@@ -9,10 +9,10 @@ import { PinoLogger } from 'nestjs-pino';
 export class UserService extends DataService<User, Repository<User>> {
   constructor(
     @InjectRepository(User)
-    userRepository: Repository<User>,
+    repository: Repository<User>,
     logger: PinoLogger
   ) {
-    super(userRepository, new User(), logger);
+    super(repository, new User(), logger);
   }
 
   async checkIfUserExists(username: string) {

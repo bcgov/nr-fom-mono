@@ -4,7 +4,6 @@ import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { ApiBaseEntity } from '../entities/base.entity';
 
-/* TODO: @bcdevlucas - let's work together to change these */
 export type MsDocumentType<T> = OptionalId<T>;
 /**
  * Base class to extend for interacting with the database through a repository pattern.
@@ -13,7 +12,7 @@ export type MsDocumentType<T> = OptionalId<T>;
  * @export
  * @class DataService
  * @template E - Model extends MsBaseEntity
- * @template R - repository extends epository<Model>
+ * @template R - repository extends Repository<Model>
  */
 @Injectable()
 export abstract class DataService<
@@ -57,7 +56,7 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async findOne(id: string): Promise<E> {
+  async findOne(id: number | string): Promise<E> {
     this.logger.info(`${this.constructor.name}findOne props`, id);
 
     try {
@@ -86,7 +85,7 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async update(id: string, dto: Partial<E>) {
+  async update(id: number | string, dto: Partial<E>) {
     this.logger.info('update props', id, dto);
     /* try {
       const update = await this.repository.findOneAndUpdate({ _id: id }, dto);
@@ -104,7 +103,7 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async remove(id: string) {
+  async remove(id: number | string) {
     try {
       this.logger.info('remove props', id);
       const removed = await this.repository.softDelete(id);

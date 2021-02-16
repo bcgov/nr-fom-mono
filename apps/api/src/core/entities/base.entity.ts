@@ -1,5 +1,5 @@
 // import { ObjectId } from 'bson';
-import { Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 // import { Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
 export type DeepPartial<T> = {
@@ -15,6 +15,22 @@ export abstract class ApiBaseEntity<M> {
   // _id: ObjectId;
   @PrimaryGeneratedColumn('increment')
   public id: number;
+
+  // Metadata columns
+  @Column({ name: 'revision_count' })
+  public revisionCount: number;
+
+  @Column({ name: 'create_timestamp' })
+  public createTimestamp: string;
+
+  @Column({ name: 'create_user' })
+  public createUser: string;
+
+  @Column({ name: 'update_timestamp' })
+  public updateTimestamp: string;
+
+  @Column({ name: 'update_user' })
+  public updateUser: string;
 
   constructor(model?: Partial<M>) {
     Object.assign(this, model);
