@@ -52,8 +52,13 @@ const pgTypeOrmConfig = {
   ssl: false, //process.env.POSTGRES_DB_SSL,
   username: process.env.POSTGRES_DB_USERNAME,
   password: process.env.POSTGRES_DB_PASSWORD,
-  entities: [__dirname + '**/*.entity{.ts,.js}']
-};
+  entities: [__dirname + '**/*.entity{.ts,.js}'],
+  migrationsTableName: 'migrations',
+  migrations: ['migrations/*{.ts,.js}'],
+  cli: {
+    'migrationsDir': 'migrations'
+  }
+}
 
 console.log(process.env);
 
