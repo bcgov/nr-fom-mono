@@ -27,38 +27,8 @@ import { LoggerModule } from 'nestjs-pino';
 
 /* TODO: custom variable for loading this from */
 const envFilePath = '.env.development';
-import { config } from 'dotenv';
-// config({ path: __dirname + '/../../.env.development' });
-config();
-
-const mongoTypeOrmConfig = {
-  synchronize: !process.env.production,
-  autoLoadEntities: true,
-  type: 'mongodb',
-  url: process.env.DB_URL,
-  database: process.env.DATABASE,
-  entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  ssl: false, // process.env.DATABASE_SSL,
-  useUnifiedTopology: true,
-  useNewUrlParser: true,
-};
-
-const pgTypeOrmConfig = {
-  autoLoadEntities: true,
-  type: process.env.DATABASE_TYPE,
-  host: process.env.POSTGRES_DB_HOST,
-  port: process.env.POSTGRES_DB_PORT,
-  database: process.env.POSTGRES_DB_NAME,
-  ssl: false, //process.env.POSTGRES_DB_SSL,
-  username: process.env.POSTGRES_DB_USERNAME,
-  password: process.env.POSTGRES_DB_PASSWORD,
-  entities: [__dirname + '**/*.entity{.ts,.js}'],
-  migrationsTableName: 'migrations',
-  migrations: ['migrations/*{.ts,.js}'],
-  cli: {
-    'migrationsDir': 'migrations'
-  }
-}
+import { config as mongoTypeOrmConfig } from './ormconfig-mongo';
+import { config as pgTypeOrmConfig } from './ormconfig-postgres';
 
 console.log(process.env);
 
@@ -70,8 +40,6 @@ const typeOrmConfig = (() => {
       return mongoTypeOrmConfig as TypeOrmModuleOptions;
   }
 })();
-
-console.log(typeOrmConfig);
 
 @Module({
   imports: [

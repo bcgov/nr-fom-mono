@@ -34,5 +34,4 @@ export class initializeTables1613577521127 implements MigrationInterface {
         dropSubmissionTypeCodeTable(queryRunner);
         dropWorkflowStateCodeTable(queryRunner);
     }
-
 }

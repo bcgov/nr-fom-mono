@@ -1,11 +1,14 @@
 {
-  "name": "mediashare",
+  "name": "fom-api",
   "version": "0.0.0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "nx": "nx",
     "start": "nx serve",
     "start:debug": "nodemon --config nodemon.json",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "typeorm:migrate": "typeorm migration:run -f ./apps/api/src/app/ormconfig-migration.ts",
     "build": "nx build",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
@@ -25,7 +28,8 @@
     "workspace-generator": "nx workspace-generator",
     "dep-graph": "nx dep-graph",
     "help": "nx help",
-    "start:db": "docker run -d -p 27017-27019:27017-27019 --name mediashare-mongodb mongo:4.0.4"
+    "start:db:mongo": "docker run -d -p 27017-27019:27017-27019 --name api-mongodb mongo:4.0.4",
+    "start:db:postgres": "docker run -d -p 5432:5432 --name api-postgres postgres -e POSTGRES_DB='api-db' POSTGRES_PASSWORD=''"
   },
   "private": true,
   "dependencies": {
@@ -75,7 +79,7 @@
     "@types/express-session": "^1.17.3",
     "@types/jest": "^26.0.20",
     "@types/mongodb": "^3.6.6",
-    "@types/node": "12.12.38",
+    "@types/node": "^12.12.38",
     "@types/react": "16.9.38",
     "@types/react-native": "0.63.18",
     "@typescript-eslint/eslint-plugin": "4.3.0",
