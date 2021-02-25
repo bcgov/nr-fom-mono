@@ -29,7 +29,7 @@
     "dep-graph": "nx dep-graph",
     "help": "nx help",
     "start:db:mongo": "docker run -d -p 27017-27019:27017-27019 --name api-mongodb mongo:4.0.4",
-    "start:db:postgres": "docker run -d -p 5432:5432 --name api-postgres postgres -e POSTGRES_DB='api-db' POSTGRES_PASSWORD=''"
+    "start:db:postgres": "docker run -d -p 5432:5432 --name api-postgres postgres -e POSTGRES_DB='api-db' POSTGRES_PASSWORD='test' POSTGRES_HOST_AUTH_METHOD=trust"
   },
   "private": true,
   "dependencies": {
