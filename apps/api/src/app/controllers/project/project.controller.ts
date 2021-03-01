@@ -4,7 +4,9 @@ import { ProjectService } from './project.service';
 import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('project')
 @Controller('project')
 export class ProjectController extends BaseController<
   Project,

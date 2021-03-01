@@ -13,10 +13,10 @@ const ormConfig = {
   password: process.env.POSTGRES_DB_PASSWORD,
   entities: [__dirname + '**/*.entity{.ts,.js}'],
   migrationsTableName: 'migrations',
-  migrations: ['./migrations/*{.ts,.js}'],
+  migrations: ['./migration/*{.ts,.js}'],
   cli: {
-    'migrationsDir': 'migrations'
-  }
-}
+    migrationsDir: 'migration',
+  },
+};
 
 export { ormConfig as config };

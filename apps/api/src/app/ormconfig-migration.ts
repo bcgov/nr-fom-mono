@@ -7,15 +7,14 @@ const ormConfig = {
   type: 'postgres',
   host: 'localhost',
   port: 5432,
-  database: 'bcgov-fom',
+  database: 'api-db',
   ssl: false, //process.env.POSTGRES_DB_SSL,
   username: 'postgres',
   password: '',
   entities: [__dirname + '**/*.entity{.ts,.js}'],
-  migrationsTableName: 'migrations',
-  migrations: [__dirname + '/migrations/*{.ts,.js}'],
+  migrations: ['migration/*{.ts,.js}'],
   cli: {
-    'migrationsDir': 'migrations'
+    'migrationsDir': 'migration'
   }
 }
 
