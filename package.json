@@ -2,7 +2,6 @@
   "name": "fom-api",
   "version": "0.0.0",
   "license": "MIT",
-  "type": "module",
   "scripts": {
     "nx": "nx",
     "start": "nx serve",
