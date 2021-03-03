@@ -36,10 +36,10 @@ import { AppConfigService } from './modules/app-config/app-config.provider';
       useFactory: (configService: AppConfigService) => ({
         autoLoadEntities: true,
         type: configService.db('type'),
-        url: configService.db('url'),
         username: configService.db('username'),
         password: configService.db('password'),
         database: configService.db('database'),
+        host: configService.db('host'),
         entities: configService.db('entities'),
         synchronize: configService.db('synchronize'),
         ssl: configService.db('ssl'),
