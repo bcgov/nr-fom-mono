@@ -4,6 +4,8 @@ services:
     image: app-api
     ports:
       - 8081:3333
+    depends_on:
+      - db-postgres
   db-postgres:
     image: postgres
     container_name: api-postgres
