@@ -13,20 +13,21 @@
           "builder": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
-            "nx build api",
-            "docker build -f ./apps/api/Dockerfile . -t app-api"
+              "nx build api",
+              "docker build -f ./apps/api/Dockerfile . -t app-api"
             ],
             "parallel": false
           }
         },
         "build": {
-          "executor": "@nrwl/node:build",
+          "executor": "@nrwl/node:package",
           "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/apps/api",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
-            "assets": ["apps/api/src/assets"]
+            "assets": ["apps/api/src/assets"],
+            "packageJson": "apps/api/package.json"
           },
           "configurations": {
             "production": {
