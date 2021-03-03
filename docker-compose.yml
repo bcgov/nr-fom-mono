@@ -1,18 +1,21 @@
 version: '3'
 services:
   app-api:
+    depends_on:
+      - db-postgres
     image: app-api
     ports:
       - 8081:3333
     networks:
       - backend
     environment:
+      - NODE_ENV=production
       - HOST=localhost
       - PORT=3333
       - APP_HOST=localhost
       - APP_NAME=Api
       - APP_ENV=development
-      - APP_URL=http://localhost
+      - APP_URL={DOCKER_HOST}
       - APP_PORT=3333
       - APP_PREFIX=api
       - APP_TITLE=Api
@@ -28,6 +31,8 @@ services:
       - DB_SYNCHRONIZE=false
       - DB_USERNAME=postgres
       - DB_PASSWORD=test
+    links:
+      - db-postgres
   db-postgres:
     image: postgres
     container_name: api-postgres
