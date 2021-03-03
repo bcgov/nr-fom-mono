@@ -3,9 +3,7 @@ services:
   app-api:
     image: app-api
     ports:
-      - "8081:3333"
-    # depends_on:
-    # - db-postgres
+      - 8081:3333
     networks:
       - backend
   db-postgres:
@@ -18,30 +16,10 @@ services:
       - POSTGRES_DB=api-db
       - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
-      - '5432:5432'
-      - '443:443'
-      - '80:80'
-    # volumes:
-    #  - ms-postgres-data:/var/lib/postgres/data
+      - 5432:5432
+      - 443:443
+      - 80:80
     networks:
       - backend
 networks:
-  # frontend:
-    # Use a custom driver
-    # driver: custom-driver-1
   backend:
-    # Use a custom driver which takes special options
-    # driver: custom-driver-2
-    # driver_opts:
-      # foo: "1"
-      # bar: "2"
-  # db-mongo:
-    # image: mongo:4.0.4
-    # container_name: api-mongo
-    # restart: always
-    # ports:
-    # - 27017:27017
-    # - 27018:27018
-    # - 27019:27019
-# volumes:
-#   ms-postgres-data:
