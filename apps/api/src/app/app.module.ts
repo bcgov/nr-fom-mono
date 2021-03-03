@@ -24,28 +24,30 @@ import { WorkflowStateCodeModule } from './controllers/workflow-state-code/workf
 import { UserModule } from './controllers/user/user.module';
 // Other Modules
 import { LoggerModule } from 'nestjs-pino';
-
-/* TODO: custom variable for loading this from */
-const envFilePath = '.env.development';
-import { config as mongoTypeOrmConfig } from './ormconfig-mongo';
-import { config as pgTypeOrmConfig } from './ormconfig-postgres';
-
-console.log(process.env);
-
-const typeOrmConfig = (() => {
-  switch (process.env.DATABASE_TYPE) {
-    case 'postgres':
-      return pgTypeOrmConfig as TypeOrmModuleOptions;
-    case 'mongodb':
-      return mongoTypeOrmConfig as TypeOrmModuleOptions;
-  }
-})();
+import { AppConfigModule } from './modules/app-config/app-config.module';
+import { AppConfigService } from './modules/app-config/app-config.provider';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ envFilePath: envFilePath, isGlobal: true }),
-    /* TODO: @bcdevlucas change this to the PostGres settings */
-    TypeOrmModule.forRoot(typeOrmConfig),
+    // Config
+    AppConfigModule,
+    TypeOrmModule.forRootAsync({
+      imports: [AppConfigModule],
+      useFactory: (configService: AppConfigService) => ({
+        autoLoadEntities: true,
+        type: configService.db('type'),
+        url: configService.db('url'),
+        username: configService.db('username'),
+        password: configService.db('password'),
+        database: configService.db('database'),
+        entities: configService.db('entities'),
+        synchronize: configService.db('synchronize'),
+        ssl: configService.db('ssl'),
+        useUnifiedTopology: true,
+        useNewUrlParser: true,
+      }),
+      inject: [AppConfigService],
+    }),
     // Core Modules
     AttachmentModule,
     CutBlockModule,
@@ -71,8 +73,5 @@ const typeOrmConfig = (() => {
   providers: [AppService],
 })
 export class AppModule {
-  constructor() {
-    console.log('started');
-    console.log(typeOrmConfig);
-  }
+  constructor(private appConfigService: AppConfigService) {}
 }

@@ -1,5 +1,9 @@
 version: '3'
 services:
+  app-api:
+    image: app-api
+    ports:
+      - 8081:3333
   db-postgres:
     image: postgres
     container_name: api-postgres
@@ -11,11 +15,11 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     ports:
       - 5432:5432
-  db-mongo:
-    image: mongo:4.0.4
-    container_name: api-mongo
-    restart: always
-    ports:
-      - 27017:27017
-      - 27018:27018
-      - 27019:27019
+  # db-mongo:
+    # image: mongo:4.0.4
+    # container_name: api-mongo
+    # restart: always
+    # ports:
+    # - 27017:27017
+    # - 27018:27018
+    # - 27019:27019
