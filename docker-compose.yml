@@ -1,38 +1,26 @@
-version: '3'
+version: '3.8'
 services:
   app-api:
     depends_on:
       - db-postgres
     image: app-api
     ports:
-      - 8081:3333
+      - '8081:3333'
     networks:
       - backend
     environment:
+      - POSTGRES_HOST=db-postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=api-db
       - NODE_ENV=production
-      - HOST=localhost
-      - PORT=3333
-      - APP_HOST=localhost
-      - APP_NAME=Api
-      - APP_ENV=development
-      - APP_URL={DOCKER_HOST}
-      - APP_PORT=3333
-      - APP_PREFIX=api
-      - APP_TITLE=Api
-      - SESSION_DB_NAME=api-session
-      - SESSION_DB_COLLECTION=session
       - SESSION_SECRET=this-is-my-secret-key
       - MS_PORT=4000
-      - MS_HOST=localhost
-      - DB_URL=api-postgres
-      - DB_TYPE=postgres
-      - DB=api-db
-      - DB_SSL=false
-      - DB_SYNCHRONIZE=false
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=test
+      - MS_HOST={DOCKER_HOST}
+      - MS_API_PORT=4444
     links:
-      - db-postgres
+      - 'db-postgres:database'
   db-postgres:
     image: postgres
     container_name: api-postgres
@@ -42,11 +30,18 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=api-db
       - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGADMIN_DEFAULT_EMAIL=user@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=password
+    volumes:
+      - ms-postgres-data:/var/lib/postgres/data
     ports:
-      - 5432:5432
-      - 443:443
-      - 80:80
+      - '5432:5432'
+      - '443:443'
+      - '80:80'
     networks:
       - backend
 networks:
   backend:
+volumes:
+  ms-postgres-data:
+  node-cache:
