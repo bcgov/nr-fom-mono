@@ -14,8 +14,8 @@ import databaseConfiguration from './database.configuration';
       envFilePath: 'development.env',
       load: [configuration, databaseConfiguration],
       validationSchema: appValidationSchema,
-      ignoreEnvVars: true,
-      ignoreEnvFile: false
+      ignoreEnvVars: process.env.NODE_ENV === 'development',
+      ignoreEnvFile: process.env.NODE_ENV !== 'development',
     }),
   ],
   providers: [ConfigService, AppConfigService],

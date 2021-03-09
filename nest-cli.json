@@ -1,12 +1,12 @@
 {
   "projects": {
-    "utility": {
-      "type": "library",
-      "root": "libs/utility",
-      "entryFile": "index",
-      "sourceRoot": "libs/utility/src",
+    "media-api": {
+      "type": "application",
+      "root": "apps/api",
+      "entryFile": "main",
+      "sourceRoot": "apps/api/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/utility/tsconfig.lib.json"
+        "tsConfigPath": "apps/api/tsconfig.app.json"
       }
     }
   },

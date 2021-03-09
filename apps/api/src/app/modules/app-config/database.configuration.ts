@@ -8,6 +8,6 @@ export default registerAs('db', () => ({
   ssl: false, // process.env.DB_SSL,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
-  host: 'db-postgres', // process.env.DB_HOST,
+  host: process.env.DB_HOST,
   port: process.env.DB_PORT,
 }));

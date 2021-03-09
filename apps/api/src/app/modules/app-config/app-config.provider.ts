@@ -14,7 +14,7 @@ export interface AppConfigService extends ReturnType<typeof configuration> {}
 export class AppConfigService {
   constructor(private configService: ConfigService) {}
 
-  get(key: keyof AppConfigService) {
+  get(key: keyof typeof configuration) {
     return this.configService.get('app.' + key);
   }
 

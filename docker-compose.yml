@@ -1,27 +1,36 @@
 version: '3.8'
 services:
-  app-api:
-    depends_on:
-      - db-postgres
-    image: app-api
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile.slim
+    restart: always
+    working_dir: /usr/src/app
+    environment:
+      - DB_URL=database
+      - POSTGRES_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=test
+      - DB=api-db
+      - DB_TYPE=postgres
+      - DB_SSL=false
+      - DB_HOST=database
+      - NODE_ENV=production
+    volumes:
+      - .:/usr/src/app
+      - /usr/app/node_modules
     ports:
       - '8081:3333'
+    tty: true
+    command: 'npm run start:api'
+    depends_on:
+      - db
     networks:
       - backend
-    environment:
-      - POSTGRES_HOST=db-postgres
-      - POSTGRES_PORT=5432
-      - POSTGRES_USERNAME=postgres
-      - POSTGRES_PASSWORD=test
-      - POSTGRES_DB=api-db
-      - NODE_ENV=production
-      - SESSION_SECRET=this-is-my-secret-key
-      - MS_PORT=4000
-      - MS_HOST={DOCKER_HOST}
-      - MS_API_PORT=4444
     links:
-      - 'db-postgres:database'
-  db-postgres:
+      - 'db:database'
+  db:
     image: postgres
     container_name: api-postgres
     restart: always
@@ -30,8 +39,7 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=api-db
       - POSTGRES_HOST_AUTH_METHOD=trust
-      - PGADMIN_DEFAULT_EMAIL=user@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=password
+      - POSTGRES_PORT=5342
     volumes:
       - ms-postgres-data:/var/lib/postgres/data
     ports:

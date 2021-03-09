@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { OptionalId } from 'mongodb';
+// import { OptionalId } from 'mongodb';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { ApiCodeTableEntity } from '../entities/code.entity';
 
-export type MsDocumentType<T> = OptionalId<T>;
+// export type MsDocumentType<T> = OptionalId<T>;
 /**
  * Base class to extend for interacting with the database through a repository pattern.
  *

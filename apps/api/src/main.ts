@@ -11,9 +11,7 @@ import { AppModule } from './app/app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const appConfig = app.get('AppConfigService');
-  console.log('🚀 ---------------------------------------------------------------');
-  console.log('🚀 ~ file: main.ts ~ line 16 ~ bootstrap ~ appConfig', appConfig);
-  console.log('🚀 ---------------------------------------------------------------');
+
   app.useLogger(app.get(Logger));
   app.useGlobalPipes(new ValidationPipe());
   const globalPrefix = 'api';
