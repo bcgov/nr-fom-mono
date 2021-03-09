@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile.slim
+    restart: always
+    working_dir: /usr/src/app
+    environment:
+      - DB_URL=database
+      - POSTGRES_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=test
+      - DB=api-db
+      - DB_TYPE=postgres
+      - DB_SSL=false
+      - DB_HOST=database
+      - NODE_ENV=production
+    volumes:
+      - .:/usr/src/app
+      - /usr/app/node_modules
+    ports:
+      - '8081:3333'
+    tty: true
+    command: 'npm run start:api'
+    depends_on:
+      - db
+    networks:
+      - backend
+    links:
+      - 'db:database'
+  db:
+    image: postgres
+    container_name: api-postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_DB=api-db
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PORT=5342
+    volumes:
+      - ms-postgres-data:/var/lib/postgres/data
+    ports:
+      - '5432:5432'
+      - '443:443'
+      - '80:80'
+    networks:
+      - backend
+networks:
+  backend:
+volumes:
+  ms-postgres-data:
+  node-cache:
