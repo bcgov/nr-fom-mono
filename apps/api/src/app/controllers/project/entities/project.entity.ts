@@ -29,5 +29,5 @@ export class Project extends ApiBaseEntity<Project> {
   forestClientId: number;
 
   @JoinColumn({ name: 'workflow_state_code' })
-  workflow_state_code: string;
+  workflowStateCode: string;
 }

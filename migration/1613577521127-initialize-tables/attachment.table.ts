@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import {QueryRunner, Table} from 'typeorm';
 
 export async function createTable(queryRunner: QueryRunner) {
   await queryRunner.createTable(new Table({
@@ -6,7 +6,7 @@ export async function createTable(queryRunner: QueryRunner) {
     columns: [
       {
         name: 'id',
-        type: 'int',
+        type: 'serial',
         isPrimary: true
       },
       {
@@ -24,9 +24,29 @@ export async function createTable(queryRunner: QueryRunner) {
       {
         name: 'attachment_type_code',
         type: 'varchar'
+      },
+      {
+        name: 'revision_count',
+        type: 'int'
+      },
+      {
+        name: 'create_timestamp',
+        type: 'timestamp'
+      },
+      {
+        name: 'create_user',
+        type: 'varchar'
+      },
+      {
+        name: 'update_timestamp',
+        type: 'timestamp'
+      },
+      {
+        name: 'update_user',
+        type: 'varchar'
       }
     ]
-  }), true);
+  }));
 }
 
 export async function dropTable(queryRunner: QueryRunner) {

@@ -6,7 +6,7 @@ export async function createTable(queryRunner: QueryRunner) {
     columns: [
       {
         name: 'id',
-        type: 'int',
+        type: 'serial',
         isPrimary: true
       },
       {
