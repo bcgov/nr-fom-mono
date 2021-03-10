@@ -7,8 +7,8 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
     super(cutBlock);
   }
 
-  @Column({ name: 'geometry', type: 'geometry' })
-  geometry: any;
+  /* @Column({ name: 'geometry', type: 'geometry' })
+  geometry: any; */
 
   @Column({ name: 'planned_development_date' })
   plannedDevelopmentDate: string; // timestamp

@@ -7,8 +7,8 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
     super(roadSection);
   }
 
-  @Column({ name: 'geometry', type: 'geometry' })
-  geometry: any;
+  /* @Column({ name: 'geometry', type: 'geometry' })
+  geometry: any; */
 
   @Column({ name: 'planned_development_date' })
   plannedDevelopmentDate: string; // timestamp

@@ -7,8 +7,8 @@ export class Submission extends ApiBaseEntity<Submission> {
     super(submission);
   }
 
-  @Column({ name: 'geometry', type: 'geometry' })
-  geometry: any;
+  /* @Column({ name: 'geometry', type: 'geometry' })
+  geometry: any; */
 
   @JoinColumn({ name: 'project_id' })
   projectId: number;

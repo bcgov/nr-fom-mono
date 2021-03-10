@@ -1,6 +1,8 @@
-import { BaseDto } from './base.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
-export class CodeDto extends BaseDto {
+export class CodeDto {
+  @ApiProperty()
   public code: string;
+  @ApiProperty()
   public description: string;
 }
