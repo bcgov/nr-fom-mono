@@ -6,7 +6,7 @@ export async function createTable(queryRunner: QueryRunner) {
     columns: [
       {
         name: 'id',
-        type: 'int',
+        type: 'serial',
         isPrimary: true
       },
       {
@@ -27,18 +27,42 @@ export async function createTable(queryRunner: QueryRunner) {
       },
       {
         name: 'fsp_id',
-        type: 'int'
+        type: 'int',
+        isNullable: true
       },
       {
         name: 'district_id',
-        type: 'int'
+        type: 'int',
+        isNullable: true
       },
       {
         name: 'forest_client_id',
-        type: 'int'
+        type: 'int',
+        isNullable: true
       },
       {
         name: 'workflow_state_code',
+        type: 'varchar',
+        isNullable: true
+      },
+      {
+        name: 'revision_count',
+        type: 'int'
+      },
+      {
+        name: 'create_timestamp',
+        type: 'timestamp'
+      },
+      {
+        name: 'create_user',
+        type: 'varchar'
+      },
+      {
+        name: 'update_timestamp',
+        type: 'timestamp'
+      },
+      {
+        name: 'update_user',
         type: 'varchar'
       }
     ]
