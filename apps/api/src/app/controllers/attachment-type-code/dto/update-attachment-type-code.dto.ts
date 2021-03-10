@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { OmitType } from '@nestjs/swagger';
 import { CreateAttachmentTypeCodeDto } from './create-attachment-type-code.dto';
 
-export class UpdateAttachmentTypeCodeDto extends PartialType(CreateAttachmentTypeCodeDto) {}
+export class UpdateAttachmentTypeCodeDto extends OmitType(CreateAttachmentTypeCodeDto, ['code']) {}

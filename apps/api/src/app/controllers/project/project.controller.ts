@@ -34,6 +34,7 @@ export class ProjectController extends BaseController<
   }
 
   @Put(':id')
+  @ApiBody({ type: UpdateProjectDto })
   update(@Param('id') id: number, @Body() updateDto: UpdateProjectDto) {
     return super.update(id, updateDto);
   }

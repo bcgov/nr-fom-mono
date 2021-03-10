@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { OmitType } from '@nestjs/swagger';
 import { CreateResponseCodeDto } from './create-response-code.dto';
 
-export class UpdateResponseCodeDto extends PartialType(CreateResponseCodeDto) {}
+export class UpdateResponseCodeDto extends OmitType(CreateResponseCodeDto, ['code']) {}

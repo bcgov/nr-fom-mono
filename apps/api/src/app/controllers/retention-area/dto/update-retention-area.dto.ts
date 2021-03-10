@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { OmitType } from '@nestjs/swagger';
 import { CreateRetentionAreaDto } from './create-retention-area.dto';
 
-export class UpdateRetentionAreaDto extends PartialType(CreateRetentionAreaDto) {}
+export class UpdateRetentionAreaDto extends OmitType(CreateRetentionAreaDto, ['id']) {}
