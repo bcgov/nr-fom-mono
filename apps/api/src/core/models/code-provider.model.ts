@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 // import { OptionalId } from 'mongodb';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
-import { ApiCodeTableEntity } from '../entities/code.entity';
+import { ApiCodeTableEntity } from '@entities';
 
 // export type MsDocumentType<T> = OptionalId<T>;
 /**

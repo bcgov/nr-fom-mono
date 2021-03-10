@@ -1,4 +1,4 @@
-import { ApiCodeTableEntity } from '../../../../core/entities/code.entity';
+import { ApiCodeTableEntity } from '@entities';
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity('response_code')

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
 
-import { BaseController } from '../../../core/controllers/base.controller';
+import { BaseController } from '@controllers';
 import { ProjectService } from './project.service';
 import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
@@ -34,6 +34,7 @@ export class ProjectController extends BaseController<
   }
 
   @Put(':id')
+  @ApiBody({ type: UpdateProjectDto })
   update(@Param('id') id: number, @Body() updateDto: UpdateProjectDto) {
     return super.update(id, updateDto);
   }

@@ -17,7 +17,11 @@
     "paths": {
       "@core-lib": ["libs/core/src/index.ts"],
       "@util-lib": ["libs/utility/src/index.ts"],
-      "@api": ["apps/api/src/index.ts"]
+      "@core": ["apps/api/src/core"],
+      "@controllers": ["apps/api/src/core/controllers"],
+      "@dto": ["apps/api/src/core/dto"],
+      "@entities": ["apps/api/src/core/entities"],
+      "@models": ["apps/api/src/core/models"]
     }
   },
   "exclude": ["node_modules", "tmp"]

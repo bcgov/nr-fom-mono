@@ -1,4 +1,4 @@
-import { ApiBaseEntity } from '../../../../core/entities/base.entity';
+import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryColumn, JoinColumn, Column } from 'typeorm';
 
 @Entity('road_section')

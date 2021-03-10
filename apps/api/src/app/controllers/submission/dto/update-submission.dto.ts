@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { OmitType } from '@nestjs/swagger';
 import { CreateSubmissionDto } from './create-submission.dto';
 
-export class UpdateSubmissionDto extends PartialType(CreateSubmissionDto) {}
+export class UpdateSubmissionDto extends OmitType(CreateSubmissionDto, ['id']) {}

@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
+import { OmitType } from '@nestjs/swagger';
 import { CreatePublicCommentDto } from './create-public-comment.dto';
 
-export class UpdatePublicCommentDto extends PartialType(CreatePublicCommentDto) {}
+export class UpdatePublicCommentDto extends OmitType(CreatePublicCommentDto, ['id']) {}
