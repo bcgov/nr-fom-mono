@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '../../../core/controllers/base.controller';
+import { BaseController } from '@controllers';
 import { ForestStewardshipPlanService } from './forest-stewardship-plan.service';
 import { ForestStewardshipPlan } from './entities/forest-stewardship-plan.entity';
 import { CreateForestStewardshipPlanDto } from './dto/create-forest-stewardship-plan.dto';

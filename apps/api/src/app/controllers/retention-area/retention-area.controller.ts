@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '../../../core/controllers/base.controller';
+import { BaseController } from '@controllers';
 import { RetentionAreaService } from './retention-area.service';
 import { RetentionArea } from './entities/retention-area.entity';
 import { CreateRetentionAreaDto } from './dto/create-retention-area.dto';

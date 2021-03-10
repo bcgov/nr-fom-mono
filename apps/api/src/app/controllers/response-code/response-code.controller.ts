@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CodeTableController } from '../../../core/controllers/code.controller';
+import { CodeTableController } from '@controllers';
 import { ResponseCodeService } from './response-code.service';
 import { ResponseCode } from './entities/response-code.entity';
 import { CreateResponseCodeDto } from './dto/create-response-code.dto';

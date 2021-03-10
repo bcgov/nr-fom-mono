@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '../../../core/controllers/base.controller';
+import { BaseController } from '@controllers';
 import { InteractionService } from './interaction.service';
 import { Interaction } from './entities/interaction.entity';
 import { CreateInteractionDto } from './dto/create-interaction.dto';

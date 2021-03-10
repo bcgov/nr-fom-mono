@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '../../../core/controllers/base.controller';
+import { BaseController } from '@controllers';
 import { CutBlockService } from './cut-block.service';
 import { CutBlock } from './entities/cut-block.entity';
 import { CreateCutBlockDto } from './dto/create-cut-block.dto';

@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '../../../core/controllers/base.controller';
+import { BaseController } from '@controllers';
 import { RoadSectionService } from './road-section.service';
 import { RoadSection } from './entities/road-section.entity';
 import { CreateRoadSectionDto } from './dto/create-road-section.dto';

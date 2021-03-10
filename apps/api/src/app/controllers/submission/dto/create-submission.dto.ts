@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '../../../../core/dto/base.dto';
+import { BaseDto } from '@dto';
 
 export class CreateSubmissionDto extends BaseDto {
   @ApiProperty()

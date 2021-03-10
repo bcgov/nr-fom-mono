@@ -1,4 +1,4 @@
-import { ApiBaseEntity } from '../../../../core/entities/base.entity';
+import { ApiBaseEntity } from '@entities';
 import { Entity, Column, PrimaryColumn } from 'typeorm';
 
 @Entity('forest_stewardship_plan')

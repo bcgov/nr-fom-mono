@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { CodeTableController } from '../../../core/controllers/code.controller';
+import { CodeTableController } from '@controllers';
 import { AttachmentTypeCodeService } from './attachment-type-code.service';
 import { AttachmentTypeCode } from './entities/attachment-type-code.entity';
 import { CreateAttachmentTypeCodeDto } from './dto/create-attachment-type-code.dto';

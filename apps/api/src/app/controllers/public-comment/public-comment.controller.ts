@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '../../../core/controllers/base.controller';
+import { BaseController } from '@controllers';
 import { PublicCommentService } from './public-comment.service';
 import { PublicComment } from './entities/public-comment.entity';
 import { CreatePublicCommentDto } from './dto/create-public-comment.dto';
