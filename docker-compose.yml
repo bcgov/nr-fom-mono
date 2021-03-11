@@ -4,7 +4,7 @@ services:
     container_name: api
     build:
       context: .
-      dockerfile: Dockerfile.slim
+      dockerfile: ./docker/api/Dockerfile.slim
     restart: always
     working_dir: /usr/src/app
     environment:
@@ -31,7 +31,7 @@ services:
     links:
       - 'db:database'
   db:
-    image: postgres
+    image: postgis/postgis
     container_name: api-postgres
     restart: always
     environment:

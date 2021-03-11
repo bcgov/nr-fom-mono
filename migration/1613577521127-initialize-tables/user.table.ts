@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import {QueryRunner, Table} from 'typeorm';
 
 export async function createTable(queryRunner: QueryRunner) {
   await queryRunner.createTable(new Table({

@@ -7,8 +7,8 @@ export class RetentionArea extends ApiBaseEntity<RetentionArea> {
     super(retentionArea);
   }
 
-  /* @Column({ name: 'geometry', type: 'geometry' })
-  geometry: any; */
+  @Column({ name: 'geometry', type: 'geometry' })
+  geometry: any;
 
   @Column({ name: 'planned_area_ha' })
   plannedAreaHa: number;
