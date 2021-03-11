@@ -68,7 +68,7 @@ export class initializeTables1613577521127 implements MigrationInterface {
         createPublicCommentTable(queryRunner);
         createRetentionAreaTable(queryRunner);
         createRoadSectionTable(queryRunner);
-        // createSubmissionTable(queryRunner);
+        createSubmissionTable(queryRunner);
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
@@ -79,12 +79,12 @@ export class initializeTables1613577521127 implements MigrationInterface {
         dropWorkflowStateCodeTable(queryRunner);
         // Drop core tables
         dropAttachmentTable(queryRunner);
-        // dropCutBlockTable(queryRunner);
+        dropCutBlockTable(queryRunner);
         dropInteractionTable(queryRunner);
         dropProjectTable(queryRunner);
         dropPublicCommentTable(queryRunner);
-        // dropRetentionAreaTable(queryRunner);
-        // dropRoadSectionTable(queryRunner);
-        // dropSubmissionTable(queryRunner);
+        dropRetentionAreaTable(queryRunner);
+        dropRoadSectionTable(queryRunner);
+        dropSubmissionTable(queryRunner);
     }
 }
