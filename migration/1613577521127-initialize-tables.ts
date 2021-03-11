@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from 'typeorm';
+import {MigrationInterface, QueryRunner} from 'typeorm';
 
 // Code tables
 import {
@@ -62,12 +62,12 @@ export class initializeTables1613577521127 implements MigrationInterface {
         createWorkflowStateCodeTable(queryRunner);
         // Create core tables
         createAttachmentTable(queryRunner);
-        // createCutBlockTable(queryRunner);
+        createCutBlockTable(queryRunner);
         createInteractionTable(queryRunner);
         createProjectTable(queryRunner);
         createPublicCommentTable(queryRunner);
-        // createRetentionAreaTable(queryRunner);
-        // createRoadSectionTable(queryRunner);
+        createRetentionAreaTable(queryRunner);
+        createRoadSectionTable(queryRunner);
         // createSubmissionTable(queryRunner);
     }
 
