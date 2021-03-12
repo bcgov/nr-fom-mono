@@ -1,13 +1,14 @@
-<!--- NOTE: This is a template for your project README. Edit the content according to the comments provided.--->
 
 # <application_license_badge>
-<!--- [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE) --->
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 
-# <application_name>
-<!--- Description of the application. ---> 
+# Forest Operation Map (FOM)
+FOM projects (proposals for logging, essentially) are submitted to FOM and made available for public review and comment. The submitting organization then needs to address the comments before submitting the project to the ministry.
 
 ## Technical Details
-<!--- Technology Stack Used. ---> 
+Technology Stack: Angular, Node.js, PostgresSQL with PostGIS running in OCP v4
+
+This repo is for the Node.js API backend.
 
 ## Third-Party Products/Libraries used and the licenses they are covered by
 <!--- product/library and path to the LICENSE --->
@@ -18,7 +19,7 @@
 - [ ] Production/Maintenance
 
 ## Documentation
-<!--- Point to another readme or create a GitHub Pages (https://guides.github.com/features/pages/) --->
+See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/viewpage.action?pageId=83560736
 
 ## Security
 <!--- Authentication, Authorization, Policies, etc --->
@@ -54,8 +55,7 @@ By participating in this project you agree to abide by its terms.
 
 
 ## License
-<!--- Example below, modify accordingly --->
-    Copyright 2018 Province of British Columbia
+    Copyright 2021 Province of British Columbia
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
