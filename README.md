@@ -30,6 +30,9 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 
 ## Deployment (Local Development)
 * Developer Workstation Requirements/Setup:
+git clone ...
+npm install
+docker-compose up -d
 <!--- instruction on Minishift/Docker/Other services.. --->
 
 * Application Specific Setup:
