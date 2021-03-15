@@ -29,11 +29,23 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 <!--- setup env vars, secrets, instructions... --->
 
 ## Deployment (Local Development)
-* Developer Workstation Requirements/Setup:
-git clone ...
+* To get API backend running locally:
+Install node and docker desktop (with WSL2 on Windows 10)
+npm install -g ts-node
+npm install -g typeorm
+git clone https://github.com/bcgov/nr-fom-api.git
 npm install
 docker-compose up -d
-<!--- instruction on Minishift/Docker/Other services.. --->
+npm run typeorm:migrate
+Navigate to http://localhost:8081/api
+
+# To connect to PostGRES database:
+Install dbeaver
+Create PostGRES connection to local database using connection information as defined in docker-compose.yml
+
+# To create a migration:
+typeorm migration:create -n {name}
+
 
 * Application Specific Setup:
 <!--- instruction on setup local environment and dependencies.. --->
