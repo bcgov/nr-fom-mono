@@ -1,13 +1,12 @@
-<!--- NOTE: This is a template for your project README. Edit the content according to the comments provided.--->
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
 
-# <application_license_badge>
-<!--- [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE) --->
-
-# <application_name>
-<!--- Description of the application. ---> 
+# Forest Operation Map (FOM)
+FOM projects (proposals for logging, essentially) are submitted to FOM and made available for public review and comment. The submitting organization then needs to address the comments before submitting the project to the ministry.
 
 ## Technical Details
-<!--- Technology Stack Used. ---> 
+Technology Stack: Angular, Node.js, PostgresSQL with PostGIS running in OCP v4
+
+This repo is for the Node.js API backend.
 
 ## Third-Party Products/Libraries used and the licenses they are covered by
 <!--- product/library and path to the LICENSE --->
@@ -18,7 +17,7 @@
 - [ ] Production/Maintenance
 
 ## Documentation
-<!--- Point to another readme or create a GitHub Pages (https://guides.github.com/features/pages/) --->
+See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/viewpage.action?pageId=83560736
 
 ## Security
 <!--- Authentication, Authorization, Policies, etc --->
@@ -30,12 +29,26 @@
 <!--- setup env vars, secrets, instructions... --->
 
 ## Deployment (Local Development)
-* Developer Workstation Requirements/Setup:
-<!--- instruction on Minishift/Docker/Other services.. --->
+* To get API backend running locally:
+Install node and docker desktop (with WSL2 on Windows 10)
+npm install -g ts-node
+npm install -g typeorm
+git clone https://github.com/bcgov/nr-fom-api.git
+npm install
+docker-compose up -d
+npm run typeorm:migrate
+Navigate to http://localhost:8081/api
+
+# To connect to PostGRES database:
+Install dbeaver
+Create PostGRES connection to local database using connection information as defined in docker-compose.yml
+
+# To create a migration:
+typeorm migration:create -n {name}
+
 
 * Application Specific Setup:
 <!--- instruction on setup local environment and dependencies.. --->
-
 
 ## Deployment (OpenShift)
 <!--- Best to include details in a openshift/README.md --->
@@ -46,16 +59,13 @@ To report bugs/issues/feature requests, please file an [issue](../../issues).
 
 
 ## How to Contribute
-<!--- Example below, modify accordingly --->
 If you would like to contribute, please see our [CONTRIBUTING](./CONTRIBUTING.md) guidelines.
 
 Please note that this project is released with a [Contributor Code of Conduct](./CODE_OF_CONDUCT.md). 
 By participating in this project you agree to abide by its terms.
 
-
 ## License
-<!--- Example below, modify accordingly --->
-    Copyright 2018 Province of British Columbia
+    Copyright 2021 Province of British Columbia
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
