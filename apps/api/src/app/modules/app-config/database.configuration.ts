@@ -5,6 +5,7 @@ export default registerAs('db', () => ({
   synchronize: process.env.NODE_ENV !== 'production',
   type: process.env.DB_TYPE,
   database: process.env.DB,
+  // schema: 'APP_FOM',
   ssl: false, // process.env.DB_SSL,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,

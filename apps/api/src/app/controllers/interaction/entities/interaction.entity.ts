@@ -1,11 +1,14 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
 @Entity('interaction')
 export class Interaction extends ApiBaseEntity<Interaction> {
   constructor(interaction?: Partial<Interaction>) {
     super(interaction);
   }
+
+  @PrimaryGeneratedColumn('increment')
+  public id: number;
 
   @Column()
   stakeholder: string;

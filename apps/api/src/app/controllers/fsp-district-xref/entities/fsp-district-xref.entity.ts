@@ -6,4 +6,9 @@ export class FspDistrictXref extends ApiBaseEntity<FspDistrictXref> {
   constructor(fspDistrictXref?: Partial<FspDistrictXref>) {
     super(fspDistrictXref);
   }
+
+  @PrimaryColumn()
+  public id: number;
+
+
 }

@@ -1,11 +1,14 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
 @Entity('public_comment')
 export class PublicComment extends ApiBaseEntity<PublicComment> {
   constructor(project?: Partial<PublicComment>) {
     super(project);
   }
+
+  @PrimaryGeneratedColumn('increment')
+  public id: number;
 
   @Column()
   feedback: string;

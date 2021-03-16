@@ -1,11 +1,14 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
 @Entity('cut_block')
 export class CutBlock extends ApiBaseEntity<CutBlock> {
   constructor(cutBlock?: Partial<CutBlock>) {
     super(cutBlock);
   }
+
+  @PrimaryGeneratedColumn('increment')
+  public id: number;
 
   @Column({ name: 'geometry', type: 'geometry' })
   geometry: any;

@@ -6,4 +6,8 @@ export class ForestStewardshipPlan extends ApiBaseEntity<ForestStewardshipPlan> 
   constructor(forestStewardshipPlan?: Partial<ForestStewardshipPlan>) {
     super(forestStewardshipPlan);
   }
+
+  @PrimaryColumn()
+  public id: number;
+
 }

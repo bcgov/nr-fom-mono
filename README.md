@@ -28,26 +28,33 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 ## Getting Started
 <!--- setup env vars, secrets, instructions... --->
 
-## Deployment (Local Development)
-* To get API backend running locally:
-Install node and docker desktop (with WSL2 on Windows 10)
-npm install -g ts-node
-npm install -g typeorm
-git clone https://github.com/bcgov/nr-fom-api.git
-npm install
-docker-compose up -d
-npm run typeorm:migrate
-Navigate to http://localhost:8081/api
+## Local Development
 
-# To connect to PostGRES database:
-Install dbeaver
-Create PostGRES connection to local database using connection information as defined in docker-compose.yml
+### Run API Backend 
+* Install node and docker desktop (with WSL2 on Windows 10)
+* npm install -g ts-node
+* npm install -g typeorm
+* git clone https://github.com/bcgov/nr-fom-api.git
+* npm install
+* docker-compose up -d
+* npm run typeorm:migrate
+* Navigate to http://localhost:8081/api
 
-# To create a migration:
-typeorm migration:create -n {name}
+### Connect to local database:
+* Install dbeaver or pgadmin 
+* Ensure database is running (docker-compose up -d)
+* Create PostGRES connection to local database using connection information as defined in docker-compose.yml
 
+### To rebuild local database from scratch
+* docker-compose down
+* docker volume rm nr-fom-api_ms-postgres-data
+* docker-compose up -d
+* npm run typeorm:migrate
 
-* Application Specific Setup:
+### To create a migration:
+* typeorm migration:create -n {name}
+
+## Application Specific Setup:
 <!--- instruction on setup local environment and dependencies.. --->
 
 ## Deployment (OpenShift)

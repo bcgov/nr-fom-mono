@@ -8,6 +8,7 @@ const ormConfig = {
   host: 'localhost',
   port: 5432,
   database: 'api-db',
+  // schema: 'APP_FOM',
   ssl: false, //process.env.POSTGRES_DB_SSL,
   username: 'postgres',
   password: '',

@@ -1,5 +1,5 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
 @Entity('road_section')
 export class RoadSection extends ApiBaseEntity<RoadSection> {
@@ -7,6 +7,9 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
     super(roadSection);
   }
 
+  @PrimaryGeneratedColumn('increment', {name: 'road_section_id'})
+  public id: number;
+  
   @Column({ name: 'geometry', type: 'geometry' })
   geometry: any;
 

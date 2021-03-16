@@ -52,4 +52,4 @@ networks:
   backend:
 volumes:
   ms-postgres-data:
-  node-cache:
+

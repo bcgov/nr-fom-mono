@@ -5,13 +5,13 @@ export async function createTable(queryRunner: QueryRunner) {
     name: 'road_section',
     columns: [
       {
-        name: 'id',
+        name: 'road_section_id',
         type: 'serial',
         isPrimary: true
       },
       {
         name: 'geometry',
-        type: 'geometry'
+        type: 'geometry(lineString,3005)'
       },
       {
         name: 'planned_development_date',
