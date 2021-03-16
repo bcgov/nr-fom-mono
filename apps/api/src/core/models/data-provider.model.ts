@@ -3,6 +3,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { ApiBaseEntity } from '@entities';
+import {FindManyOptions} from 'typeorm/find-options/FindManyOptions';
 
 // export type MsDocumentType<T> = OptionalId<T>;
 /**
@@ -119,11 +120,11 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async findAll(): Promise<E[]> {
+  async findAll(options?: FindManyOptions<E> | undefined): Promise<E[]> {
     this.logger.info(`${this.constructor.name}.findAll`);
 
     try {
-      const findAll = await this.repository.find();
+      const findAll = await this.repository.find(options);
       this.logger.info('findAll result', findAll);
       return findAll;
     } catch (error) {
