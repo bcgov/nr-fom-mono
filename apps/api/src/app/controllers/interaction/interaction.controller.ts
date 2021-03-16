@@ -24,8 +24,8 @@ export class InteractionController extends BaseController<
   }
 
   @Get()
-  findAll() {
-    return super.findAll();
+  findAll(options) {
+    return super.findAll(options);
   }
 
   @Get(':id')
