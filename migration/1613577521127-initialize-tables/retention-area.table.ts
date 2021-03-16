@@ -2,7 +2,7 @@ import {QueryRunner, Table} from 'typeorm';
 
 export async function createTable(queryRunner: QueryRunner) {
   await queryRunner.createTable(new Table({
-    name: 'retention_area',
+    name: 'app_fom.retention_area',
     columns: [
       {
         name: 'id',

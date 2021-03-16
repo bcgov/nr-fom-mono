@@ -28,8 +28,8 @@ export class Project extends ApiBaseEntity<Project> {
   @JoinColumn({ name: 'district_id' })
   districtId: number;
 
-  @JoinColumn({ name: 'forest_client_id' })
-  forestClientId: number;
+  @JoinColumn({ name: 'forest_client_number' })
+  forestClientNumber: number;
 
   @JoinColumn({ name: 'workflow_state_code' })
   workflowStateCode: string;

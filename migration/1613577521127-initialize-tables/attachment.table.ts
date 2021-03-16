@@ -2,7 +2,7 @@ import {QueryRunner, Table} from 'typeorm';
 
 export async function createTable(queryRunner: QueryRunner) {
   await queryRunner.createTable(new Table({
-    name: 'attachment',
+    name: 'app_fom.attachment',
     columns: [
       {
         name: 'id',
