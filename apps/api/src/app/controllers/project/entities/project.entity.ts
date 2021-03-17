@@ -1,13 +1,13 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
-@Entity('project')
+@Entity('project', {schema: 'app_fom'})
 export class Project extends ApiBaseEntity<Project> {
   constructor(project?: Partial<Project>) {
     super(project);
   }
 
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn('increment', {name: 'project_id'})
   public id: number;
 
   @Column()

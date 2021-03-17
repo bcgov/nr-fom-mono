@@ -1,7 +1,7 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
-@Entity('road_section')
+@Entity('road_section', {schema: 'app_fom'})
 export class RoadSection extends ApiBaseEntity<RoadSection> {
   constructor(roadSection?: Partial<RoadSection>) {
     super(roadSection);

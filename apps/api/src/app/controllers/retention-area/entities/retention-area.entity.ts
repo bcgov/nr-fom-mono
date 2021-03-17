@@ -7,7 +7,7 @@ export class RetentionArea extends ApiBaseEntity<RetentionArea> {
     super(retentionArea);
   }
 
-  @PrimaryGeneratedColumn('increment')
+  @PrimaryGeneratedColumn('increment', {name: 'retention_area_id'})
   public id: number;
 
   @Column({ name: 'geometry', type: 'geometry' })
