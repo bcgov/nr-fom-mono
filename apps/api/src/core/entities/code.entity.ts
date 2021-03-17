@@ -5,6 +5,8 @@ export abstract class ApiCodeTableEntity<M> {
   @PrimaryColumn() code: string;
   @Column() description: string;
 
+  // No need for metadata columns as the app only reads from code tables.
+
   protected constructor(model?: Partial<M>) {
     Object.assign(this, model);
   }

@@ -38,16 +38,18 @@ export abstract class DataService<
   async create(dto: Partial<E>): Promise<E> {
     this.logger.info(`${this.constructor.name}.create props`, dto);
 
-    try {
-      const object = this.entity.factory(dto);
-      const created = await this.repository.save(object);
+    dto.createUser = "FAKED USER";
+    dto.revisionCount = 0;
+    dto.updateUser = null;
+    dto.updateTimestamp = null;
 
-      this.logger.info(`${this.constructor.name}.create result`, created);
+    const object = this.entity.factory(dto);
+    
+    const created = await this.repository.save(object);
 
-      return created;
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.create ${error}`);
-    }
+    this.logger.info(`${this.constructor.name}.create result`, created);
+
+    return created;
   }
 
   /**
@@ -87,6 +89,8 @@ export abstract class DataService<
    * @memberof DataService
    */
   async update(id: number | string, dto: Partial<E>) {
+    dto.updateUser = "FAKED USER";
+
     this.logger.info('update props', id, dto);
     /* try {
       const update = await this.repository.findOneAndUpdate({ _id: id }, dto);

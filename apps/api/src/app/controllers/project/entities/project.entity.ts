@@ -22,15 +22,18 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'commenting_closed_date' })
   commentingClosedDate: string; // timestamp
 
-  @JoinColumn({ name: 'fsp_id' })
+  @Column({ name: 'fsp_id' })
   fspId: number;
 
-  @JoinColumn({ name: 'district_id' })
+  // TODO: Using JoinColumn here didn't cause the POST to fail, but failed to save the specified value in the column.
+  @Column({ name: 'district_id' })
   districtId: number;
 
-  @JoinColumn({ name: 'forest_client_number' })
-  forestClientNumber: number;
+  // TODO: Using @JoinColumn is not working for some reason
+  @Column({ name: 'forest_client_number' })
+  forestClientNumber: string;
 
-  @JoinColumn({ name: 'workflow_state_code' })
+  // TODO: Using @JoinColumn is not working for some reason.
+  @Column({ name: 'workflow_state_code' })
   workflowStateCode: string;
 }
