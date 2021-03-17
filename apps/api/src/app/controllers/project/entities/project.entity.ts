@@ -1,11 +1,14 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
-@Entity('project')
+@Entity('project', {schema: 'app_fom'})
 export class Project extends ApiBaseEntity<Project> {
   constructor(project?: Partial<Project>) {
     super(project);
   }
+
+  @PrimaryGeneratedColumn('increment', {name: 'project_id'})
+  public id: number;
 
   @Column()
   name: string;
@@ -25,8 +28,8 @@ export class Project extends ApiBaseEntity<Project> {
   @JoinColumn({ name: 'district_id' })
   districtId: number;
 
-  @JoinColumn({ name: 'forest_client_id' })
-  forestClientId: number;
+  @JoinColumn({ name: 'forest_client_number' })
+  forestClientNumber: number;
 
   @JoinColumn({ name: 'workflow_state_code' })
   workflowStateCode: string;

@@ -1,11 +1,14 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
-@Entity('attachment')
+@Entity('attachment', {schema: 'app_fom'})
 export class Attachment extends ApiBaseEntity<Attachment> {
   constructor(attachment?: Partial<Attachment>) {
     super(attachment);
   }
+
+  @PrimaryGeneratedColumn('increment', {name: 'attachment_id'})
+  public id: number;
 
   @Column({ name: 'file_name' })
   fileName: string;

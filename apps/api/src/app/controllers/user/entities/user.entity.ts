@@ -7,6 +7,9 @@ export class User extends ApiBaseEntity<User> {
     super(user);
   }
 
+  @PrimaryColumn()
+  id: number;
+
   @Column()
   username: string;
 
