@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 export default registerAs('db', () => ({
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: process.env.NODE_ENV !== 'production',
+  synchronize: false, // process.env.NODE_ENV !== 'production',
   type: process.env.DB_TYPE,
   database: process.env.DB,
   schema: 'app_fom',
