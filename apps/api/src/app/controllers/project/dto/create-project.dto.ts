@@ -16,7 +16,7 @@ export class CreateProjectDto extends BaseDto {
   @ApiProperty()
   districtId: number;
   @ApiProperty()
-  forestClientId: number;
+  forestClientNumber: string;
   @ApiProperty()
-  workflow_state_code: string;
+  workflowStateCode: string;
 }

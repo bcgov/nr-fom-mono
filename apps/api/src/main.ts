@@ -19,8 +19,8 @@ async function bootstrap() {
 
   /* TODO: abstract this out */
   const config = new DocumentBuilder()
-    .setTitle('API')
-    .setDescription('The API description')
+    .setTitle('FOM API')
+    .setDescription('API for FOM backend')
     .setVersion('1.0')
     .addTag('api')
     .build();
