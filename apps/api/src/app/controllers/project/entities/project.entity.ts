@@ -2,6 +2,7 @@ import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column, OneToOne, OneToMany, ManyToOne } from 'typeorm';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { District } from '../../district/entities/district.entity';
+import { ForestClient } from '../../forest-client/entities/forest-client.entity';
 
 @Entity('project', {schema: 'app_fom'})
 export class Project extends ApiBaseEntity<Project> {
@@ -27,16 +28,14 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'fsp_id' })
   fspId: number;
 
-  // TODO: Using JoinColumn here didn't cause the POST to fail, but failed to save the specified value in the column.
   @ManyToOne(() => District, { eager: true}) 
   @JoinColumn({ name: 'district_id' })
   district: District;
 
-  // TODO: Using @JoinColumn is not working for some reason
-  @Column({ name: 'forest_client_number' })
-  forestClientNumber: string;
+  @ManyToOne(() => ForestClient, { eager: true}) 
+  @JoinColumn({ name: 'forest_client_number' })
+  forestClient: ForestClient;
 
-  // TODO: Using @JoinColumn is not working for some reason.
   @ManyToOne(() => WorkflowStateCode, { eager: true}) 
   @JoinColumn({ name: 'workflow_state_code' })
   workflowStateCode: string;

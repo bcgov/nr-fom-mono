@@ -16,9 +16,9 @@ export class Attachment extends ApiBaseEntity<Attachment> {
   @Column({ name: 'file_contents' })
   fileContents: string; // bytearray
 
-  @JoinColumn({ name: 'project_id' })
+  @Column({ name: 'project_id' })
   projectId: number;
 
-  @JoinColumn({ name: 'attachment_type_code' })
+  @Column({ name: 'attachment_type_code' })
   attachmentTypeCode: string;
 }

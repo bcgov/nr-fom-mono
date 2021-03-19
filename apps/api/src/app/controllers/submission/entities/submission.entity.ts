@@ -13,9 +13,9 @@ export class Submission extends ApiBaseEntity<Submission> {
   @Column({ name: 'geometry', type: 'geometry' })
   geometry: any;
 
-  @JoinColumn({ name: 'project_id' })
+  @Column({ name: 'project_id' })
   projectId: number;
 
-  @JoinColumn({ name: 'submission_type_code' })
+  @Column({ name: 'submission_type_code' })
   submissionTypeCode: string;
 }

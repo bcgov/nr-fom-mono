@@ -28,9 +28,9 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   @Column({ name: 'response_details' })
   responseDetails: string;
 
-  @JoinColumn({ name: 'project_id' })
+  @Column({ name: 'project_id' })
   projectId: number;
 
-  @JoinColumn({ name: 'response_code' })
+  @Column({ name: 'response_code' })
   responseCode: string;
 }

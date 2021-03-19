@@ -19,6 +19,6 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   @Column({ name: 'planned_length_km' })
   plannedLengthKm: number;
 
-  @JoinColumn({ name: 'submission_id' })
+  @Column({ name: 'submission_id' })
   submissionId: number;
 }
