@@ -125,8 +125,8 @@ export abstract class DataService<
    * @memberof DataService
    */
   async findAll(options?: FindManyOptions<E> | undefined): Promise<E[]> {
-    this.logger.info(`${this.constructor.name}.findAll`);
-
+    this.logger.info(`************ ${this.constructor.name}.findAll options = ` + JSON.stringify(options));
+    
     try {
       const findAll = await this.repository.find(options);
       this.logger.info('findAll result', findAll);

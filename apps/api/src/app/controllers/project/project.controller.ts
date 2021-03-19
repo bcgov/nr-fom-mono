@@ -23,6 +23,11 @@ export class ProjectController extends BaseController<
     return super.create(createDto);
   }
 
+  @Get('/byFspId/:id')
+  findByFspId(@Param('id') id: number) {
+    return super.findAll({ where: {fspId: id}});
+  }
+
   @Get()
   findAll(options) {
     return super.findAll(options);
