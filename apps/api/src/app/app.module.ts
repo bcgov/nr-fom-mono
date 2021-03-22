@@ -10,6 +10,8 @@ import { CutBlockModule } from './controllers/cut-block/cut-block.module';
 import { ForestStewardshipPlanModule } from './controllers/forest-stewardship-plan/forest-stewardship-plan.module';
 import { FspDistrictXrefModule } from './controllers/fsp-district-xref/fsp-district-xref.module';
 import { InteractionModule } from './controllers/interaction/interaction.module';
+import { DistrictModule } from './controllers/district/district.module';
+import { ForestClientModule } from './controllers/forest-client/forest-client.module';
 import { ProjectModule } from './controllers/project/project.module';
 import { PublicCommentModule } from './controllers/public-comment/public-comment.module';
 import { RetentionAreaModule } from './controllers/retention-area/retention-area.module';
@@ -54,6 +56,8 @@ import { AppConfigService } from './modules/app-config/app-config.provider';
     ForestStewardshipPlanModule,
     FspDistrictXrefModule,
     InteractionModule,
+    DistrictModule,
+    ForestClientModule,
     ProjectModule,
     PublicCommentModule,
     RetentionAreaModule,

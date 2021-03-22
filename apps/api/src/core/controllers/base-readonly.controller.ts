@@ -1,11 +1,11 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CodeTableService } from 'apps/api/src/core/models/code-provider.model';
+import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly-provider.model';
 
 @Controller()
-export class CodeTableController<E, C, U> {
+export class BaseReadOnlyController<E> {
   // @ts-ignore
-  constructor(protected readonly service: CodeTableService<E, Repository<E>>) {}
+  constructor(protected readonly service: DataReadOnlyService<E, Repository<E>>) {}
 
   @Get()
   findAll() {
@@ -13,7 +13,7 @@ export class CodeTableController<E, C, U> {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number | string) {
+  findOne(@Param('id') id: number) {
     return this.service.findOne(id);
   }
 

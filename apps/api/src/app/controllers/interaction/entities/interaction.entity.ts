@@ -19,9 +19,9 @@ export class Interaction extends ApiBaseEntity<Interaction> {
   @Column({ name: 'communication_details' })
   communicationDetails: string;
 
-  @JoinColumn({ name: 'project_id' })
+  @Column({ name: 'project_id' })
   projectId: number;
 
-  @JoinColumn({ name: 'attachment_id' })
+  @Column({ name: 'attachment_id' })
   attachmentId: number;
 }

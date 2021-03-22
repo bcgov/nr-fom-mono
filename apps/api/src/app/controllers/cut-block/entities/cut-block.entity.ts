@@ -19,6 +19,6 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column({ name: 'planned_area_ha' })
   plannedAreaHa: number;
 
-  @JoinColumn({ name: 'submission_id' })
+  @Column({ name: 'submission_id' })
   submissionId: number;
 }
