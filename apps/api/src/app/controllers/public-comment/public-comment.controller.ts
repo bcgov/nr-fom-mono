@@ -28,6 +28,12 @@ export class PublicCommentController extends BaseController<
     return super.findAll(options);
   }
 
+  @Get('/byProjectId/:id')
+  findByProjectId(@Param('id') id: number) {
+    return super.findAll({ where: {projectId: id}});
+  }
+
+
   @Get(':id')
   findOne(@Param('id') id: number) {
     return super.findOne(id);
