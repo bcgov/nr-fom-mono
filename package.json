@@ -8,6 +8,7 @@
     "start:debug": "nodemon --config nodemon.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "typeorm:migrate": "npm run typeorm migration:run -- --config ./apps/api/src/app/ormconfig-migration.ts",
+    "typeorm:migrate-revert": "npm run typeorm migration:revert -- --config ./apps/api/src/app/ormconfig-migration.ts",
     "build": "nx build",
     "test": "nx test",
     "lint": "nx workspace-lint && nx lint",
