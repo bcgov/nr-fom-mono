@@ -22,7 +22,7 @@ export class testdata1616434875304 implements MigrationInterface {
         , (11, 1, 'Hi there? When are you actually planning on executing this work? Will there be any further
             notification? I''m planing on building a house very close to where the cut will be, that''s why the
             concern. In addition, how long will your work take?', 'Anonymous', 
-            'Fort Nelson Natural Resource', 'anonymous@test.com', null, null, 'This comment will be dealt with later', 'testdata')
+            'Fort Nelson Natural Resource', 'anonymous@test.com', null, 'CONSIDERED', 'This comment will be dealt with later', 'testdata')
         ;
         `);
     }
