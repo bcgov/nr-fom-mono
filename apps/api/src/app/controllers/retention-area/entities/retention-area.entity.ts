@@ -16,6 +16,6 @@ export class RetentionArea extends ApiBaseEntity<RetentionArea> {
   @Column({ name: 'planned_area_ha' })
   plannedAreaHa: number;
 
-  @JoinColumn({ name: 'submission_id' })
+  @Column({ name: 'submission_id' })
   submissionId: number;
 }
