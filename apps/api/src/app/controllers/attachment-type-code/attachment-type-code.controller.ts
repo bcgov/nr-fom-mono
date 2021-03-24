@@ -18,11 +18,6 @@ export class AttachmentTypeCodeController extends CodeTableController<
     super(service);
   }
 
-  @Post()
-  create(@Body() createDto: CreateAttachmentTypeCodeDto) {
-    return super.create(createDto);
-  }
-
   @Get()
   findAll() {
     return super.findAll();
@@ -33,13 +28,4 @@ export class AttachmentTypeCodeController extends CodeTableController<
     return super.findOne(id);
   }
 
-  @Put(':id')
-  update(@Param('id') id: number, @Body() updateDto: UpdateAttachmentTypeCodeDto) {
-    return super.update(id, updateDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: number) {
-    return super.remove(id);
-  }
 }
