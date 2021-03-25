@@ -30,14 +30,17 @@ describe('API endpoints testing (e2e)', () => {
         commentingClosedDate: '2020-10-10',
         fspId: 1,
         districtId: 1,
-        forestClientNumber: '123',
-        workflowStateCode: 'test'
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
       };
+
+      const projects = await request(app.getHttpServer())
+      .get('/project');
 
       const res = await request(app.getHttpServer())
       .post('/project')
       .send(requestData);
-      expect(res.status).toBe(409);
+      expect(res.status).toBe(201);
     });
   });
 });
