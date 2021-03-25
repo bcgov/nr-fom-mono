@@ -28,15 +28,15 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'fsp_id' })
   fspId: number;
 
-  @ManyToOne(() => District, { eager: true}) 
-  @JoinColumn({ name: 'district_id' })
+  @ManyToOne(() => District, { eager: true})
+  @JoinColumn({ name: 'district_id', referencedColumnName: 'id' })
   district: District;
 
-  @ManyToOne(() => ForestClient, { eager: true}) 
-  @JoinColumn({ name: 'forest_client_number' })
+  @ManyToOne(() => ForestClient, { eager: true})
+  @JoinColumn({ name: 'forest_client_number', referencedColumnName: 'id' })
   forestClient: ForestClient;
 
-  @ManyToOne(() => WorkflowStateCode, { eager: true}) 
+  @ManyToOne(() => WorkflowStateCode, { eager: true})
   @JoinColumn({ name: 'workflow_state_code' })
   workflowStateCode: string;
 }
