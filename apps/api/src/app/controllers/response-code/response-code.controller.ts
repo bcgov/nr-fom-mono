@@ -17,10 +17,10 @@ export class ResponseCodeController extends CodeTableController<
     super(service);
   }
 
-  @Post()
+  /* @Post()
   create(@Body() createDto: CreateResponseCodeDto) {
     return super.create(createDto);
-  }
+  } */
 
   @Get()
   findAll() {
@@ -32,13 +32,13 @@ export class ResponseCodeController extends CodeTableController<
     return super.findOne(id);
   }
 
-  @Put(':id')
+  /* @Put(':id')
   update(@Param('id') id: number, @Body() updateDto: UpdateResponseCodeDto) {
     return super.update(id, updateDto);
-  }
+  } */
 
-  @Delete(':id')
+  /* @Delete(':id')
   remove(@Param('id') id: number) {
     return super.remove(id);
-  }
+  } */
 }

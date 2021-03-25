@@ -18,10 +18,10 @@ export class WorkflowStateCodeController extends CodeTableController<
     super(service);
   }
 
-  @Post()
+  /* @Post()
   create(@Body() createDto: CreateWorkflowStateCodeDto) {
     return super.create(createDto);
-  }
+  } */
 
   @Get()
   findAll() {
@@ -33,13 +33,13 @@ export class WorkflowStateCodeController extends CodeTableController<
     return super.findOne(id);
   }
 
-  @Put(':id')
+  /* @Put(':id')
   update(@Param('id') id: number, @Body() updateDto: UpdateWorkflowStateCodeDto) {
     return super.update(id, updateDto);
-  }
+  } */
 
-  @Delete(':id')
+  /* @Delete(':id')
   remove(@Param('id') id: number) {
     return super.remove(id);
-  }
+  } */
 }
