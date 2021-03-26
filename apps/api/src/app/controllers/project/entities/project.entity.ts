@@ -1,5 +1,5 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column, OneToOne, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne } from 'typeorm';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
