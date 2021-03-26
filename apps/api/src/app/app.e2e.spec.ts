@@ -35,7 +35,7 @@ describe('API endpoints testing (e2e)', () => {
         commentingOpenDate: '2020-10-10',
         commentingClosedDate: '2020-10-10',
         fspId: 1,
-        districtId: 1,
+        districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL'
       };
@@ -92,8 +92,8 @@ describe('API endpoints testing (e2e)', () => {
         description: 'Test',
         commentingOpenDate: '2020-10-10',
         commentingClosedDate: '2020-10-10',
-        fspId: 1,
-        districtId: 1,
+        fspId: 2,
+        districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL'
       };
