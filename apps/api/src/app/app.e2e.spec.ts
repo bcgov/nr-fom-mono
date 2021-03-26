@@ -3,8 +3,54 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from './app.module';
 
+// Test helper functions - don't forget to curry in the app!
+const createProjectAndVerifyResultFunction = (app) => async (createData) => {
+  const res = await request(app.getHttpServer())
+  .post('/project')
+  .send(createData);
+  expect(res.status).toBe(201);
+
+  // Test body
+  const resBody = res.body;
+  expect(resBody).toBeDefined();
+  expect(resBody.id).toBeDefined();
+  expect(resBody.name).toEqual(createData.name);
+  expect(resBody.description).toEqual(createData.description);
+  expect(resBody.fspId).toEqual(createData.fspId);
+  expect(resBody.districtId).toEqual(createData.districtId);
+  expect(resBody.forestClientNumber).toEqual(createData.forestClientNumber);
+  expect(resBody.workflowStateCode).toEqual(createData.workflowStateCode);
+
+  return res;
+}
+
+const updateProjectAndVerifyResultFunction = (app) => async (updateId, updateData) => {
+  const res = await request(app.getHttpServer())
+  .put(`/project/${updateId}`)
+  .send(updateData);
+  expect(res.status).toBe(200);
+
+  // Test body
+  const resBody = res.body;
+  expect(resBody).toBeDefined();
+  expect(resBody.id).toBeDefined();
+  expect(resBody.name).toEqual(updateData.name);
+  expect(resBody.description).toEqual(updateData.description);
+  expect(resBody.fspId).toEqual(updateData.fspId);
+  expect(resBody.districtId).toEqual(updateData.districtId);
+  expect(resBody.forestClientNumber).toEqual(updateData.forestClientNumber);
+  expect(resBody.workflowStateCode).toEqual(updateData.workflowStateCode);
+
+  return res;
+}
+
 describe('API endpoints testing (e2e)', () => {
   let app: INestApplication;
+  // Declare vars to hold helper functions
+  // We'll need to curry in app each one
+  let createProjectAndVerifyResult;
+  let updateProjectAndVerifyResult;
+
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -15,6 +61,9 @@ describe('API endpoints testing (e2e)', () => {
     app.enableShutdownHooks();
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
+
+    createProjectAndVerifyResult = createProjectAndVerifyResultFunction(app);
+    updateProjectAndVerifyResult = updateProjectAndVerifyResultFunction(app);
   });
 
   afterAll(async () => {
@@ -29,7 +78,8 @@ describe('API endpoints testing (e2e)', () => {
     });
 
     it('should create a new project', async () => {
-      const requestData = {
+      // Create a project
+      const createData = {
         name: 'Test',
         description: 'Test',
         commentingOpenDate: '2020-10-10',
@@ -39,41 +89,25 @@ describe('API endpoints testing (e2e)', () => {
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL'
       };
-
-      const res = await request(app.getHttpServer())
-      .post('/project')
-      .send(requestData);
-      expect(res.status).toBe(201);
-      const resBody = res.body;
-      expect(resBody).toBeDefined();
-      expect(resBody.id).toBeDefined();
-      expect(resBody.name).toEqual(resBody.name);
-      expect(resBody.description).toEqual(resBody.description);
-      expect(resBody.fspId).toEqual(resBody.fspId);
-      expect(resBody.districtId).toEqual(resBody.districtId);
-      expect(resBody.forestClientNumber).toEqual(resBody.forestClientNumber);
-      expect(resBody.workflowStateCode).toEqual(resBody.workflowStateCode);
+      await createProjectAndVerifyResult(createData);
     });
 
     it('should update an existing project', async () => {
       // Create a project
       const createData = {
-        name: 'Test Update',
-        description: 'Test Update',
+        name: 'Test',
+        description: 'Test',
         commentingOpenDate: '2020-10-10',
         commentingClosedDate: '2020-10-10',
         fspId: 1,
-        districtId: 1,
+        districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL'
       };
+      const res = await createProjectAndVerifyResult(createData);
+      const resBody = res.body;
 
-      const res = await request(app.getHttpServer())
-      .post('/project')
-      .send(createData);
-      expect(res.status).toBe(201);
-
-      const updateId = res.body ? res.body.id : undefined;
+      const updateId = resBody ? resBody.id : undefined;
 
       // Update the project
       const updateData = {
@@ -88,41 +122,29 @@ describe('API endpoints testing (e2e)', () => {
         workflowStateCode: 'FINALIZED'
       };
 
-      // Make the request to create the project
-      const updateRes = await request(app.getHttpServer())
-      .put(`/project/${updateId}`)
-      .send(updateData);
-      expect(updateRes.status).toBe(200);
-      const updateBody = updateRes.body;
-      expect(updateBody).toBeDefined();
-      expect(updateBody.id).toEqual(updateId);
-      expect(updateBody.name).toEqual(updateData.name);
-      expect(updateBody.description).toEqual(updateData.description);
-      expect(updateBody.fspId).toEqual(updateData.fspId);
-      expect(updateBody.districtId).toEqual(updateData.districtId);
-      expect(updateBody.forestClientNumber).toEqual(updateData.forestClientNumber);
-      expect(updateBody.workflowStateCode).toEqual(updateData.workflowStateCode);
+      // Make the request to update the project
+      await updateProjectAndVerifyResult(updateId, updateData);
     });
 
     it('should add a comment to an existing project', async () => {
+      // Create a project
       const requestData = {
         name: 'Test',
         description: 'Test',
         commentingOpenDate: '2020-10-10',
         commentingClosedDate: '2020-10-10',
-        fspId: 2,
+        fspId: 1,
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL'
       };
+      const res = await createProjectAndVerifyResult(requestData);
+      const resBody = res.body;
 
-      /* const projects = await request(app.getHttpServer())
-      .get('/project');
+      const updateId = resBody ? resBody.id : undefined;
 
-      const res = await request(app.getHttpServer())
-      .post('/project')
-      .send(requestData);
-      expect(res.status).toBe(201); */
+      // Attach a comment
+      // First create the comment
     });
   });
 });
