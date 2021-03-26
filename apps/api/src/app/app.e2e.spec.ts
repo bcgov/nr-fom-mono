@@ -44,6 +44,15 @@ describe('API endpoints testing (e2e)', () => {
       .post('/project')
       .send(requestData);
       expect(res.status).toBe(201);
+      const resBody = res.body;
+      expect(resBody).toBeDefined();
+      expect(resBody.id).toBeDefined();
+      expect(resBody.name).toEqual(resBody.name);
+      expect(resBody.description).toEqual(resBody.description);
+      expect(resBody.fspId).toEqual(resBody.fspId);
+      expect(resBody.districtId).toEqual(resBody.districtId);
+      expect(resBody.forestClientNumber).toEqual(resBody.forestClientNumber);
+      expect(resBody.workflowStateCode).toEqual(resBody.workflowStateCode);
     });
 
     it('should update an existing project', async () => {
