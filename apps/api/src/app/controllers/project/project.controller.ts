@@ -51,7 +51,6 @@ export class ProjectController extends BaseController<
   @Post()
   async create(@Body() createDto: CreateProjectDto) {
     createDto = await this.mapEntitiesFromIds(createDto);
-
     return super.create(createDto);
   }
 
@@ -76,7 +75,6 @@ export class ProjectController extends BaseController<
   @ApiBody({ type: UpdateProjectDto })
   async update(@Param('id') id: number, @Body() updateDto: UpdateProjectDto): Promise<CreateProjectDto> {
     updateDto = await this.mapEntitiesFromIds(updateDto);
-
     const result = await super.update(id, updateDto) as CreateProjectDto;
     result.forestClientNumber = result.forestClient.id;
     result.districtId = result.district.id;

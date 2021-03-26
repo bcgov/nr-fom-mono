@@ -9,6 +9,6 @@ import { ResponseCodeController } from './response-code.controller';
   imports: [TypeOrmModule.forFeature([ResponseCode])],
   controllers: [ResponseCodeController],
   providers: [ResponseCodeService],
-  exports: []
+  exports: [ResponseCodeService]
 })
 export class ResponseCodeModule {}

@@ -1,6 +1,7 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne } from 'typeorm';
 import { ResponseCode } from '../../response-code/entities/response-code.entity';
+import {Project} from '../../project/entities/project.entity';
 
 @Entity('public_comment', {schema: 'app_fom'})
 export class PublicComment extends ApiBaseEntity<PublicComment> {
@@ -29,11 +30,12 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   @Column({ name: 'response_details' })
   responseDetails: string;
 
-  @Column({ name: 'project_id' })
-  projectId: number;
+  @ManyToOne(() => Project, { eager: true })
+  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
+  project: Project;
 
   @Column({ name: 'response_code' })
   @ManyToOne(() => ResponseCode, { eager: true})
-  @JoinColumn({ name: 'response_code' })
+  @JoinColumn({ name: 'response_code', referencedColumnName: 'code' })
   responseCode: ResponseCode;
 }

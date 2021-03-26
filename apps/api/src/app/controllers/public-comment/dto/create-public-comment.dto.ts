@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '@dto';
+import { Project } from '../../project/entities/project.entity';
+import { ResponseCode } from '../../response-code/entities/response-code.entity';
 
 export class CreatePublicCommentDto extends BaseDto {
   @ApiProperty()
@@ -18,5 +20,9 @@ export class CreatePublicCommentDto extends BaseDto {
   @ApiProperty()
   projectId: number;
   @ApiProperty()
+  project: Project;
+  @ApiProperty()
   responseCode: string;
+  @ApiProperty()
+  response: ResponseCode;
 }
