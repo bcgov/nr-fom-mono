@@ -21,8 +21,14 @@ describe('API endpoints testing (e2e)', () => {
     await app.close();
   });
 
-  describe('create a project', () => {
-    it('should create', async () => {
+  describe('project endpoints', () => {
+    it('should return a list of projects', async () => {
+      const res = await request(app.getHttpServer())
+      .get('/project')
+      expect(res.status).toBe(200);
+    });
+
+    it('should create a new project', async () => {
       const requestData = {
         name: 'Test',
         description: 'Test',
@@ -34,13 +40,71 @@ describe('API endpoints testing (e2e)', () => {
         workflowStateCode: 'INITIAL'
       };
 
-      const projects = await request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
+      .post('/project')
+      .send(requestData);
+      expect(res.status).toBe(201);
+    });
+
+    it('should update an existing project', async () => {
+      // Create a project
+      const createData = {
+        name: 'Test Update',
+        description: 'Test Update',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 1,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      };
+
+      const res = await request(app.getHttpServer())
+      .post('/project')
+      .send(createData);
+      expect(res.status).toBe(201);
+
+      const updateId = res.body ? res.body.id : undefined;
+
+      // Update the project
+      const updateData = {
+        id: updateId,
+        name: 'Test Updated',
+        description: 'Test Updated',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 2,
+        districtId: 15, // Chilliwack natural resources
+        forestClientNumber: '1011',
+        workflowStateCode: 'FINALIZED'
+      };
+
+      // Make the request to create the project
+      const updateRes = await request(app.getHttpServer())
+      .put(`/project/${updateId}`)
+      .send(updateData);
+      expect(updateRes.status).toBe(200);
+    });
+
+    it('should add a comment to an existing project', async () => {
+      const requestData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 1,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      };
+
+      /* const projects = await request(app.getHttpServer())
       .get('/project');
 
       const res = await request(app.getHttpServer())
       .post('/project')
       .send(requestData);
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(201); */
     });
   });
 });

@@ -1,9 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-// import { OptionalId } from 'mongodb';
 import { PinoLogger } from 'nestjs-pino';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { ApiBaseEntity } from '@entities';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 // export type MsDocumentType<T> = OptionalId<T>;
 /**
@@ -44,7 +44,7 @@ export abstract class DataService<
     dto.updateTimestamp = null;
 
     const object = this.entity.factory(dto);
-    
+
     const created = await this.repository.save(object);
 
     this.logger.info(`${this.constructor.name}.create result`, created);
@@ -53,7 +53,7 @@ export abstract class DataService<
   }
 
   /**
-   * Find a document by Id
+   * Find a record by Id
    *
    * @param {string} id
    * @return {*}
@@ -63,9 +63,9 @@ export abstract class DataService<
     this.logger.info(`${this.constructor.name}findOne props`, id);
 
     try {
-      const document = await this.repository.findOne(id);
-      this.logger.info('${this.constructor.name}findOne result', document);
-      return document;
+      const record = await this.repository.findOne(id);
+      this.logger.info('${this.constructor.name}findOne result', record);
+      return record;
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findOne ${error}`);
     }
@@ -74,14 +74,14 @@ export abstract class DataService<
   // async findByQuery( query: ) {
 
   //   try {
-  //       const document = await this.repository.query
+  //       const record = await this.repository.query
   //   } catch (error) {
 
   //   }
   // }
 
   /**
-   * update a document by Id with deep  partial
+   * update a record by Id with deep  partial
    *
    * @param {string} id
    * @param {Partial<E>} dto
@@ -92,17 +92,28 @@ export abstract class DataService<
     dto.updateUser = "FAKED USER";
 
     this.logger.info('update props', id, dto);
-    /* try {
-      const update = await this.repository.findOneAndUpdate({ _id: id }, dto);
-      this.logger.info('update result', update);
-      return update;
+    try {
+      let updated;
+      // TODO: I don't like this hack, but it gets the types working...
+      const record = await this.repository.findOne(id) as unknown as QueryDeepPartialEntity<Partial<E>>;
+      if (record) {
+        Object.keys(dto).map((k,idx) => {
+          if (record.hasOwnProperty(k)) {
+            record[k] = dto[k];
+          }
+        });
+        updated = await this.repository.update(id, record);
+      }
+
+      this.logger.info('update result', updated);
+      return updated;
     } catch (error) {
       this.logger.error(`${this.constructor.name}.update ${error}`);
-    } */
+    }
   }
 
   /**
-   * Remove document by Id
+   * Remove record by Id
    *
    * @param {string} id
    * @return {*}
@@ -119,14 +130,14 @@ export abstract class DataService<
   }
 
   /**
-   * Findall documents in collection
+   * Findall records in collection
    *
    * @return {*}
    * @memberof DataService
    */
   async findAll(options?: FindManyOptions<E> | undefined): Promise<E[]> {
     this.logger.info(`${this.constructor.name}.findAll options = ` + JSON.stringify(options));
-    
+
     try {
       const findAll = await this.repository.find(options);
       this.logger.info('findAll result', findAll);
@@ -141,7 +152,7 @@ export abstract class DataService<
   }
 
   /**
-   * Find document by any partial query of the entity.
+   * Find record by any partial query of the entity.
    *
    * @param {Partial<E>} query
    * @return {*}
