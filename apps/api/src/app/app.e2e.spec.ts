@@ -54,6 +54,15 @@ const createCommentAndVerifyResultFunction = (app) => async (createData) => {
 
   // Test body
   const resBody = res.body;
+  expect(resBody.id).toBeDefined();
+  expect(resBody.feedback).toEqual(createData.feedback);
+  expect(resBody.name).toEqual(createData.name);
+  expect(resBody.location).toEqual(createData.location);
+  expect(resBody.email).toEqual(createData.email);
+  expect(resBody.phoneNumber).toEqual(createData.phoneNumber);
+  expect(resBody.responseDetails).toEqual(createData.responseDetails);
+  expect(resBody.projectId).toEqual(createData.projectId);
+  expect(resBody.responseCode).toEqual(createData.responseCode);
 
   return res;
 }
