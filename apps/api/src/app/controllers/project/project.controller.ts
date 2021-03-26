@@ -3,11 +3,13 @@ import { ApiTags, ApiBody } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
 import { ProjectService } from './project.service';
+import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { Project } from './entities/project.entity';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import {ForestClient} from '../forest-client/entities/forest-client.entity';
+import { District } from '../district/entities/district.entity';
+import { ForestClient } from '../forest-client/entities/forest-client.entity';
 
 @ApiTags('project')
 @Controller('project')
@@ -18,6 +20,7 @@ export class ProjectController extends BaseController<
 > {
   constructor(
     protected readonly service: ProjectService,
+    protected readonly districtService: DistrictService,
     protected readonly forestClientService: ForestClientService
   ) {
     super(service);
@@ -52,6 +55,16 @@ export class ProjectController extends BaseController<
   @Put(':id')
   @ApiBody({ type: UpdateProjectDto })
   async update(@Param('id') id: number, @Body() updateDto: UpdateProjectDto) {
+    if (updateDto.forestClientNumber) {
+      const forestClient: ForestClient = await this.forestClientService.findOne(updateDto.forestClientNumber);
+      updateDto.forestClient = forestClient;
+    }
+
+    if (updateDto.districtId) {
+      const district: District = await this.districtService.findOne(updateDto.districtId);
+      updateDto.district = district;
+    }
+
     return super.update(id, updateDto);
   }
 
