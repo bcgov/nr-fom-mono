@@ -84,6 +84,15 @@ describe('API endpoints testing (e2e)', () => {
       .put(`/project/${updateId}`)
       .send(updateData);
       expect(updateRes.status).toBe(200);
+      const updateBody = updateRes.body;
+      expect(updateBody).toBeDefined();
+      expect(updateBody.id).toEqual(updateId);
+      expect(updateBody.name).toEqual(updateData.name);
+      expect(updateBody.description).toEqual(updateData.description);
+      expect(updateBody.fspId).toEqual(updateData.fspId);
+      expect(updateBody.districtId).toEqual(updateData.districtId);
+      expect(updateBody.forestClientNumber).toEqual(updateData.forestClientNumber);
+      expect(updateBody.workflowStateCode).toEqual(updateData.workflowStateCode);
     });
 
     it('should add a comment to an existing project', async () => {
