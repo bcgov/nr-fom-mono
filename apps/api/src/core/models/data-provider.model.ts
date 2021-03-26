@@ -102,7 +102,8 @@ export abstract class DataService<
             record[k] = dto[k];
           }
         });
-        updated = await this.repository.update(id, record);
+        await this.repository.update(id, record);
+        updated = await this.repository.findOne(id);
       }
 
       this.logger.info('update result', updated);

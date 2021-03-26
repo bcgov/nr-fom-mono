@@ -38,5 +38,5 @@ export class Project extends ApiBaseEntity<Project> {
 
   @ManyToOne(() => WorkflowStateCode, { eager: true})
   @JoinColumn({ name: 'workflow_state_code' })
-  workflowStateCode: string;
+  workflowState: WorkflowStateCode;
 }
