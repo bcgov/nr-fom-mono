@@ -18,6 +18,6 @@ import { WorkflowStateCodeModule } from '../workflow-state-code/workflow-state-c
   ],
   controllers: [ProjectController],
   providers: [ProjectService],
-  exports: []
+  exports: [ProjectService]
 })
 export class ProjectModule {}
