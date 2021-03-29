@@ -15,7 +15,7 @@ parameters:
   - description: Tag (e.g. release/build)
     displayName: Tag
     name: TAG
-    value: demo
+    value: main
   - description: OpenShift Project (namespace prefix).
     displayName: Project
     name: PROJECT
