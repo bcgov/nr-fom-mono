@@ -1,0 +1,176 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: fom-api-deploy
+  app: fom
+  app-component: ${NAME}
+  tag: ${TAG}
+  app.kubernetes.io/part-of: fom
+metadata:
+  name: fom-api-deploy
+parameters:
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+  - description: OpenShift Project (namespace prefix).
+    displayName: Project
+    name: PROJECT
+    value: a4b31c
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-api
+  - description: Tag (e.g. release/build) being deployed. Changing tag not tested, might break.
+    displayName: Tag
+    name: TAG
+    value: main
+  - description: Port number
+    displayName: Port number
+    name: PORT
+    value: '3333'
+  - description: Service port name (referenced by route).
+    displayName: Service port name
+    name: SERVICE_PORT_NAME
+    value: http
+  - description: Request for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource request
+    name: REQUEST_CPU
+    required: false
+    value: 100m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 512Mi
+  - description: Limit for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource limit
+    name: LIMIT_CPU
+    required: false
+    value: 200m
+  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource limit
+    name: LIMIT_MEMORY
+    required: false
+    value: 1Gi
+objects:
+  ### DeploymentConfig
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: ${NAME}-${TAG}-${ENV}
+    spec:
+      replicas: 1
+      revisionHistoryLimit: 10
+      test: false
+      strategy:
+        type: Rolling
+        rollingParams:
+          updatePeriodSeconds: 1
+          intervalSeconds: 1
+          timeoutSeconds: 600
+          maxUnavailable: 25%
+          maxSurge: 25%
+      resources: {}
+      activeDeadlineSeconds: 21600
+      selector:
+        deploymentconfig: ${NAME}-${TAG}-${ENV}
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}-${TAG}-${ENV}
+            from:
+              kind: ImageStreamTag
+              namespace: ${PROJECT}-tools
+              name: ${NAME}:${TAG}
+        - type: ConfigChange
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            deploymentconfig: ${NAME}-${TAG}-${ENV}
+        spec:
+          containers:
+            - name: ${NAME}-${TAG}-${ENV}
+              image: >-
+                image-registry.openshift-image-registry.svc:5000/${PROJECT}-tools/${NAME}:${TAG}
+              env:
+                - name: PORT
+                  value: '${PORT}'
+              resources:
+                requests:
+                  cpu: ${REQUEST_CPU}
+                  memory: ${REQUEST_MEMORY}
+                limits:
+                  cpu: ${LIMIT_CPU}
+                  memory: ${LIMIT_MEMORY}
+              livenessProbe:
+                httpGet:
+                  path: /api
+                  port: ${{PORT}}
+                  scheme: HTTP
+                timeoutSeconds: 1
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              readinessProbe:
+                httpGet:
+                  path: /api
+                  port: ${{PORT}}
+                  scheme: HTTP
+                timeoutSeconds: 1
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+  ### Service
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${TAG}
+    spec:
+      ports:
+        - name: ${SERVICE_PORT_NAME}
+          protocol: TCP
+          port: ${{PORT}}
+          targetPort: ${{PORT}}
+      selector:
+        deploymentconfig: ${NAME}-${TAG}-${ENV}
+      type: ClusterIP
+      sessionAffinity: None
+  ### Route
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${TAG}
+    spec:
+      host: ${NAME}-${TAG}-${PROJECT}-${ENV}.apps.silver.devops.gov.bc.ca
+      to:
+        kind: Service
+        name: ${NAME}-${TAG}
+        weight: 100
+      port:
+        targetPort: ${SERVICE_PORT_NAME}
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
+  ### Network Policy
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: web-allow-external-${NAME}-${TAG}
+    spec:
+      podSelector:
+        matchLabels:
+          deploymentconfig: ${NAME}-${TAG}-${ENV}
+      ingress:
+        - {}

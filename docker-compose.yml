@@ -4,7 +4,7 @@ services:
     container_name: api
     build:
       context: .
-      dockerfile: ./docker/api/Dockerfile.slim
+      dockerfile: ./docker/api/Dockerfile
     restart: always
     working_dir: /usr/src/app
     environment:
