@@ -22,5 +22,5 @@ export class Submission extends ApiBaseEntity<Submission> {
   @Column({ name: 'submission_type_code' })
   @ManyToOne(() => SubmissionTypeCode, { eager: true})
   @JoinColumn({ name: 'submission_type_code', referencedColumnName: 'code' })
-  submissionTypeCode: SubmissionTypeCode;
+  submissionType: SubmissionTypeCode;
 }
