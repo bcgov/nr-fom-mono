@@ -1,6 +1,9 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
 
+// console.log(process.env.NODE_ENV);
+console.log(process.env);
+
 export const appValidationSchema = Joi.object({
   APP_HOST: Joi.string().default('localhost'),
   APP_NAME: Joi.string().default('Api'),
@@ -27,21 +30,16 @@ export const appValidationSchema = Joi.object({
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
 });
 
-export default registerAs('app', () => {
-  const config = {
-    host: process.env.APP_HOST,
-    env: process.env.APP_ENV,
-    name: process.env.APP_NAME,
-    port: process.env.APP_PORT,
-    globalPrefix: process.env.APP_PREFIX,
-    title: process.env.APP_TITLE,
-    sessionDb: process.env.DB_URL,
-    sessionDbName: process.env.SESSION_DB,
-    sessionSecret: process.env.SESSION_SECRET,
-    sessionCollection: process.env.SESSION_DB_COLLECTION,
-    msAuthPort: process.env.MS_AUTH_PORT,
-  };
-
-  console.log(`Starting app using configuration:\n${JSON.stringify(config, null, 4)}`);
-  return config;
-});
+export default registerAs('app', () => ({
+  host: process.env.APP_HOST,
+  env: process.env.APP_ENV,
+  name: process.env.APP_NAME,
+  port: process.env.APP_PORT,
+  globalPrefix: process.env.APP_PREFIX,
+  title: process.env.APP_TITLE,
+  sessionDb: process.env.DB_URL,
+  sessionDbName: process.env.SESSION_DB,
+  sessionSecret: process.env.SESSION_SECRET,
+  sessionCollection: process.env.SESSION_DB_COLLECTION,
+  msAuthPort: process.env.MS_AUTH_PORT,
+}));
