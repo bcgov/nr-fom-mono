@@ -37,5 +37,5 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   @Column({ name: 'response_code' })
   @ManyToOne(() => ResponseCode, { eager: true})
   @JoinColumn({ name: 'response_code', referencedColumnName: 'code' })
-  responseCode: ResponseCode;
+  response: ResponseCode;
 }
