@@ -1,43 +1,32 @@
-FROM node:14-alpine
 
-# Set necessary environment variables.
-ENV NODE_ENV=production \
-    NPM_CONFIG_PREFIX=/home/node/.npm-global \
-    PATH=$PATH:/home/node/.npm-global/bin:/home/node/node_modules/.bin:$PATH
+FROM node:14-slim
+# FROM node:14-alpine
 
-# For handling Kernel signals properly
-RUN apk add --no-cache tini
+# Workaround npm limitation with running as non-root
+RUN mkdir "/.npm"
+RUN chown -R 1001:0 "/.npm"
 
-# Create the working directory, including the node_modules folder for the sake of assigning ownership in the next command
-RUN mkdir -p /usr/src/app/node_modules
+# Run as non-root user.
+USER 1001
 
+# Create and change to the app directory.
+WORKDIR /opt/app
 
-# Set the default working directory for the app
-# It is a best practice to use the /usr/src/app directory
-WORKDIR /usr/src/app
-
-# Copy package.json, package-lock.json
+# Copy application dependency manifests to the container image.
+# A wildcard is used to ensure both package.json AND package-lock.json are copied.
 # Copying this separately prevents re-running npm install on every code change.
 COPY package*.json ./
 
 # Install dependencies.
-# RUN npm i -g @nestjs/cli
-RUN npm ci --only=production
+# If you add a package-lock.json speed your build by switching to 'npm ci'.
+RUN npm ci
 
-# Necessary to run before adding application code to leverage Docker cache
-RUN npm cache clean --force
-# RUN mv node_modules ../
-
-# Bundle app source
-COPY . ./
-
-# Display directory structure
-RUN ls -l
+# Copy local code to the container image.
+COPY . .
 
 # Expose API port
-EXPOSE 8081
+EXPOSE 3333
 
-ENTRYPOINT ["/sbin/tini", "--"]
-
-# Run the web service on container startup
+# Run the web service on container startup.
 CMD [ "npm", "start" ]
+
