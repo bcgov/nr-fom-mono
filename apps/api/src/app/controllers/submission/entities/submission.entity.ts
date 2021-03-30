@@ -1,5 +1,7 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne} from 'typeorm';
+import { Project } from '../../project/entities/project.entity';
+import { SubmissionTypeCode } from '../../submission-type-code/entities/submission-type-code.entity';
 
 @Entity('submission', {schema: 'app_fom'})
 export class Submission extends ApiBaseEntity<Submission> {
@@ -13,9 +15,12 @@ export class Submission extends ApiBaseEntity<Submission> {
   @Column({ name: 'geometry', type: 'geometry' })
   geometry: any;
 
-  @Column({ name: 'project_id' })
-  projectId: number;
+  @ManyToOne(() => Project, { eager: true })
+  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
+  project: Project;
 
   @Column({ name: 'submission_type_code' })
-  submissionTypeCode: string;
+  @ManyToOne(() => SubmissionTypeCode, { eager: true})
+  @JoinColumn({ name: 'submission_type_code', referencedColumnName: 'code' })
+  submissionType: SubmissionTypeCode;
 }
