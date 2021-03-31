@@ -11,7 +11,7 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @PrimaryGeneratedColumn('increment', {name: 'cut_block_id'})
   public id: number;
 
-  @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
+  @Column({ type: 'geometry', spatialFeatureType: 'Polygon', srid: 3005 })
   geometry: any;
 
   @Column()
