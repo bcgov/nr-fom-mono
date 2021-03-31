@@ -6,6 +6,8 @@ import { CreatePublicCommentDto } from './controllers/public-comment/dto/create-
 import { CreateProjectDto } from './controllers/project/dto/create-project.dto';
 import { CreateSubmissionDto } from './controllers/submission/dto/create-submission.dto';
 import { CreateCutBlockDto } from './controllers/cut-block/dto/create-cut-block.dto';
+import {CreateRetentionAreaDto} from './controllers/retention-area/dto/create-retention-area.dto';
+import {CreateRoadSectionDto} from './controllers/road-section/dto/create-road-section.dto';
 
 // Test helper functions - don't forget to curry in the app!
 const createProjectAndVerifyResultFunction = (app) => async (createData) => {
@@ -104,6 +106,40 @@ const createCutBlockAndVerifyResultFunction = (app) => async (createData) => {
   return res;
 }
 
+const createRetentionAreaAndVerifyResultFunction = (app) => async (createData) => {
+  const res = await request(app.getHttpServer())
+  .post('/retention-area')
+  .send(createData);
+  expect(res.status).toBe(201);
+
+  // Test body
+  const resBody = res.body;
+  expect(resBody.id).toBeDefined();
+  expect(resBody.geometry).toBeDefined();
+  expect(resBody.plannedDevelopmentDate).toEqual(createData.plannedDevelopmentDate);
+  expect(resBody.plannedAreaHa).toEqual(createData.plannedAreaHa);
+  expect(resBody.submissionId).toEqual(createData.submissionId);
+
+  return res;
+}
+
+const createRoadSectionAndVerifyResultFunction = (app) => async (createData) => {
+  const res = await request(app.getHttpServer())
+  .post('/road-section')
+  .send(createData);
+  expect(res.status).toBe(201);
+
+  // Test body
+  const resBody = res.body;
+  expect(resBody.id).toBeDefined();
+  expect(resBody.geometry).toBeDefined();
+  expect(resBody.plannedDevelopmentDate).toEqual(createData.plannedDevelopmentDate);
+  expect(resBody.plannedAreaHa).toEqual(createData.plannedAreaHa);
+  expect(resBody.submissionId).toEqual(createData.submissionId);
+
+  return res;
+}
+
 describe('API endpoints testing (e2e)', () => {
   let app: INestApplication;
   // Declare vars to hold helper functions
@@ -133,6 +169,8 @@ describe('API endpoints testing (e2e)', () => {
     createCommentAndVerifyResult = createCommentAndVerifyResultFunction(app);
     createSubmissionAndVerifyResult = createSubmissionAndVerifyResultFunction(app);
     createCutBlockAndVerifyResult = createCutBlockAndVerifyResultFunction(app);
+    createRetentionAreaAndVerifyResult = createRetentionAreaAndVerifyResultFunction(app);
+    createRoadSectionAndVerifyResult = createRoadSectionAndVerifyResultFunction(app);
   });
 
   afterAll(async () => {
@@ -325,7 +363,20 @@ describe('API endpoints testing (e2e)', () => {
         submissionTypeCode: 'PROPOSED'
       } as CreateSubmissionDto;
 
-      await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionRes = await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionBody = submissionRes.body;
+
+      const submissionId = submissionBody ? submissionBody.id : undefined;
+
+      // Create a cut block for an existing submission
+      const createCutBlockData = {
+        geometry: {'type': 'Polygon', 'coordinates': [[[102.0, 0.5]]]},
+        plannedDevelopmentDate: '2020-10-10',
+        plannedAreaHa: 86,
+        submissionId: submissionId
+      } as CreateCutBlockDto;
+
+      await createCutBlockAndVerifyResult(createCutBlockData);
     });
 
     it('should create a retention area for an existing submission', async () => {
@@ -352,7 +403,19 @@ describe('API endpoints testing (e2e)', () => {
         submissionTypeCode: 'PROPOSED'
       } as CreateSubmissionDto;
 
-      await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionRes = await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionBody = submissionRes.body;
+
+      const submissionId = submissionBody ? submissionBody.id : undefined;
+
+      // Create a retention area for an existing submission
+      const createRetentionAreaData = {
+        geometry: {'type': 'Polygon', 'coordinates': [[[102.0, 0.5]]]},
+        plannedAreaHa: 86,
+        submissionId: submissionId
+      } as CreateRetentionAreaDto;
+
+      await createRetentionAreaAndVerifyResult(createRetentionAreaData);
     });
 
     it('should update a retention area for an existing submission', async () => {
@@ -379,7 +442,19 @@ describe('API endpoints testing (e2e)', () => {
         submissionTypeCode: 'PROPOSED'
       } as CreateSubmissionDto;
 
-      await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionRes = await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionBody = submissionRes.body;
+
+      const submissionId = submissionBody ? submissionBody.id : undefined;
+
+      // Create a retention area for an existing submission
+      const createRetentionAreaData = {
+        geometry: {'type': 'Polygon', 'coordinates': [[[102.0, 0.5]]]},
+        plannedAreaHa: 86,
+        submissionId: submissionId
+      } as CreateRetentionAreaDto;
+
+      await createRetentionAreaAndVerifyResult(createRetentionAreaData);
     });
 
     it('should create a road section for an existing submission', async () => {
@@ -406,7 +481,20 @@ describe('API endpoints testing (e2e)', () => {
         submissionTypeCode: 'PROPOSED'
       } as CreateSubmissionDto;
 
-      await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionRes = await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionBody = submissionRes.body;
+
+      const submissionId = submissionBody ? submissionBody.id : undefined;
+
+      // Create a road section for an existing submission
+      const createRoadSectionData = {
+        geometry: {'type': 'LineString', 'coordinates': [[[102.0, 0.5], [102.0, 0.5]]]},
+        plannedDevelopmentDate: '2020-10-10',
+        plannedLengthKm: 86,
+        submissionId: submissionId
+      } as CreateRoadSectionDto;
+
+      await createRoadSectionAndVerifyResult(createRoadSectionData);
     });
 
     it('should update a road section for an existing submission', async () => {
@@ -433,7 +521,20 @@ describe('API endpoints testing (e2e)', () => {
         submissionTypeCode: 'PROPOSED'
       } as CreateSubmissionDto;
 
-      await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionRes = await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionBody = submissionRes.body;
+
+      const submissionId = submissionBody ? submissionBody.id : undefined;
+
+      // Create a road section for an existing submission
+      const createRoadSectionData = {
+        geometry: {'type': 'LineString', 'coordinates': [[[102.0, 0.5], [102.0, 0.5]]]},
+        plannedDevelopmentDate: '2020-10-10',
+        plannedLengthKm: 86,
+        submissionId: submissionId
+      } as CreateRoadSectionDto;
+
+      await createRoadSectionAndVerifyResult(createRoadSectionData);
     });
   });
 });

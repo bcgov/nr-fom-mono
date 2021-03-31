@@ -11,7 +11,7 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   @PrimaryGeneratedColumn('increment', {name: 'road_section_id'})
   public id: number;
 
-  @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
+  @Column({ type: 'geometry', spatialFeatureType: 'LineString', srid: 3005 })
   geometry: string;
 
   @Column()
