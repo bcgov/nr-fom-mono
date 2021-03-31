@@ -14,11 +14,11 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column({ name: 'geometry', type: 'geometry' })
   geometry: any;
 
-  @Column({ name: 'planned_development_date' })
-  plannedDevelopmentDate: string; // timestamp
+  @Column()
+  planned_development_date: string; // timestamp
 
   @Column({ name: 'planned_area_ha' })
-  plannedAreaHa: number;
+  planned_area_ha: number;
 
   @ManyToOne(() => Submission, (submission) => submission.cut_blocks)
   @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
