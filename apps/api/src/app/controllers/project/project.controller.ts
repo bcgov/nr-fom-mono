@@ -27,9 +27,7 @@ export class ProjectController extends BaseController<
 
   @Get('/byFspId/:id')
   async findByFspId(@Param('id') id: number) {
-    // Don't need to specify loading of workflowStateCode because it is eager loaded.
-    // return super.findAll({ where: {fspId: id}, relations: ["workflowStateCode"] });
-    return super.findAll({ where: {fspId: id}});
+    return super.findAll({ where: { fsp_id: id }, relations: [] });
   }
 
   @Get()
