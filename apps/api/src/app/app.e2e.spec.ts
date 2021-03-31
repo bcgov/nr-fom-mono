@@ -5,6 +5,7 @@ import { AppModule } from './app.module';
 import { CreatePublicCommentDto } from './controllers/public-comment/dto/create-public-comment.dto';
 import { CreateProjectDto } from './controllers/project/dto/create-project.dto';
 import { CreateSubmissionDto } from './controllers/submission/dto/create-submission.dto';
+import { CreateCutBlockDto } from './controllers/cut-block/dto/create-cut-block.dto';
 
 // Test helper functions - don't forget to curry in the app!
 const createProjectAndVerifyResultFunction = (app) => async (createData) => {
@@ -86,6 +87,23 @@ const createSubmissionAndVerifyResultFunction = (app) => async (createData) => {
   return res;
 }
 
+const createCutBlockAndVerifyResultFunction = (app) => async (createData) => {
+  const res = await request(app.getHttpServer())
+  .post('/cut-block')
+  .send(createData);
+  expect(res.status).toBe(201);
+
+  // Test body
+  const resBody = res.body;
+  expect(resBody.id).toBeDefined();
+  expect(resBody.geometry).toBeDefined();
+  expect(resBody.plannedDevelopmentDate).toEqual(createData.plannedDevelopmentDate);
+  expect(resBody.plannedAreaHa).toEqual(createData.plannedAreaHa);
+  expect(resBody.submissionId).toEqual(createData.submissionId);
+
+  return res;
+}
+
 describe('API endpoints testing (e2e)', () => {
   let app: INestApplication;
   // Declare vars to hold helper functions
@@ -94,6 +112,9 @@ describe('API endpoints testing (e2e)', () => {
   let updateProjectAndVerifyResult;
   let createCommentAndVerifyResult;
   let createSubmissionAndVerifyResult;
+  let createCutBlockAndVerifyResult;
+  let createRetentionAreaAndVerifyResult;
+  let createRoadSectionAndVerifyResult;
 
 
   beforeAll(async () => {
@@ -106,10 +127,12 @@ describe('API endpoints testing (e2e)', () => {
     app.useGlobalPipes(new ValidationPipe());
     await app.init();
 
+    // Register test handlers
     createProjectAndVerifyResult = createProjectAndVerifyResultFunction(app);
     updateProjectAndVerifyResult = updateProjectAndVerifyResultFunction(app);
     createCommentAndVerifyResult = createCommentAndVerifyResultFunction(app);
     createSubmissionAndVerifyResult = createSubmissionAndVerifyResultFunction(app);
+    createCutBlockAndVerifyResult = createCutBlockAndVerifyResultFunction(app);
   });
 
   afterAll(async () => {
@@ -262,7 +285,20 @@ describe('API endpoints testing (e2e)', () => {
         submissionTypeCode: 'PROPOSED'
       } as CreateSubmissionDto;
 
-      await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionRes = await createSubmissionAndVerifyResult(createSubmissionData);
+      const submissionBody = submissionRes.body;
+
+      const submissionId = submissionBody ? submissionBody.id : undefined;
+
+      // Create a cut block for an existing submission
+      const createCutBlockData = {
+        geometry: {'type': 'Polygon', 'coordinates': [[[102.0, 0.5]]]},
+        plannedDevelopmentDate: '2020-10-10',
+        plannedAreaHa: 86,
+        submissionId: submissionId
+      } as CreateCutBlockDto;
+
+      await createCutBlockAndVerifyResult(createCutBlockData);
     });
 
     it('should update a cut block for an existing submission', async () => {
