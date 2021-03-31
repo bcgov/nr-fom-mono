@@ -266,6 +266,60 @@ describe('API endpoints testing (e2e)', () => {
       await createCommentAndVerifyResult(commentData)
     });
 
+    it('should return a list of comments for an existing project', async () => {
+      // Create a project
+      const createData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      const commentData1 = {
+        feedback: 'Testing project comments #1',
+        name: 'Bob Johnson',
+        location: 'Some Location',
+        email: 'bob.johnson@example.com',
+        phoneNumber: '(555) 555-5555',
+        responseDetails: 'Ipsum lorem dolor',
+        projectId: projectId,
+        responseCode: 'CONSIDERED'
+      } as CreatePublicCommentDto;
+
+      // Attach a comment
+      // First create the comment
+      await createCommentAndVerifyResult(commentData1);
+
+      const commentData2 = {
+        feedback: 'Testing project comments #2',
+        name: 'Bob Johnson',
+        location: 'Some Location',
+        email: 'bob.johnson@example.com',
+        phoneNumber: '(555) 555-5555',
+        responseDetails: 'Ipsum lorem dolor',
+        projectId: projectId,
+        responseCode: 'CONSIDERED'
+      } as CreatePublicCommentDto;
+
+      // Attach a comment
+      // First create the comment
+      await createCommentAndVerifyResult(commentData2);
+
+      const byProjectIdRes = await request(app.getHttpServer())
+      .get(`/public-comment/byProjectId/${projectId}`)
+      expect(byProjectIdRes.status).toBe(200);
+      const byFspIdRecords = byProjectIdRes.body.length;
+      expect(byFspIdRecords).toEqual(2);
+    });
+
     it('should return a list of projects by fsp id', async () => {
       const randomNumber = () => Math.trunc(Math.random()*5000) + 1;
       const randomId = randomNumber();

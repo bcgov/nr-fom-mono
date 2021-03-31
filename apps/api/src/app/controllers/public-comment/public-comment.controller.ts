@@ -36,7 +36,7 @@ export class PublicCommentController extends BaseController<
 
   @Get('/byProjectId/:id')
   async findByProjectId(@Param('id') id: number) {
-    return super.findAll({ where: {projectId: id}});
+    return super.findAll({ where: { project_id: id }});
   }
 
 
