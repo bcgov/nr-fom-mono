@@ -1,5 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '@dto';
+import { District } from '../../district/entities/district.entity';
+import { ForestClient } from '../../forest-client/entities/forest-client.entity';
+import {WorkflowStateCode} from '../../workflow-state-code/entities/workflow-state-code.entity';
 
 export class CreateProjectDto extends BaseDto {
   @ApiProperty()
@@ -16,7 +19,13 @@ export class CreateProjectDto extends BaseDto {
   @ApiProperty()
   districtId: number;
   @ApiProperty()
+  district: District;
+  @ApiProperty()
   forestClientNumber: string;
   @ApiProperty()
+  forestClient: ForestClient;
+  @ApiProperty()
   workflowStateCode: string;
+  @ApiProperty()
+  workflowState: WorkflowStateCode;
 }

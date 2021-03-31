@@ -1,4 +1,4 @@
-/* import { ApiBaseEntity, DeepPartial } from '@api';
+import { ApiBaseEntity, DeepPartial } from '@entities';
 
 class MockDataService<T extends ApiBaseEntity<T>> {
   mockDocuments = new Map<string, T>();
@@ -29,4 +29,4 @@ class MockDataService<T extends ApiBaseEntity<T>> {
 
 export function mockDataServiceFactory<T extends ApiBaseEntity<T>>(entity: T) {
   return new MockDataService(entity);
-} */
+}

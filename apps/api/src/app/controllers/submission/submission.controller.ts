@@ -7,6 +7,11 @@ import { Submission } from './entities/submission.entity';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 
+import { ProjectService } from '../project/project.service';
+import { SubmissionTypeCodeService } from '../submission-type-code/submission-type-code.service';
+import { Project } from '../project/entities/project.entity';
+import { SubmissionTypeCode } from '../submission-type-code/entities/submission-type-code.entity';
+
 @ApiTags('submission')
 @Controller('submission')
 export class SubmissionController extends BaseController<
@@ -14,32 +19,34 @@ export class SubmissionController extends BaseController<
   CreateSubmissionDto,
   UpdateSubmissionDto
 > {
-  constructor(protected readonly service: SubmissionService) {
+  constructor(
+    protected readonly service: SubmissionService
+  ) {
     super(service);
   }
 
   @Post()
-  create(@Body() createDto: CreateSubmissionDto) {
+  async create(@Body() createDto: CreateSubmissionDto) {
     return super.create(createDto);
   }
 
   @Get()
-  findAll(options) {
+  async findAll(options) {
     return super.findAll(options);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateDto: UpdateSubmissionDto) {
+  async update(@Param('id') id: number, @Body() updateDto: UpdateSubmissionDto) {
     return super.update(id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number) {
     return super.remove(id);
   }
 }

@@ -1,6 +1,7 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
 import { ResponseCode } from '../../response-code/entities/response-code.entity';
+import { Project } from '../../project/entities/project.entity';
 
 @Entity('public_comment', {schema: 'app_fom'})
 export class PublicComment extends ApiBaseEntity<PublicComment> {
@@ -23,17 +24,25 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   @Column()
   email: string;
 
-  @Column({ name: 'phone_number' })
-  phoneNumber: string;
+  @Column()
+  phone_number: string;
 
-  @Column({ name: 'response_details' })
-  responseDetails: string;
+  @Column()
+  response_details: string;
 
-  @Column({ name: 'project_id' })
-  projectId: number;
+  @ManyToOne(() => Project)
+  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
+  project: Project;
 
-  @Column({ name: 'response_code' })
-  @ManyToOne(() => ResponseCode, { eager: true}) 
-  @JoinColumn({ name: 'response_code' })
-  responseCode: ResponseCode;
+  @Column()
+  @RelationId((comment: PublicComment) => comment.project)
+  project_id: number;
+
+  @ManyToOne(() => ResponseCode)
+  @JoinColumn({ name: 'response_code', referencedColumnName: 'code' })
+  response: ResponseCode;
+
+  @Column()
+  @RelationId((comment: PublicComment) => comment.response)
+  response_code: string;
 }

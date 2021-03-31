@@ -1,5 +1,7 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import { Project } from '../../project/entities/project.entity';
+import { AttachmentTypeCode } from '../../attachment-type-code/entities/attachment-type-code.entity';
 
 @Entity('attachment', {schema: 'app_fom'})
 export class Attachment extends ApiBaseEntity<Attachment> {
@@ -10,15 +12,25 @@ export class Attachment extends ApiBaseEntity<Attachment> {
   @PrimaryGeneratedColumn('increment', {name: 'attachment_id'})
   public id: number;
 
-  @Column({ name: 'file_name' })
-  fileName: string;
+  @Column()
+  file_name: string;
 
-  @Column({ name: 'file_contents' })
-  fileContents: string; // bytearray
+  @Column()
+  file_contents: string; // bytearray
 
-  @Column({ name: 'project_id' })
-  projectId: number;
+  @ManyToOne(() => Project, { eager: true })
+  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
+  project: Project;
 
-  @Column({ name: 'attachment_type_code' })
-  attachmentTypeCode: string;
+  @Column()
+  @RelationId((attachment: Attachment) => attachment.project)
+  project_id: number;
+
+  @ManyToOne(() => AttachmentTypeCode)
+  @JoinColumn({ name: 'attachment_type_code', referencedColumnName: 'code' })
+  attachment_type: AttachmentTypeCode;
+
+  @Column()
+  @RelationId((attachment: Attachment) => attachment.attachment_type)
+  attachment_type_code: string;
 }
