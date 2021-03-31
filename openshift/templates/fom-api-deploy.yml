@@ -37,12 +37,12 @@ parameters:
     displayName: CPU resource request
     name: REQUEST_CPU
     required: false
-    value: 100m
+    value: 50m
   - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
     displayName: Memory resource request
     name: REQUEST_MEMORY
     required: false
-    value: 512Mi
+    value: 50Mi
   - description: Limit for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource limit
     name: LIMIT_CPU
@@ -53,6 +53,16 @@ parameters:
     name: LIMIT_MEMORY
     required: false
     value: 1Gi
+  - description: Number of replicas
+    displayName: Replica Count
+    name: REPLICA_COUNT
+    required: false
+    value: '2'
+  - description: DNS Hostname for the public route. For dev should default to nr-fom-${NAME}-${TAG}-${ENV}. (But can't use other parameters in default value.)
+    displayName: DNS Hostname
+    name: HOSTNAME
+    required: true
+  
 objects:
   ### DeploymentConfig
   - kind: DeploymentConfig
@@ -60,7 +70,7 @@ objects:
     metadata:
       name: ${NAME}-${TAG}-${ENV}
     spec:
-      replicas: 1
+      replicas: ${{REPLICA_COUNT}}
       revisionHistoryLimit: 10
       test: false
       strategy:
@@ -80,7 +90,7 @@ objects:
           imageChangeParams:
             automatic: true
             containerNames:
-              - ${NAME}-${TAG}-${ENV}
+              - app
             from:
               kind: ImageStreamTag
               namespace: ${PROJECT}-tools
@@ -93,9 +103,9 @@ objects:
             deploymentconfig: ${NAME}-${TAG}-${ENV}
         spec:
           containers:
-            - name: ${NAME}-${TAG}-${ENV}
-              image: >-
-                image-registry.openshift-image-registry.svc:5000/${PROJECT}-tools/${NAME}:${TAG}
+            - name: app
+              # Supply a space to image:, will use settings in ImageChange trigger.
+              image:  
               env:
                 - name: PORT
                   value: '${PORT}'
@@ -152,7 +162,7 @@ objects:
     metadata:
       name: ${NAME}-${TAG}
     spec:
-      host: ${NAME}-${TAG}-${PROJECT}-${ENV}.apps.silver.devops.gov.bc.ca
+      host: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
       to:
         kind: Service
         name: ${NAME}-${TAG}

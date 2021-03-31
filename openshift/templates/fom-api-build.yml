@@ -20,8 +20,12 @@ parameters:
     displayName: Project
     name: PROJECT
     value: a4b31c
+  - description: Git Source Reference (branch/tag/ref )
+    displayName: Git Ref
+    name: GIT_REF
+    value: master
 objects:
-  ### ImageStream
+  ### ImageStream - scoped to entire application component, not to tag. Do not delete/recreate as this leads to loss of previously stored images
   - kind: ImageStream
     apiVersion: v1
     metadata:
@@ -33,11 +37,9 @@ objects:
   - kind: BuildConfig
     apiVersion: v1
     metadata:
-      name: ${NAME}
-    labels:
-      app: fom
-      app.component: ${NAME}
-      tag: ${TAG}
+      name: ${NAME}-${TAG}
+      labels:
+        tag: ${TAG}
     spec:
       nodeSelector: null
       output:
@@ -59,5 +61,6 @@ objects:
         type: Git
         git:
           uri: 'https://github.com/bcgov/nr-fom-api'
+          ref: ${GIT_REF}
         contextDir: /
-    runPolicy: Serial
+    runPolicy: SerialLatestOnly
