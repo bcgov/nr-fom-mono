@@ -29,7 +29,7 @@ export abstract class ApiBaseEntity<M> {
   @Column()
   public update_timestamp: string;
 
-  @Column({ name: 'update_user' })
+  @Column()
   public update_user: string;
 
   constructor(model?: Partial<M>) {

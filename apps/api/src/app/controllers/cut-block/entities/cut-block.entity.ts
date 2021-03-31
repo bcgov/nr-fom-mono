@@ -11,13 +11,13 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @PrimaryGeneratedColumn('increment', {name: 'cut_block_id'})
   public id: number;
 
-  @Column({ name: 'geometry', type: 'geometry' })
+  @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
   geometry: any;
 
   @Column()
   planned_development_date: string; // timestamp
 
-  @Column({ name: 'planned_area_ha' })
+  @Column()
   planned_area_ha: number;
 
   @ManyToOne(() => Submission, (submission) => submission.cut_blocks)
