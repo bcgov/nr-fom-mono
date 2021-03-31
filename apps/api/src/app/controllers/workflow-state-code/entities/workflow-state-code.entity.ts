@@ -1,5 +1,5 @@
 import { ApiCodeTableEntity } from '@entities';
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity } from 'typeorm';
 
 @Entity('workflow_state_code', {schema: 'app_fom'})
 export class WorkflowStateCode extends ApiCodeTableEntity<WorkflowStateCode> {

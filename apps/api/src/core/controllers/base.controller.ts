@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
-import {FindManyOptions} from 'typeorm/find-options/FindManyOptions';
+import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 
 @Controller()
 export class BaseController<E, C, U> {
