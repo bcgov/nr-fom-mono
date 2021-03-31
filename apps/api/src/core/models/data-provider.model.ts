@@ -6,6 +6,34 @@ import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { ApiBaseEntity } from '@entities';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
+/**
+ * Function to recursively map a dto or entity structure's keys.
+ * We use this to either camelCase properties when mapping an entity to a DTO,
+ * or snake_case properties when mapping a DTO to an entity.
+ * @param originalObject
+ * @param callback
+ */
+function deepMapKeys(originalObject, callback) {
+  if (typeof originalObject !== 'object') {
+    return originalObject
+  }
+
+  return Object.keys(originalObject || {}).reduce((newObject, key) => {
+    const newKey = callback(key)
+    const originalValue = originalObject[key]
+    let newValue = originalValue
+    if (Array.isArray(originalValue)) {
+      newValue = originalValue.map(item => deepMapKeys(item, callback))
+    } else if (originalValue) {
+      newValue = deepMapKeys(originalValue, callback)
+    }
+    return {
+      ...newObject,
+      [newKey]: newValue,
+    }
+  }, {})
+}
+
 // export type MsDocumentType<T> = OptionalId<T>;
 /**
  * Base class to extend for interacting with the database through a repository pattern.
@@ -41,6 +69,8 @@ export abstract class DataService<
       entity[modelKey] = dto[dtoKey];
     });
 
+    // We might not need to deep map keys here...
+    // return deepMapKeys(entity, (key) => snakeCase(key));
     return entity;
   }
 
@@ -56,7 +86,7 @@ export abstract class DataService<
       dto[dtoKey] = entity[modelKey];
     });
 
-    return dto;
+    return deepMapKeys(dto, (key) => camelCase(key));
   }
 
   /**
