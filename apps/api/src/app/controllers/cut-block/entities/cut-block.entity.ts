@@ -20,7 +20,7 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column({ name: 'planned_area_ha' })
   plannedAreaHa: number;
 
-  @ManyToOne(() => Submission, (submission) => submission.cutBlocks)
+  @ManyToOne(() => Submission, (submission) => submission.cut_blocks)
   @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
   submission: Submission;
 

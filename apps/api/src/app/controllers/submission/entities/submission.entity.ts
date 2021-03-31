@@ -3,6 +3,8 @@ import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, OneToMan
 import { Project } from '../../project/entities/project.entity';
 import { SubmissionTypeCode } from '../../submission-type-code/entities/submission-type-code.entity';
 import { CutBlock } from '../../cut-block/entities/cut-block.entity';
+import { RetentionArea } from '../../retention-area/entities/retention-area.entity';
+import { RoadSection } from '../../road-section/entities/road-section.entity';
 
 @Entity('submission', {schema: 'app_fom'})
 export class Submission extends ApiBaseEntity<Submission> {
@@ -14,7 +16,7 @@ export class Submission extends ApiBaseEntity<Submission> {
   public id: number;
 
   @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
-  geometry: any;
+  geometry: string;
 
   @ManyToOne(() => Project, { eager: true })
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
@@ -33,5 +35,11 @@ export class Submission extends ApiBaseEntity<Submission> {
   submission_type_code: string;
 
   @OneToMany(type => CutBlock, (cutBlock) => cutBlock.submission)
-  cutBlocks: CutBlock[];
+  cut_blocks: CutBlock[];
+
+  @OneToMany(type => RetentionArea, (retentionArea) => retentionArea.submission)
+  retention_areas: RetentionArea[];
+
+  @OneToMany(type => RoadSection, (roadSection) => roadSection.submission)
+  road_sections: RoadSection[];
 }

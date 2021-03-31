@@ -1,5 +1,6 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import { Submission } from '../../submission/entities/submission.entity';
 
 @Entity('retention_area', {schema: 'app_fom'})
 export class RetentionArea extends ApiBaseEntity<RetentionArea> {
@@ -10,12 +11,17 @@ export class RetentionArea extends ApiBaseEntity<RetentionArea> {
   @PrimaryGeneratedColumn('increment', {name: 'retention_area_id'})
   public id: number;
 
-  @Column({ name: 'geometry', type: 'geometry' })
-  geometry: any;
+  @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
+  geometry: string;
 
-  @Column({ name: 'planned_area_ha' })
-  plannedAreaHa: number;
+  @Column()
+  planned_area_ha: number;
 
-  @Column({ name: 'submission_id' })
-  submissionId: number;
+  @ManyToOne(() => Submission, (submission) => submission.retention_areas)
+  @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
+  submission: Submission;
+
+  @Column()
+  @RelationId((retentionArea: RetentionArea) => retentionArea.submission)
+  submission_id: number;
 }
