@@ -1,6 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
-import { DeepPartial, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
+import { snakeCase, camelCase }  from 'typeorm/util/StringUtils';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { ApiBaseEntity } from '@entities';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -28,6 +29,36 @@ export abstract class DataService<
     logger.setContext(this.constructor.name);
   }
 
+  protected mapToEntity(dto, entity) {
+    Object.keys(dto).map((dtoKey,idx) => {
+      // Convert to snake_case here!
+      // TypeORM model properties need to be snake_case when using with Postgres
+      // - TypeORM prefers a camelCase naming convention by default
+      // - https://github.com/typeorm/typeorm/blob/master/docs/connection-options.md namingStrategy won't handle our needs
+      // - TypeORM won't handle @RelationId decorator properly if the relation id is not suffixed with _id
+      //   eg. forest_client_number instead of forest_client_id
+      const modelKey = snakeCase(dtoKey);
+      entity[modelKey] = dto[dtoKey];
+    });
+
+    return entity;
+  }
+
+  protected mapFromEntity(entity, dto) {
+    Object.keys(entity).map((modelKey,idx) => {
+      // Convert to camelCase here!
+      // TypeORM model properties need to be snake_case when using with Postgres
+      // - TypeORM prefers a camelCase naming convention by default
+      // - https://github.com/typeorm/typeorm/blob/master/docs/connection-options.md namingStrategy won't handle our needs
+      // - TypeORM won't handle @RelationId decorator properly if the relation id is not suffixed with _id
+      //   eg. forest_client_number instead of forest_client_id
+      const dtoKey = camelCase(modelKey);
+      dto[dtoKey] = entity[modelKey];
+    });
+
+    return dto;
+  }
+
   /**
    * Create a repository item
    *
@@ -35,7 +66,7 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async create(dto: Partial<E>): Promise<E> {
+  async create<C>(dto: Partial<any>): Promise<C> {
     this.logger.info(`${this.constructor.name}.create props`, dto);
 
     dto.createUser = "FAKED USER";
@@ -43,13 +74,13 @@ export abstract class DataService<
     dto.updateUser = null;
     dto.updateTimestamp = null;
 
-    const object = this.entity.factory(dto);
-
-    const created = await this.repository.save(object);
+    const model = this.entity.factory(this.mapToEntity(dto as C, {} as E));
+    const created = await this.repository.save(model);
 
     this.logger.info(`${this.constructor.name}.create result`, created);
 
-    return created;
+    const createdDto = {} as C;
+    return this.mapFromEntity(created, createdDto);
   }
 
   /**
@@ -59,55 +90,46 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async findOne(id: number | string): Promise<E> {
+  async findOne<C>(id: number | string): Promise<C> {
     this.logger.info(`${this.constructor.name}findOne props`, id);
 
     try {
       const record = await this.repository.findOne(id);
+
       this.logger.info('${this.constructor.name}findOne result', record);
-      return record;
+
+      const dto = {} as C;
+      return this.mapFromEntity(record, dto);
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findOne ${error}`);
     }
   }
 
-  // async findByQuery( query: ) {
-
-  //   try {
-  //       const record = await this.repository.query
-  //   } catch (error) {
-
-  //   }
-  // }
-
   /**
-   * update a record by Id with deep  partial
+   * Update a record by Id with deep partial
    *
    * @param {string} id
    * @param {Partial<E>} dto
    * @return {*}
    * @memberof DataService
    */
-  async update(id: number | string, dto: Partial<E>) {
+  async update<U>(id: number | string, dto: Partial<any>): Promise<U> {
     dto.updateUser = "FAKED USER";
 
     this.logger.info('update props', id, dto);
     try {
       let updated;
       // TODO: I don't like this hack, but it gets the types working...
-      const record = await this.repository.findOne(id) as unknown as QueryDeepPartialEntity<Partial<E>>;
-      if (record) {
-        Object.keys(dto).map((k,idx) => {
-          if (record.hasOwnProperty(k)) {
-            record[k] = dto[k];
-          }
-        });
-        await this.repository.update(id, record);
+      const model = await this.repository.findOne(id) as unknown as QueryDeepPartialEntity<Partial<E>>;
+      if (model) {
+        await this.repository.update(id, this.mapToEntity(dto, model));
         updated = await this.repository.findOne(id);
       }
 
       this.logger.info('update result', updated);
-      return updated;
+
+      const updatedDto = {} as U;
+      return this.mapFromEntity(updated, updatedDto);
     } catch (error) {
       this.logger.error(`${this.constructor.name}.update ${error}`);
     }
@@ -131,18 +153,19 @@ export abstract class DataService<
   }
 
   /**
-   * Findall records in collection
+   * Find all records in collection
    *
    * @return {*}
    * @memberof DataService
    */
-  async findAll(options?: FindManyOptions<E> | undefined): Promise<E[]> {
+  async findAll<C>(options?: FindManyOptions<E> | undefined): Promise<E[]> {
     this.logger.info(`${this.constructor.name}.findAll options = ` + JSON.stringify(options));
 
     try {
       const findAll = await this.repository.find(options);
       this.logger.info('findAll result', findAll);
-      return findAll;
+
+      return findAll.map((r) => this.mapFromEntity(r, {} as C));
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findAll ${error}`);
       throw new HttpException(

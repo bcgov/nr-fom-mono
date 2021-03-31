@@ -20,30 +20,13 @@ export class SubmissionController extends BaseController<
   UpdateSubmissionDto
 > {
   constructor(
-    protected readonly service: SubmissionService,
-    protected readonly projectService: ProjectService,
-    protected readonly submissionTypeCodeService: SubmissionTypeCodeService
+    protected readonly service: SubmissionService
   ) {
     super(service);
   }
 
-  async mapEntitiesFromIds(dto): Promise<CreateSubmissionDto> {
-    if (dto.projectId) {
-      const project: Project = await this.projectService.findOne(dto.projectId);
-      dto.project = project;
-    }
-
-    if (dto.submissionTypeCode) {
-      const submissionType: SubmissionTypeCode = await this.submissionTypeCodeService.findOne(dto.projectId);
-      dto.submissionType = submissionType;
-    }
-
-    return dto;
-  }
-
   @Post()
   async create(@Body() createDto: CreateSubmissionDto) {
-    createDto = await this.mapEntitiesFromIds(createDto);
     return super.create(createDto);
   }
 
@@ -59,11 +42,7 @@ export class SubmissionController extends BaseController<
 
   @Put(':id')
   async update(@Param('id') id: number, @Body() updateDto: UpdateSubmissionDto) {
-    updateDto = await this.mapEntitiesFromIds(updateDto);
-    const result = await super.update(id, updateDto);
-    result.projectId = result.project.id;
-    result.submissionTypeCode = result.submissionType.code;
-    return result;
+    return super.update(id, updateDto);
   }
 
   @Delete(':id')

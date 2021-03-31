@@ -1,5 +1,5 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
@@ -19,24 +19,36 @@ export class Project extends ApiBaseEntity<Project> {
   @Column()
   description: string;
 
-  @Column({ name: 'commenting_open_date' })
-  commentingOpenDate: string; // timestamp
+  @Column()
+  commenting_open_date: string; // timestamp
 
-  @Column({ name: 'commenting_closed_date' })
-  commentingClosedDate: string; // timestamp
+  @Column()
+  commenting_closed_date: string; // timestamp
 
-  @Column({ name: 'fsp_id' })
-  fspId: number;
+  @Column()
+  fsp_id: number;
 
-  @ManyToOne(() => District, { eager: true})
+  @ManyToOne(() => District)
   @JoinColumn({ name: 'district_id', referencedColumnName: 'id' })
   district: District;
 
-  @ManyToOne(() => ForestClient, { eager: true})
-  @JoinColumn({ name: 'forest_client_number', referencedColumnName: 'id' })
-  forestClient: ForestClient;
+  @Column()
+  @RelationId((project: Project) => project.district)
+  district_id: number;
 
-  @ManyToOne(() => WorkflowStateCode, { eager: true})
+  @ManyToOne(() => ForestClient)
+  @JoinColumn({ name: 'forest_client_number', referencedColumnName: 'id' })
+  forest_client: ForestClient;
+
+  @Column()
+  @RelationId((project: Project) => project.forest_client)
+  forest_client_number?: number;
+
+  @ManyToOne(() => WorkflowStateCode)
   @JoinColumn({ name: 'workflow_state_code' })
-  workflowState: WorkflowStateCode;
+  workflow_state: WorkflowStateCode;
+
+  @Column()
+  @RelationId((project: Project) => project.workflow_state)
+  workflow_state_code?: string;
 }

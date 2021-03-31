@@ -1,4 +1,5 @@
 import { registerAs } from '@nestjs/config';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export default registerAs('db', () => ({
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
@@ -9,6 +10,7 @@ export default registerAs('db', () => ({
   ssl: false, // process.env.DB_SSL,
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
-  host: process.env.DB_HOST,
+  host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT,
+  // namingStrategy: new SnakeNamingStrategy()
 }));

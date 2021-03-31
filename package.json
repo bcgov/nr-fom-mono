@@ -56,7 +56,8 @@
     "swagger-ui-express": "^4.1.6",
     "tslib": "^2.0.0",
     "tsutils": "^3.21.0",
-    "typeorm": "^0.2.31"
+    "typeorm": "^0.2.31",
+    "typeorm-naming-strategies": "^2.0.0"
   },
   "devDependencies": {
     "@devniel/nestjs-typeorm-testing": "^0.1.1-alpha",

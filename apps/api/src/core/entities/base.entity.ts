@@ -17,20 +17,20 @@ export abstract class ApiBaseEntity<M> {
   // public id: number;
 
   // Metadata columns
-  @Column({ name: 'revision_count' })
-  public revisionCount: number;
+  @Column()
+  public revision_count: number;
 
-  @Column({ name: 'create_timestamp' })
-  public createTimestamp: string;
+  @Column()
+  public create_timestamp: string;
 
-  @Column({ name: 'create_user' })
-  public createUser: string;
+  @Column()
+  public create_user: string;
 
-  @Column({ name: 'update_timestamp' })
-  public updateTimestamp: string;
+  @Column()
+  public update_timestamp: string;
 
   @Column({ name: 'update_user' })
-  public updateUser: string;
+  public update_user: string;
 
   constructor(model?: Partial<M>) {
     Object.assign(this, model);

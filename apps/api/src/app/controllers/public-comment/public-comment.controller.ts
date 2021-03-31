@@ -19,30 +19,13 @@ export class PublicCommentController extends BaseController<
   UpdatePublicCommentDto
 > {
   constructor(
-    protected readonly service: PublicCommentService,
-    protected readonly projectService: ProjectService,
-    protected readonly responseCodeService: ResponseCodeService
+    protected readonly service: PublicCommentService
   ) {
     super(service);
   }
 
-  async mapEntitiesFromIds(dto): Promise<CreatePublicCommentDto> {
-    if (dto.projectId) {
-      const project: Project = await this.projectService.findOne(dto.projectId);
-      dto.project = project;
-    }
-
-    if (dto.responseCode) {
-      const response: Project = await this.projectService.findOne(dto.responseCode);
-      dto.response = response;
-    }
-
-    return dto;
-  }
-
   @Post()
   async create(@Body() createDto: CreatePublicCommentDto) {
-    createDto = await this.mapEntitiesFromIds(createDto);
     return super.create(createDto);
   }
 
@@ -64,11 +47,7 @@ export class PublicCommentController extends BaseController<
 
   @Put(':id')
   async update(@Param('id') id: number, @Body() updateDto: UpdatePublicCommentDto) {
-    updateDto = await this.mapEntitiesFromIds(updateDto);
-    const result = await super.update(id, updateDto);
-    result.projectId = result.project.id;
-    result.responseCode = result.response.code;
-    return result;
+    return super.update(id, updateDto);
   }
 
   @Delete(':id')
