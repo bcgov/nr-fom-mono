@@ -27,7 +27,7 @@ export class ProjectController extends BaseController<
 
   @Get('/byFspId/:id')
   async findByFspId(@Param('id') id: number) {
-    return super.findAll({ where: { fsp_id: id }, relations: [] });
+    return super.findAll({ where: { fsp_id: id }, relations: ['district', 'forest_client', 'workflow_state'] });
   }
 
   @Get()

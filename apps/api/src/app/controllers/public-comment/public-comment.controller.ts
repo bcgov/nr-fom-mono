@@ -3,12 +3,9 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
 import { PublicCommentService } from './public-comment.service';
-import { ProjectService } from '../project/project.service';
-import { ResponseCodeService } from '../response-code/response-code.service';
 import { PublicComment } from './entities/public-comment.entity';
 import { CreatePublicCommentDto } from './dto/create-public-comment.dto';
 import { UpdatePublicCommentDto } from './dto/update-public-comment.dto';
-import { Project } from '../project/entities/project.entity';
 
 
 @ApiTags('public-comment')
@@ -36,7 +33,7 @@ export class PublicCommentController extends BaseController<
 
   @Get('/byProjectId/:id')
   async findByProjectId(@Param('id') id: number) {
-    return super.findAll({ where: { project_id: id }});
+    return super.findAll({ where: { project_id: id } });
   }
 
 
