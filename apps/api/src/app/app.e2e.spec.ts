@@ -266,6 +266,30 @@ describe('API endpoints testing (e2e)', () => {
       await createCommentAndVerifyResult(commentData)
     });
 
+    it('should return a list of projects by fsp id', async () => {
+      const randomNumber = () => Math.trunc(Math.random()*5000) + 1;
+      const randomId = randomNumber();
+      // TODO: Reset DB data for these tests... random number test could randomly fail :)
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: randomId,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      await createProjectAndVerifyResult(createProjectData);
+
+      const byFspIdRes = await request(app.getHttpServer())
+      .get(`/project/byFspId/${randomId}`)
+      expect(byFspIdRes.status).toBe(200);
+      const byFspIdRecords = byFspIdRes.body.length;
+      expect(byFspIdRecords).toEqual(1);
+    });
+
     it('should return a list of submissions', async () => {
       const res = await request(app.getHttpServer())
       .get('/submission')
