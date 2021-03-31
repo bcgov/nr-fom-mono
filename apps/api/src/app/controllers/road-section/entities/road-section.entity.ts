@@ -1,5 +1,6 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import { Submission } from '../../submission/entities/submission.entity';
 
 @Entity('road_section', {schema: 'app_fom'})
 export class RoadSection extends ApiBaseEntity<RoadSection> {
@@ -9,16 +10,21 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
 
   @PrimaryGeneratedColumn('increment', {name: 'road_section_id'})
   public id: number;
-  
-  @Column({ name: 'geometry', type: 'geometry' })
-  geometry: any;
 
-  @Column({ name: 'planned_development_date' })
-  plannedDevelopmentDate: string; // timestamp
+  @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
+  geometry: string;
 
-  @Column({ name: 'planned_length_km' })
-  plannedLengthKm: number;
+  @Column()
+  planned_development_date: string; // timestamp
 
-  @Column({ name: 'submission_id' })
-  submissionId: number;
+  @Column()
+  planned_length_km: number;
+
+  @ManyToOne(() => Submission, (submission) => submission.road_sections)
+  @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
+  submission: Submission;
+
+  @Column()
+  @RelationId((roadSection: RoadSection) => roadSection.submission)
+  submission_id: number;
 }

@@ -2,8 +2,9 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from './app.module';
-import {CreatePublicCommentDto} from './controllers/public-comment/dto/create-public-comment.dto';
-import {CreateProjectDto} from './controllers/project/dto/create-project.dto';
+import { CreatePublicCommentDto } from './controllers/public-comment/dto/create-public-comment.dto';
+import { CreateProjectDto } from './controllers/project/dto/create-project.dto';
+import { CreateSubmissionDto } from './controllers/submission/dto/create-submission.dto';
 
 // Test helper functions - don't forget to curry in the app!
 const createProjectAndVerifyResultFunction = (app) => async (createData) => {
@@ -67,6 +68,24 @@ const createCommentAndVerifyResultFunction = (app) => async (createData) => {
   return res;
 }
 
+// Test helper functions - don't forget to curry in the app!
+const createSubmissionAndVerifyResultFunction = (app) => async (createData) => {
+  const res = await request(app.getHttpServer())
+  .post('/submission')
+  .send(createData);
+  expect(res.status).toBe(201);
+
+  // Test body
+  const resBody = res.body;
+  expect(resBody).toBeDefined();
+  expect(resBody.id).toBeDefined();
+  expect(resBody.geometry).toEqual(createData.geometry);
+  expect(resBody.projectId).toEqual(createData.projectId);
+  expect(resBody.submissionTypeCode).toEqual(createData.submissionTypeCode);
+
+  return res;
+}
+
 describe('API endpoints testing (e2e)', () => {
   let app: INestApplication;
   // Declare vars to hold helper functions
@@ -74,6 +93,7 @@ describe('API endpoints testing (e2e)', () => {
   let createProjectAndVerifyResult;
   let updateProjectAndVerifyResult;
   let createCommentAndVerifyResult;
+  let createSubmissionAndVerifyResult;
 
 
   beforeAll(async () => {
@@ -89,6 +109,7 @@ describe('API endpoints testing (e2e)', () => {
     createProjectAndVerifyResult = createProjectAndVerifyResultFunction(app);
     updateProjectAndVerifyResult = updateProjectAndVerifyResultFunction(app);
     createCommentAndVerifyResult = createCommentAndVerifyResultFunction(app);
+    createSubmissionAndVerifyResult = createSubmissionAndVerifyResultFunction(app);
   });
 
   afterAll(async () => {
@@ -182,6 +203,201 @@ describe('API endpoints testing (e2e)', () => {
       // Attach a comment
       // First create the comment
       await createCommentAndVerifyResult(commentData)
+    });
+
+    it('should return a list of submissions', async () => {
+      const res = await request(app.getHttpServer())
+      .get('/submission')
+      expect(res.status).toBe(200);
+    });
+
+    it('should create a new submission', async () => {
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createProjectData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      // Create a submission
+      const createSubmissionData = {
+        geometry: {'type': 'Point', 'coordinates': [102.0, 0.5]},
+        projectId: projectId,
+        submissionTypeCode: 'PROPOSED'
+      } as CreateSubmissionDto;
+
+      await createSubmissionAndVerifyResult(createSubmissionData);
+    });
+
+    it('should create a cut block for an existing submission', async () => {
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createProjectData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      // Create a submission
+      const createSubmissionData = {
+        geometry: {'type': 'Point', 'coordinates': [102.0, 0.5]},
+        projectId: projectId,
+        submissionTypeCode: 'PROPOSED'
+      } as CreateSubmissionDto;
+
+      await createSubmissionAndVerifyResult(createSubmissionData);
+    });
+
+    it('should update a cut block for an existing submission', async () => {
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createProjectData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      // Create a submission
+      const createSubmissionData = {
+        geometry: {'type': 'Point', 'coordinates': [102.0, 0.5]},
+        projectId: projectId,
+        submissionTypeCode: 'PROPOSED'
+      } as CreateSubmissionDto;
+
+      await createSubmissionAndVerifyResult(createSubmissionData);
+    });
+
+    it('should create a retention area for an existing submission', async () => {
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createProjectData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      // Create a submission
+      const createSubmissionData = {
+        geometry: {'type': 'Point', 'coordinates': [102.0, 0.5]},
+        projectId: projectId,
+        submissionTypeCode: 'PROPOSED'
+      } as CreateSubmissionDto;
+
+      await createSubmissionAndVerifyResult(createSubmissionData);
+    });
+
+    it('should update a retention area for an existing submission', async () => {
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createProjectData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      // Create a submission
+      const createSubmissionData = {
+        geometry: {'type': 'Point', 'coordinates': [102.0, 0.5]},
+        projectId: projectId,
+        submissionTypeCode: 'PROPOSED'
+      } as CreateSubmissionDto;
+
+      await createSubmissionAndVerifyResult(createSubmissionData);
+    });
+
+    it('should create a road section for an existing submission', async () => {
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createProjectData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      // Create a submission
+      const createSubmissionData = {
+        geometry: {'type': 'Point', 'coordinates': [102.0, 0.5]},
+        projectId: projectId,
+        submissionTypeCode: 'PROPOSED'
+      } as CreateSubmissionDto;
+
+      await createSubmissionAndVerifyResult(createSubmissionData);
+    });
+
+    it('should update a road section for an existing submission', async () => {
+      // Create a project
+      const createProjectData = {
+        name: 'Test',
+        description: 'Test',
+        commentingOpenDate: '2020-10-10',
+        commentingClosedDate: '2020-10-10',
+        fspId: 1,
+        districtId: 15,
+        forestClientNumber: '1011',
+        workflowStateCode: 'INITIAL'
+      } as CreateProjectDto;
+      const res = await createProjectAndVerifyResult(createProjectData);
+      const resBody = res.body;
+
+      const projectId = resBody ? resBody.id : undefined;
+
+      // Create a submission
+      const createSubmissionData = {
+        geometry: {'type': 'Point', 'coordinates': [102.0, 0.5]},
+        projectId: projectId,
+        submissionTypeCode: 'PROPOSED'
+      } as CreateSubmissionDto;
+
+      await createSubmissionAndVerifyResult(createSubmissionData);
     });
   });
 });

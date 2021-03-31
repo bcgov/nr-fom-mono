@@ -69,7 +69,7 @@ describe('ProjectService', () => {
     it('should create a new project ', async () => {
       const objectToTest = projectPropsFactory();
       const expected = new Project(objectToTest);
-      const received = await service.create(objectToTest);
+      const received = await service.create<Project>(objectToTest);
 
       expect(received.name).toEqual(expected.name);
       expect(received).toHaveProperty('_id');
@@ -78,8 +78,8 @@ describe('ProjectService', () => {
 
   describe('findAll', () => {
     it('should return many projects', async () => {
-      await service.create(projectPropsFactory());
-      await service.create(projectPropsFactory());
+      await service.create<Project>(projectPropsFactory());
+      await service.create<Project>(projectPropsFactory());
 
       const result = await service.findAll();
       expect(result).toHaveLength(2);
@@ -87,16 +87,16 @@ describe('ProjectService', () => {
   });
   describe('findOne', () => {
     it('should return an existing project', async () => {
-      const project = await service.create(projectPropsFactory());
+      const project = await service.create<Project>(projectPropsFactory());
 
-      const result = await service.findOne(project.id);
+      const result = await service.findOne<Project>(project.id);
       expect(result).toHaveProperty('name');
     });
   });
 
   describe('checkIfProjectExists', () => {
     it('should have a project with the same name', async () => {
-      const expected = await service.create(projectPropsFactory());
+      const expected = await service.create<Project>(projectPropsFactory());
       // @ts-ignore
       /* const result: { name: string } = await service.checkIfProjectExists(expected.name);
       expect(result).toBeDefined();

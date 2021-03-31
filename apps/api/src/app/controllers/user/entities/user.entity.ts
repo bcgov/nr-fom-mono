@@ -1,5 +1,5 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, Column, PrimaryColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('user')
 export class User extends ApiBaseEntity<User> {
@@ -7,17 +7,17 @@ export class User extends ApiBaseEntity<User> {
     super(user);
   }
 
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('increment')
   id: number;
 
   @Column()
   username: string;
 
-  @Column({ name: 'first_name'})
-  firstName: string;
+  @Column()
+  first_name: string;
 
-  @Column({ name: 'last_name' })
-  lastName: string;
+  @Column()
+  last_name: string;
 
   @Column()
   email: string;

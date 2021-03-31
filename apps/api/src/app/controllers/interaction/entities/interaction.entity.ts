@@ -1,5 +1,7 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import { Project } from '../../project/entities/project.entity';
+import { Attachment } from '../../attachment/entities/attachment.entity';
 
 @Entity('interaction', {schema: 'app_fom'})
 export class Interaction extends ApiBaseEntity<Interaction> {
@@ -13,15 +15,25 @@ export class Interaction extends ApiBaseEntity<Interaction> {
   @Column()
   stakeholder: string;
 
-  @Column({ name: 'communication_date' })
-  communicationDate: string; // timestamp
+  @Column()
+  communication_date: string; // timestamp
 
-  @Column({ name: 'communication_details' })
-  communicationDetails: string;
+  @Column()
+  communication_details: string;
 
-  @Column({ name: 'project_id' })
-  projectId: number;
+  @ManyToOne(() => Project, { eager: true })
+  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
+  project: Project;
 
-  @Column({ name: 'attachment_id' })
-  attachmentId: number;
+  @Column()
+  @RelationId((interaction: Interaction) => interaction.project)
+  project_id: number;
+
+  @ManyToOne(() => Attachment, { eager: true })
+  @JoinColumn({ name: 'attachment_id', referencedColumnName: 'id' })
+  attachment: Attachment;
+
+  @Column()
+  @RelationId((interaction: Interaction) => interaction.attachment)
+  attachment_id: number;
 }
