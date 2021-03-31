@@ -47,6 +47,7 @@ import { AppConfigService } from './modules/app-config/app-config.provider';
         ssl: configService.db('ssl'),
         useUnifiedTopology: true,
         useNewUrlParser: true,
+        // namingStrategy: configService.db('namingStrategy'),
       }),
       inject: [AppConfigService],
     }),

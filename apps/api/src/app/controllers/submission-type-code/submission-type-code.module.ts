@@ -9,6 +9,6 @@ import { SubmissionTypeCodeController } from './submission-type-code.controller'
   imports: [TypeOrmModule.forFeature([SubmissionTypeCode])],
   controllers: [SubmissionTypeCodeController],
   providers: [SubmissionTypeCodeService],
-  exports: []
+  exports: [SubmissionTypeCodeService]
 })
 export class SubmissionTypeCodeModule {}

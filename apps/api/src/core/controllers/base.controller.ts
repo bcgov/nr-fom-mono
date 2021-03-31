@@ -9,27 +9,27 @@ export class BaseController<E, C, U> {
   constructor(protected readonly service: DataService<E, Repository<E>>) {}
 
   @Post()
-  create(@Body() createDto: C) {
-    return this.service.create(createDto);
+  async create(@Body() createDto: C) {
+    return this.service.create<C>(createDto);
   }
 
   @Get()
-  findAll(options?: FindManyOptions<E> | undefined) {
+  async findAll(options?: FindManyOptions<E> | undefined) {
     return this.service.findAll(options);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.service.findOne(id);
+  async findOne(@Param('id') id: number) {
+    return this.service.findOne<C>(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateDto: U) {
-    return this.service.update(id, updateDto);
+  async update(@Param('id') id: number, @Body() updateDto: U) {
+    return this.service.update<U>(id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number) {
     return this.service.remove(id);
   }
 }

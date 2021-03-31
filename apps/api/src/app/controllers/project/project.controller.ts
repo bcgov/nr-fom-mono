@@ -14,40 +14,42 @@ export class ProjectController extends BaseController<
   CreateProjectDto,
   UpdateProjectDto
 > {
-  constructor(protected readonly service: ProjectService) {
+  constructor(
+    protected readonly service: ProjectService
+  ) {
     super(service);
   }
 
   @Post()
-  create(@Body() createDto: CreateProjectDto) {
+  async create(@Body() createDto: CreateProjectDto) {
     return super.create(createDto);
   }
 
   @Get('/byFspId/:id')
-  findByFspId(@Param('id') id: number) {
+  async findByFspId(@Param('id') id: number) {
     // Don't need to specify loading of workflowStateCode because it is eager loaded.
     // return super.findAll({ where: {fspId: id}, relations: ["workflowStateCode"] });
     return super.findAll({ where: {fspId: id}});
   }
 
   @Get()
-  findAll(options) {
+  async findAll(options) {
     return super.findAll(options);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
 
   @Put(':id')
   @ApiBody({ type: UpdateProjectDto })
-  update(@Param('id') id: number, @Body() updateDto: UpdateProjectDto) {
+  async update(@Param('id') id: number, @Body() updateDto: UpdateProjectDto): Promise<UpdateProjectDto> {
     return super.update(id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number) {
     return super.remove(id);
   }
 }

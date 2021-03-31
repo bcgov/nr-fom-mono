@@ -9,6 +9,6 @@ import { WorkflowStateCodeController } from './workflow-state-code.controller';
   imports: [TypeOrmModule.forFeature([WorkflowStateCode])],
   controllers: [WorkflowStateCodeController],
   providers: [WorkflowStateCodeService],
-  exports: []
+  exports: [WorkflowStateCodeService]
 })
 export class WorkflowStateCodeModule {}

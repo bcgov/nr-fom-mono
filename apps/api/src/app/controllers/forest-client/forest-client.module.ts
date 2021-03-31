@@ -9,6 +9,6 @@ import { ForestClientController } from './forest-client.controller';
   imports: [TypeOrmModule.forFeature([ForestClient])],
   controllers: [ForestClientController],
   providers: [ForestClientService],
-  exports: []
+  exports: [ForestClientService]
 })
 export class ForestClientModule {}
