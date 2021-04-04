@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
@@ -14,15 +22,16 @@ export class ProjectsController extends BaseCollectionController<
   CreateProjectDto,
   UpdateProjectDto
 > {
-  constructor(
-  protected readonly service: ProjectService
-  ) {
+  constructor(protected readonly service: ProjectService) {
     super(service);
   }
 
   @Get('/byFspId/:id')
   async findByFspId(@Param('id') id: number) {
-    return super.findAll({where: {fsp_id: id}, relations: ['district', 'forest_client', 'workflow_state']});
+    return super.findAll({
+      where: { fsp_id: id },
+      relations: ['district', 'forest_client', 'workflow_state'],
+    });
   }
 
   @Post()
@@ -38,9 +47,7 @@ export class ProjectController extends BaseController<
   CreateProjectDto,
   UpdateProjectDto
 > {
-  constructor(
-    protected readonly service: ProjectService
-  ) {
+  constructor(protected readonly service: ProjectService) {
     super(service);
   }
 
@@ -56,7 +63,10 @@ export class ProjectController extends BaseController<
 
   @Put(':id')
   @ApiBody({ type: UpdateProjectDto })
-  async update(@Param('id') id: number, @Body() updateDto: UpdateProjectDto): Promise<UpdateProjectDto> {
+  async update(
+    @Param('id') id: number,
+    @Body() updateDto: UpdateProjectDto
+  ): Promise<UpdateProjectDto> {
     return super.update(id, updateDto);
   }
 

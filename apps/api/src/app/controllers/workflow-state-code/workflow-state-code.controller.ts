@@ -27,5 +27,4 @@ export class WorkflowStateCodeController extends CodeTableController<
   async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
-
 }

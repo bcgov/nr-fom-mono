@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
@@ -14,9 +22,7 @@ export class PublicCommentsController extends BaseCollectionController<
   CreatePublicCommentDto,
   UpdatePublicCommentDto
 > {
-  constructor(
-  protected readonly service: PublicCommentService
-  ) {
+  constructor(protected readonly service: PublicCommentService) {
     super(service);
   }
 
@@ -27,10 +33,9 @@ export class PublicCommentsController extends BaseCollectionController<
 
   @Get('/byProjectId/:id')
   async findByProjectId(@Param('id') id: number) {
-    return super.findAll({where: {project_id: id}});
+    return super.findAll({ where: { project_id: id } });
   }
 }
-
 
 @ApiTags('public-comment')
 @Controller('public-comment')
@@ -39,9 +44,7 @@ export class PublicCommentController extends BaseController<
   CreatePublicCommentDto,
   UpdatePublicCommentDto
 > {
-  constructor(
-    protected readonly service: PublicCommentService
-  ) {
+  constructor(protected readonly service: PublicCommentService) {
     super(service);
   }
 
@@ -56,7 +59,10 @@ export class PublicCommentController extends BaseController<
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() updateDto: UpdatePublicCommentDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateDto: UpdatePublicCommentDto
+  ) {
     return super.update(id, updateDto);
   }
 

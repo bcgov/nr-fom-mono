@@ -1,6 +1,8 @@
 {
   "version": 2,
-  "cli": { "defaultCollection": "@nrwl/nest" },
+  "cli": {
+    "defaultCollection": "@nrwl/nest"
+  },
   "defaultProject": "api",
   "projects": {
     "api": {
@@ -10,7 +12,7 @@
       "prefix": "api",
       "targets": {
         "deploy": {
-          "builder": "@nrwl/workspace:run-commands",
+          "executor": "@nrwl/workspace:run-commands",
           "options": {
             "commands": [
               "nx build api",
@@ -45,11 +47,15 @@
         },
         "serve": {
           "executor": "@nrwl/node:execute",
-          "options": { "buildTarget": "api:build" }
+          "options": {
+            "buildTarget": "api:build"
+          }
         },
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": { "lintFilePatterns": ["apps/api/**/*.ts"] }
+          "options": {
+            "lintFilePatterns": ["apps/api/**/*.ts"]
+          }
         },
         "test": {
           "executor": "@nrwl/jest:jest",
@@ -68,7 +74,9 @@
       "targets": {
         "lint": {
           "executor": "@nrwl/linter:eslint",
-          "options": { "lintFilePatterns": ["libs/core/**/*.ts"] }
+          "options": {
+            "lintFilePatterns": ["libs/core/**/*.ts"]
+          }
         },
         "test": {
           "executor": "@nrwl/jest:jest",

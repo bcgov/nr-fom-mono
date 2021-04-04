@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
@@ -14,9 +22,7 @@ export class SubmissionsController extends BaseCollectionController<
   CreateSubmissionDto,
   UpdateSubmissionDto
 > {
-  constructor(
-  protected readonly service: SubmissionService
-  ) {
+  constructor(protected readonly service: SubmissionService) {
     super(service);
   }
 
@@ -33,9 +39,7 @@ export class SubmissionController extends BaseController<
   CreateSubmissionDto,
   UpdateSubmissionDto
 > {
-  constructor(
-    protected readonly service: SubmissionService
-  ) {
+  constructor(protected readonly service: SubmissionService) {
     super(service);
   }
 
@@ -50,7 +54,10 @@ export class SubmissionController extends BaseController<
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() updateDto: UpdateSubmissionDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateDto: UpdateSubmissionDto
+  ) {
     return super.update(id, updateDto);
   }
 

@@ -14,10 +14,10 @@ import { WorkflowStateCodeModule } from '../workflow-state-code/workflow-state-c
     TypeOrmModule.forFeature([Project]),
     DistrictModule,
     ForestClientModule,
-    WorkflowStateCodeModule
+    WorkflowStateCodeModule,
   ],
   controllers: [ProjectController, ProjectsController],
   providers: [ProjectService],
-  exports: [ProjectService]
+  exports: [ProjectService],
 })
 export class ProjectModule {}

@@ -1,4 +1,12 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
@@ -46,7 +54,10 @@ export class AttachmentController extends BaseController<
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() updateDto: UpdateAttachmentDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateDto: UpdateAttachmentDto
+  ) {
     return super.update(id, updateDto);
   }
 

@@ -27,5 +27,4 @@ export class SubmissionTypeCodeController extends CodeTableController<
   async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
-
 }

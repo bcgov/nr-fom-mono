@@ -3,15 +3,22 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Submission } from './entities/submission.entity';
 import { SubmissionService } from './submission.service';
-import { SubmissionController, SubmissionsController } from './submission.controller';
+import {
+  SubmissionController,
+  SubmissionsController,
+} from './submission.controller';
 
 import { ProjectModule } from '../project/project.module';
 import { SubmissionTypeCodeModule } from '../submission-type-code/submission-type-code.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Submission]), ProjectModule, SubmissionTypeCodeModule],
+  imports: [
+    TypeOrmModule.forFeature([Submission]),
+    ProjectModule,
+    SubmissionTypeCodeModule,
+  ],
   controllers: [SubmissionController, SubmissionsController],
   providers: [SubmissionService],
-  exports: []
+  exports: [],
 })
 export class SubmissionModule {}

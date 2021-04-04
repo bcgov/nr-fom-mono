@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+  Res,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
@@ -9,7 +18,7 @@ export class BaseCollectionController<E, C, U> {
   constructor(protected readonly service: DataService<E, Repository<E>>) {}
 
   @Post()
-  async findAll( @Body() options?: FindManyOptions<E> | undefined) {
+  async findAll(@Body() options?: FindManyOptions<E> | undefined) {
     return this.service.findAll(options);
   }
 }

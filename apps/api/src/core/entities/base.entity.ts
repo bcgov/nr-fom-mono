@@ -1,5 +1,10 @@
 // import { ObjectId } from 'bson';
-import { Column, CreateDateColumn, UpdateDateColumn, VersionColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  VersionColumn,
+} from 'typeorm';
 // import { Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
 export type DeepPartial<T> = {
@@ -11,7 +16,6 @@ export type DeepPartial<T> = {
 };
 
 export abstract class ApiBaseEntity<M> {
-
   // Needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.
   // @PrimaryGeneratedColumn('increment')
   // public id: number;
