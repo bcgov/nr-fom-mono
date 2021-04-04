@@ -1,11 +1,28 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '@controllers';
+import { BaseController, BaseCollectionController } from '@controllers';
 import { FspDistrictXrefService } from './fsp-district-xref.service';
 import { FspDistrictXref } from './entities/fsp-district-xref.entity';
 import { CreateFspDistrictXrefDto } from './dto/create-fsp-district-xref.dto';
 import { UpdateFspDistrictXrefDto } from './dto/update-fsp-district-xref.dto';
+
+@ApiTags('fsp-district-xrefs')
+@Controller('fsp-district-xrefs')
+export class FspDistrictXrefsController extends BaseCollectionController<
+  FspDistrictXref,
+  CreateFspDistrictXrefDto,
+  UpdateFspDistrictXrefDto
+> {
+  constructor(protected readonly service: FspDistrictXrefService) {
+    super(service);
+  }
+
+  @Post()
+  async findAll(@Body() options) {
+    return super.findAll(options);
+  }
+}
 
 @ApiTags('fsp-district-xref')
 @Controller('fsp-district-xref')
@@ -19,17 +36,12 @@ export class FspDistrictXrefController extends BaseController<
   }
 
   @Post()
-  create(@Body() createDto: CreateFspDistrictXrefDto) {
+  async create(@Body() createDto: CreateFspDistrictXrefDto) {
     return super.create(createDto);
   }
 
-  @Get()
-  findAll(options) {
-    return super.findAll(options);
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
 
@@ -39,7 +51,7 @@ export class FspDistrictXrefController extends BaseController<
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number) {
     return super.remove(id);
   }
 }

@@ -1,16 +1,30 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '@controllers';
+import { BaseController, BaseCollectionController } from '@controllers';
 import { SubmissionService } from './submission.service';
 import { Submission } from './entities/submission.entity';
 import { CreateSubmissionDto } from './dto/create-submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 
-import { ProjectService } from '../project/project.service';
-import { SubmissionTypeCodeService } from '../submission-type-code/submission-type-code.service';
-import { Project } from '../project/entities/project.entity';
-import { SubmissionTypeCode } from '../submission-type-code/entities/submission-type-code.entity';
+@ApiTags('submissions')
+@Controller('submissions')
+export class SubmissionsController extends BaseCollectionController<
+  Submission,
+  CreateSubmissionDto,
+  UpdateSubmissionDto
+> {
+  constructor(
+  protected readonly service: SubmissionService
+  ) {
+    super(service);
+  }
+
+  @Post()
+  async findAll(@Body() options) {
+    return super.findAll(options);
+  }
+}
 
 @ApiTags('submission')
 @Controller('submission')
@@ -28,11 +42,6 @@ export class SubmissionController extends BaseController<
   @Post()
   async create(@Body() createDto: CreateSubmissionDto) {
     return super.create(createDto);
-  }
-
-  @Get()
-  async findAll(options) {
-    return super.findAll(options);
   }
 
   @Get(':id')

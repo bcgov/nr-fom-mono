@@ -8,12 +8,12 @@ export class CodeTableController<E, C, U> {
   constructor(protected readonly service: CodeTableService<E, Repository<E>>) {}
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.service.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number | string) {
+  async findOne(@Param('id') id: number | string) {
     return this.service.findOne(id);
   }
 

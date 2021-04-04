@@ -3,11 +3,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { RetentionArea } from './entities/retention-area.entity';
 import { RetentionAreaService } from './retention-area.service';
-import { RetentionAreaController } from './retention-area.controller';
+import { RetentionAreaController, RetentionAreasController } from './retention-area.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([RetentionArea])],
-  controllers: [RetentionAreaController],
+  controllers: [RetentionAreaController, RetentionAreasController],
   providers: [RetentionAreaService],
   exports: []
 })

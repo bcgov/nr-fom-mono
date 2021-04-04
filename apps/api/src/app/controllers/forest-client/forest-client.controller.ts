@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { BaseReadOnlyController } from '@controllers';
@@ -11,5 +11,4 @@ export class ForestClientController extends BaseReadOnlyController<ForestClient>
   constructor(protected readonly service: ForestClientService) {
     super(service);
   }
-
 }

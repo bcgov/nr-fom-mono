@@ -1,11 +1,28 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '@controllers';
+import { BaseController, BaseCollectionController } from '@controllers';
 import { AttachmentService } from './attachment.service';
 import { Attachment } from './entities/attachment.entity';
 import { CreateAttachmentDto } from './dto/create-attachment.dto';
 import { UpdateAttachmentDto } from './dto/update-attachment.dto';
+
+@ApiTags('attachments')
+@Controller('attachments')
+export class AttachmentsController extends BaseCollectionController<
+  Attachment,
+  CreateAttachmentDto,
+  UpdateAttachmentDto
+> {
+  constructor(protected readonly service: AttachmentService) {
+    super(service);
+  }
+
+  @Post()
+  async findAll(@Body() options) {
+    return super.findAll(options);
+  }
+}
 
 @ApiTags('attachment')
 @Controller('attachment')
@@ -19,27 +36,22 @@ export class AttachmentController extends BaseController<
   }
 
   @Post()
-  create(@Body() createDto: CreateAttachmentDto) {
+  async create(@Body() createDto: CreateAttachmentDto) {
     return super.create(createDto);
   }
 
-  @Get()
-  findAll(options) {
-    return super.findAll(options);
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateDto: UpdateAttachmentDto) {
+  async update(@Param('id') id: number, @Body() updateDto: UpdateAttachmentDto) {
     return super.update(id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number) {
     return super.remove(id);
   }
 }

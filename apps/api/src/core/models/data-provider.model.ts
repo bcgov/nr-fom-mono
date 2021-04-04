@@ -12,21 +12,25 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
  * or snake_case properties when mapping a DTO to an entity.
  * @param originalObject
  * @param callback
+ * @param mapDates
  */
-function deepMapKeys(originalObject, callback) {
+function deepMapKeys(originalObject, callback, mapDate = (timeValue) => timeValue) {
   if (typeof originalObject !== 'object') {
-    return originalObject
+    return originalObject;
   }
 
   return Object.keys(originalObject || {}).reduce((newObject, key) => {
-    const newKey = callback(key)
-    const originalValue = originalObject[key]
-    let newValue = originalValue
+    const newKey = callback(key);
+    const originalValue = originalObject[key];
+    let newValue = originalValue;
     if (Array.isArray(originalValue)) {
-      newValue = originalValue.map(item => deepMapKeys(item, callback))
-    } else if (originalValue) {
-      newValue = deepMapKeys(originalValue, callback)
+      newValue = originalValue.map(item => deepMapKeys(item, callback));
+    } else if (typeof originalValue === 'object' && originalValue && Object.keys(originalValue).length > 0) {
+      newValue = deepMapKeys(originalValue, callback);
+    } else if (originalValue && originalValue instanceof Date) {
+      newValue = mapDate(originalValue)
     }
+
     return {
       ...newObject,
       [newKey]: newValue,
@@ -86,7 +90,7 @@ export abstract class DataService<
       dto[dtoKey] = entity[modelKey];
     });
 
-    return deepMapKeys(dto, (key) => camelCase(key));
+    return deepMapKeys(dto, (key) => camelCase(key), (value: Date) => value.toISOString());
   }
 
   /**
@@ -164,7 +168,7 @@ export abstract class DataService<
       this.logger.error(`${this.constructor.name}.update ${error}`);
     }
   }
-
+w
   /**
    * Remove record by Id
    *

@@ -6,8 +6,24 @@ import { CreatePublicCommentDto } from './controllers/public-comment/dto/create-
 import { CreateProjectDto } from './controllers/project/dto/create-project.dto';
 import { CreateSubmissionDto } from './controllers/submission/dto/create-submission.dto';
 import { CreateCutBlockDto } from './controllers/cut-block/dto/create-cut-block.dto';
-import {CreateRetentionAreaDto} from './controllers/retention-area/dto/create-retention-area.dto';
-import {CreateRoadSectionDto} from './controllers/road-section/dto/create-road-section.dto';
+import { CreateRetentionAreaDto } from './controllers/retention-area/dto/create-retention-area.dto';
+import { CreateRoadSectionDto } from './controllers/road-section/dto/create-road-section.dto';
+
+const randomNumber = () => Math.trunc(Math.random()*5000) + 1;
+
+const verifyCreateMetadata = (data) => {
+  expect(data.createTimestamp).not.toBeNull();
+  expect(data.createUser).not.toBeNull();
+  expect(data.updateTimestamp).toBeNull();
+  expect(data.updateUser).toBeNull();
+}
+
+const verifyUpdateMetadata = (data) => {
+  expect(data.createTimestamp).not.toBeNull();
+  expect(data.createUser).not.toBeNull();
+  expect(data.updateTimestamp).not.toBeNull();
+  expect(data.updateUser).not.toBeNull();
+}
 
 // Test helper functions - don't forget to curry in the app!
 const createProjectAndVerifyResultFunction = (app) => async (createData) => {
@@ -26,6 +42,7 @@ const createProjectAndVerifyResultFunction = (app) => async (createData) => {
   expect(resBody.districtId).toEqual(createData.districtId);
   expect(resBody.forestClientNumber).toEqual(createData.forestClientNumber);
   expect(resBody.workflowStateCode).toEqual(createData.workflowStateCode);
+  verifyCreateMetadata(resBody);
 
   return res;
 }
@@ -46,6 +63,7 @@ const updateProjectAndVerifyResultFunction = (app) => async (projectId, updateDa
   expect(resBody.districtId).toEqual(updateData.districtId);
   expect(resBody.forestClientNumber).toEqual(updateData.forestClientNumber);
   expect(resBody.workflowStateCode).toEqual(updateData.workflowStateCode);
+  verifyUpdateMetadata(resBody);
 
   return res;
 }
@@ -67,6 +85,7 @@ const createCommentAndVerifyResultFunction = (app) => async (createData) => {
   expect(resBody.responseDetails).toEqual(createData.responseDetails);
   expect(resBody.projectId).toEqual(createData.projectId);
   expect(resBody.responseCode).toEqual(createData.responseCode);
+  verifyCreateMetadata(resBody);
 
   return res;
 }
@@ -85,6 +104,7 @@ const createSubmissionAndVerifyResultFunction = (app) => async (createData) => {
   expect(resBody.geometry).toEqual(createData.geometry);
   expect(resBody.projectId).toEqual(createData.projectId);
   expect(resBody.submissionTypeCode).toEqual(createData.submissionTypeCode);
+  verifyCreateMetadata(resBody);
 
   return res;
 }
@@ -102,6 +122,7 @@ const createCutBlockAndVerifyResultFunction = (app) => async (createData) => {
   expect(resBody.plannedDevelopmentDate).toEqual(createData.plannedDevelopmentDate);
   expect(resBody.plannedAreaHa).toEqual(createData.plannedAreaHa);
   expect(resBody.submissionId).toEqual(createData.submissionId);
+  verifyCreateMetadata(resBody);
 
   return res;
 }
@@ -119,6 +140,7 @@ const createRetentionAreaAndVerifyResultFunction = (app) => async (createData) =
   expect(resBody.plannedDevelopmentDate).toEqual(createData.plannedDevelopmentDate);
   expect(resBody.plannedAreaHa).toEqual(createData.plannedAreaHa);
   expect(resBody.submissionId).toEqual(createData.submissionId);
+  verifyCreateMetadata(resBody);
 
   return res;
 }
@@ -136,6 +158,7 @@ const createRoadSectionAndVerifyResultFunction = (app) => async (createData) => 
   expect(resBody.plannedDevelopmentDate).toEqual(createData.plannedDevelopmentDate);
   expect(resBody.plannedAreaHa).toEqual(createData.plannedAreaHa);
   expect(resBody.submissionId).toEqual(createData.submissionId);
+  verifyCreateMetadata(resBody);
 
   return res;
 }
@@ -180,8 +203,9 @@ describe('API endpoints testing (e2e)', () => {
   describe('project endpoints', () => {
     it('should return a list of projects', async () => {
       const res = await request(app.getHttpServer())
-      .get('/project')
-      expect(res.status).toBe(200);
+      .post('/projects')
+      // TODO: Find a way to get POST to return 200
+      expect(res.status).toBe(201);
     });
 
     it('should create a new project', async () => {
@@ -314,14 +338,13 @@ describe('API endpoints testing (e2e)', () => {
       await createCommentAndVerifyResult(commentData2);
 
       const byProjectIdRes = await request(app.getHttpServer())
-      .get(`/public-comment/byProjectId/${projectId}`)
+      .get(`/public-comments/byProjectId/${projectId}`)
       expect(byProjectIdRes.status).toBe(200);
       const byFspIdRecords = byProjectIdRes.body.length;
       expect(byFspIdRecords).toEqual(2);
     });
 
     it('should return a list of projects by fsp id', async () => {
-      const randomNumber = () => Math.trunc(Math.random()*5000) + 1;
       const randomId = randomNumber();
       // TODO: Reset DB data for these tests... random number test could randomly fail :)
       // Create a project
@@ -338,7 +361,7 @@ describe('API endpoints testing (e2e)', () => {
       await createProjectAndVerifyResult(createProjectData);
 
       const byFspIdRes = await request(app.getHttpServer())
-      .get(`/project/byFspId/${randomId}`)
+      .get(`/projects/byFspId/${randomId}`)
       expect(byFspIdRes.status).toBe(200);
       const byFspIdRecords = byFspIdRes.body.length;
       expect(byFspIdRecords).toEqual(1);
@@ -346,8 +369,9 @@ describe('API endpoints testing (e2e)', () => {
 
     it('should return a list of submissions', async () => {
       const res = await request(app.getHttpServer())
-      .get('/submission')
-      expect(res.status).toBe(200);
+      .post('/submissions')
+      // TODO: Find a way to get POST to return 200
+      expect(res.status).toBe(201);
     });
 
     it('should create a new submission', async () => {
