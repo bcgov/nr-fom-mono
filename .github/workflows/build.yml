@@ -12,14 +12,3 @@ jobs:
         projectKey: "fom-api"
         host: ${{ secrets.SONARQUBE_HOST }}
         login: ${{ secrets.SONARQUBE_TOKEN }}
-#  sonarqube:
-#    name: SonarQube
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: philips-software/sonar-scanner-action@v1.2.0
-#        with:
-#          token: ${{ secrets.SONARQUBE_TOKEN }}
-#          projectName: fom api 
-#          projectKey: fom-api
-#          url: ${{ secrets.SONARQUBE_HOST }}
-#          isCommunityEdition: true
