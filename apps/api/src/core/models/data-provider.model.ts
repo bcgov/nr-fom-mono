@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
-import { snakeCase, camelCase }  from 'typeorm/util/StringUtils';
+import { snakeCase, camelCase } from 'typeorm/util/StringUtils';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { ApiBaseEntity } from '@entities';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -12,26 +12,38 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
  * or snake_case properties when mapping a DTO to an entity.
  * @param originalObject
  * @param callback
+ * @param mapDates
  */
-function deepMapKeys(originalObject, callback) {
+function deepMapKeys(
+  originalObject,
+  callback,
+  mapDate = (timeValue) => timeValue
+) {
   if (typeof originalObject !== 'object') {
-    return originalObject
+    return originalObject;
   }
 
   return Object.keys(originalObject || {}).reduce((newObject, key) => {
-    const newKey = callback(key)
-    const originalValue = originalObject[key]
-    let newValue = originalValue
+    const newKey = callback(key);
+    const originalValue = originalObject[key];
+    let newValue = originalValue;
     if (Array.isArray(originalValue)) {
-      newValue = originalValue.map(item => deepMapKeys(item, callback))
-    } else if (originalValue) {
-      newValue = deepMapKeys(originalValue, callback)
+      newValue = originalValue.map((item) => deepMapKeys(item, callback));
+    } else if (
+      typeof originalValue === 'object' &&
+      originalValue &&
+      Object.keys(originalValue).length > 0
+    ) {
+      newValue = deepMapKeys(originalValue, callback);
+    } else if (originalValue && originalValue instanceof Date) {
+      newValue = mapDate(originalValue);
     }
+
     return {
       ...newObject,
       [newKey]: newValue,
-    }
-  }, {})
+    };
+  }, {});
 }
 
 // export type MsDocumentType<T> = OptionalId<T>;
@@ -58,7 +70,7 @@ export abstract class DataService<
   }
 
   protected mapToEntity(dto, entity) {
-    Object.keys(dto).map((dtoKey,idx) => {
+    Object.keys(dto).map((dtoKey, idx) => {
       // Convert to snake_case here!
       // TypeORM model properties need to be snake_case when using with Postgres
       // - TypeORM prefers a camelCase naming convention by default
@@ -75,7 +87,7 @@ export abstract class DataService<
   }
 
   protected mapFromEntity(entity, dto) {
-    Object.keys(entity).map((modelKey,idx) => {
+    Object.keys(entity).map((modelKey, idx) => {
       // Convert to camelCase here!
       // TypeORM model properties need to be snake_case when using with Postgres
       // - TypeORM prefers a camelCase naming convention by default
@@ -86,7 +98,11 @@ export abstract class DataService<
       dto[dtoKey] = entity[modelKey];
     });
 
-    return deepMapKeys(dto, (key) => camelCase(key));
+    return deepMapKeys(
+      dto,
+      (key) => camelCase(key),
+      (value: Date) => value.toISOString()
+    );
   }
 
   /**
@@ -99,7 +115,7 @@ export abstract class DataService<
   async create<C>(dto: Partial<any>): Promise<C> {
     this.logger.info(`${this.constructor.name}.create props`, dto);
 
-    dto.createUser = "FAKED USER";
+    dto.createUser = 'FAKED USER';
     dto.revisionCount = 0;
     dto.updateUser = null;
     dto.updateTimestamp = null;
@@ -144,13 +160,15 @@ export abstract class DataService<
    * @memberof DataService
    */
   async update<U>(id: number | string, dto: Partial<any>): Promise<U> {
-    dto.updateUser = "FAKED USER";
+    dto.updateUser = 'FAKED USER';
 
     this.logger.info('update props', id, dto);
     try {
       let updated;
       // TODO: I don't like this hack, but it gets the types working...
-      const model = await this.repository.findOne(id) as unknown as QueryDeepPartialEntity<Partial<E>>;
+      const model = ((await this.repository.findOne(
+        id
+      )) as unknown) as QueryDeepPartialEntity<Partial<E>>;
       if (model) {
         await this.repository.update(id, this.mapToEntity(dto, model));
         updated = await this.repository.findOne(id);
@@ -164,7 +182,7 @@ export abstract class DataService<
       this.logger.error(`${this.constructor.name}.update ${error}`);
     }
   }
-
+  w;
   /**
    * Remove record by Id
    *
@@ -189,7 +207,9 @@ export abstract class DataService<
    * @memberof DataService
    */
   async findAll<C>(options?: FindManyOptions<E> | undefined): Promise<E[]> {
-    this.logger.info(`${this.constructor.name}.findAll options = ` + JSON.stringify(options));
+    this.logger.info(
+      `${this.constructor.name}.findAll options = ` + JSON.stringify(options)
+    );
 
     try {
       const findAll = await this.repository.find(options);

@@ -3,12 +3,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { ForestStewardshipPlan } from './entities/forest-stewardship-plan.entity';
 import { ForestStewardshipPlanService } from './forest-stewardship-plan.service';
-import { ForestStewardshipPlanController } from './forest-stewardship-plan.controller';
+import {
+  ForestStewardshipPlanController,
+  ForestStewardshipPlansController,
+} from './forest-stewardship-plan.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ForestStewardshipPlan])],
-  controllers: [ForestStewardshipPlanController],
+  controllers: [
+    ForestStewardshipPlanController,
+    ForestStewardshipPlansController,
+  ],
   providers: [ForestStewardshipPlanService],
-  exports: []
+  exports: [],
 })
 export class ForestStewardshipPlanModule {}

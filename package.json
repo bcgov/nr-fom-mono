@@ -30,8 +30,10 @@
     "help": "nx help",
     "init:dev": "docker-compose -p nr-fom-api up --build -V",
     "start:api": "nest start --path apps/api/tsconfig.json --watch",
-    "start:db:postgres": "docker-compose start db-postgres",
-    "stop:db:postgres": "docker-compose stop db-postgres"
+    "start:db:postgres": "docker-compose up db",
+    "stop:db:postgres": "docker-compose stop db",
+    "gen:client-api": "npm run gen:models && npm run format:write",
+    "gen:models": "openapi-generator-cli generate"
   },
   "private": true,
   "dependencies": {
@@ -74,10 +76,8 @@
     "@nrwl/react-native": "^11.4.1",
     "@nrwl/tao": "11.2.0",
     "@nrwl/workspace": "11.2.0",
-    "@react-native-community/cli-platform-android": "4.13.0",
-    "@react-native-community/cli-platform-ios": "4.13.0",
+    "@openapitools/openapi-generator-cli": "^2.1.26",
     "@testing-library/jest-native": "3.4.3",
-    "@testing-library/react-native": "7.1.0",
     "@types/express-session": "^1.17.3",
     "@types/jest": "^26.0.21",
     "@types/node": "^12.20.6",
