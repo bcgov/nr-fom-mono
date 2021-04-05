@@ -193,9 +193,10 @@ objects:
                 - mountPath: /opt/sonarqube/temp
                   name: sonar-temp
                   subPath: temp
-                - mountPath: /opt/sonarqube/extensions/plugins
-                  name: sonar-plugins
-                  subPath: plugins
+                # This hides the pre-installed language extensions.
+                #- mountPath: /opt/sonarqube/extensions/plugins
+                #  name: sonar-plugins
+                #  subPath: plugins
               image: " "
               imagePullPolicy: IfNotPresent
               livenessProbe:
