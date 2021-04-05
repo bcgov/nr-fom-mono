@@ -1,11 +1,36 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '@controllers';
+import { BaseController, BaseCollectionController } from '@controllers';
 import { CutBlockService } from './cut-block.service';
 import { CutBlock } from './entities/cut-block.entity';
 import { CreateCutBlockDto } from './dto/create-cut-block.dto';
 import { UpdateCutBlockDto } from './dto/update-cut-block.dto';
+
+@ApiTags('cut-blocks')
+@Controller('cut-blocks')
+export class CutBlocksController extends BaseCollectionController<
+  CutBlock,
+  CreateCutBlockDto,
+  UpdateCutBlockDto
+> {
+  constructor(protected readonly service: CutBlockService) {
+    super(service);
+  }
+
+  @Post()
+  async findAll(@Body() options) {
+    return super.findAll(options);
+  }
+}
 
 @ApiTags('cut-block')
 @Controller('cut-block')
@@ -19,27 +44,22 @@ export class CutBlockController extends BaseController<
   }
 
   @Post()
-  create(@Body() createDto: CreateCutBlockDto) {
+  async create(@Body() createDto: CreateCutBlockDto) {
     return super.create(createDto);
   }
 
-  @Get()
-  findAll(options) {
-    return super.findAll(options);
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
 
   @Put(':id')
-  update(@Param('id') id: number, @Body() updateDto: UpdateCutBlockDto) {
+  async update(@Param('id') id: number, @Body() updateDto: UpdateCutBlockDto) {
     return super.update(id, updateDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number) {
     return super.remove(id);
   }
 }

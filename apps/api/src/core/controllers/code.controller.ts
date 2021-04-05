@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { CodeTableService } from 'apps/api/src/core/models/code-provider.model';
 
@@ -8,13 +16,12 @@ export class CodeTableController<E, C, U> {
   constructor(protected readonly service: CodeTableService<E, Repository<E>>) {}
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.service.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number | string) {
+  async findOne(@Param('id') id: number | string) {
     return this.service.findOne(id);
   }
-
 }

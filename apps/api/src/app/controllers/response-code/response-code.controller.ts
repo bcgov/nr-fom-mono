@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CodeTableController } from '@controllers';
 import { ResponseCodeService } from './response-code.service';
@@ -18,13 +18,12 @@ export class ResponseCodeController extends CodeTableController<
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return super.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
-
 }
