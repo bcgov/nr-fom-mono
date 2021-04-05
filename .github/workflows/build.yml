@@ -1,26 +1,25 @@
 on: push
-name: Main Workflow
+name: SonarQube
 jobs:
-#  sonarQubeTrigger:
-#    name: SonarQube Trigger
-#    runs-on: ubuntu-latest
-#    steps:
-#    - uses: actions/checkout@master
-#    - name: SonarQube Scan
-#      uses: kitabisa/sonarqube-action@v1.1.0
-#      with:
-#        projectKey: "fom-api"
-#        host: ${{ secrets.SONARQUBE_HOST }}
-#        login: ${{ secrets.SONARQUBE_TOKEN }}
-
   sonarqube:
-    name: SonarQube
+    name: SonarQube Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: philips-software/sonar-scanner-action@v1.2.0
-        with:
-          token: ${{ secrets.SONARQUBE_TOKEN }}
-          projectName: fom api 
-          projectKey: fom-api
-          url: ${{ secrets.SONARQUBE_HOST }}
-          isCommunityEdition: true
+    - uses: actions/checkout@master
+    - name: Scan
+      uses: kitabisa/sonarqube-action@v1.1.0
+      with:
+        projectKey: "fom-api"
+        host: ${{ secrets.SONARQUBE_HOST }}
+        login: ${{ secrets.SONARQUBE_TOKEN }}
+#  sonarqube:
+#    name: SonarQube
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: philips-software/sonar-scanner-action@v1.2.0
+#        with:
+#          token: ${{ secrets.SONARQUBE_TOKEN }}
+#          projectName: fom api 
+#          projectKey: fom-api
+#          url: ${{ secrets.SONARQUBE_HOST }}
+#          isCommunityEdition: true
