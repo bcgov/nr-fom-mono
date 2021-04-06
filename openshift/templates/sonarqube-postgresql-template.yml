@@ -193,10 +193,9 @@ objects:
                 - mountPath: /opt/sonarqube/temp
                   name: sonar-temp
                   subPath: temp
-                # This hides the pre-installed language extensions.
-                #- mountPath: /opt/sonarqube/extensions/plugins
-                #  name: sonar-plugins
-                #  subPath: plugins
+                - mountPath: /opt/sonarqube/extensions/plugins
+                  name: sonar-plugins
+                  subPath: plugins
               image: " "
               imagePullPolicy: IfNotPresent
               livenessProbe:
@@ -419,7 +418,7 @@ parameters:
   - displayName: SonarQube version
     name: SONARQUBE_VERSION
     required: true
-    value: "8.2"
+    value: "8.8"
   - description: Password for SonarQube Server PostgreSQL backend
     displayName: SonarQube's PostgreSQL Password
     from: "[a-zA-Z0-9]{16}"
