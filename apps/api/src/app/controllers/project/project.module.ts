@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Project } from './entities/project.entity';
 import { ProjectService } from './project.service';
-import { ProjectController } from './project.controller';
+import { ProjectController, ProjectsController } from './project.controller';
 
 import { DistrictModule } from '../district/district.module';
 import { ForestClientModule } from '../forest-client/forest-client.module';
@@ -14,10 +14,10 @@ import { WorkflowStateCodeModule } from '../workflow-state-code/workflow-state-c
     TypeOrmModule.forFeature([Project]),
     DistrictModule,
     ForestClientModule,
-    WorkflowStateCodeModule
+    WorkflowStateCodeModule,
   ],
-  controllers: [ProjectController],
+  controllers: [ProjectController, ProjectsController],
   providers: [ProjectService],
-  exports: [ProjectService]
+  exports: [ProjectService],
 })
 export class ProjectModule {}

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { District } from './entities/district.entity';
@@ -11,5 +11,4 @@ export class DistrictController extends BaseReadOnlyController<District> {
   constructor(protected readonly service: DistrictService) {
     super(service);
   }
-
 }

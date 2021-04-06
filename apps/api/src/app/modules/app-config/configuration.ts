@@ -1,8 +1,8 @@
 import { registerAs } from '@nestjs/config';
 import * as Joi from 'joi';
 
+// Do not log full environment - security issue.
 // console.log(process.env.NODE_ENV);
-console.log(process.env);
 
 export const appValidationSchema = Joi.object({
   APP_HOST: Joi.string().default('localhost'),

@@ -1,12 +1,41 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '@controllers';
+import { BaseController, BaseCollectionController } from '@controllers';
 import { PublicCommentService } from './public-comment.service';
 import { PublicComment } from './entities/public-comment.entity';
 import { CreatePublicCommentDto } from './dto/create-public-comment.dto';
 import { UpdatePublicCommentDto } from './dto/update-public-comment.dto';
 
+@ApiTags('public-comments')
+@Controller('public-comments')
+export class PublicCommentsController extends BaseCollectionController<
+  PublicComment,
+  CreatePublicCommentDto,
+  UpdatePublicCommentDto
+> {
+  constructor(protected readonly service: PublicCommentService) {
+    super(service);
+  }
+
+  @Post()
+  async findAll(@Body() options) {
+    return super.findAll(options);
+  }
+
+  @Get('/byProjectId/:id')
+  async findByProjectId(@Param('id') id: number) {
+    return super.findAll({ where: { project_id: id } });
+  }
+}
 
 @ApiTags('public-comment')
 @Controller('public-comment')
@@ -15,9 +44,7 @@ export class PublicCommentController extends BaseController<
   CreatePublicCommentDto,
   UpdatePublicCommentDto
 > {
-  constructor(
-    protected readonly service: PublicCommentService
-  ) {
+  constructor(protected readonly service: PublicCommentService) {
     super(service);
   }
 
@@ -26,24 +53,16 @@ export class PublicCommentController extends BaseController<
     return super.create(createDto);
   }
 
-  @Get()
-  async findAll(options) {
-    return super.findAll(options);
-  }
-
-  @Get('/byProjectId/:id')
-  async findByProjectId(@Param('id') id: number) {
-    return super.findAll({ where: { project_id: id } });
-  }
-
-
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return super.findOne(id);
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() updateDto: UpdatePublicCommentDto) {
+  async update(
+    @Param('id') id: number,
+    @Body() updateDto: UpdatePublicCommentDto
+  ) {
     return super.update(id, updateDto);
   }
 
