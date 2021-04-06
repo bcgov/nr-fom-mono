@@ -9,7 +9,7 @@ jobs:
     steps:
     - uses: actions/checkout@master
     - name: Scan
-      uses: kitabisa/sonarqube-action@v1.1.0
+      uses: kitabisa/sonarqube-action@master
       with:
         projectKey: "fom-api"
         host: ${{ secrets.SONARQUBE_HOST }}
