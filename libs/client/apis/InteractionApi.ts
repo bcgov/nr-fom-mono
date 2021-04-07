@@ -73,7 +73,7 @@ export class InteractionApi extends BaseAPI {
         headers,
         body: createInteractionDto,
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -97,7 +97,7 @@ export class InteractionApi extends BaseAPI {
         url: '/api/interaction/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -121,7 +121,7 @@ export class InteractionApi extends BaseAPI {
         url: '/api/interaction/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -157,7 +157,7 @@ export class InteractionApi extends BaseAPI {
         headers,
         body: updateInteractionDto,
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

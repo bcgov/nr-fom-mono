@@ -32,7 +32,7 @@ export class SubmissionsApi extends BaseAPI {
         url: '/api/submissions',
         method: 'POST',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

@@ -32,7 +32,7 @@ export class DefaultApi extends BaseAPI {
         url: '/api/default',
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

@@ -32,7 +32,7 @@ export class ForestStewardshipPlansApi extends BaseAPI {
         url: '/api/forest-stewardship-plans',
         method: 'POST',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

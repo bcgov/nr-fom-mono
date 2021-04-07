@@ -42,7 +42,7 @@ export class ResponseCodeApi extends BaseAPI {
         url: '/api/response-code',
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -66,7 +66,7 @@ export class ResponseCodeApi extends BaseAPI {
         url: '/api/response-code/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

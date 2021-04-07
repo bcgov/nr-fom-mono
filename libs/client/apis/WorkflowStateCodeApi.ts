@@ -42,7 +42,7 @@ export class WorkflowStateCodeApi extends BaseAPI {
         url: '/api/workflow-state-code',
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -66,7 +66,7 @@ export class WorkflowStateCodeApi extends BaseAPI {
         url: '/api/workflow-state-code/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

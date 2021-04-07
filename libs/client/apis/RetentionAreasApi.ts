@@ -32,7 +32,7 @@ export class RetentionAreasApi extends BaseAPI {
         url: '/api/retention-areas',
         method: 'POST',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

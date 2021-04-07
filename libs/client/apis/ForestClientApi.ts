@@ -42,7 +42,7 @@ export class ForestClientApi extends BaseAPI {
         url: '/api/forest-client',
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -66,7 +66,7 @@ export class ForestClientApi extends BaseAPI {
         url: '/api/forest-client/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts ? opts.responseOpts : opts
+      opts ? opts.responseOpts : undefined
     );
   }
 }
