@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 apis/AttachmentApi.ts
 apis/AttachmentTypeCodeApi.ts
 apis/AttachmentsApi.ts

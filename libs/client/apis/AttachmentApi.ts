@@ -73,7 +73,7 @@ export class AttachmentApi extends BaseAPI {
         headers,
         body: createAttachmentDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -97,7 +97,7 @@ export class AttachmentApi extends BaseAPI {
         url: '/api/attachment/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -121,7 +121,7 @@ export class AttachmentApi extends BaseAPI {
         url: '/api/attachment/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -157,7 +157,7 @@ export class AttachmentApi extends BaseAPI {
         headers,
         body: updateAttachmentDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

@@ -31,11 +31,11 @@ export class Configuration {
   constructor(private configuration: ConfigurationParameters = {}) {}
 
   get basePath(): string {
-    return this.configuration.basePath ?? BASE_PATH;
+    return this.configuration.basePath ? BASE_PATH : undefined;
   }
 
   get middleware(): Middleware[] {
-    return this.configuration.middleware ?? [];
+    return this.configuration.middleware ? [] : undefined;
   }
 
   get username(): string | undefined {
@@ -100,7 +100,10 @@ export class BaseAPI {
       map((res) => {
         const { status, response } = res;
         if (status >= 200 && status < 300) {
-          return responseOpts?.respone === 'raw' ? res : response;
+          // TODO: Why does this say respone? Is that some kind of typo? Can we change it?
+          return (responseOpts ? responseOpts.respone : responseOpts) === 'raw'
+            ? res
+            : response;
         }
         throw res;
       })
@@ -127,7 +130,7 @@ export class BaseAPI {
       method,
       headers,
       body: body instanceof FormData ? body : JSON.stringify(body),
-      responseType: responseType ?? 'json',
+      responseType: responseType ? 'json' : undefined,
     };
   };
 

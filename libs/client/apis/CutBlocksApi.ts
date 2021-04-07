@@ -32,7 +32,7 @@ export class CutBlocksApi extends BaseAPI {
         url: '/api/cut-blocks',
         method: 'POST',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

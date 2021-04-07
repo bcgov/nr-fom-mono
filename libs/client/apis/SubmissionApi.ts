@@ -73,7 +73,7 @@ export class SubmissionApi extends BaseAPI {
         headers,
         body: createSubmissionDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -97,7 +97,7 @@ export class SubmissionApi extends BaseAPI {
         url: '/api/submission/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -121,7 +121,7 @@ export class SubmissionApi extends BaseAPI {
         url: '/api/submission/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -157,7 +157,7 @@ export class SubmissionApi extends BaseAPI {
         headers,
         body: updateSubmissionDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }
