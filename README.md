@@ -56,6 +56,15 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 
 ## Application Specific Setup:
 <!--- instruction on setup local environment and dependencies.. --->
+This project uses the Nest API framework and the Nx monorepo platform / cli tools.
+Nx is used to manage this repository and generate Nest components. 
+See FRAMEWORK.md for nrwl nx documentation.
+
+Notes:
+- We use a custom OpenApi template when generating the frontend api clients from our Api
+- The ```.fetch-template``` bash script that does the clone and patch is in the ```apps/api/openapi``` dir
+- To generate the API client execute ```npm run gen:client-api```
+- The generated client api library is located in ```libs/client```
 
 ## Deployment (OpenShift)
 <!--- Best to include details in a openshift/README.md --->
