@@ -80,7 +80,7 @@ export class ForestStewardshipPlanApi extends BaseAPI {
         headers,
         body: createForestStewardshipPlanDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -104,7 +104,7 @@ export class ForestStewardshipPlanApi extends BaseAPI {
         url: '/api/forest-stewardship-plan/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -128,7 +128,7 @@ export class ForestStewardshipPlanApi extends BaseAPI {
         url: '/api/forest-stewardship-plan/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -170,7 +170,7 @@ export class ForestStewardshipPlanApi extends BaseAPI {
         headers,
         body: updateForestStewardshipPlanDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

@@ -73,7 +73,7 @@ export class RoadSectionApi extends BaseAPI {
         headers,
         body: createRoadSectionDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -97,7 +97,7 @@ export class RoadSectionApi extends BaseAPI {
         url: '/api/road-section/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -121,7 +121,7 @@ export class RoadSectionApi extends BaseAPI {
         url: '/api/road-section/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -157,7 +157,7 @@ export class RoadSectionApi extends BaseAPI {
         headers,
         body: updateRoadSectionDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

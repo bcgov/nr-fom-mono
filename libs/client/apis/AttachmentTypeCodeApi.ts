@@ -42,7 +42,7 @@ export class AttachmentTypeCodeApi extends BaseAPI {
         url: '/api/attachment-type-code',
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -66,7 +66,7 @@ export class AttachmentTypeCodeApi extends BaseAPI {
         url: '/api/attachment-type-code/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

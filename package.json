@@ -32,8 +32,9 @@
     "start:api": "nest start --path apps/api/tsconfig.json --watch",
     "start:db:postgres": "docker-compose up db",
     "stop:db:postgres": "docker-compose stop db",
-    "gen:client-api": "npm run gen:models && npm run format:write",
-    "gen:models": "openapi-generator-cli generate"
+    "gen:client-api": "npm run gen:fetch-template && npm run gen:models && npm run format:write",
+    "gen:models": "openapi-generator-cli generate -g typescript-rxjs -t apps/api/openapi/template -i apps/api/openapi/swagger-spec.json -o libs/client",
+    "gen:fetch-template": "bash ./apps/api/openapi/.fetch-template"
   },
   "private": true,
   "dependencies": {

@@ -73,7 +73,7 @@ export class CutBlockApi extends BaseAPI {
         headers,
         body: createCutBlockDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -97,7 +97,7 @@ export class CutBlockApi extends BaseAPI {
         url: '/api/cut-block/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -121,7 +121,7 @@ export class CutBlockApi extends BaseAPI {
         url: '/api/cut-block/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -157,7 +157,7 @@ export class CutBlockApi extends BaseAPI {
         headers,
         body: updateCutBlockDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

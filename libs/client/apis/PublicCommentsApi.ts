@@ -42,7 +42,7 @@ export class PublicCommentsApi extends BaseAPI {
         url: '/api/public-comments',
         method: 'POST',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -69,7 +69,7 @@ export class PublicCommentsApi extends BaseAPI {
         ),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

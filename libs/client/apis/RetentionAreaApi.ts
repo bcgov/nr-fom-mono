@@ -73,7 +73,7 @@ export class RetentionAreaApi extends BaseAPI {
         headers,
         body: createRetentionAreaDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -97,7 +97,7 @@ export class RetentionAreaApi extends BaseAPI {
         url: '/api/retention-area/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -121,7 +121,7 @@ export class RetentionAreaApi extends BaseAPI {
         url: '/api/retention-area/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -157,7 +157,7 @@ export class RetentionAreaApi extends BaseAPI {
         headers,
         body: updateRetentionAreaDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

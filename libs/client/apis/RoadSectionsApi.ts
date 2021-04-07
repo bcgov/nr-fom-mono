@@ -32,7 +32,7 @@ export class RoadSectionsApi extends BaseAPI {
         url: '/api/road-sections',
         method: 'POST',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

@@ -32,7 +32,7 @@ export class FspDistrictXrefsApi extends BaseAPI {
         url: '/api/fsp-district-xrefs',
         method: 'POST',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

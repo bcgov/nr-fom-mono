@@ -73,7 +73,7 @@ export class PublicCommentApi extends BaseAPI {
         headers,
         body: createPublicCommentDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -97,7 +97,7 @@ export class PublicCommentApi extends BaseAPI {
         url: '/api/public-comment/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -121,7 +121,7 @@ export class PublicCommentApi extends BaseAPI {
         url: '/api/public-comment/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -157,7 +157,7 @@ export class PublicCommentApi extends BaseAPI {
         headers,
         body: updatePublicCommentDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

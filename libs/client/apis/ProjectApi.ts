@@ -73,7 +73,7 @@ export class ProjectApi extends BaseAPI {
         headers,
         body: createProjectDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -97,7 +97,7 @@ export class ProjectApi extends BaseAPI {
         url: '/api/project/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -121,7 +121,7 @@ export class ProjectApi extends BaseAPI {
         url: '/api/project/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -157,7 +157,7 @@ export class ProjectApi extends BaseAPI {
         headers,
         body: updateProjectDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }

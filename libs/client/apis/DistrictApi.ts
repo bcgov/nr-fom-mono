@@ -42,7 +42,7 @@ export class DistrictApi extends BaseAPI {
         url: '/api/district',
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 
@@ -66,7 +66,7 @@ export class DistrictApi extends BaseAPI {
         url: '/api/district/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : opts
     );
   }
 }
