@@ -32,7 +32,7 @@ export class AttachmentsApi extends BaseAPI {
         url: '/api/attachments',
         method: 'POST',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }
