@@ -42,7 +42,7 @@ export class ProjectsApi extends BaseAPI {
         url: '/api/projects',
         method: 'POST',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -66,7 +66,7 @@ export class ProjectsApi extends BaseAPI {
         url: '/api/projects/byFspId/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

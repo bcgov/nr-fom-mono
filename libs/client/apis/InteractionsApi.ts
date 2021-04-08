@@ -32,7 +32,7 @@ export class InteractionsApi extends BaseAPI {
         url: '/api/interactions',
         method: 'POST',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

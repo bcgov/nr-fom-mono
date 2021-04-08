@@ -73,7 +73,7 @@ export class UserApi extends BaseAPI {
         headers,
         body: createUserDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -95,7 +95,7 @@ export class UserApi extends BaseAPI {
         url: '/api/user/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -117,7 +117,7 @@ export class UserApi extends BaseAPI {
         url: '/api/user/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -153,7 +153,7 @@ export class UserApi extends BaseAPI {
         headers,
         body: updateUserDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }

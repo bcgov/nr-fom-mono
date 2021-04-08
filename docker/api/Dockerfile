@@ -1,13 +1,9 @@
 
-FROM node:14-slim
+FROM node:14-slim as build
 # FROM node:14-alpine
 
-# Workaround npm limitation with running as non-root
-RUN mkdir "/.npm"
-RUN chown -R 1001:0 "/.npm"
-
-# Run as non-root user.
-USER 1001
+# Workaround npm limitation with building as non-root
+USER 0
 
 # Create and change to the app directory.
 WORKDIR /opt/app
@@ -19,14 +15,33 @@ COPY package*.json ./
 
 # Install dependencies.
 # If you add a package-lock.json speed your build by switching to 'npm ci'.
-RUN npm ci
+RUN npm ci 
 
 # Copy local code to the container image.
 COPY . .
+
+RUN npm run build
+
+FROM node:14-slim AS run
+
+# Workaround npm limitation with installing as non-root
+USER 0
+RUN mkdir "/.npm"
+RUN chown -R 1001:0 "/.npm"
+USER 1001
+
+WORKDIR /app
+COPY --from=build /opt/app/dist .
+# Should exclude dev dependencies
+# COPY --from=build /opt/app/node_modules .
+COPY ./package*.json ./
+RUN npm ci
 
 # Expose API port
 EXPOSE 3333
 
 # Run the web service on container startup.
-CMD [ "npm", "start" ]
+#CMD [ "npm", "run" "start:prod" ]
+#CMD [ "node", ".dist/apps/api/main.js" ]
+CMD [ "node", "./main.js" ]
 

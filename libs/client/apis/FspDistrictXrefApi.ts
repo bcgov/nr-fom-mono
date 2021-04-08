@@ -73,7 +73,7 @@ export class FspDistrictXrefApi extends BaseAPI {
         headers,
         body: createFspDistrictXrefDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -97,7 +97,7 @@ export class FspDistrictXrefApi extends BaseAPI {
         url: '/api/fsp-district-xref/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -121,7 +121,7 @@ export class FspDistrictXrefApi extends BaseAPI {
         url: '/api/fsp-district-xref/{id}'.replace('{id}', encodeURI(id)),
         method: 'DELETE',
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 
@@ -157,7 +157,7 @@ export class FspDistrictXrefApi extends BaseAPI {
         headers,
         body: updateFspDistrictXrefDto,
       },
-      opts?.responseOpts
+      opts ? opts.responseOpts : undefined
     );
   }
 }
