@@ -3,6 +3,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { snakeCase, camelCase } from 'typeorm/util/StringUtils';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { ApiBaseEntity } from '@entities';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
@@ -133,14 +134,15 @@ export abstract class DataService<
    * Find a record by Id
    *
    * @param {string} id
+   * @param {FindOneOptions} options
    * @return {*}
    * @memberof DataService
    */
-  async findOne<C>(id: number | string): Promise<C> {
+  async findOne<C>(id: number | string, options?: FindOneOptions<E> | undefined): Promise<C> {
     this.logger.info(`${this.constructor.name}findOne props`, id);
 
     try {
-      const record = await this.repository.findOne(id);
+      const record = await this.repository.findOne(id, options);
 
       this.logger.info('${this.constructor.name}findOne result', record);
 
@@ -206,7 +208,7 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async findAll<C>(options?: FindManyOptions<E> | undefined): Promise<E[]> {
+  async findAll<C>(options?: FindManyOptions<E> | undefined): Promise<C[]> {
     this.logger.info(
       `${this.constructor.name}.findAll options = ` + JSON.stringify(options)
     );

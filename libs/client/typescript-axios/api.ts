@@ -40,708 +40,69 @@ import {
 /**
  *
  * @export
- * @interface CreateAttachmentDto
+ * @interface AttachmentDto
  */
-export interface CreateAttachmentDto {
+export interface AttachmentDto {
   /**
    *
    * @type {number}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   id: number;
   /**
    *
    * @type {number}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   revisionCount: number;
   /**
    *
    * @type {string}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   createTimestamp: string;
   /**
    *
    * @type {string}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   createUser: string;
   /**
    *
    * @type {string}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   updateTimestamp: string;
   /**
    *
    * @type {string}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   updateUser: string;
   /**
    *
    * @type {string}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   fileName: string;
   /**
    *
    * @type {string}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   fileContents: string;
   /**
    *
    * @type {number}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   projectId: number;
   /**
    *
    * @type {string}
-   * @memberof CreateAttachmentDto
+   * @memberof AttachmentDto
    */
   attachmentTypeCode: string;
-}
-/**
- *
- * @export
- * @interface CreateCutBlockDto
- */
-export interface CreateCutBlockDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateCutBlockDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateCutBlockDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateCutBlockDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateCutBlockDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateCutBlockDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateCutBlockDto
-   */
-  updateUser: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateCutBlockDto
-   */
-  geometry: object;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateCutBlockDto
-   */
-  plannedDevelopmentDate: string;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateCutBlockDto
-   */
-  plannedAreaHa: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateCutBlockDto
-   */
-  submissionId: number;
-}
-/**
- *
- * @export
- * @interface CreateForestStewardshipPlanDto
- */
-export interface CreateForestStewardshipPlanDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateForestStewardshipPlanDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateForestStewardshipPlanDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateForestStewardshipPlanDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateForestStewardshipPlanDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateForestStewardshipPlanDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateForestStewardshipPlanDto
-   */
-  updateUser: string;
-}
-/**
- *
- * @export
- * @interface CreateFspDistrictXrefDto
- */
-export interface CreateFspDistrictXrefDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateFspDistrictXrefDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateFspDistrictXrefDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateFspDistrictXrefDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateFspDistrictXrefDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateFspDistrictXrefDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateFspDistrictXrefDto
-   */
-  updateUser: string;
-}
-/**
- *
- * @export
- * @interface CreateInteractionDto
- */
-export interface CreateInteractionDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateInteractionDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateInteractionDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInteractionDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInteractionDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInteractionDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInteractionDto
-   */
-  updateUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInteractionDto
-   */
-  stakeholder: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInteractionDto
-   */
-  communicationDate: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateInteractionDto
-   */
-  communicationDetails: string;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateInteractionDto
-   */
-  projectId: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateInteractionDto
-   */
-  attachmentId: number;
-}
-/**
- *
- * @export
- * @interface CreateProjectDto
- */
-export interface CreateProjectDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateProjectDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateProjectDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  updateUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  description: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  commentingOpenDate: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  commentingClosedDate: string;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateProjectDto
-   */
-  fspId: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateProjectDto
-   */
-  districtId: number;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateProjectDto
-   */
-  district: object;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  forestClientNumber: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateProjectDto
-   */
-  forestClient: object;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateProjectDto
-   */
-  workflowStateCode: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateProjectDto
-   */
-  workflowState: object;
-}
-/**
- *
- * @export
- * @interface CreatePublicCommentDto
- */
-export interface CreatePublicCommentDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreatePublicCommentDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreatePublicCommentDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  updateUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  feedback: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  name: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  location: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  email: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  phoneNumber: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  responseDetails: string;
-  /**
-   *
-   * @type {number}
-   * @memberof CreatePublicCommentDto
-   */
-  projectId: number;
-  /**
-   *
-   * @type {object}
-   * @memberof CreatePublicCommentDto
-   */
-  project: object;
-  /**
-   *
-   * @type {string}
-   * @memberof CreatePublicCommentDto
-   */
-  responseCode: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreatePublicCommentDto
-   */
-  response: object;
-}
-/**
- *
- * @export
- * @interface CreateRetentionAreaDto
- */
-export interface CreateRetentionAreaDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRetentionAreaDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRetentionAreaDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRetentionAreaDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRetentionAreaDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRetentionAreaDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRetentionAreaDto
-   */
-  updateUser: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateRetentionAreaDto
-   */
-  geometry: object;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRetentionAreaDto
-   */
-  plannedAreaHa: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRetentionAreaDto
-   */
-  submissionId: number;
-}
-/**
- *
- * @export
- * @interface CreateRoadSectionDto
- */
-export interface CreateRoadSectionDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRoadSectionDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRoadSectionDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRoadSectionDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRoadSectionDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRoadSectionDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRoadSectionDto
-   */
-  updateUser: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateRoadSectionDto
-   */
-  geometry: object;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateRoadSectionDto
-   */
-  plannedDevelopmentDate: string;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRoadSectionDto
-   */
-  plannedLengthKm: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateRoadSectionDto
-   */
-  submissionId: number;
-}
-/**
- *
- * @export
- * @interface CreateSubmissionDto
- */
-export interface CreateSubmissionDto {
-  /**
-   *
-   * @type {number}
-   * @memberof CreateSubmissionDto
-   */
-  id: number;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateSubmissionDto
-   */
-  revisionCount: number;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateSubmissionDto
-   */
-  createTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateSubmissionDto
-   */
-  createUser: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateSubmissionDto
-   */
-  updateTimestamp: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateSubmissionDto
-   */
-  updateUser: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateSubmissionDto
-   */
-  geometry: object;
-  /**
-   *
-   * @type {number}
-   * @memberof CreateSubmissionDto
-   */
-  projectId: number;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateSubmissionDto
-   */
-  project: object;
-  /**
-   *
-   * @type {string}
-   * @memberof CreateSubmissionDto
-   */
-  submissionTypeCode: string;
-  /**
-   *
-   * @type {object}
-   * @memberof CreateSubmissionDto
-   */
-  submissionType: object;
 }
 /**
  *
@@ -761,6 +122,645 @@ export interface CreateUserDto {
    * @memberof CreateUserDto
    */
   username: string;
+}
+/**
+ *
+ * @export
+ * @interface CutBlockDto
+ */
+export interface CutBlockDto {
+  /**
+   *
+   * @type {number}
+   * @memberof CutBlockDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof CutBlockDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof CutBlockDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CutBlockDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CutBlockDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CutBlockDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {object}
+   * @memberof CutBlockDto
+   */
+  geometry: object;
+  /**
+   *
+   * @type {string}
+   * @memberof CutBlockDto
+   */
+  plannedDevelopmentDate: string;
+  /**
+   *
+   * @type {number}
+   * @memberof CutBlockDto
+   */
+  plannedAreaHa: number;
+  /**
+   *
+   * @type {number}
+   * @memberof CutBlockDto
+   */
+  submissionId: number;
+}
+/**
+ *
+ * @export
+ * @interface ForestStewardshipPlanDto
+ */
+export interface ForestStewardshipPlanDto {
+  /**
+   *
+   * @type {number}
+   * @memberof ForestStewardshipPlanDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ForestStewardshipPlanDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestStewardshipPlanDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestStewardshipPlanDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestStewardshipPlanDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestStewardshipPlanDto
+   */
+  updateUser: string;
+}
+/**
+ *
+ * @export
+ * @interface FspDistrictXrefDto
+ */
+export interface FspDistrictXrefDto {
+  /**
+   *
+   * @type {number}
+   * @memberof FspDistrictXrefDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof FspDistrictXrefDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof FspDistrictXrefDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FspDistrictXrefDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FspDistrictXrefDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FspDistrictXrefDto
+   */
+  updateUser: string;
+}
+/**
+ *
+ * @export
+ * @interface InteractionDto
+ */
+export interface InteractionDto {
+  /**
+   *
+   * @type {number}
+   * @memberof InteractionDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof InteractionDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof InteractionDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof InteractionDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof InteractionDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof InteractionDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof InteractionDto
+   */
+  stakeholder: string;
+  /**
+   *
+   * @type {string}
+   * @memberof InteractionDto
+   */
+  communicationDate: string;
+  /**
+   *
+   * @type {string}
+   * @memberof InteractionDto
+   */
+  communicationDetails: string;
+  /**
+   *
+   * @type {number}
+   * @memberof InteractionDto
+   */
+  projectId: number;
+  /**
+   *
+   * @type {number}
+   * @memberof InteractionDto
+   */
+  attachmentId: number;
+}
+/**
+ *
+ * @export
+ * @interface ProjectDto
+ */
+export interface ProjectDto {
+  /**
+   *
+   * @type {number}
+   * @memberof ProjectDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ProjectDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  commentingOpenDate: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  commentingClosedDate: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ProjectDto
+   */
+  fspId: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ProjectDto
+   */
+  districtId: number;
+  /**
+   *
+   * @type {object}
+   * @memberof ProjectDto
+   */
+  district: object;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  forestClientNumber: string;
+  /**
+   *
+   * @type {object}
+   * @memberof ProjectDto
+   */
+  forestClient: object;
+  /**
+   *
+   * @type {string}
+   * @memberof ProjectDto
+   */
+  workflowStateCode: string;
+  /**
+   *
+   * @type {object}
+   * @memberof ProjectDto
+   */
+  workflowState: object;
+}
+/**
+ *
+ * @export
+ * @interface PublicCommentDto
+ */
+export interface PublicCommentDto {
+  /**
+   *
+   * @type {number}
+   * @memberof PublicCommentDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PublicCommentDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  feedback: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  location: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  phoneNumber: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  responseDetails: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PublicCommentDto
+   */
+  projectId: number;
+  /**
+   *
+   * @type {object}
+   * @memberof PublicCommentDto
+   */
+  project: object;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  responseCode: string;
+  /**
+   *
+   * @type {object}
+   * @memberof PublicCommentDto
+   */
+  response: object;
+}
+/**
+ *
+ * @export
+ * @interface RetentionAreaDto
+ */
+export interface RetentionAreaDto {
+  /**
+   *
+   * @type {number}
+   * @memberof RetentionAreaDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof RetentionAreaDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof RetentionAreaDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RetentionAreaDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RetentionAreaDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RetentionAreaDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {object}
+   * @memberof RetentionAreaDto
+   */
+  geometry: object;
+  /**
+   *
+   * @type {number}
+   * @memberof RetentionAreaDto
+   */
+  plannedAreaHa: number;
+  /**
+   *
+   * @type {number}
+   * @memberof RetentionAreaDto
+   */
+  submissionId: number;
+}
+/**
+ *
+ * @export
+ * @interface RoadSectionDto
+ */
+export interface RoadSectionDto {
+  /**
+   *
+   * @type {number}
+   * @memberof RoadSectionDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof RoadSectionDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof RoadSectionDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoadSectionDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoadSectionDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoadSectionDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {object}
+   * @memberof RoadSectionDto
+   */
+  geometry: object;
+  /**
+   *
+   * @type {string}
+   * @memberof RoadSectionDto
+   */
+  plannedDevelopmentDate: string;
+  /**
+   *
+   * @type {number}
+   * @memberof RoadSectionDto
+   */
+  plannedLengthKm: number;
+  /**
+   *
+   * @type {number}
+   * @memberof RoadSectionDto
+   */
+  submissionId: number;
+}
+/**
+ *
+ * @export
+ * @interface SubmissionDto
+ */
+export interface SubmissionDto {
+  /**
+   *
+   * @type {number}
+   * @memberof SubmissionDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof SubmissionDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof SubmissionDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SubmissionDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SubmissionDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SubmissionDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {object}
+   * @memberof SubmissionDto
+   */
+  geometry: object;
+  /**
+   *
+   * @type {number}
+   * @memberof SubmissionDto
+   */
+  projectId: number;
+  /**
+   *
+   * @type {object}
+   * @memberof SubmissionDto
+   */
+  project: object;
+  /**
+   *
+   * @type {string}
+   * @memberof SubmissionDto
+   */
+  submissionTypeCode: string;
+  /**
+   *
+   * @type {object}
+   * @memberof SubmissionDto
+   */
+  submissionType: object;
 }
 /**
  *
@@ -1432,19 +1432,19 @@ export const AttachmentApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateAttachmentDto} createAttachmentDto
+     * @param {AttachmentDto} attachmentDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     attachmentControllerCreate: async (
-      createAttachmentDto: CreateAttachmentDto,
+      attachmentDto: AttachmentDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createAttachmentDto' is not null or undefined
+      // verify required parameter 'attachmentDto' is not null or undefined
       assertParamExists(
         'attachmentControllerCreate',
-        'createAttachmentDto',
-        createAttachmentDto
+        'attachmentDto',
+        attachmentDto
       );
       const localVarPath = `/api/attachment`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1473,7 +1473,7 @@ export const AttachmentApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createAttachmentDto,
+        attachmentDto,
         localVarRequestOptions,
         configuration
       );
@@ -1647,18 +1647,18 @@ export const AttachmentApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateAttachmentDto} createAttachmentDto
+     * @param {AttachmentDto} attachmentDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async attachmentControllerCreate(
-      createAttachmentDto: CreateAttachmentDto,
+      attachmentDto: AttachmentDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.attachmentControllerCreate(
-        createAttachmentDto,
+        attachmentDto,
         options
       );
       return createRequestFunction(
@@ -1756,16 +1756,16 @@ export const AttachmentApiFactory = function (
   return {
     /**
      *
-     * @param {CreateAttachmentDto} createAttachmentDto
+     * @param {AttachmentDto} attachmentDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     attachmentControllerCreate(
-      createAttachmentDto: CreateAttachmentDto,
+      attachmentDto: AttachmentDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .attachmentControllerCreate(createAttachmentDto, options)
+        .attachmentControllerCreate(attachmentDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -1818,17 +1818,17 @@ export const AttachmentApiFactory = function (
 export class AttachmentApi extends BaseAPI {
   /**
    *
-   * @param {CreateAttachmentDto} createAttachmentDto
+   * @param {AttachmentDto} attachmentDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AttachmentApi
    */
   public attachmentControllerCreate(
-    createAttachmentDto: CreateAttachmentDto,
+    attachmentDto: AttachmentDto,
     options?: any
   ) {
     return AttachmentApiFp(this.configuration)
-      .attachmentControllerCreate(createAttachmentDto, options)
+      .attachmentControllerCreate(attachmentDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -2234,20 +2234,16 @@ export const CutBlockApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateCutBlockDto} createCutBlockDto
+     * @param {CutBlockDto} cutBlockDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     cutBlockControllerCreate: async (
-      createCutBlockDto: CreateCutBlockDto,
+      cutBlockDto: CutBlockDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createCutBlockDto' is not null or undefined
-      assertParamExists(
-        'cutBlockControllerCreate',
-        'createCutBlockDto',
-        createCutBlockDto
-      );
+      // verify required parameter 'cutBlockDto' is not null or undefined
+      assertParamExists('cutBlockControllerCreate', 'cutBlockDto', cutBlockDto);
       const localVarPath = `/api/cut-block`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2275,7 +2271,7 @@ export const CutBlockApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createCutBlockDto,
+        cutBlockDto,
         localVarRequestOptions,
         configuration
       );
@@ -2447,18 +2443,18 @@ export const CutBlockApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateCutBlockDto} createCutBlockDto
+     * @param {CutBlockDto} cutBlockDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async cutBlockControllerCreate(
-      createCutBlockDto: CreateCutBlockDto,
+      cutBlockDto: CutBlockDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.cutBlockControllerCreate(
-        createCutBlockDto,
+        cutBlockDto,
         options
       );
       return createRequestFunction(
@@ -2556,16 +2552,16 @@ export const CutBlockApiFactory = function (
   return {
     /**
      *
-     * @param {CreateCutBlockDto} createCutBlockDto
+     * @param {CutBlockDto} cutBlockDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     cutBlockControllerCreate(
-      createCutBlockDto: CreateCutBlockDto,
+      cutBlockDto: CutBlockDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .cutBlockControllerCreate(createCutBlockDto, options)
+        .cutBlockControllerCreate(cutBlockDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -2618,17 +2614,14 @@ export const CutBlockApiFactory = function (
 export class CutBlockApi extends BaseAPI {
   /**
    *
-   * @param {CreateCutBlockDto} createCutBlockDto
+   * @param {CutBlockDto} cutBlockDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof CutBlockApi
    */
-  public cutBlockControllerCreate(
-    createCutBlockDto: CreateCutBlockDto,
-    options?: any
-  ) {
+  public cutBlockControllerCreate(cutBlockDto: CutBlockDto, options?: any) {
     return CutBlockApiFp(this.configuration)
-      .cutBlockControllerCreate(createCutBlockDto, options)
+      .cutBlockControllerCreate(cutBlockDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -3368,19 +3361,19 @@ export const ForestStewardshipPlanApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateForestStewardshipPlanDto} createForestStewardshipPlanDto
+     * @param {ForestStewardshipPlanDto} forestStewardshipPlanDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     forestStewardshipPlanControllerCreate: async (
-      createForestStewardshipPlanDto: CreateForestStewardshipPlanDto,
+      forestStewardshipPlanDto: ForestStewardshipPlanDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createForestStewardshipPlanDto' is not null or undefined
+      // verify required parameter 'forestStewardshipPlanDto' is not null or undefined
       assertParamExists(
         'forestStewardshipPlanControllerCreate',
-        'createForestStewardshipPlanDto',
-        createForestStewardshipPlanDto
+        'forestStewardshipPlanDto',
+        forestStewardshipPlanDto
       );
       const localVarPath = `/api/forest-stewardship-plan`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -3409,7 +3402,7 @@ export const ForestStewardshipPlanApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createForestStewardshipPlanDto,
+        forestStewardshipPlanDto,
         localVarRequestOptions,
         configuration
       );
@@ -3585,18 +3578,18 @@ export const ForestStewardshipPlanApiFp = function (
   return {
     /**
      *
-     * @param {CreateForestStewardshipPlanDto} createForestStewardshipPlanDto
+     * @param {ForestStewardshipPlanDto} forestStewardshipPlanDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async forestStewardshipPlanControllerCreate(
-      createForestStewardshipPlanDto: CreateForestStewardshipPlanDto,
+      forestStewardshipPlanDto: ForestStewardshipPlanDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.forestStewardshipPlanControllerCreate(
-        createForestStewardshipPlanDto,
+        forestStewardshipPlanDto,
         options
       );
       return createRequestFunction(
@@ -3694,17 +3687,17 @@ export const ForestStewardshipPlanApiFactory = function (
   return {
     /**
      *
-     * @param {CreateForestStewardshipPlanDto} createForestStewardshipPlanDto
+     * @param {ForestStewardshipPlanDto} forestStewardshipPlanDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     forestStewardshipPlanControllerCreate(
-      createForestStewardshipPlanDto: CreateForestStewardshipPlanDto,
+      forestStewardshipPlanDto: ForestStewardshipPlanDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
         .forestStewardshipPlanControllerCreate(
-          createForestStewardshipPlanDto,
+          forestStewardshipPlanDto,
           options
         )
         .then((request) => request(axios, basePath));
@@ -3769,20 +3762,17 @@ export const ForestStewardshipPlanApiFactory = function (
 export class ForestStewardshipPlanApi extends BaseAPI {
   /**
    *
-   * @param {CreateForestStewardshipPlanDto} createForestStewardshipPlanDto
+   * @param {ForestStewardshipPlanDto} forestStewardshipPlanDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ForestStewardshipPlanApi
    */
   public forestStewardshipPlanControllerCreate(
-    createForestStewardshipPlanDto: CreateForestStewardshipPlanDto,
+    forestStewardshipPlanDto: ForestStewardshipPlanDto,
     options?: any
   ) {
     return ForestStewardshipPlanApiFp(this.configuration)
-      .forestStewardshipPlanControllerCreate(
-        createForestStewardshipPlanDto,
-        options
-      )
+      .forestStewardshipPlanControllerCreate(forestStewardshipPlanDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -3972,19 +3962,19 @@ export const FspDistrictXrefApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateFspDistrictXrefDto} createFspDistrictXrefDto
+     * @param {FspDistrictXrefDto} fspDistrictXrefDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     fspDistrictXrefControllerCreate: async (
-      createFspDistrictXrefDto: CreateFspDistrictXrefDto,
+      fspDistrictXrefDto: FspDistrictXrefDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createFspDistrictXrefDto' is not null or undefined
+      // verify required parameter 'fspDistrictXrefDto' is not null or undefined
       assertParamExists(
         'fspDistrictXrefControllerCreate',
-        'createFspDistrictXrefDto',
-        createFspDistrictXrefDto
+        'fspDistrictXrefDto',
+        fspDistrictXrefDto
       );
       const localVarPath = `/api/fsp-district-xref`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4013,7 +4003,7 @@ export const FspDistrictXrefApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createFspDistrictXrefDto,
+        fspDistrictXrefDto,
         localVarRequestOptions,
         configuration
       );
@@ -4187,18 +4177,18 @@ export const FspDistrictXrefApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateFspDistrictXrefDto} createFspDistrictXrefDto
+     * @param {FspDistrictXrefDto} fspDistrictXrefDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async fspDistrictXrefControllerCreate(
-      createFspDistrictXrefDto: CreateFspDistrictXrefDto,
+      fspDistrictXrefDto: FspDistrictXrefDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.fspDistrictXrefControllerCreate(
-        createFspDistrictXrefDto,
+        fspDistrictXrefDto,
         options
       );
       return createRequestFunction(
@@ -4296,16 +4286,16 @@ export const FspDistrictXrefApiFactory = function (
   return {
     /**
      *
-     * @param {CreateFspDistrictXrefDto} createFspDistrictXrefDto
+     * @param {FspDistrictXrefDto} fspDistrictXrefDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     fspDistrictXrefControllerCreate(
-      createFspDistrictXrefDto: CreateFspDistrictXrefDto,
+      fspDistrictXrefDto: FspDistrictXrefDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .fspDistrictXrefControllerCreate(createFspDistrictXrefDto, options)
+        .fspDistrictXrefControllerCreate(fspDistrictXrefDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4364,17 +4354,17 @@ export const FspDistrictXrefApiFactory = function (
 export class FspDistrictXrefApi extends BaseAPI {
   /**
    *
-   * @param {CreateFspDistrictXrefDto} createFspDistrictXrefDto
+   * @param {FspDistrictXrefDto} fspDistrictXrefDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof FspDistrictXrefApi
    */
   public fspDistrictXrefControllerCreate(
-    createFspDistrictXrefDto: CreateFspDistrictXrefDto,
+    fspDistrictXrefDto: FspDistrictXrefDto,
     options?: any
   ) {
     return FspDistrictXrefApiFp(this.configuration)
-      .fspDistrictXrefControllerCreate(createFspDistrictXrefDto, options)
+      .fspDistrictXrefControllerCreate(fspDistrictXrefDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -4558,19 +4548,19 @@ export const InteractionApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateInteractionDto} createInteractionDto
+     * @param {InteractionDto} interactionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     interactionControllerCreate: async (
-      createInteractionDto: CreateInteractionDto,
+      interactionDto: InteractionDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createInteractionDto' is not null or undefined
+      // verify required parameter 'interactionDto' is not null or undefined
       assertParamExists(
         'interactionControllerCreate',
-        'createInteractionDto',
-        createInteractionDto
+        'interactionDto',
+        interactionDto
       );
       const localVarPath = `/api/interaction`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4599,7 +4589,7 @@ export const InteractionApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createInteractionDto,
+        interactionDto,
         localVarRequestOptions,
         configuration
       );
@@ -4773,18 +4763,18 @@ export const InteractionApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateInteractionDto} createInteractionDto
+     * @param {InteractionDto} interactionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async interactionControllerCreate(
-      createInteractionDto: CreateInteractionDto,
+      interactionDto: InteractionDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.interactionControllerCreate(
-        createInteractionDto,
+        interactionDto,
         options
       );
       return createRequestFunction(
@@ -4882,16 +4872,16 @@ export const InteractionApiFactory = function (
   return {
     /**
      *
-     * @param {CreateInteractionDto} createInteractionDto
+     * @param {InteractionDto} interactionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     interactionControllerCreate(
-      createInteractionDto: CreateInteractionDto,
+      interactionDto: InteractionDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .interactionControllerCreate(createInteractionDto, options)
+        .interactionControllerCreate(interactionDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -4947,17 +4937,17 @@ export const InteractionApiFactory = function (
 export class InteractionApi extends BaseAPI {
   /**
    *
-   * @param {CreateInteractionDto} createInteractionDto
+   * @param {InteractionDto} interactionDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof InteractionApi
    */
   public interactionControllerCreate(
-    createInteractionDto: CreateInteractionDto,
+    interactionDto: InteractionDto,
     options?: any
   ) {
     return InteractionApiFp(this.configuration)
-      .interactionControllerCreate(createInteractionDto, options)
+      .interactionControllerCreate(interactionDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5141,20 +5131,16 @@ export const ProjectApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateProjectDto} createProjectDto
+     * @param {ProjectDto} projectDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     projectControllerCreate: async (
-      createProjectDto: CreateProjectDto,
+      projectDto: ProjectDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createProjectDto' is not null or undefined
-      assertParamExists(
-        'projectControllerCreate',
-        'createProjectDto',
-        createProjectDto
-      );
+      // verify required parameter 'projectDto' is not null or undefined
+      assertParamExists('projectControllerCreate', 'projectDto', projectDto);
       const localVarPath = `/api/project`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -5182,7 +5168,7 @@ export const ProjectApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createProjectDto,
+        projectDto,
         localVarRequestOptions,
         configuration
       );
@@ -5354,18 +5340,18 @@ export const ProjectApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateProjectDto} createProjectDto
+     * @param {ProjectDto} projectDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async projectControllerCreate(
-      createProjectDto: CreateProjectDto,
+      projectDto: ProjectDto,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.projectControllerCreate(
-        createProjectDto,
+        projectDto,
         options
       );
       return createRequestFunction(
@@ -5385,7 +5371,7 @@ export const ProjectApiFp = function (configuration?: Configuration) {
       id: number,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ProjectDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.projectControllerFindOne(
         id,
@@ -5408,7 +5394,7 @@ export const ProjectApiFp = function (configuration?: Configuration) {
       id: number,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<object>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.projectControllerRemove(
         id,
@@ -5433,7 +5419,10 @@ export const ProjectApiFp = function (configuration?: Configuration) {
       updateProjectDto: UpdateProjectDto,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<UpdateProjectDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.projectControllerUpdate(
         id,
@@ -5463,16 +5452,16 @@ export const ProjectApiFactory = function (
   return {
     /**
      *
-     * @param {CreateProjectDto} createProjectDto
+     * @param {ProjectDto} projectDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     projectControllerCreate(
-      createProjectDto: CreateProjectDto,
+      projectDto: ProjectDto,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<ProjectDto> {
       return localVarFp
-        .projectControllerCreate(createProjectDto, options)
+        .projectControllerCreate(projectDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -5481,7 +5470,10 @@ export const ProjectApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    projectControllerFindOne(id: number, options?: any): AxiosPromise<void> {
+    projectControllerFindOne(
+      id: number,
+      options?: any
+    ): AxiosPromise<ProjectDto> {
       return localVarFp
         .projectControllerFindOne(id, options)
         .then((request) => request(axios, basePath));
@@ -5492,7 +5484,7 @@ export const ProjectApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    projectControllerRemove(id: number, options?: any): AxiosPromise<void> {
+    projectControllerRemove(id: number, options?: any): AxiosPromise<object> {
       return localVarFp
         .projectControllerRemove(id, options)
         .then((request) => request(axios, basePath));
@@ -5508,7 +5500,7 @@ export const ProjectApiFactory = function (
       id: number,
       updateProjectDto: UpdateProjectDto,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<UpdateProjectDto> {
       return localVarFp
         .projectControllerUpdate(id, updateProjectDto, options)
         .then((request) => request(axios, basePath));
@@ -5525,17 +5517,14 @@ export const ProjectApiFactory = function (
 export class ProjectApi extends BaseAPI {
   /**
    *
-   * @param {CreateProjectDto} createProjectDto
+   * @param {ProjectDto} projectDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ProjectApi
    */
-  public projectControllerCreate(
-    createProjectDto: CreateProjectDto,
-    options?: any
-  ) {
+  public projectControllerCreate(projectDto: ProjectDto, options?: any) {
     return ProjectApiFp(this.configuration)
-      .projectControllerCreate(createProjectDto, options)
+      .projectControllerCreate(projectDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -5693,7 +5682,10 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
     async projectsControllerFindAll(
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<ProjectDto>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.projectsControllerFindAll(
         options
@@ -5715,7 +5707,10 @@ export const ProjectsApiFp = function (configuration?: Configuration) {
       id: number,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<ProjectDto>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.projectsControllerFindByFspId(
         id,
@@ -5747,7 +5742,7 @@ export const ProjectsApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    projectsControllerFindAll(options?: any): AxiosPromise<void> {
+    projectsControllerFindAll(options?: any): AxiosPromise<Array<ProjectDto>> {
       return localVarFp
         .projectsControllerFindAll(options)
         .then((request) => request(axios, basePath));
@@ -5761,7 +5756,7 @@ export const ProjectsApiFactory = function (
     projectsControllerFindByFspId(
       id: number,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<Array<ProjectDto>> {
       return localVarFp
         .projectsControllerFindByFspId(id, options)
         .then((request) => request(axios, basePath));
@@ -5812,19 +5807,19 @@ export const PublicCommentApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreatePublicCommentDto} createPublicCommentDto
+     * @param {PublicCommentDto} publicCommentDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     publicCommentControllerCreate: async (
-      createPublicCommentDto: CreatePublicCommentDto,
+      publicCommentDto: PublicCommentDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createPublicCommentDto' is not null or undefined
+      // verify required parameter 'publicCommentDto' is not null or undefined
       assertParamExists(
         'publicCommentControllerCreate',
-        'createPublicCommentDto',
-        createPublicCommentDto
+        'publicCommentDto',
+        publicCommentDto
       );
       const localVarPath = `/api/public-comment`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -5853,7 +5848,7 @@ export const PublicCommentApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createPublicCommentDto,
+        publicCommentDto,
         localVarRequestOptions,
         configuration
       );
@@ -6027,18 +6022,18 @@ export const PublicCommentApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreatePublicCommentDto} createPublicCommentDto
+     * @param {PublicCommentDto} publicCommentDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async publicCommentControllerCreate(
-      createPublicCommentDto: CreatePublicCommentDto,
+      publicCommentDto: PublicCommentDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.publicCommentControllerCreate(
-        createPublicCommentDto,
+        publicCommentDto,
         options
       );
       return createRequestFunction(
@@ -6136,16 +6131,16 @@ export const PublicCommentApiFactory = function (
   return {
     /**
      *
-     * @param {CreatePublicCommentDto} createPublicCommentDto
+     * @param {PublicCommentDto} publicCommentDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     publicCommentControllerCreate(
-      createPublicCommentDto: CreatePublicCommentDto,
+      publicCommentDto: PublicCommentDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .publicCommentControllerCreate(createPublicCommentDto, options)
+        .publicCommentControllerCreate(publicCommentDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -6204,17 +6199,17 @@ export const PublicCommentApiFactory = function (
 export class PublicCommentApi extends BaseAPI {
   /**
    *
-   * @param {CreatePublicCommentDto} createPublicCommentDto
+   * @param {PublicCommentDto} publicCommentDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof PublicCommentApi
    */
   public publicCommentControllerCreate(
-    createPublicCommentDto: CreatePublicCommentDto,
+    publicCommentDto: PublicCommentDto,
     options?: any
   ) {
     return PublicCommentApiFp(this.configuration)
-      .publicCommentControllerCreate(createPublicCommentDto, options)
+      .publicCommentControllerCreate(publicCommentDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -6713,19 +6708,19 @@ export const RetentionAreaApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateRetentionAreaDto} createRetentionAreaDto
+     * @param {RetentionAreaDto} retentionAreaDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     retentionAreaControllerCreate: async (
-      createRetentionAreaDto: CreateRetentionAreaDto,
+      retentionAreaDto: RetentionAreaDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createRetentionAreaDto' is not null or undefined
+      // verify required parameter 'retentionAreaDto' is not null or undefined
       assertParamExists(
         'retentionAreaControllerCreate',
-        'createRetentionAreaDto',
-        createRetentionAreaDto
+        'retentionAreaDto',
+        retentionAreaDto
       );
       const localVarPath = `/api/retention-area`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -6754,7 +6749,7 @@ export const RetentionAreaApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createRetentionAreaDto,
+        retentionAreaDto,
         localVarRequestOptions,
         configuration
       );
@@ -6928,18 +6923,18 @@ export const RetentionAreaApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateRetentionAreaDto} createRetentionAreaDto
+     * @param {RetentionAreaDto} retentionAreaDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async retentionAreaControllerCreate(
-      createRetentionAreaDto: CreateRetentionAreaDto,
+      retentionAreaDto: RetentionAreaDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.retentionAreaControllerCreate(
-        createRetentionAreaDto,
+        retentionAreaDto,
         options
       );
       return createRequestFunction(
@@ -7037,16 +7032,16 @@ export const RetentionAreaApiFactory = function (
   return {
     /**
      *
-     * @param {CreateRetentionAreaDto} createRetentionAreaDto
+     * @param {RetentionAreaDto} retentionAreaDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     retentionAreaControllerCreate(
-      createRetentionAreaDto: CreateRetentionAreaDto,
+      retentionAreaDto: RetentionAreaDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .retentionAreaControllerCreate(createRetentionAreaDto, options)
+        .retentionAreaControllerCreate(retentionAreaDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7105,17 +7100,17 @@ export const RetentionAreaApiFactory = function (
 export class RetentionAreaApi extends BaseAPI {
   /**
    *
-   * @param {CreateRetentionAreaDto} createRetentionAreaDto
+   * @param {RetentionAreaDto} retentionAreaDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof RetentionAreaApi
    */
   public retentionAreaControllerCreate(
-    createRetentionAreaDto: CreateRetentionAreaDto,
+    retentionAreaDto: RetentionAreaDto,
     options?: any
   ) {
     return RetentionAreaApiFp(this.configuration)
-      .retentionAreaControllerCreate(createRetentionAreaDto, options)
+      .retentionAreaControllerCreate(retentionAreaDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7299,19 +7294,19 @@ export const RoadSectionApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateRoadSectionDto} createRoadSectionDto
+     * @param {RoadSectionDto} roadSectionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     roadSectionControllerCreate: async (
-      createRoadSectionDto: CreateRoadSectionDto,
+      roadSectionDto: RoadSectionDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createRoadSectionDto' is not null or undefined
+      // verify required parameter 'roadSectionDto' is not null or undefined
       assertParamExists(
         'roadSectionControllerCreate',
-        'createRoadSectionDto',
-        createRoadSectionDto
+        'roadSectionDto',
+        roadSectionDto
       );
       const localVarPath = `/api/road-section`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -7340,7 +7335,7 @@ export const RoadSectionApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createRoadSectionDto,
+        roadSectionDto,
         localVarRequestOptions,
         configuration
       );
@@ -7514,18 +7509,18 @@ export const RoadSectionApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateRoadSectionDto} createRoadSectionDto
+     * @param {RoadSectionDto} roadSectionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async roadSectionControllerCreate(
-      createRoadSectionDto: CreateRoadSectionDto,
+      roadSectionDto: RoadSectionDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.roadSectionControllerCreate(
-        createRoadSectionDto,
+        roadSectionDto,
         options
       );
       return createRequestFunction(
@@ -7623,16 +7618,16 @@ export const RoadSectionApiFactory = function (
   return {
     /**
      *
-     * @param {CreateRoadSectionDto} createRoadSectionDto
+     * @param {RoadSectionDto} roadSectionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     roadSectionControllerCreate(
-      createRoadSectionDto: CreateRoadSectionDto,
+      roadSectionDto: RoadSectionDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .roadSectionControllerCreate(createRoadSectionDto, options)
+        .roadSectionControllerCreate(roadSectionDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -7688,17 +7683,17 @@ export const RoadSectionApiFactory = function (
 export class RoadSectionApi extends BaseAPI {
   /**
    *
-   * @param {CreateRoadSectionDto} createRoadSectionDto
+   * @param {RoadSectionDto} roadSectionDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof RoadSectionApi
    */
   public roadSectionControllerCreate(
-    createRoadSectionDto: CreateRoadSectionDto,
+    roadSectionDto: RoadSectionDto,
     options?: any
   ) {
     return RoadSectionApiFp(this.configuration)
-      .roadSectionControllerCreate(createRoadSectionDto, options)
+      .roadSectionControllerCreate(roadSectionDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -7882,19 +7877,19 @@ export const SubmissionApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {CreateSubmissionDto} createSubmissionDto
+     * @param {SubmissionDto} submissionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     submissionControllerCreate: async (
-      createSubmissionDto: CreateSubmissionDto,
+      submissionDto: SubmissionDto,
       options: any = {}
     ): Promise<RequestArgs> => {
-      // verify required parameter 'createSubmissionDto' is not null or undefined
+      // verify required parameter 'submissionDto' is not null or undefined
       assertParamExists(
         'submissionControllerCreate',
-        'createSubmissionDto',
-        createSubmissionDto
+        'submissionDto',
+        submissionDto
       );
       const localVarPath = `/api/submission`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -7923,7 +7918,7 @@ export const SubmissionApiAxiosParamCreator = function (
         ...options.headers,
       };
       localVarRequestOptions.data = serializeDataIfNeeded(
-        createSubmissionDto,
+        submissionDto,
         localVarRequestOptions,
         configuration
       );
@@ -8097,18 +8092,18 @@ export const SubmissionApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {CreateSubmissionDto} createSubmissionDto
+     * @param {SubmissionDto} submissionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async submissionControllerCreate(
-      createSubmissionDto: CreateSubmissionDto,
+      submissionDto: SubmissionDto,
       options?: any
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.submissionControllerCreate(
-        createSubmissionDto,
+        submissionDto,
         options
       );
       return createRequestFunction(
@@ -8206,16 +8201,16 @@ export const SubmissionApiFactory = function (
   return {
     /**
      *
-     * @param {CreateSubmissionDto} createSubmissionDto
+     * @param {SubmissionDto} submissionDto
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     submissionControllerCreate(
-      createSubmissionDto: CreateSubmissionDto,
+      submissionDto: SubmissionDto,
       options?: any
     ): AxiosPromise<void> {
       return localVarFp
-        .submissionControllerCreate(createSubmissionDto, options)
+        .submissionControllerCreate(submissionDto, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -8268,17 +8263,17 @@ export const SubmissionApiFactory = function (
 export class SubmissionApi extends BaseAPI {
   /**
    *
-   * @param {CreateSubmissionDto} createSubmissionDto
+   * @param {SubmissionDto} submissionDto
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof SubmissionApi
    */
   public submissionControllerCreate(
-    createSubmissionDto: CreateSubmissionDto,
+    submissionDto: SubmissionDto,
     options?: any
   ) {
     return SubmissionApiFp(this.configuration)
-      .submissionControllerCreate(createSubmissionDto, options)
+      .submissionControllerCreate(submissionDto, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -14,6 +14,7 @@ import { PublicCommentService } from './public-comment.service';
 import { PublicComment } from './entities/public-comment.entity';
 import { PublicCommentDto } from './dto/public-comment.dto';
 import { UpdatePublicCommentDto } from './dto/update-public-comment.dto';
+import { UpdateResult } from 'typeorm';
 
 @ApiTags('public-comments')
 @Controller('public-comments')
@@ -27,12 +28,12 @@ export class PublicCommentsController extends BaseCollectionController<
   }
 
   @Post()
-  async findAll(@Body() options) {
+  async findAll(@Body() options): Promise<PublicCommentDto[]> {
     return super.findAll(options);
   }
 
   @Get('/byProjectId/:id')
-  async findByProjectId(@Param('id') id: number) {
+  async findByProjectId(@Param('id') id: number): Promise<PublicCommentDto[]> {
     return super.findAll({ where: { project_id: id } });
   }
 }
@@ -49,12 +50,12 @@ export class PublicCommentController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: PublicCommentDto) {
+  async create(@Body() createDto: PublicCommentDto): Promise<PublicCommentDto> {
     return super.create(createDto);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  async findOne(@Param('id') id: number): Promise<PublicCommentDto> {
     return super.findOne(id);
   }
 
@@ -62,12 +63,12 @@ export class PublicCommentController extends BaseController<
   async update(
     @Param('id') id: number,
     @Body() updateDto: UpdatePublicCommentDto
-  ) {
+  ): Promise<UpdatePublicCommentDto> {
     return super.update(id, updateDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  async remove(@Param('id') id: number): Promise<UpdateResult> {
     return super.remove(id);
   }
 }

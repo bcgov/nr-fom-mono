@@ -4,7 +4,7 @@ import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 
-export class CreateProjectDto extends BaseDto {
+export class ProjectDto extends BaseDto {
   @ApiProperty()
   name: string;
   @ApiProperty()

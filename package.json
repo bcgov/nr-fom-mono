@@ -32,11 +32,12 @@
     "start:api": "nest start --path apps/api/tsconfig.json --watch",
     "start:db:postgres": "docker-compose up db",
     "stop:db:postgres": "docker-compose stop db",
-    "gen:client-api:rxjs": "npm run gen:fetch-template && npm run gen:models:rxjs && npm run format:write",
-    "gen:client-api:axios": "npm run gen:fetch-template && npm run gen:models:axios && npm run format:write",
-    "gen:models:rxjs": "openapi-generator-cli generate -g typescript-rxjs -t apps/api/openapi/template -i apps/api/openapi/swagger-spec.json -o libs/client",
-    "gen:models:axios": "openapi-generator-cli generate -g typescript-axios -t apps/api/openapi/template -i apps/api/openapi/swagger-spec.json -o libs/client",
-    "gen:fetch-template": "bash ./apps/api/openapi/.fetch-template"
+    "gen:client-api:rxjs": "npm run gen:fetch-template:rxjs && npm run gen:models:rxjs && npm run format:write",
+    "gen:client-api:axios": "npm run gen:fetch-template:axios && npm run gen:models:axios && npm run format:write",
+    "gen:models:rxjs": "openapi-generator-cli generate -g typescript-rxjs -t apps/api/openapi/template/typescript-rxjs -i apps/api/openapi/swagger-spec.json -o libs/client/typescript-rxjs",
+    "gen:models:axios": "openapi-generator-cli generate -g typescript-axios -t apps/api/openapi/template/typescript-axios -i apps/api/openapi/swagger-spec.json -o libs/client/typescript-axios",
+    "gen:fetch-template:rxjs": "bash ./apps/api/openapi/.fetch-template-typescript-rxjs",
+    "gen:fetch-template:axios": "bash ./apps/api/openapi/.fetch-template-typescript-axios"
   },
   "private": true,
   "dependencies": {
