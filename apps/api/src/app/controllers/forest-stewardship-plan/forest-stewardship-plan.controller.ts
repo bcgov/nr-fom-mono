@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { ForestStewardshipPlanService } from './forest-stewardship-plan.service';
 import { ForestStewardshipPlan } from './entities/forest-stewardship-plan.entity';
-import { CreateForestStewardshipPlanDto } from './dto/create-forest-stewardship-plan.dto';
+import { ForestStewardshipPlanDto } from './dto/forest-stewardship-plan.dto';
 import { UpdateForestStewardshipPlanDto } from './dto/update-forest-stewardship-plan.dto';
 
 @ApiTags('forest-stewardship-plans')
 @Controller('forest-stewardship-plans')
 export class ForestStewardshipPlansController extends BaseCollectionController<
   ForestStewardshipPlan,
-  CreateForestStewardshipPlanDto,
+  ForestStewardshipPlanDto,
   UpdateForestStewardshipPlanDto
 > {
   constructor(protected readonly service: ForestStewardshipPlanService) {
@@ -36,7 +36,7 @@ export class ForestStewardshipPlansController extends BaseCollectionController<
 @Controller('forest-stewardship-plan')
 export class ForestStewardshipPlanController extends BaseController<
   ForestStewardshipPlan,
-  CreateForestStewardshipPlanDto,
+  ForestStewardshipPlanDto,
   UpdateForestStewardshipPlanDto
 > {
   constructor(protected readonly service: ForestStewardshipPlanService) {
@@ -44,7 +44,7 @@ export class ForestStewardshipPlanController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateForestStewardshipPlanDto) {
+  async create(@Body() createDto: ForestStewardshipPlanDto) {
     return super.create(createDto);
   }
 

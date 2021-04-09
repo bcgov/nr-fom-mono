@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateResponseCodeDto } from './create-response-code.dto';
+import { ResponseCodeDto } from './response-code.dto';
 
-export class UpdateResponseCodeDto extends OmitType(CreateResponseCodeDto, ['code']) {}
+export class UpdateResponseCodeDto extends OmitType(ResponseCodeDto, ['code']) {}

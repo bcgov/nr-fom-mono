@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { PublicCommentService } from './public-comment.service';
 import { PublicComment } from './entities/public-comment.entity';
-import { CreatePublicCommentDto } from './dto/create-public-comment.dto';
+import { PublicCommentDto } from './dto/public-comment.dto';
 import { UpdatePublicCommentDto } from './dto/update-public-comment.dto';
 
 @ApiTags('public-comments')
 @Controller('public-comments')
 export class PublicCommentsController extends BaseCollectionController<
   PublicComment,
-  CreatePublicCommentDto,
+  PublicCommentDto,
   UpdatePublicCommentDto
 > {
   constructor(protected readonly service: PublicCommentService) {
@@ -41,7 +41,7 @@ export class PublicCommentsController extends BaseCollectionController<
 @Controller('public-comment')
 export class PublicCommentController extends BaseController<
   PublicComment,
-  CreatePublicCommentDto,
+  PublicCommentDto,
   UpdatePublicCommentDto
 > {
   constructor(protected readonly service: PublicCommentService) {
@@ -49,7 +49,7 @@ export class PublicCommentController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreatePublicCommentDto) {
+  async create(@Body() createDto: PublicCommentDto) {
     return super.create(createDto);
   }
 

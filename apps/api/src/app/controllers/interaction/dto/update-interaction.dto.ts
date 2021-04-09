@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateInteractionDto } from './create-interaction.dto';
+import { InteractionDto } from './interaction.dto';
 
-export class UpdateInteractionDto extends OmitType(CreateInteractionDto, ['id']) {}
+export class UpdateInteractionDto extends OmitType(InteractionDto, ['id']) {}

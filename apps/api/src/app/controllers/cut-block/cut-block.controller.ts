@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { CutBlockService } from './cut-block.service';
 import { CutBlock } from './entities/cut-block.entity';
-import { CreateCutBlockDto } from './dto/create-cut-block.dto';
+import { CutBlockDto } from './dto/cut-block.dto';
 import { UpdateCutBlockDto } from './dto/update-cut-block.dto';
 
 @ApiTags('cut-blocks')
 @Controller('cut-blocks')
 export class CutBlocksController extends BaseCollectionController<
   CutBlock,
-  CreateCutBlockDto,
+  CutBlockDto,
   UpdateCutBlockDto
 > {
   constructor(protected readonly service: CutBlockService) {
@@ -36,7 +36,7 @@ export class CutBlocksController extends BaseCollectionController<
 @Controller('cut-block')
 export class CutBlockController extends BaseController<
   CutBlock,
-  CreateCutBlockDto,
+  CutBlockDto,
   UpdateCutBlockDto
 > {
   constructor(protected readonly service: CutBlockService) {
@@ -44,7 +44,7 @@ export class CutBlockController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateCutBlockDto) {
+  async create(@Body() createDto: CutBlockDto) {
     return super.create(createDto);
   }
 

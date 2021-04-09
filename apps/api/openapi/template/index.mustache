@@ -1,4 +1,7 @@
-export * from './runtime';
-export * from './servers';
-export * from './apis';
-export * from './models';
+/* tslint:disable */
+/* eslint-disable */
+{{>licenseInfo}}
+
+export * from "./api";
+export * from "./configuration";
+{{#withSeparateModelsAndApi}}export * from "./{{tsModelPackage}}";{{/withSeparateModelsAndApi}}

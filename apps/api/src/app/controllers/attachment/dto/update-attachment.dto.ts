@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateAttachmentDto } from './create-attachment.dto';
+import { AttachmentDto } from './attachment.dto';
 
-export class UpdateAttachmentDto extends OmitType(CreateAttachmentDto, ['id']) {}
+export class UpdateAttachmentDto extends OmitType(AttachmentDto, ['id']) {}

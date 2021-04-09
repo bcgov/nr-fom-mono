@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateRoadSectionDto } from './create-road-section.dto';
+import { RoadSectionDto } from './road-section.dto';
 
-export class UpdateRoadSectionDto extends OmitType(CreateRoadSectionDto, ['id']) {}
+export class UpdateRoadSectionDto extends OmitType(RoadSectionDto, ['id']) {}

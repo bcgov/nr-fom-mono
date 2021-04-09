@@ -2,18 +2,27 @@
   "name": "{{npmName}}",
   "version": "{{npmVersion}}",
   "description": "OpenAPI client for {{npmName}}",
-  "author": "OpenAPI-Generator",
+  "author": "OpenAPI-Generator Contributors",
+  "keywords": [
+    "axios",
+    "typescript",
+    "openapi-client",
+    "openapi-generator",
+    "{{npmName}}"
+  ],
+  "license": "Unlicense",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",
-  "scripts" : {
-    "build": "node_modules/.bin/tsc --outDir dist/",
-    "prepare": "npm run build"
+  "scripts": {
+    "build": "tsc --outDir dist/",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "rxjs": "^6.3.3"
+    "axios": "^0.21.1"
   },
   "devDependencies": {
-    "typescript": "^3.7"
+    "@types/node": "^12.11.5",
+    "typescript": "^3.6.4"
   }{{#npmRepository}},{{/npmRepository}}
 {{#npmRepository}}
   "publishConfig": {

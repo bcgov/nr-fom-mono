@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateSubmissionTypeCodeDto } from './create-submission-type-code.dto';
+import { SubmissionTypeCodeDto } from './submission-type-code.dto';
 
-export class UpdateSubmissionTypeCodeDto extends OmitType(CreateSubmissionTypeCodeDto, ['code']) {}
+export class UpdateSubmissionTypeCodeDto extends OmitType(SubmissionTypeCodeDto, ['code']) {}

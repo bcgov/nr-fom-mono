@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { SubmissionService } from './submission.service';
 import { Submission } from './entities/submission.entity';
-import { CreateSubmissionDto } from './dto/create-submission.dto';
+import { SubmissionDto } from './dto/submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 
 @ApiTags('submissions')
 @Controller('submissions')
 export class SubmissionsController extends BaseCollectionController<
   Submission,
-  CreateSubmissionDto,
+  SubmissionDto,
   UpdateSubmissionDto
 > {
   constructor(protected readonly service: SubmissionService) {
@@ -36,7 +36,7 @@ export class SubmissionsController extends BaseCollectionController<
 @Controller('submission')
 export class SubmissionController extends BaseController<
   Submission,
-  CreateSubmissionDto,
+  SubmissionDto,
   UpdateSubmissionDto
 > {
   constructor(protected readonly service: SubmissionService) {
@@ -44,7 +44,7 @@ export class SubmissionController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateSubmissionDto) {
+  async create(@Body() createDto: SubmissionDto) {
     return super.create(createDto);
   }
 

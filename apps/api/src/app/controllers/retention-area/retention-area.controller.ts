@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { RetentionAreaService } from './retention-area.service';
 import { RetentionArea } from './entities/retention-area.entity';
-import { CreateRetentionAreaDto } from './dto/create-retention-area.dto';
+import { RetentionAreaDto } from './dto/retention-area.dto';
 import { UpdateRetentionAreaDto } from './dto/update-retention-area.dto';
 
 @ApiTags('retention-areas')
 @Controller('retention-areas')
 export class RetentionAreasController extends BaseCollectionController<
   RetentionArea,
-  CreateRetentionAreaDto,
+  RetentionAreaDto,
   UpdateRetentionAreaDto
 > {
   constructor(protected readonly service: RetentionAreaService) {
@@ -36,7 +36,7 @@ export class RetentionAreasController extends BaseCollectionController<
 @Controller('retention-area')
 export class RetentionAreaController extends BaseController<
   RetentionArea,
-  CreateRetentionAreaDto,
+  RetentionAreaDto,
   UpdateRetentionAreaDto
 > {
   constructor(protected readonly service: RetentionAreaService) {
@@ -44,7 +44,7 @@ export class RetentionAreaController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateRetentionAreaDto) {
+  async create(@Body() createDto: RetentionAreaDto) {
     return super.create(createDto);
   }
 
