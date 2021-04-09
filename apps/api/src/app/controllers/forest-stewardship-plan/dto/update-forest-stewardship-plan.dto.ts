@@ -1,4 +1,7 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateForestStewardshipPlanDto } from './create-forest-stewardship-plan.dto';
+import { ForestStewardshipPlanDto } from './forest-stewardship-plan.dto';
 
-export class UpdateForestStewardshipPlanDto extends OmitType(CreateForestStewardshipPlanDto, ['id']) {}
+export class UpdateForestStewardshipPlanDto extends OmitType(
+  ForestStewardshipPlanDto,
+  ['id']
+) {}

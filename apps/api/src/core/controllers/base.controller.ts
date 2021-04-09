@@ -11,6 +11,7 @@ import {
 import { Repository } from 'typeorm';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
+import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
 
 @Controller()
 export class BaseCollectionController<E, C, U> {
@@ -18,8 +19,10 @@ export class BaseCollectionController<E, C, U> {
   constructor(protected readonly service: DataService<E, Repository<E>>) {}
 
   @Post()
-  async findAll(@Body() options?: FindManyOptions<E> | undefined) {
-    return this.service.findAll(options);
+  async findAll(
+    @Body() options?: FindManyOptions<E> | undefined
+  ): Promise<C[]> {
+    return this.service.findAll<C>(options);
   }
 }
 
@@ -34,8 +37,8 @@ export class BaseController<E, C, U> {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return this.service.findOne<C>(id);
+  async findOne(@Param('id') id: number, options?: FindOneOptions<E>) {
+    return this.service.findOne<C>(id, options);
   }
 
   @Put(':id')

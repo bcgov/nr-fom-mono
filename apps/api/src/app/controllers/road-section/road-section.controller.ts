@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { RoadSectionService } from './road-section.service';
 import { RoadSection } from './entities/road-section.entity';
-import { CreateRoadSectionDto } from './dto/create-road-section.dto';
+import { RoadSectionDto } from './dto/road-section.dto';
 import { UpdateRoadSectionDto } from './dto/update-road-section.dto';
 
 @ApiTags('road-sections')
 @Controller('road-sections')
 export class RoadSectionsController extends BaseCollectionController<
   RoadSection,
-  CreateRoadSectionDto,
+  RoadSectionDto,
   UpdateRoadSectionDto
 > {
   constructor(protected readonly service: RoadSectionService) {
@@ -36,7 +36,7 @@ export class RoadSectionsController extends BaseCollectionController<
 @Controller('road-section')
 export class RoadSectionController extends BaseController<
   RoadSection,
-  CreateRoadSectionDto,
+  RoadSectionDto,
   UpdateRoadSectionDto
 > {
   constructor(protected readonly service: RoadSectionService) {
@@ -44,7 +44,7 @@ export class RoadSectionController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateRoadSectionDto) {
+  async create(@Body() createDto: RoadSectionDto) {
     return super.create(createDto);
   }
 

@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { AttachmentService } from './attachment.service';
 import { Attachment } from './entities/attachment.entity';
-import { CreateAttachmentDto } from './dto/create-attachment.dto';
+import { AttachmentDto } from './dto/attachment.dto';
 import { UpdateAttachmentDto } from './dto/update-attachment.dto';
 
 @ApiTags('attachments')
 @Controller('attachments')
 export class AttachmentsController extends BaseCollectionController<
   Attachment,
-  CreateAttachmentDto,
+  AttachmentDto,
   UpdateAttachmentDto
 > {
   constructor(protected readonly service: AttachmentService) {
@@ -36,7 +36,7 @@ export class AttachmentsController extends BaseCollectionController<
 @Controller('attachment')
 export class AttachmentController extends BaseController<
   Attachment,
-  CreateAttachmentDto,
+  AttachmentDto,
   UpdateAttachmentDto
 > {
   constructor(protected readonly service: AttachmentService) {
@@ -44,7 +44,7 @@ export class AttachmentController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateAttachmentDto) {
+  async create(@Body() createDto: AttachmentDto) {
     return super.create(createDto);
   }
 

@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { InteractionService } from './interaction.service';
 import { Interaction } from './entities/interaction.entity';
-import { CreateInteractionDto } from './dto/create-interaction.dto';
+import { InteractionDto } from './dto/interaction.dto';
 import { UpdateInteractionDto } from './dto/update-interaction.dto';
 
 @ApiTags('interactions')
 @Controller('interactions')
 export class InteractionsController extends BaseCollectionController<
   Interaction,
-  CreateInteractionDto,
+  InteractionDto,
   UpdateInteractionDto
 > {
   constructor(protected readonly service: InteractionService) {
@@ -36,7 +36,7 @@ export class InteractionsController extends BaseCollectionController<
 @Controller('interaction')
 export class InteractionController extends BaseController<
   Interaction,
-  CreateInteractionDto,
+  InteractionDto,
   UpdateInteractionDto
 > {
   constructor(protected readonly service: InteractionService) {
@@ -44,7 +44,7 @@ export class InteractionController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateInteractionDto) {
+  async create(@Body() createDto: InteractionDto) {
     return super.create(createDto);
   }
 

@@ -6,20 +6,23 @@ import {
   Param,
   Post,
   Put,
+  Res,
+  Response,
 } from '@nestjs/common';
-import { ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
 import { ProjectService } from './project.service';
 import { Project } from './entities/project.entity';
-import { CreateProjectDto } from './dto/create-project.dto';
+import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { UpdateResult } from 'typeorm';
 
 @ApiTags('projects')
 @Controller('projects')
 export class ProjectsController extends BaseCollectionController<
   Project,
-  CreateProjectDto,
+  ProjectDto,
   UpdateProjectDto
 > {
   constructor(protected readonly service: ProjectService) {
@@ -27,15 +30,17 @@ export class ProjectsController extends BaseCollectionController<
   }
 
   @Get('/byFspId/:id')
-  async findByFspId(@Param('id') id: number) {
+  @ApiResponse({ status: 200, type: [ProjectDto] })
+  async findByFspId(@Param('id') id: number): Promise<ProjectDto[]> {
     return super.findAll({
       where: { fsp_id: id },
-      relations: ['district', 'forest_client', 'workflow_state'],
+      relations: ['district', 'forest_client', 'workflow_state']
     });
   }
 
   @Post()
-  async findAll(@Body() options) {
+  @ApiResponse({ status: 200, type: [ProjectDto] })
+  async findAll(@Body() options = {}): Promise<ProjectDto[]> {
     return super.findAll(options);
   }
 }
@@ -44,7 +49,7 @@ export class ProjectsController extends BaseCollectionController<
 @Controller('project')
 export class ProjectController extends BaseController<
   Project,
-  CreateProjectDto,
+  ProjectDto,
   UpdateProjectDto
 > {
   constructor(protected readonly service: ProjectService) {
@@ -52,16 +57,21 @@ export class ProjectController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateProjectDto) {
+  @ApiResponse({ status: 201, type: ProjectDto })
+  async create(@Body() createDto: ProjectDto): Promise<ProjectDto> {
     return super.create(createDto);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return super.findOne(id);
+  @ApiResponse({ status: 200, type: ProjectDto })
+  async findOne(@Param('id') id: number): Promise<ProjectDto> {
+    return super.findOne(id, {
+      relations: ['district', 'forest_client', 'workflow_state']
+    });
   }
 
   @Put(':id')
+  @ApiResponse({ status: 200, type: UpdateProjectDto })
   @ApiBody({ type: UpdateProjectDto })
   async update(
     @Param('id') id: number,
@@ -71,7 +81,8 @@ export class ProjectController extends BaseController<
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @ApiResponse({ status: 200, type: UpdateResult })
+  async remove(@Param('id') id: number): Promise<UpdateResult> {
     return super.remove(id);
   }
 }

@@ -1,4 +1,6 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreatePublicCommentDto } from './create-public-comment.dto';
+import { PublicCommentDto } from './public-comment.dto';
 
-export class UpdatePublicCommentDto extends OmitType(CreatePublicCommentDto, ['id']) {}
+export class UpdatePublicCommentDto extends OmitType(PublicCommentDto, [
+  'id',
+]) {}

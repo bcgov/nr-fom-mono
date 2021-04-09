@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateProjectDto } from './create-project.dto';
+import { ProjectDto } from './project.dto';
 
-export class UpdateProjectDto extends OmitType(CreateProjectDto, ['id']) {}
+export class UpdateProjectDto extends OmitType(ProjectDto, ['id']) {}

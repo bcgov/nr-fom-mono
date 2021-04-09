@@ -4,14 +4,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { CodeTableController } from '@controllers';
 import { SubmissionTypeCodeService } from './submission-type-code.service';
 import { SubmissionTypeCode } from './entities/submission-type-code.entity';
-import { CreateSubmissionTypeCodeDto } from './dto/create-submission-type-code.dto';
+import { SubmissionTypeCodeDto } from './dto/submission-type-code.dto';
 import { UpdateSubmissionTypeCodeDto } from './dto/update-submission-type-code.dto';
 
 @ApiTags('submission-type-code')
 @Controller('submission-type-code')
 export class SubmissionTypeCodeController extends CodeTableController<
   SubmissionTypeCode,
-  CreateSubmissionTypeCodeDto,
+  SubmissionTypeCodeDto,
   UpdateSubmissionTypeCodeDto
 > {
   constructor(protected readonly service: SubmissionTypeCodeService) {

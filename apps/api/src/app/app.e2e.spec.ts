@@ -2,12 +2,12 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from './app.module';
-import { CreatePublicCommentDto } from './controllers/public-comment/dto/create-public-comment.dto';
-import { CreateProjectDto } from './controllers/project/dto/create-project.dto';
-import { CreateSubmissionDto } from './controllers/submission/dto/create-submission.dto';
-import { CreateCutBlockDto } from './controllers/cut-block/dto/create-cut-block.dto';
-import { CreateRetentionAreaDto } from './controllers/retention-area/dto/create-retention-area.dto';
-import { CreateRoadSectionDto } from './controllers/road-section/dto/create-road-section.dto';
+import { PublicCommentDto } from './controllers/public-comment/dto/public-comment.dto';
+import { ProjectDto } from './controllers/project/dto/project.dto';
+import { SubmissionDto } from './controllers/submission/dto/submission.dto';
+import { CutBlockDto } from './controllers/cut-block/dto/cut-block.dto';
+import { RetentionAreaDto } from './controllers/retention-area/dto/retention-area.dto';
+import { RoadSectionDto } from './controllers/road-section/dto/road-section.dto';
 
 const randomNumber = () => Math.trunc(Math.random() * 5000) + 1;
 
@@ -236,7 +236,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       await createProjectAndVerifyResult(createData);
     });
 
@@ -251,7 +251,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createData);
       const resBody = res.body;
 
@@ -268,7 +268,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15, // Chilliwack natural resources
         forestClientNumber: '1011',
         workflowStateCode: 'FINALIZED',
-      } as CreateProjectDto;
+      } as ProjectDto;
 
       // Make the request to update the project
       await updateProjectAndVerifyResult(projectId, updateData);
@@ -285,7 +285,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createData);
       const resBody = res.body;
 
@@ -300,7 +300,7 @@ describe('API endpoints testing (e2e)', () => {
         responseDetails: 'Ipsum lorem dolor',
         projectId: projectId,
         responseCode: 'CONSIDERED',
-      } as CreatePublicCommentDto;
+      } as PublicCommentDto;
 
       // Attach a comment
       // First create the comment
@@ -318,7 +318,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createData);
       const resBody = res.body;
 
@@ -333,7 +333,7 @@ describe('API endpoints testing (e2e)', () => {
         responseDetails: 'Ipsum lorem dolor',
         projectId: projectId,
         responseCode: 'CONSIDERED',
-      } as CreatePublicCommentDto;
+      } as PublicCommentDto;
 
       // Attach a comment
       // First create the comment
@@ -348,7 +348,7 @@ describe('API endpoints testing (e2e)', () => {
         responseDetails: 'Ipsum lorem dolor',
         projectId: projectId,
         responseCode: 'CONSIDERED',
-      } as CreatePublicCommentDto;
+      } as PublicCommentDto;
 
       // Attach a comment
       // First create the comment
@@ -375,7 +375,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       await createProjectAndVerifyResult(createProjectData);
 
       const byFspIdRes = await request(app.getHttpServer()).get(
@@ -403,7 +403,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -414,7 +414,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
-      } as CreateSubmissionDto;
+      } as SubmissionDto;
 
       await createSubmissionAndVerifyResult(createSubmissionData);
     });
@@ -430,7 +430,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -441,7 +441,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
-      } as CreateSubmissionDto;
+      } as SubmissionDto;
 
       const submissionRes = await createSubmissionAndVerifyResult(
         createSubmissionData
@@ -456,7 +456,7 @@ describe('API endpoints testing (e2e)', () => {
         plannedDevelopmentDate: '2020-10-10',
         plannedAreaHa: 86,
         submissionId: submissionId,
-      } as CreateCutBlockDto;
+      } as CutBlockDto;
 
       await createCutBlockAndVerifyResult(createCutBlockData);
     });
@@ -472,7 +472,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -483,7 +483,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
-      } as CreateSubmissionDto;
+      } as SubmissionDto;
 
       const submissionRes = await createSubmissionAndVerifyResult(
         createSubmissionData
@@ -498,7 +498,7 @@ describe('API endpoints testing (e2e)', () => {
         plannedDevelopmentDate: '2020-10-10',
         plannedAreaHa: 86,
         submissionId: submissionId,
-      } as CreateCutBlockDto;
+      } as CutBlockDto;
 
       await createCutBlockAndVerifyResult(createCutBlockData);
     });
@@ -514,7 +514,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -525,7 +525,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
-      } as CreateSubmissionDto;
+      } as SubmissionDto;
 
       const submissionRes = await createSubmissionAndVerifyResult(
         createSubmissionData
@@ -539,7 +539,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Polygon', coordinates: [[[102.0, 0.5]]] },
         plannedAreaHa: 86,
         submissionId: submissionId,
-      } as CreateRetentionAreaDto;
+      } as RetentionAreaDto;
 
       await createRetentionAreaAndVerifyResult(createRetentionAreaData);
     });
@@ -555,7 +555,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -566,7 +566,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
-      } as CreateSubmissionDto;
+      } as SubmissionDto;
 
       const submissionRes = await createSubmissionAndVerifyResult(
         createSubmissionData
@@ -580,7 +580,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Polygon', coordinates: [[[102.0, 0.5]]] },
         plannedAreaHa: 86,
         submissionId: submissionId,
-      } as CreateRetentionAreaDto;
+      } as RetentionAreaDto;
 
       await createRetentionAreaAndVerifyResult(createRetentionAreaData);
     });
@@ -596,7 +596,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -607,7 +607,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
-      } as CreateSubmissionDto;
+      } as SubmissionDto;
 
       const submissionRes = await createSubmissionAndVerifyResult(
         createSubmissionData
@@ -630,7 +630,7 @@ describe('API endpoints testing (e2e)', () => {
         plannedDevelopmentDate: '2020-10-10',
         plannedLengthKm: 86,
         submissionId: submissionId,
-      } as CreateRoadSectionDto;
+      } as RoadSectionDto;
 
       await createRoadSectionAndVerifyResult(createRoadSectionData);
     });
@@ -646,7 +646,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as CreateProjectDto;
+      } as ProjectDto;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -657,7 +657,7 @@ describe('API endpoints testing (e2e)', () => {
         geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
-      } as CreateSubmissionDto;
+      } as SubmissionDto;
 
       const submissionRes = await createSubmissionAndVerifyResult(
         createSubmissionData
@@ -680,7 +680,7 @@ describe('API endpoints testing (e2e)', () => {
         plannedDevelopmentDate: '2020-10-10',
         plannedLengthKm: 86,
         submissionId: submissionId,
-      } as CreateRoadSectionDto;
+      } as RoadSectionDto;
 
       await createRoadSectionAndVerifyResult(createRoadSectionData);
     });

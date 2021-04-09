@@ -10,7 +10,7 @@
   "servers": [],
   "components": {
     "schemas": {
-      "CreateAttachmentDto": {
+      "AttachmentDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -62,7 +62,7 @@
           "attachmentTypeCode"
         ]
       },
-      "CreateCutBlockDto": {
+      "CutBlockDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -114,7 +114,7 @@
           "submissionId"
         ]
       },
-      "CreateForestStewardshipPlanDto": {
+      "ForestStewardshipPlanDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -150,7 +150,7 @@
           "updateUser"
         ]
       },
-      "CreateFspDistrictXrefDto": {
+      "FspDistrictXrefDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -186,7 +186,7 @@
           "updateUser"
         ]
       },
-      "CreateInteractionDto": {
+      "InteractionDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -245,7 +245,7 @@
       "District": { "type": "object", "properties": {} },
       "ForestClient": { "type": "object", "properties": {} },
       "WorkflowStateCode": { "type": "object", "properties": {} },
-      "CreateProjectDto": {
+      "ProjectDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -325,9 +325,10 @@
           "workflowState"
         ]
       },
+      "UpdateResult": { "type": "object", "properties": {} },
       "Project": { "type": "object", "properties": {} },
       "ResponseCode": { "type": "object", "properties": {} },
-      "CreatePublicCommentDto": {
+      "PublicCommentDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -403,7 +404,7 @@
           "response"
         ]
       },
-      "CreateRetentionAreaDto": {
+      "RetentionAreaDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -451,7 +452,7 @@
           "submissionId"
         ]
       },
-      "CreateRoadSectionDto": {
+      "RoadSectionDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -504,7 +505,7 @@
         ]
       },
       "SubmissionTypeCode": { "type": "object", "properties": {} },
-      "CreateSubmissionDto": {
+      "SubmissionDto": {
         "type": "object",
         "properties": {
           "id": { "type": "number" },
@@ -595,7 +596,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateAttachmentDto" }
+              "schema": { "$ref": "#/components/schemas/AttachmentDto" }
             }
           }
         },
@@ -668,7 +669,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateCutBlockDto" }
+              "schema": { "$ref": "#/components/schemas/CutBlockDto" }
             }
           }
         },
@@ -742,7 +743,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CreateForestStewardshipPlanDto"
+                "$ref": "#/components/schemas/ForestStewardshipPlanDto"
               }
             }
           }
@@ -818,9 +819,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateFspDistrictXrefDto"
-              }
+              "schema": { "$ref": "#/components/schemas/FspDistrictXrefDto" }
             }
           }
         },
@@ -895,7 +894,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateInteractionDto" }
+              "schema": { "$ref": "#/components/schemas/InteractionDto" }
             }
           }
         },
@@ -1014,11 +1013,20 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateProjectDto" }
+              "schema": { "$ref": "#/components/schemas/ProjectDto" }
             }
           }
         },
-        "responses": { "201": { "description": "" } },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectDto" }
+              }
+            }
+          }
+        },
         "tags": ["project"]
       }
     },
@@ -1033,7 +1041,16 @@
             "schema": { "type": "number" }
           }
         ],
-        "responses": { "200": { "description": "" } },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ProjectDto" }
+              }
+            }
+          }
+        },
         "tags": ["project"]
       },
       "put": {
@@ -1054,7 +1071,16 @@
             }
           }
         },
-        "responses": { "200": { "description": "" } },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UpdateProjectDto" }
+              }
+            }
+          }
+        },
         "tags": ["project"]
       },
       "delete": {
@@ -1067,7 +1093,16 @@
             "schema": { "type": "number" }
           }
         ],
-        "responses": { "200": { "description": "" } },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UpdateResult" }
+              }
+            }
+          }
+        },
         "tags": ["project"]
       }
     },
@@ -1082,7 +1117,19 @@
             "schema": { "type": "number" }
           }
         ],
-        "responses": { "200": { "description": "" } },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ProjectDto" }
+                }
+              }
+            }
+          }
+        },
         "tags": ["projects"]
       }
     },
@@ -1090,7 +1137,19 @@
       "post": {
         "operationId": "ProjectsController_findAll",
         "parameters": [],
-        "responses": { "201": { "description": "" } },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ProjectDto" }
+                }
+              }
+            }
+          }
+        },
         "tags": ["projects"]
       }
     },
@@ -1125,9 +1184,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreatePublicCommentDto"
-              }
+              "schema": { "$ref": "#/components/schemas/PublicCommentDto" }
             }
           }
         },
@@ -1240,9 +1297,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateRetentionAreaDto"
-              }
+              "schema": { "$ref": "#/components/schemas/RetentionAreaDto" }
             }
           }
         },
@@ -1317,7 +1372,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateRoadSectionDto" }
+              "schema": { "$ref": "#/components/schemas/RoadSectionDto" }
             }
           }
         },
@@ -1390,7 +1445,7 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateSubmissionDto" }
+              "schema": { "$ref": "#/components/schemas/SubmissionDto" }
             }
           }
         },
