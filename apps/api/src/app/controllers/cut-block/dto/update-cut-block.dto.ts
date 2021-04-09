@@ -1,4 +1,4 @@
 import { OmitType } from '@nestjs/swagger';
-import { CreateCutBlockDto } from './create-cut-block.dto';
+import { CutBlockDto } from './cut-block.dto';
 
-export class UpdateCutBlockDto extends OmitType(CreateCutBlockDto, ['id']) {}
+export class UpdateCutBlockDto extends OmitType(CutBlockDto, ['id']) {}

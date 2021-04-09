@@ -12,14 +12,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { FspDistrictXrefService } from './fsp-district-xref.service';
 import { FspDistrictXref } from './entities/fsp-district-xref.entity';
-import { CreateFspDistrictXrefDto } from './dto/create-fsp-district-xref.dto';
+import { FspDistrictXrefDto } from './dto/fsp-district-xref.dto';
 import { UpdateFspDistrictXrefDto } from './dto/update-fsp-district-xref.dto';
 
 @ApiTags('fsp-district-xrefs')
 @Controller('fsp-district-xrefs')
 export class FspDistrictXrefsController extends BaseCollectionController<
   FspDistrictXref,
-  CreateFspDistrictXrefDto,
+  FspDistrictXrefDto,
   UpdateFspDistrictXrefDto
 > {
   constructor(protected readonly service: FspDistrictXrefService) {
@@ -36,7 +36,7 @@ export class FspDistrictXrefsController extends BaseCollectionController<
 @Controller('fsp-district-xref')
 export class FspDistrictXrefController extends BaseController<
   FspDistrictXref,
-  CreateFspDistrictXrefDto,
+  FspDistrictXrefDto,
   UpdateFspDistrictXrefDto
 > {
   constructor(protected readonly service: FspDistrictXrefService) {
@@ -44,7 +44,7 @@ export class FspDistrictXrefController extends BaseController<
   }
 
   @Post()
-  async create(@Body() createDto: CreateFspDistrictXrefDto) {
+  async create(@Body() createDto: FspDistrictXrefDto) {
     return super.create(createDto);
   }
 

@@ -1,0 +1,5 @@
+# RxJs
+rm -rf apps/api/openapi/template/typescript-axios/.  # Clear any existing artifacts
+git clone --depth 1 https://github.com/OpenAPITools/openapi-generator.git apps/api/openapi/template/typescript-axios/temp # Clone openapi-generator into temp dir
+cp -rvf apps/api/openapi/template/typescript-axios/temp/modules/openapi-generator/src/main/resources/typescript-axios/. apps/api/openapi/template/typescript-axios # Copy the typescript-axios template
+rm -rf apps/api/openapi/template/typescript-axios/temp # Delete the temp directory

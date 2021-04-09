@@ -5,7 +5,7 @@
     "version": "5.0.1",
     "generators": {
       "v3.0": {
-        "generatorName": "typescript-rxjs",
+        "generatorName": "typescript-axios",
         "output": "#{cwd}/libs/client",
         "glob": "apps/api/openapi/swagger-spec.{json,yaml}",
         "additionalProperties": {
