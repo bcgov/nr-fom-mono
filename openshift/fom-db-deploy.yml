@@ -41,7 +41,8 @@ parameters:
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
-    value: 13-3.1-alpine
+    # Cannot use alpine version because only debian supports running as any user under openshift as per https://registry.hub.docker.com/_/postgres/
+    value: 13-3.1
 
   - description: Name of the PostgreSQL database accessed.
     displayName: PostgreSQL Database Name
@@ -50,7 +51,7 @@ parameters:
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
     name: POSTGRESQL_USER
-    value: admin
+    value: postgres
     #from: user[A-Z0-9]{3}
     #generate: expression
     required: true
@@ -291,7 +292,7 @@ objects:
                     - bash
                     - '-c'
                     - >-
-                      psql -q --dbname "$POSTGRESQL_DATABASE" --username "$POSTGRESQL_USER" -c 'SELECT 1'
+                      psql -q --dbname "$POSTGRES_DB" --username "$POSTGRES_USER" -c 'SELECT 1'
                 failureThreshold: 5
                 initialDelaySeconds: 30
                 periodSeconds: 15
