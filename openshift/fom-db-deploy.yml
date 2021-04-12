@@ -9,14 +9,6 @@ labels:
 metadata:
   name: fom-db-deploy
 parameters:
-  - description: Environment corresponding to namespace (dev/test/prod).
-    displayName: Environment
-    name: ENV
-    value: dev
-  - description: OpenShift Project (namespace prefix).
-    displayName: Project
-    name: PROJECT
-    value: a4b31c
   - description: Name of the application component being deployed.
     displayName: Name
     name: NAME
@@ -25,18 +17,21 @@ parameters:
     displayName: Suffix
     name: SUFFIX
     value: main
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+  - description: OpenShift Project (namespace prefix).
+    displayName: Project
+    name: PROJECT
+    value: a4b31c
 
 # TODO - remove?
-  - description: The name of the OpenShift Service exposed for the database.
-    displayName: Database Service Name
-    name: DATABASE_SERVICE_NAME
-    required: true
-    value: postgresql
-  - description: Name of the PostgreSQL database accessed.
-    displayName: PostgreSQL Database Name
-    name: POSTGRESQL_DATABASE
-    required: true
-    value: fomdb
+#  - description: The name of the OpenShift Service exposed for the database.
+#    displayName: Database Service Name
+#    name: DATABASE_SERVICE_NAME
+#    required: true
+#    value: postgresql
 
   - description: The OpenShift ImageStream name.
     displayName: IMAGE_STREAM_NAME
@@ -47,16 +42,17 @@ parameters:
     name: IMAGE_STREAM_VERSION
     required: true
     value: 13-3.1-alpine
-#  - description: The image registry for the container image or ImageStream.
-#    displayName: Image Registry
-#    name: IMAGE_REGISTRY
-#    value: image-registry.openshift-image-registry.svc:5000
 
+  - description: Name of the PostgreSQL database accessed.
+    displayName: PostgreSQL Database Name
+    name: POSTGRESQL_DATABASE
+    value: fom
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
-    from: user[A-Z0-9]{3}
-    generate: expression
     name: POSTGRESQL_USER
+    value: admin
+    #from: user[A-Z0-9]{3}
+    #generate: expression
     required: true
   - description: Password for the PostgreSQL connection user.
     displayName: PostgreSQL Connection Password
@@ -100,6 +96,11 @@ objects:
     apiVersion: v1
     data:
       setup.sql: |-
+        CREATE USER docker;
+        CREATE DATABASE docker;
+        GRANT ALL PRIVILEGES ON DATABASE docker TO docker;
+
+
         SET application_name="container_setup";
         create extension postgis;
         create extension postgis_topology;
@@ -138,43 +139,44 @@ objects:
         grant usage on schema postgis_ftw to ftw_reader;
         ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
     metadata:
-      name: ${NAME}-setupcfg-${SUFFIX}-${ENV}
-  - apiVersion: v1
-    kind: Secret
+      name: ${NAME}-${SUFFIX}-${ENV}
+    # SECRET - db/user/pwd
+  - kind: Secret
+    apiVersion: v1
     metadata:
       annotations:
-        template.openshift.io/expose-database_name: "{.data['database-name']}"
-        template.openshift.io/expose-password: "{.data['database-password']}"
-        template.openshift.io/expose-username: "{.data['database-user']}"
-        as-copy-of: fom-database-secrets
-      name: ${DATABASE_SERVICE_NAME}
+        #template.openshift.io/expose-database_name: "{.data['database-name']}"
+        #template.openshift.io/expose-password: "{.data['database-password']}"
+        #template.openshift.io/expose-username: "{.data['database-user']}"
+        #as-copy-of: fom-database-secrets
+      name: ${NAME}-${SUFFIX}-${ENV}
     stringData:
       database-name: ${POSTGRESQL_DATABASE}
       database-password: ${POSTGRESQL_PASSWORD}
       database-user: ${POSTGRESQL_USER}
-  - apiVersion: v1
-    kind: Service
+    # Service - DB
+  - kind: Service
+    apiVersion: v1
     metadata:
       annotations:
         template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
-      name: ${DATABASE_SERVICE_NAME}
+      name: ${NAME}-${SUFFIX}-${ENV}
     spec:
       ports:
         - name: postgresql
-          nodePort: 0
+          # nodePort: 0
           port: 5432
           protocol: TCP
           targetPort: 5432
       selector:
-        name: ${DATABASE_SERVICE_NAME}
+        name: ${NAME}-${SUFFIX}-${ENV}
       sessionAffinity: None
       type: ClusterIP
-    status:
-      loadBalancer: {}
+    # Persistent Storage - DB
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
-      name: ${DATABASE_SERVICE_NAME}
+      name: ${NAME}-${SUFFIX}-${ENV}
       annotations:
     spec:
       accessModes:
@@ -183,84 +185,93 @@ objects:
         requests:
           storage: ${VOLUME_CAPACITY}
       storageClassName: ${STORAGE_CLASS}
+    # DeploymentConfig - DB
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: "true"
-      name: ${DATABASE_SERVICE_NAME}
+      name: ${NAME}-${SUFFIX}-${ENV}
     spec:
       replicas: 1
       selector:
-        name: ${DATABASE_SERVICE_NAME}
+        name: ${NAME}-${SUFFIX}-${ENV}
       strategy:
         type: Recreate
       template:
         metadata:
           labels:           
-            name: ${DATABASE_SERVICE_NAME}
-#            appver: fom${NAME_SUFFIX}
+            name: ${NAME}-${SUFFIX}-${ENV}
         spec:
           containers:
             - capabilities: {}
               env:
                 - name: POSTGRES_USER
-                  value: postgres
+                  valueFrom:
+                      secretKeyRef:
+                          key: database-user
+                          name: ${NAME}-${SUFFIX}-${ENV}
                 - name: POSTGRES_PASSWORD
-                  value: test
+                  valueFrom:
+                      secretKeyRef:
+                          key: database-password
+                          name: ${NAME}-${SUFFIX}-${ENV}
                 - name: POSTGRES_DB
-                  value: api-db
+                  valueFrom:
+                      secretKeyRef:
+                          key: database-name
+                          name: ${NAME}-${SUFFIX}-${ENV}
                 - name: POSTGRES_PORT
                   value: "5342"
                 - name: PGDATA
                   value: /var/lib/postgresql/data/pgdata
-                - name: PG_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-name
-                        name: ${DATABASE_SERVICE_NAME}
-                - name: PG_PRIMARY_PORT
-                  value: "5432"
-                - name: CONTAINER_NAME
-                  value: postgresql
-                - name: PG_PRIMARY_HOST
-                  value: ${DATABASE_SERVICE_NAME}
-                - name: PGDATA_PATH_OVERRIDE
-                  value: userdata
-                - name: PGHOST
-                  value: /tmp
-                - name: PG_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-password
-                        name: ${DATABASE_SERVICE_NAME}
-                - name: PG_USER
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-user
-                        name: ${DATABASE_SERVICE_NAME}
-                - name: PG_MODE
-                  valueFrom:
-                    secretKeyRef:
-                        key: PG_MODE
-                        name: crunchy-db-credentials
-                - name: PG_PRIMARY_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                        key: PG_PRIMARY_PASSWORD
-                        name: crunchy-db-credentials
-                - name: PG_PRIMARY_USER
-                  valueFrom:
-                    secretKeyRef:
-                        key: PG_PRIMARY_USER
-                        name: crunchy-db-credentials
-                - name: PG_ROOT_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                        key: PG_ROOT_PASSWORD
-                        name: crunchy-db-credentials
+                #- name: PG_DATABASE
+                #  valueFrom:
+                #    secretKeyRef:
+                #        key: database-name
+                #        name: ${NAME}-${SUFFIX}-${ENV}
+                #- name: PG_PRIMARY_PORT
+                #  value: "5432"
+                #- name: CONTAINER_NAME
+                #  value: postgresql
+                #- name: PG_PRIMARY_HOST
+                #  value: ${DATABASE_SERVICE_NAME}
+                #- name: PGDATA_PATH_OVERRIDE
+                #  value: userdata
+                #- name: PGHOST
+                #  value: /tmp
+                #- name: PG_PASSWORD
+                #  valueFrom:
+                #    secretKeyRef:
+                #        key: database-password
+                #        name: ${NAME}-${SUFFIX}-${ENV}
+                #- name: PG_USER
+                #  valueFrom:
+                #    secretKeyRef:
+                #        key: database-user
+                #        name: ${NAME}-${SUFFIX}-${ENV}
+#                - name: PG_MODE
+#                  valueFrom:
+#                    secretKeyRef:
+#                        key: PG_MODE
+#                        name: crunchy-db-credentials
+#                - name: PG_PRIMARY_PASSWORD
+#                  valueFrom:
+#                    secretKeyRef:
+#                        key: PG_PRIMARY_PASSWORD
+#                        name: crunchy-db-credentials
+#                - name: PG_PRIMARY_USER
+#                  valueFrom:
+#                    secretKeyRef:
+#                        key: PG_PRIMARY_USER
+#                        name: crunchy-db-credentials
+#                - name: PG_ROOT_PASSWORD
+#                  valueFrom:
+#                    secretKeyRef:
+#                        key: PG_ROOT_PASSWORD
+#                        name: crunchy-db-credentials
               image: " "
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
               livenessProbe:
                 failureThreshold: 3
                 initialDelaySeconds: 30
@@ -280,8 +291,7 @@ objects:
                     - bash
                     - '-c'
                     - >-
-                      psql -q -d
-                      $PG_DATABASE -c 'SELECT 1'
+                      psql -q --dbname "$POSTGRESQL_DATABASE" --username "$POSTGRESQL_USER" -c 'SELECT 1'
                 failureThreshold: 5
                 initialDelaySeconds: 30
                 periodSeconds: 15
@@ -301,14 +311,14 @@ objects:
               volumeMounts:
                 - mountPath: /var/lib/postgres/data
                   name: db-data
-                - mountPath: /docker-entrypoint-initdb.d
-                  name: db-setupcfg
+                #- mountPath: /docker-entrypoint-initdb.d
+                #  name: db-setupcfg
                 #- mountPath: /pgdata
                 #  name: db-data
                 - mountPath: /var/run/postgresql
                   name: db-run
-                - mountPath: /pgconf
-                  name: db-setupcfg
+                #- mountPath: /pgconf
+                #  name: db-setupcfg
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
@@ -319,7 +329,7 @@ objects:
               emptyDir: {}
             - name: db-setupcfg
               configMap:
-                name: ${NAME}-setupcfg-${SUFFIX}-${ENV}
+                name: ${NAME}-${SUFFIX}-${ENV}
               
       triggers:
         - imageChangeParams:
