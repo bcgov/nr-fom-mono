@@ -107,6 +107,24 @@ objects:
               # Supply a space to image:, will use settings in ImageChange trigger.
               image:  
               env:
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: fom-db-${TAG}-${ENV}
+                - name: DB_USERNAME 
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: fom-db-${TAG}-${ENV}
+                - name: DB_NAME
+                  valueFrom:
+                      secretKeyRef:
+                        key: database-name
+                        name: fom-db-${TAG}-${ENV}
+                - name: DB_HOST
+                  value: 'fom-db-${TAG}-${ENV}.${PROJECT}-${ENV}.svc.cluster.local'
+                # This is the application port
                 - name: PORT
                   value: '${PORT}'
               resources:
@@ -173,7 +191,7 @@ objects:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
       wildcardPolicy: None
-  ### Network Policy
+  ### Network Policy - External Web Traffic
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
@@ -184,3 +202,20 @@ objects:
           deploymentconfig: ${NAME}-${TAG}-${ENV}
       ingress:
         - {}
+  ### Network Policy - App to DB Traffic
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: app-to-db-allow-${NAME}-${TAG}
+    spec:
+      podSelector:
+        matchLabels:
+          deploymentconfig: fom-db-${TAG}-${ENV}
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  deploymentconfig: ${NAME}-${TAG}-${ENV}
+          ports:
+            - protocol: TCP
+              port: 5432

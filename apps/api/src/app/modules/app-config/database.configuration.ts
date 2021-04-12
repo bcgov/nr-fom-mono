@@ -1,16 +1,14 @@
 import { registerAs } from '@nestjs/config';
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export default registerAs('db', () => ({
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  synchronize: false, // process.env.NODE_ENV !== 'production',
-  type: process.env.DB_TYPE,
-  database: process.env.DB,
-  schema: 'app_fom',
-  ssl: false, // process.env.DB_SSL,
-  username: process.env.DB_USERNAME,
+  synchronize: false, // This changes the DB schema to match changes to entities, which we do not want even in development.
+  database: process.env.DB_NAME || 'api-db',
+  username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT,
-  // namingStrategy: new SnakeNamingStrategy()
+  type: process.env.DB_TYPE || 'postgres',
+  port: process.env.DB_PORT || '5432',
+  schema: 'app_fom',
+  ssl: process.env.DB_SSL || false, 
 }));

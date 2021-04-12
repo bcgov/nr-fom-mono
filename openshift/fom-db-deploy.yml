@@ -210,19 +210,19 @@ objects:
               env:
                 - name: POSTGRES_USER
                   valueFrom:
-                      secretKeyRef:
-                          key: database-user
-                          name: ${NAME}-${SUFFIX}-${ENV}
+                    secretKeyRef:
+                      key: database-user
+                      name: ${NAME}-${SUFFIX}-${ENV}
                 - name: POSTGRES_PASSWORD
                   valueFrom:
-                      secretKeyRef:
-                          key: database-password
-                          name: ${NAME}-${SUFFIX}-${ENV}
+                    secretKeyRef:
+                      key: database-password
+                      name: ${NAME}-${SUFFIX}-${ENV}
                 - name: POSTGRES_DB
                   valueFrom:
-                      secretKeyRef:
-                          key: database-name
-                          name: ${NAME}-${SUFFIX}-${ENV}
+                    secretKeyRef:
+                      key: database-name
+                      name: ${NAME}-${SUFFIX}-${ENV}
                 - name: POSTGRES_PORT
                   value: "5342"
                 - name: PGDATA
