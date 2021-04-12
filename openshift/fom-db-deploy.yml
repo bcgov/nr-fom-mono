@@ -51,6 +51,7 @@ parameters:
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
     name: POSTGRESQL_USER
+    # User needs to be this value to avoid runtime errors in the log, seems linked to running as any user within openshift.
     value: postgres
     #from: user[A-Z0-9]{3}
     #generate: expression
