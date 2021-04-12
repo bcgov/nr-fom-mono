@@ -7,8 +7,17 @@ As per https://docs.openshift.com/container-platform/4.5/openshift_images/managi
 
 
 ### Pull images locally
-
+``` bash
 docker login -u `oc whoami` -p `oc whoami -t` image-registry.apps.silver.devops.gov.bc.ca
 docker pull image-registry.apps.silver.devops.gov.bc.ca/a4b31c-tools/fom-public:demo
 docker run -d -p 4300:4300 image-registry.apps.silver.devops.gov.bc.ca/a4b31c-tools/fom-public:demo
+``` 
 
+## Push images to imagestream (workaround for docker hub pull rate limits)
+``` bash
+docker login -u `oc whoami` -p `oc whoami -t` image-registry.apps.silver.devops.gov.bc.ca
+docker pull ${image}:${tag}
+docker tag ${image}:${tag} image-registry.apps.silver.devops.gov.bc.ca/a4b31c-tools/${image}:${tag}
+docker push image-registry.apps.silver.devops.gov.bc.ca/a4b31c-tools/${image}:${tag}
+# Note that the image name used in OCP cannot have slashes, so a docker image like 'postgis/postgis' will need to have the image name converted to something like 'postgis' in OCP
+```

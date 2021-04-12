@@ -4,7 +4,7 @@ services:
     container_name: api
     build:
       context: .
-      dockerfile: ./docker/api/Dockerfile
+      dockerfile: ./docker/api/Dockerfile.local
     restart: always
     working_dir: /usr/src/app
     environment:

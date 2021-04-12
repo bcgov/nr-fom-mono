@@ -1,28 +1,57 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: postgresql-persistent-template
+  app.kubernetes.io/part-of: fom
+  template: fom-db-deploy
+  suffix: ${SUFFIX}
+  app: fom
+  app-component: ${NAME}
 metadata:
-  creationTimestamp: null
-  name: gwells-postgresql-dc
+  name: fom-db-deploy
 parameters:
-  - description: The OpenShift ImageStream name.
-    displayName: IMAGE_STREAM_NAME
-    name: IMAGE_STREAM_NAME
-    value: crunchy-postgres-gis
-  - description: The OpenShift Namespace where the ImageStream resides.
-    displayName: Namespace
-    name: IMAGE_STREAM_NAMESPACE
-    value: 26e83e-tools
-  - description: The image registry for the container image or ImageStream.
-    displayName: Image Registry
-    name: IMAGE_REGISTRY
-    value: image-registry.openshift-image-registry.svc:5000
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+  - description: OpenShift Project (namespace prefix).
+    displayName: Project
+    name: PROJECT
+    value: a4b31c
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-db
+  - description: Suffix specifying the release/build being deployed.
+    displayName: Suffix
+    name: SUFFIX
+    value: main
+
+# TODO - remove?
   - description: The name of the OpenShift Service exposed for the database.
     displayName: Database Service Name
     name: DATABASE_SERVICE_NAME
     required: true
     value: postgresql
+  - description: Name of the PostgreSQL database accessed.
+    displayName: PostgreSQL Database Name
+    name: POSTGRESQL_DATABASE
+    required: true
+    value: fomdb
+
+  - description: The OpenShift ImageStream name.
+    displayName: IMAGE_STREAM_NAME
+    name: IMAGE_STREAM_NAME
+    value: postgis
+  - description: Version of PostgreSQL image to be used.
+    displayName: Version of PostgreSQL Image
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: 13-3.1-alpine
+#  - description: The image registry for the container image or ImageStream.
+#    displayName: Image Registry
+#    name: IMAGE_REGISTRY
+#    value: image-registry.openshift-image-registry.svc:5000
+
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
     from: user[A-Z0-9]{3}
@@ -35,16 +64,16 @@ parameters:
     generate: expression
     name: POSTGRESQL_PASSWORD
     required: true
-  - description: Name of the PostgreSQL database accessed.
-    displayName: PostgreSQL Database Name
-    name: POSTGRESQL_DATABASE
-    required: true
-    value: sampledb
+
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
     required: true
     value: 1Gi
+  - description: Storage class for PVCs.
+    displayName: Storage class for PVCs.
+    name: STORAGE_CLASS
+    value: netapp-file-standard
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -65,19 +94,10 @@ parameters:
     name: LIMIT_MEMORY
     required: false
     value: 1Gi
-  - description: Version of PostgreSQL image to be used (9.5 or 9.6).
-    displayName: Version of PostgreSQL Image
-    name: IMAGE_STREAM_VERSION
-    required: true
-    value: centos7-12.4-3.0-4.5.0
-  - name: NAME_SUFFIX
-    required: true
-  - description: Storage class for PVCs.
-    displayName: Storage class for PVCs.
-    name: STORAGE_CLASS
-    value: gluster-file-db
 objects:
-  - apiVersion: v1
+    # ConfigMap - Setup Data
+  - kind: ConfigMap
+    apiVersion: v1
     data:
       setup.sql: |-
         SET application_name="container_setup";
@@ -117,13 +137,8 @@ objects:
         create schema postgis_ftw;
         grant usage on schema postgis_ftw to ftw_reader;
         ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
-    kind: ConfigMap
     metadata:
-      labels:
-        app: gwells${NAME_SUFFIX}
-        name: ${DATABASE_SERVICE_NAME}-setupcfg
-        appver: gwells${NAME_SUFFIX}
-      name: ${DATABASE_SERVICE_NAME}-setupcfg
+      name: ${NAME}-setupcfg-${SUFFIX}-${ENV}
   - apiVersion: v1
     kind: Secret
     metadata:
@@ -131,16 +146,12 @@ objects:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
         template.openshift.io/expose-password: "{.data['database-password']}"
         template.openshift.io/expose-username: "{.data['database-user']}"
-        as-copy-of: gwells-database-secrets
+        as-copy-of: fom-database-secrets
       name: ${DATABASE_SERVICE_NAME}
     stringData:
       database-name: ${POSTGRESQL_DATABASE}
       database-password: ${POSTGRESQL_PASSWORD}
       database-user: ${POSTGRESQL_USER}
-      fdw-database-user: null
-      fdw-database-password: null
-      fdw-database-server: null
-      fdw-database-schema: null
   - apiVersion: v1
     kind: Service
     metadata:
@@ -160,12 +171,11 @@ objects:
       type: ClusterIP
     status:
       loadBalancer: {}
-  - apiVersion: v1
-    kind: PersistentVolumeClaim
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
     metadata:
       name: ${DATABASE_SERVICE_NAME}
       annotations:
-        template.openshift.io.bcgov/create: "true"
     spec:
       accessModes:
         - ReadWriteOnce
@@ -173,8 +183,8 @@ objects:
         requests:
           storage: ${VOLUME_CAPACITY}
       storageClassName: ${STORAGE_CLASS}
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - kind: DeploymentConfig
+    apiVersion: v1
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: "true"
@@ -187,13 +197,28 @@ objects:
         type: Recreate
       template:
         metadata:
-          labels:
+          labels:           
             name: ${DATABASE_SERVICE_NAME}
-            appver: gwells${NAME_SUFFIX}
+#            appver: fom${NAME_SUFFIX}
         spec:
           containers:
             - capabilities: {}
               env:
+                - name: POSTGRES_USER
+                  value: postgres
+                - name: POSTGRES_PASSWORD
+                  value: test
+                - name: POSTGRES_DB
+                  value: api-db
+                - name: POSTGRES_PORT
+                  value: "5342"
+                - name: PGDATA
+                  value: /var/lib/postgresql/data/pgdata
+                - name: PG_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                        key: database-name
+                        name: ${DATABASE_SERVICE_NAME}
                 - name: PG_PRIMARY_PORT
                   value: "5432"
                 - name: CONTAINER_NAME
@@ -204,11 +229,6 @@ objects:
                   value: userdata
                 - name: PGHOST
                   value: /tmp
-                - name: PG_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                        key: database-name
-                        name: ${DATABASE_SERVICE_NAME}
                 - name: PG_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -279,23 +299,28 @@ objects:
                 privileged: false
               terminationMessagePath: /dev/termination-log
               volumeMounts:
-                - mountPath: /pgdata
-                  name: ${DATABASE_SERVICE_NAME}-data
+                - mountPath: /var/lib/postgres/data
+                  name: db-data
+                - mountPath: /docker-entrypoint-initdb.d
+                  name: db-setupcfg
+                #- mountPath: /pgdata
+                #  name: db-data
                 - mountPath: /var/run/postgresql
-                  name: ${DATABASE_SERVICE_NAME}-run
+                  name: db-run
                 - mountPath: /pgconf
-                  name: ${DATABASE_SERVICE_NAME}-setupcfg
+                  name: db-setupcfg
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
-            - name: ${DATABASE_SERVICE_NAME}-data
+            - name: db-data
               persistentVolumeClaim:
-                claimName: ${DATABASE_SERVICE_NAME}
-            - name: ${DATABASE_SERVICE_NAME}-run
+                claimName: ${NAME}-${SUFFIX}-${ENV}
+            - name: db-run
               emptyDir: {}
-            - configMap:
-                name: ${DATABASE_SERVICE_NAME}-setupcfg
-              name: ${DATABASE_SERVICE_NAME}-setupcfg
+            - name: db-setupcfg
+              configMap:
+                name: ${NAME}-setupcfg-${SUFFIX}-${ENV}
+              
       triggers:
         - imageChangeParams:
             automatic: true
@@ -303,9 +328,8 @@ objects:
               - postgresql
             from:
               kind: ImageStreamTag
+              namespace: ${PROJECT}-tools
               name: ${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
-              namespace: ${IMAGE_STREAM_NAMESPACE}
             lastTriggeredImage: ""
           type: ImageChange
         - type: ConfigChange
-    status: {}
