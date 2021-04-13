@@ -10,5 +10,5 @@ export default registerAs('db', () => ({
   type: process.env.DB_TYPE || 'postgres',
   port: process.env.DB_PORT || '5432',
   schema: 'app_fom',
-  ssl: process.env.DB_SSL || false, 
+  ssl: false, 
 }));
