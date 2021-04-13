@@ -19,15 +19,15 @@ export const appValidationSchema = Joi.object({
   // SESSION_DB_NAME: Joi.string().default('api-session'),
   // SESSION_DB_COLLECTION: Joi.string().default('session'),
   // SESSION_SECRET: Joi.string().default('this-is-my-secret-key'),
-  // DB_URL: Joi.string().default('localhost'),
-  // DB_TYPE: Joi.string().default('postgres'),
-  // DB: Joi.string().default('api-db'),
-  // DB_SSL: Joi.boolean().default(false),
-  // DB_SYNCHRONIZE: Joi.boolean().default(false),
-  // DB_USERNAME: Joi.string().default('postgres'),
-  // DB_PASSWORD: Joi.string().default(''),
   // MS_AUTH_PORT: Joi.number().default(4000),
-  // entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  DB_HOST: Joi.string().default('localhost'),
+  DB_TYPE: Joi.string().default('postgres'),
+  DB_NAME: Joi.string().default('api-db'),
+  DB_SSL: Joi.boolean().default(false),
+  DB_SYNCHRONIZE: Joi.boolean().default(false),
+  DB_USERNAME: Joi.string().default('postgres'),
+  DB_PASSWORD: Joi.string().default(''),
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
 });
 
 export default registerAs('app', () => ({
