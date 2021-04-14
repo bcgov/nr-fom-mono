@@ -89,6 +89,8 @@ Notes:
 
 ## Deployment (OpenShift)
 
+See [OpenShift Readme](./openshift/README.md)
+
 <!--- Best to include details in a openshift/README.md --->
 
 ## Getting Help or Reporting an Issue

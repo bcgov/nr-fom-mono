@@ -13,7 +13,7 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-db
-  - description: Suffix specifying the release/build being deployed.
+  - description: Suffix specifying the release/build/environment being deployed.
     displayName: Suffix
     name: SUFFIX
     value: main
@@ -25,14 +25,6 @@ parameters:
     displayName: Project
     name: PROJECT
     value: a4b31c
-
-# TODO - remove?
-#  - description: The name of the OpenShift Service exposed for the database.
-#    displayName: Database Service Name
-#    name: DATABASE_SERVICE_NAME
-#    required: true
-#    value: postgresql
-
   - description: The OpenShift ImageStream name.
     displayName: IMAGE_STREAM_NAME
     name: IMAGE_STREAM_NAME
@@ -48,13 +40,15 @@ parameters:
     displayName: PostgreSQL Database Name
     name: POSTGRESQL_DATABASE
     value: fom
+  - description: PostgreSQL database port
+    displayName: PostgreSQL Database Port
+    name: POSTGRESQL_PORT
+    value: '5432'
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
     name: POSTGRESQL_USER
     # User needs to be this value to avoid runtime errors in the log, seems linked to running as any user within openshift.
     value: postgres
-    #from: user[A-Z0-9]{3}
-    #generate: expression
     required: true
   - description: Password for the PostgreSQL connection user.
     displayName: PostgreSQL Connection Password
@@ -97,49 +91,22 @@ objects:
   - kind: ConfigMap
     apiVersion: v1
     data:
+      # This is experimental, not yet used.
       setup.sql: |-
-        CREATE USER docker;
-        CREATE DATABASE docker;
-        GRANT ALL PRIVILEGES ON DATABASE docker TO docker;
-
-
-        SET application_name="container_setup";
-        create extension postgis;
-        create extension postgis_topology;
-        create extension fuzzystrmatch;
-        create extension postgis_tiger_geocoder;
-        create extension pg_stat_statements;
-        create extension pgaudit;
-        create extension plr;
-        alter user postgres password 'PG_ROOT_PASSWORD'; -- these values are automatically replaced by secrets
-        create user "PG_PRIMARY_USER" with REPLICATION  PASSWORD 'PG_PRIMARY_PASSWORD';
-        create user "PG_USER" with password 'PG_PASSWORD';
-        -- read only account for generating tiles
-        create user ftw_reader with password 'PG_PASSWORD';
-        create table primarytable (key varchar(20), value varchar(20));
-        grant all on primarytable to "PG_PRIMARY_USER";
-        create database "PG_DATABASE";
-        grant all privileges on database "PG_DATABASE" to "PG_USER";
-        \c "PG_DATABASE"
-        create extension postgis;
-        create extension postgis_topology;
-        create extension fuzzystrmatch;
-        create extension postgis_tiger_geocoder;
-        create extension pg_stat_statements;
-        create extension pgaudit;
-        create extension plr;
-        \c "PG_DATABASE" "PG_USER";
-        create table testtable (
-          name varchar(30) primary key,
-          value varchar(50) not null,
-          updatedt timestamp not null
-        );
-        insert into testtable (name, value, updatedt) values ('CPU', '256', now());
-        insert into testtable (name, value, updatedt) values ('MEM', '512m', now());
-        grant all on testtable to "PG_PRIMARY_USER";
-        create schema postgis_ftw;
-        grant usage on schema postgis_ftw to ftw_reader;
-        ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
+        -- SET application_name="container_setup";
+        -- \c fom
+        -- create extension pg_stat_statements;
+        -- create extension pgaudit;
+        -- create extension plr;
+        -- create extension postgis;
+        -- create extension postgis_topology;
+        -- create extension fuzzystrmatch;
+        -- create extension postgis_tiger_geocoder;
+        -- create user app;
+        -- create user "PG_USER" with password 'PG_PASSWORD';
+        -- alter user app password 'POSTGRESQL_PASSWORD'; // values are NOT automatically replaced by secrets. Would need to likely use a script.
+        -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
+        -- ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
     metadata:
       name: ${NAME}-${SUFFIX}-${ENV}
     # SECRET - db/user/pwd
@@ -147,12 +114,10 @@ objects:
     apiVersion: v1
     metadata:
       annotations:
-        #template.openshift.io/expose-database_name: "{.data['database-name']}"
-        #template.openshift.io/expose-password: "{.data['database-password']}"
-        #template.openshift.io/expose-username: "{.data['database-user']}"
-        #as-copy-of: fom-database-secrets
       name: ${NAME}-${SUFFIX}-${ENV}
     stringData:
+      # The unqualified hostname is the name of the db service. Easier to look up in fom-api-deploy than recreate.
+      database-host: ${NAME}-${SUFFIX}-${ENV}.${PROJECT}-${ENV}.svc.cluster.local
       database-name: ${POSTGRESQL_DATABASE}
       database-password: ${POSTGRESQL_PASSWORD}
       database-user: ${POSTGRESQL_USER}
@@ -160,16 +125,13 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      annotations:
-        template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
       name: ${NAME}-${SUFFIX}-${ENV}
     spec:
       ports:
         - name: postgresql
-          # nodePort: 0
-          port: 5432
+          port: ${{POSTGRESQL_PORT}}
           protocol: TCP
-          targetPort: 5432
+          targetPort: ${{POSTGRESQL_PORT}}
       selector:
         name: ${NAME}-${SUFFIX}-${ENV}
       sessionAffinity: None
@@ -224,54 +186,10 @@ objects:
                       key: database-name
                       name: ${NAME}-${SUFFIX}-${ENV}
                 - name: POSTGRES_PORT
-                  value: "5342"
+                  value: '${POSTGRESQL_PORT}'
                 - name: PGDATA
+                  # Documentation recommends using subdirectory of mount.
                   value: /var/lib/postgresql/data/pgdata
-                #- name: PG_DATABASE
-                #  valueFrom:
-                #    secretKeyRef:
-                #        key: database-name
-                #        name: ${NAME}-${SUFFIX}-${ENV}
-                #- name: PG_PRIMARY_PORT
-                #  value: "5432"
-                #- name: CONTAINER_NAME
-                #  value: postgresql
-                #- name: PG_PRIMARY_HOST
-                #  value: ${DATABASE_SERVICE_NAME}
-                #- name: PGDATA_PATH_OVERRIDE
-                #  value: userdata
-                #- name: PGHOST
-                #  value: /tmp
-                #- name: PG_PASSWORD
-                #  valueFrom:
-                #    secretKeyRef:
-                #        key: database-password
-                #        name: ${NAME}-${SUFFIX}-${ENV}
-                #- name: PG_USER
-                #  valueFrom:
-                #    secretKeyRef:
-                #        key: database-user
-                #        name: ${NAME}-${SUFFIX}-${ENV}
-#                - name: PG_MODE
-#                  valueFrom:
-#                    secretKeyRef:
-#                        key: PG_MODE
-#                        name: crunchy-db-credentials
-#                - name: PG_PRIMARY_PASSWORD
-#                  valueFrom:
-#                    secretKeyRef:
-#                        key: PG_PRIMARY_PASSWORD
-#                        name: crunchy-db-credentials
-#                - name: PG_PRIMARY_USER
-#                  valueFrom:
-#                    secretKeyRef:
-#                        key: PG_PRIMARY_USER
-#                        name: crunchy-db-credentials
-#                - name: PG_ROOT_PASSWORD
-#                  valueFrom:
-#                    secretKeyRef:
-#                        key: PG_ROOT_PASSWORD
-#                        name: crunchy-db-credentials
               image: " "
               imagePullPolicy: Always
               livenessProbe:
@@ -280,16 +198,15 @@ objects:
                 periodSeconds: 10
                 successThreshold: 1
                 tcpSocket:
-                  port: 5432
+                  port: ${{POSTGRESQL_PORT}}
                 timeoutSeconds: 1
               name: postgresql
               ports:
-                - containerPort: 5432
+                - containerPort: ${{POSTGRESQL_PORT}}
                   protocol: TCP
               readinessProbe:
                 exec:
                   command:
-                    - /usr/bin/env
                     - bash
                     - '-c'
                     - >-
@@ -313,14 +230,10 @@ objects:
               volumeMounts:
                 - mountPath: /var/lib/postgres/data
                   name: db-data
-                #- mountPath: /docker-entrypoint-initdb.d
-                #  name: db-setupcfg
-                #- mountPath: /pgdata
-                #  name: db-data
                 - mountPath: /var/run/postgresql
                   name: db-run
-                #- mountPath: /pgconf
-                #  name: db-setupcfg
+                - mountPath: /docker-entrypoint-initdb.d
+                  name: db-initconfig
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
@@ -329,10 +242,9 @@ objects:
                 claimName: ${NAME}-${SUFFIX}-${ENV}
             - name: db-run
               emptyDir: {}
-            - name: db-setupcfg
+            - name: db-initconfig
               configMap:
                 name: ${NAME}-${SUFFIX}-${ENV}
-              
       triggers:
         - imageChangeParams:
             automatic: true

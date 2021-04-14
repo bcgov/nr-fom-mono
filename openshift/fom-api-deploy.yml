@@ -62,6 +62,11 @@ parameters:
     displayName: DNS Hostname
     name: HOSTNAME
     required: true
+  - description: API Image Version to use
+    displayName: API Image Version
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: main
   
 objects:
   ### DeploymentConfig
@@ -94,7 +99,7 @@ objects:
             from:
               kind: ImageStreamTag
               namespace: ${PROJECT}-tools
-              name: ${NAME}:${TAG}
+              name: ${NAME}:${IMAGE_STREAM_VERSION}
         - type: ConfigChange
       template:
         metadata:
@@ -123,7 +128,10 @@ objects:
                         key: database-name
                         name: fom-db-${TAG}-${ENV}
                 - name: DB_HOST
-                  value: 'fom-db-${TAG}-${ENV}.${PROJECT}-${ENV}.svc.cluster.local'
+                  valueFrom:
+                      secretKeyRef:
+                        key: database-host
+                        name: fom-db-${TAG}-${ENV}
                 # This is the application port
                 - name: PORT
                   value: '${PORT}'
