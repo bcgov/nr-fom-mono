@@ -36,6 +36,7 @@ module.exports = class district1616014739471 {
     }
 
     async down(queryRunner) {
+        // This is intentional
     }
 
 }

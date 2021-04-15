@@ -70,7 +70,7 @@ parameters:
   - description: Specify 'true' to populate test data (run test migrations) at startup.
     displayName: Database Test Data
     name: DB_TESTDATA
-    value: false
+    value: 'false'
   
 objects:
   ### DeploymentConfig

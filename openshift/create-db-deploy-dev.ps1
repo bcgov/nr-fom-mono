@@ -1,4 +1,6 @@
 
+# Deprecated - use create-deploy-dev instead.
+
 Set-Variable -Name "name" -Value "db"
 Set-Variable -Name "env" -Value "dev"
 Set-Variable -Name "suffix" -Value "dev"

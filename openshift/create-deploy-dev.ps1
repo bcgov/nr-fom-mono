@@ -1,7 +1,7 @@
 
 
-function Create-Api-Stack {
-    param ($ApiVersion, $Suffix, $Env)
+function CreateApiStack {
+    param ($ApiVersion, $Suffix, $Env, $TestData)
 
     Write-Output "Create API stack for suffix $Suffix and env $Env ..."
 
@@ -16,10 +16,10 @@ function Create-Api-Stack {
     oc process -f fom-db-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix | oc create -n a4b31c-$Env -f -
 
     Write-Output "Creating api backend..."
-    oc process -f fom-api-deploy.yml -p ENV=$Env -p TAG=$Suffix -p HOSTNAME="nr-fom-api-$Suffix-$Env" -p IMAGE_STREAM_VERSION=$ApiVersion | oc create -n a4b31c-$Env -f -
+    oc process -f fom-api-deploy.yml -p ENV=$Env -p TAG=$Suffix -p HOSTNAME="nr-fom-api-$Suffix-$Env" -p IMAGE_STREAM_VERSION=$ApiVersion -p DB_TESTDATA=$TestData | oc create -n a4b31c-$Env -f -
 }
 
-Create-Api-Stack -Suffix "dev" -Env "dev" -ApiVersion "dev"
-#Create-Api-Stack -Suffix "main" -Env "dev" -ApiVersion "main"
+CreateApiStack -Suffix "working" -Env "dev" -ApiVersion "dev" -TestData "true"
+#CreateApiStack -Suffix "main" -Env "dev" -ApiVersion "main" -TestData "true"
 
 
