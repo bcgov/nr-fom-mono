@@ -4,8 +4,6 @@ module.exports = class district1616014739471 {
 
     async up(queryRunner) {
         await queryRunner.query(`
-        DELETE FROM app_fom.district;
-
         INSERT INTO app_fom.district(district_id, name, create_user) VALUES 
         (43, 'Campbell River Natural Resource District', CURRENT_USER),
         (56, '100 Mile House Natural Resource District', CURRENT_USER),
@@ -36,7 +34,9 @@ module.exports = class district1616014739471 {
     }
 
     async down(queryRunner) {
-        // This is intentional
+        await queryRunner.query(`
+        DELETE FROM app_fom.district;
+        `);
     }
 
 }

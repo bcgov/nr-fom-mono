@@ -4,8 +4,6 @@ module.exports = class forestClient1616015261635 {
 
     async up(queryRunner) {
         await queryRunner.query(`
-        DELETE FROM app_fom.forest_client;
-
         INSERT INTO app_fom.forest_client(forest_client_number, name, create_user) VALUES 
         ('1011', 'AKIECA EXPLORERS LTD.', CURRENT_USER),
         ('1012', 'BELL LUMBER & POLE CANADA, ULC', CURRENT_USER),
@@ -22483,7 +22481,9 @@ module.exports = class forestClient1616015261635 {
     }
 
     async down(queryRunner) {
-        // This is intentional
+        await queryRunner.query(`
+        DELETE FROM app_fom.forest_client;
+        `);
     }
 
 }
