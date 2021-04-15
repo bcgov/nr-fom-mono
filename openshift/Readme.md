@@ -22,6 +22,9 @@ docker push image-registry.apps.silver.devops.gov.bc.ca/a4b31c-tools/${image}:${
 # Note that the image name used in OCP cannot have slashes, so a docker image like 'postgis/postgis' will need to have the image name converted to something like 'postgis' in OCP
 ```
 
+### Starting a build
+oc start-build -F -n a4b31c-tools fom-api-dev
+
 ### Working with postgres
 - Open terminal on pod running postgres
 - psql --user postgres
