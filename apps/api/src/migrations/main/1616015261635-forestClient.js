@@ -338,7 +338,13 @@ module.exports = class forestClient1616015261635 {
         ('4915', 'CHRISTIE BAY ENTERPRISES(1974)LTD.', CURRENT_USER),
         ('4916', 'OLYMPIC FOREST PRODUCTS LTD.', CURRENT_USER),
         ('4975', 'TRI VALLEY CONSTRUCTION LTD.', CURRENT_USER),
-        ('4999', 'SLADEY TIMBER LTD.', CURRENT_USER),
+        ('4999', 'SLADEY TIMBER LTD.', CURRENT_USER)
+
+        ;
+        `);
+
+    }
+/*
         ('5017', 'INLET BOOMING LIMITED', CURRENT_USER),
         ('5028', 'DONMAR LOGGING LTD.', CURRENT_USER),
         ('5039', 'KOOTENAY RANCHES LTD.', CURRENT_USER),
@@ -22477,11 +22483,7 @@ module.exports = class forestClient1616015261635 {
         ('190168', 'PENIKA ENTERPRISES LTD.', CURRENT_USER),
         ('190177', 'TOURMALINE OIL CORP.', CURRENT_USER)
 
-        ;
-        `);
-
-    }
-
+*/
     async down(queryRunner) {
         await queryRunner.query(`
         DELETE FROM app_fom.forest_client;
