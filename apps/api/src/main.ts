@@ -5,8 +5,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
-import * as ormConfigMain from './migration/ormconfig-migration-main';
-import * as ormConfigTest from './migration/ormconfig-migration-test';
+import * as ormConfigMain from './migrations/ormconfig-migration-main';
+import * as ormConfigTest from './migrations/ormconfig-migration-test';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);

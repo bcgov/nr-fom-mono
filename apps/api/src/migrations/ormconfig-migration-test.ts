@@ -6,13 +6,13 @@ var ormConfig = {
     schema: '', // Use default (public) schema for migration table to avoid bootstrapping error where the app_fom schema doesn't exist yet to check the migration table.
     migrations: [
       // Production migration files
-      './migration/main/*.js',
-      // Source migration files used in development
-      './apps/api/src/migration/main/*{.ts,.js}',
+      './migrations/test/*.js',
+      // Source migration files used in development    
+      './apps/api/src/migrations/test/*{.ts,.js}'
     ],
-    migrationsTableName: 'migration_main', 
+    migrationsTableName: 'migration_test', 
     cli: {
-        'migrationsDir': './apps/api/src/migration/main'
+        'migrationsDir': './apps/api/src/migrations/test'
       }      
 } as TypeOrmModuleOptions;
 
