@@ -85,13 +85,12 @@ objects:
       strategy:
         type: Rolling
         rollingParams:
-          updatePeriodSeconds: 1
+          # Delay pod updates to account for time to run migrations
+          updatePeriodSeconds: 10
           intervalSeconds: 1
           timeoutSeconds: 600
           maxUnavailable: 25%
           maxSurge: 25%
-      resources: {}
-      activeDeadlineSeconds: 21600
       selector:
         deploymentconfig: ${NAME}-${TAG}-${ENV}
       triggers:
@@ -148,6 +147,17 @@ objects:
                 limits:
                   cpu: ${LIMIT_CPU}
                   memory: ${LIMIT_MEMORY}
+              # Have longer delay at startup to allow for database migrations to take place.
+              startupProbe:
+                httpGet:
+                  path: /api
+                  port: ${{PORT}}
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
               livenessProbe:
                 httpGet:
                   path: /api
