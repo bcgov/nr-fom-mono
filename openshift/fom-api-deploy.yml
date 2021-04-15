@@ -67,6 +67,10 @@ parameters:
     name: IMAGE_STREAM_VERSION
     required: true
     value: main
+  - description: Specify 'true' to populate test data (run test migrations) at startup.
+    displayName: Database Test Data
+    name: DB_TESTDATA
+    value: false
   
 objects:
   ### DeploymentConfig
@@ -132,6 +136,8 @@ objects:
                       secretKeyRef:
                         key: database-host
                         name: fom-db-${TAG}-${ENV}
+                - name: DB_TESTDATA
+                  value: ${DB_TESTDATA}
                 # This is the application port
                 - name: PORT
                   value: '${PORT}'
