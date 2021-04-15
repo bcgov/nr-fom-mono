@@ -11,7 +11,7 @@ import * as ormConfigTest from './migrations/ormconfig-migration-test';
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
     try {
-      await connection.runMigrations();
+      await connection.runMigrations({ transaction: "each"});
     } finally {
       await connection.close();
     }
