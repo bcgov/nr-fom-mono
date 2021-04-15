@@ -1,10 +1,11 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+const { MigrationInterface, QueryRunner } = require("typeorm");
 
-export class forestClient1616015261635 implements MigrationInterface {
+module.exports = class forestClient1616015261635 {
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    // TODO: Add the full list of forest clients...
+    async up(queryRunner) {
         await queryRunner.query(`
-        -- DELETE FROM app_fom.forest_client;
+        DELETE FROM app_fom.forest_client;
 
         INSERT INTO app_fom.forest_client(forest_client_number, name, create_user) VALUES 
         ('1011', 'AKIECA EXPLORERS LTD.', CURRENT_USER),
@@ -42,7 +43,7 @@ export class forestClient1616015261635 implements MigrationInterface {
         `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    async down(queryRunner) {
     }
 
 }

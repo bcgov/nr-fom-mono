@@ -66,11 +66,15 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 - docker-compose down
 - docker volume rm nr-fom-api_ms-postgres-data
 - docker-compose up -d db
-- npm run typeorm:migrate
+- npm run typeorm:migrate-main
+- npm run typeorm:migrate-test
+- (Although migrations are also run when starting the API component)
+
 
 ### To create a migration:
 
-- typeorm migration:create -n {name}
+- typeorm migration:create -o -n {name}
+- Copy resulting file into migrations/main or migrations/test
 
 ## Application Specific Setup:
 

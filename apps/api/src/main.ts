@@ -1,14 +1,36 @@
-/**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
- */
+import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app/app.module';
+import { createConnection, ConnectionOptions } from 'typeorm';
+import * as ormConfigMain from './migration/ormconfig-migration-main';
+import * as ormConfigTest from './migration/ormconfig-migration-test';
+
+async function dbmigrate(config: ConnectionOptions) {
+    const connection = await createConnection(config);
+    try {
+      await connection.runMigrations();
+    } finally {
+      await connection.close();
+    }
+}
 
 async function bootstrap() {
+
+  try {
+    console.log("Running DB Main Migrations...");
+    await dbmigrate(ormConfigMain as ConnectionOptions);
+    if (process.env.DB_TESTDATA  == "true") {
+      console.log("Running DB Test Data Migrations...");
+      await dbmigrate(ormConfigTest as ConnectionOptions);
+    }
+  } catch (error) {
+    console.log('Error during database migration', error);
+    return error;
+  }
+
   const app = await NestFactory.create(AppModule);
   const appConfig = app.get('AppConfigService');
 
@@ -17,7 +39,6 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  /* TODO: abstract this out */
   const config = new DocumentBuilder()
     .setTitle('FOM API')
     .setDescription('API for FOM backend')
@@ -37,4 +58,5 @@ async function bootstrap() {
     console.log('Listening at http://localhost:' + port + '/' + globalPrefix);
   });
 }
+
 bootstrap();

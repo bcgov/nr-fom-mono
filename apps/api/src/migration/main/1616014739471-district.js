@@ -1,8 +1,8 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+const { MigrationInterface, QueryRunner } = require("typeorm");
 
-export class district1616014739471 implements MigrationInterface {
+module.exports = class district1616014739471 {
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    async up(queryRunner) {
         await queryRunner.query(`
         DELETE FROM app_fom.district;
 
@@ -35,7 +35,7 @@ export class district1616014739471 implements MigrationInterface {
         `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    async down(queryRunner) {
     }
 
 }
