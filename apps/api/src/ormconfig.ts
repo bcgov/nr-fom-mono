@@ -14,8 +14,7 @@ const config: TypeOrmModuleOptions = {
 
   autoLoadEntities: false,
   synchronize: false, // This changes the DB schema to match changes to entities, which we do NOT want even in development.
-  logging: false,
-  entities: [__dirname + '**/*.entity{.ts,.js}'],
+  logging: [ "error", "warn", "info", "log", "migration"],
 };
 
 module.exports = config;

@@ -1,5 +1,4 @@
 
-
 function CreateApiStack {
     param ($ApiVersion, $Suffix, $Env, $TestData)
 
@@ -20,6 +19,6 @@ function CreateApiStack {
 }
 
 CreateApiStack -Suffix "working" -Env "dev" -ApiVersion "dev" -TestData "true"
-#CreateApiStack -Suffix "main" -Env "dev" -ApiVersion "main" -TestData "true"
+CreateApiStack -Suffix "main" -Env "dev" -ApiVersion "main" -TestData "true"
 
 

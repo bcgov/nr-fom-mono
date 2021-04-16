@@ -73,6 +73,14 @@ parameters:
     value: 'false'
   
 objects:
+    # ConfigMap - Hostname - for lookup by Admin/Public
+  - kind: ConfigMap
+    apiVersion: v1
+    data: 
+      hostname: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
+    metadata:
+      name: ${NAME}-${TAG}-${ENV}
+
   ### DeploymentConfig
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
