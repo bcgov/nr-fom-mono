@@ -63,4 +63,10 @@ objects:
           uri: 'https://github.com/bcgov/nr-fom-api'
           ref: ${GIT_REF}
         contextDir: /
-    runPolicy: SerialLatestOnly
+      runPolicy: SerialLatestOnly
+      triggers:
+        - imageChange:
+          from:
+            kind: ImageStreamTag
+            name: "node:14-slim"
+          

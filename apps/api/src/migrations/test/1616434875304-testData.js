@@ -1,8 +1,8 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+const { MigrationInterface, QueryRunner } = require("typeorm");
 
-export class testdata1616434875304 implements MigrationInterface {
+module.exports = class testdata1616434875304 {
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    async up(queryRunner) {
         await queryRunner.query(`
 
         -- app_fom.project
@@ -27,7 +27,7 @@ export class testdata1616434875304 implements MigrationInterface {
         `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    async down(queryRunner) {
         await queryRunner.query(`
         DELETE FROM app_fom.public_comment where public_comment_id in (10,11);
         DELETE FROM app_fom.project where project_id in (1, 2);

@@ -1,9 +1,8 @@
-import {MigrationInterface, QueryRunner, TableForeignKey} from 'typeorm';
+const { MigrationInterface, QueryRunner } = require("typeorm");
 
+module.exports = class initializeTables1613577521127 {
 
-export class initializeTables1613577521127 implements MigrationInterface {
-
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    async up(queryRunner) {
 
         // Run the master DDL script
         await queryRunner.query(`
@@ -520,7 +519,7 @@ comment on column app_fom.interaction.revision_count is 'Standard column for opt
         `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    async down(queryRunner) {
 
         await queryRunner.query(`
         -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.

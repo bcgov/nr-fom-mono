@@ -38,33 +38,38 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 
 ## Local Development
 
-### Run API Backend
+### Run API Backend (directly from code base)
 
 - Install node and docker desktop (with WSL2 on Windows 10)
 - npm install -g ts-node
 - npm install -g typeorm
 - git clone https://github.com/bcgov/nr-fom-api.git
 - npm install
-- docker-compose up -d
+- docker-compose up -d db
 - npm run typeorm:migrate
-- Navigate to http://localhost:8081/api
+- npm run start:api
+- Navigate to http://localhost:3333/api
+
+### Run API Backend as open-shift style container
+- docker build -f docker/api/Dockerfile.local -t api .
+- docker run -d --name api -p 3333:3333 -u 1001 --read-only -e DB_PASSWORD=test -e DB_NAME=api-db -e DB_USERNAME=postgres -e DB_HOST=localhost -e DB_TYPE=postgres -e DB_PORT=5432 api
+- WARNING: Currently doesn't work - fails with Error: connect ECONNREFUSED 127.0.0.1:5432
 
 ### Connect to local database:
 
 - Install dbeaver or pgadmin
-- Ensure database is running (docker-compose up -d)
+- Ensure database is running (docker-compose up -d db && npm run typeorm:migrate)
 - Create PostGRES connection to local database using connection information as defined in docker-compose.yml
 
 ### To rebuild local database from scratch
 
 - docker-compose down
 - docker volume rm nr-fom-api_ms-postgres-data
-- docker-compose up -d
-- npm run typeorm:migrate
+- docker-compose up -d db
+- npm run db:migrate-main
+- npm run db:migrate-test
+- (Although migrations are also run when starting the API component)
 
-### To create a migration:
-
-- typeorm migration:create -n {name}
 
 ## Application Specific Setup:
 
@@ -82,6 +87,8 @@ Notes:
 - The generated client api library is located in `libs/client`
 
 ## Deployment (OpenShift)
+
+See [OpenShift Readme](./openshift/README.md)
 
 <!--- Best to include details in a openshift/README.md --->
 

@@ -62,6 +62,15 @@ parameters:
     displayName: DNS Hostname
     name: HOSTNAME
     required: true
+  - description: API Image Version to use
+    displayName: API Image Version
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: main
+  - description: Specify 'true' to populate test data (run test migrations) at startup.
+    displayName: Database Test Data
+    name: DB_TESTDATA
+    value: 'false'
   
 objects:
   ### DeploymentConfig
@@ -76,13 +85,12 @@ objects:
       strategy:
         type: Rolling
         rollingParams:
-          updatePeriodSeconds: 1
+          # Delay pod updates to account for time to run migrations
+          updatePeriodSeconds: 10
           intervalSeconds: 1
           timeoutSeconds: 600
           maxUnavailable: 25%
           maxSurge: 25%
-      resources: {}
-      activeDeadlineSeconds: 21600
       selector:
         deploymentconfig: ${NAME}-${TAG}-${ENV}
       triggers:
@@ -94,7 +102,7 @@ objects:
             from:
               kind: ImageStreamTag
               namespace: ${PROJECT}-tools
-              name: ${NAME}:${TAG}
+              name: ${NAME}:${IMAGE_STREAM_VERSION}
         - type: ConfigChange
       template:
         metadata:
@@ -107,6 +115,29 @@ objects:
               # Supply a space to image:, will use settings in ImageChange trigger.
               image:  
               env:
+                - name: DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: fom-db-${TAG}-${ENV}
+                - name: DB_USERNAME 
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: fom-db-${TAG}-${ENV}
+                - name: DB_NAME
+                  valueFrom:
+                      secretKeyRef:
+                        key: database-name
+                        name: fom-db-${TAG}-${ENV}
+                - name: DB_HOST
+                  valueFrom:
+                      secretKeyRef:
+                        key: database-host
+                        name: fom-db-${TAG}-${ENV}
+                - name: DB_TESTDATA
+                  value: ${DB_TESTDATA}
+                # This is the application port
                 - name: PORT
                   value: '${PORT}'
               resources:
@@ -116,6 +147,17 @@ objects:
                 limits:
                   cpu: ${LIMIT_CPU}
                   memory: ${LIMIT_MEMORY}
+              # Have longer delay at startup to allow for database migrations to take place.
+              startupProbe:
+                httpGet:
+                  path: /api
+                  port: ${{PORT}}
+                  scheme: HTTP
+                initialDelaySeconds: 10
+                timeoutSeconds: 10
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
               livenessProbe:
                 httpGet:
                   path: /api
@@ -173,7 +215,7 @@ objects:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
       wildcardPolicy: None
-  ### Network Policy
+  ### Network Policy - External Web Traffic
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
@@ -184,3 +226,20 @@ objects:
           deploymentconfig: ${NAME}-${TAG}-${ENV}
       ingress:
         - {}
+  ### Network Policy - App to DB Traffic
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: app-to-db-allow-${NAME}-${TAG}
+    spec:
+      podSelector:
+        matchLabels:
+          deploymentconfig: fom-db-${TAG}-${ENV}
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  deploymentconfig: ${NAME}-${TAG}-${ENV}
+          ports:
+            - protocol: TCP
+              port: 5432

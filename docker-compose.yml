@@ -4,18 +4,16 @@ services:
     container_name: api
     build:
       context: .
-      dockerfile: ./docker/api/Dockerfile
+      dockerfile: ./docker/api/Dockerfile.local
     restart: always
     working_dir: /usr/src/app
     environment:
-      - DB_URL=database
-      - POSTGRES_PORT=5432
       - DB_USERNAME=postgres
       - DB_PASSWORD=test
-      - DB=api-db
+      - DB_NAME=api-db
       - DB_TYPE=postgres
+      - DB_HOST=localhost
       - DB_SSL=false
-      - DB_HOST=database
       - NODE_ENV=production
     volumes:
       - .:/usr/src/app

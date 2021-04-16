@@ -1,11 +1,9 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+const { MigrationInterface, QueryRunner } = require("typeorm");
 
-export class district1616014739471 implements MigrationInterface {
+module.exports = class district1616014739471 {
 
-    public async up(queryRunner: QueryRunner): Promise<void> {
+    async up(queryRunner) {
         await queryRunner.query(`
-        DELETE FROM app_fom.district;
-
         INSERT INTO app_fom.district(district_id, name, create_user) VALUES 
         (43, 'Campbell River Natural Resource District', CURRENT_USER),
         (56, '100 Mile House Natural Resource District', CURRENT_USER),
@@ -35,7 +33,10 @@ export class district1616014739471 implements MigrationInterface {
         `);
     }
 
-    public async down(queryRunner: QueryRunner): Promise<void> {
+    async down(queryRunner) {
+        await queryRunner.query(`
+        DELETE FROM app_fom.district;
+        `);
     }
 
 }

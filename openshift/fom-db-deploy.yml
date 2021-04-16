@@ -1,0 +1,259 @@
+apiVersion: v1
+kind: Template
+labels:
+  app.kubernetes.io/part-of: fom
+  template: fom-db-deploy
+  suffix: ${SUFFIX}
+  app: fom
+  app-component: ${NAME}
+metadata:
+  name: fom-db-deploy
+parameters:
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-db
+  - description: Suffix specifying the release/build/environment being deployed.
+    displayName: Suffix
+    name: SUFFIX
+    value: main
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+  - description: OpenShift Project (namespace prefix).
+    displayName: Project
+    name: PROJECT
+    value: a4b31c
+  - description: The OpenShift ImageStream name.
+    displayName: IMAGE_STREAM_NAME
+    name: IMAGE_STREAM_NAME
+    value: postgis
+  - description: Version of PostgreSQL image to be used.
+    displayName: Version of PostgreSQL Image
+    name: IMAGE_STREAM_VERSION
+    required: true
+    # Cannot use alpine version because only debian supports running as any user under openshift as per https://registry.hub.docker.com/_/postgres/
+    value: 13-3.1
+
+  - description: Name of the PostgreSQL database accessed.
+    displayName: PostgreSQL Database Name
+    name: POSTGRESQL_DATABASE
+    value: fom
+  - description: PostgreSQL database port
+    displayName: PostgreSQL Database Port
+    name: POSTGRESQL_PORT
+    value: '5432'
+  - description: Username for PostgreSQL user that will be used for accessing the database.
+    displayName: PostgreSQL Connection Username
+    name: POSTGRESQL_USER
+    # User needs to be this value to avoid runtime errors in the log, seems linked to running as any user within openshift.
+    value: postgres
+    required: true
+  - description: Password for the PostgreSQL connection user.
+    displayName: PostgreSQL Connection Password
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    name: POSTGRESQL_PASSWORD
+    required: true
+
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: 1Gi
+  - description: Storage class for PVCs.
+    displayName: Storage class for PVCs.
+    name: STORAGE_CLASS
+    value: netapp-file-standard
+  - description: Request for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource request
+    name: REQUEST_CPU
+    required: false
+    value: 100m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 512Mi
+  - description: Limit for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource limit
+    name: LIMIT_CPU
+    required: false
+    value: 200m
+  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource limit
+    name: LIMIT_MEMORY
+    required: false
+    value: 1Gi
+objects:
+    # ConfigMap - Setup Data
+  - kind: ConfigMap
+    apiVersion: v1
+    data:
+      # This is experimental, not yet used.
+      setup.sql: |-
+        -- SET application_name="container_setup";
+        -- \c fom
+        -- create extension pg_stat_statements;
+        -- create extension pgaudit;
+        -- create extension plr;
+        -- create extension postgis;
+        -- create extension postgis_topology;
+        -- create extension fuzzystrmatch;
+        -- create extension postgis_tiger_geocoder;
+        -- create user app;
+        -- create user "PG_USER" with password 'PG_PASSWORD';
+        -- alter user app password 'POSTGRESQL_PASSWORD'; // values are NOT automatically replaced by secrets. Would need to likely use a script.
+        -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
+        -- ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
+    metadata:
+      name: ${NAME}-${SUFFIX}-${ENV}
+    # SECRET - db/user/pwd
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+      name: ${NAME}-${SUFFIX}-${ENV}
+    stringData:
+      # The unqualified hostname is the name of the db service. Easier to look up in fom-api-deploy than recreate.
+      database-host: ${NAME}-${SUFFIX}-${ENV}.${PROJECT}-${ENV}.svc.cluster.local
+      database-name: ${POSTGRESQL_DATABASE}
+      database-password: ${POSTGRESQL_PASSWORD}
+      database-user: ${POSTGRESQL_USER}
+    # Service - DB
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${SUFFIX}-${ENV}
+    spec:
+      ports:
+        - name: postgresql
+          port: ${{POSTGRESQL_PORT}}
+          protocol: TCP
+          targetPort: ${{POSTGRESQL_PORT}}
+      selector:
+        name: ${NAME}-${SUFFIX}-${ENV}
+      sessionAffinity: None
+      type: ClusterIP
+    # Persistent Storage - DB
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${SUFFIX}-${ENV}
+      annotations:
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${VOLUME_CAPACITY}
+      storageClassName: ${STORAGE_CLASS}
+    # DeploymentConfig - DB
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      annotations:
+        template.alpha.openshift.io/wait-for-ready: "true"
+      name: ${NAME}-${SUFFIX}-${ENV}
+    spec:
+      replicas: 1
+      selector:
+        name: ${NAME}-${SUFFIX}-${ENV}
+      strategy:
+        type: Recreate
+      template:
+        metadata:
+          labels:           
+            name: ${NAME}-${SUFFIX}-${ENV}
+        spec:
+          containers:
+            - capabilities: {}
+              env:
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: ${NAME}-${SUFFIX}-${ENV}
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: ${NAME}-${SUFFIX}-${ENV}
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: ${NAME}-${SUFFIX}-${ENV}
+                - name: POSTGRES_PORT
+                  value: '${POSTGRESQL_PORT}'
+                - name: PGDATA
+                  # Documentation recommends using subdirectory of mount.
+                  value: /var/lib/postgresql/data/pgdata
+              image: " "
+              imagePullPolicy: Always
+              livenessProbe:
+                failureThreshold: 3
+                initialDelaySeconds: 30
+                periodSeconds: 10
+                successThreshold: 1
+                tcpSocket:
+                  port: ${{POSTGRESQL_PORT}}
+                timeoutSeconds: 1
+              name: postgresql
+              ports:
+                - containerPort: ${{POSTGRESQL_PORT}}
+                  protocol: TCP
+              readinessProbe:
+                exec:
+                  command:
+                    - bash
+                    - '-c'
+                    - >-
+                      psql -q --dbname "$POSTGRES_DB" --username "$POSTGRES_USER" -c 'SELECT 1'
+                failureThreshold: 5
+                initialDelaySeconds: 30
+                periodSeconds: 15
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources:
+                requests:
+                  cpu: ${REQUEST_CPU}
+                  memory: ${REQUEST_MEMORY}
+                limits:
+                  cpu: ${LIMIT_CPU}
+                  memory: ${LIMIT_MEMORY}
+              securityContext:
+                capabilities: {}
+                privileged: false
+              terminationMessagePath: /dev/termination-log
+              volumeMounts:
+                - mountPath: /var/lib/postgres/data
+                  name: db-data
+                - mountPath: /var/run/postgresql
+                  name: db-run
+                - mountPath: /docker-entrypoint-initdb.d
+                  name: db-initconfig
+          dnsPolicy: ClusterFirst
+          restartPolicy: Always
+          volumes:
+            - name: db-data
+              persistentVolumeClaim:
+                claimName: ${NAME}-${SUFFIX}-${ENV}
+            - name: db-run
+              emptyDir: {}
+            - name: db-initconfig
+              configMap:
+                name: ${NAME}-${SUFFIX}-${ENV}
+      triggers:
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - postgresql
+            from:
+              kind: ImageStreamTag
+              namespace: ${PROJECT}-tools
+              name: ${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
+            lastTriggeredImage: ""
+          type: ImageChange
+        - type: ConfigChange
