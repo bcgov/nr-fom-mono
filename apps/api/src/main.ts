@@ -49,11 +49,12 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
+/* TODO: Temporarily disable - admin front-end is being blocked by CORS policy.
   app.enableCors({
     origin: '*',
     credentials: false,
   });
-
+*/
   await app.listen(port, () => {
     console.log('Listening at http://localhost:' + port + '/' + globalPrefix);
   });
