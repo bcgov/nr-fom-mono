@@ -24,6 +24,13 @@ parameters:
     displayName: Git Ref
     name: GIT_REF
     value: master
+  - description: Webhook secret key.
+    displayName: Webhook secret key
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    name: WEBHOOK_SECRET_KEY
+    required: true
+
 objects:
   ### ImageStream - scoped to entire application component, not to tag. Do not delete/recreate as this leads to loss of previously stored images
   - kind: ImageStream
@@ -33,6 +40,14 @@ objects:
     spec:
       lookupPolicy:
         local: false
+  ### SECRET - webhook - scoped to entire application component, not to tag. Do not delete/recreate as this changes the secret.
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+      name: ${NAME}-webhook
+    stringData:
+      WebHookSecretKey: ${WEBHOOK_SECRET_KEY}
   ### BuildConfig
   - kind: BuildConfig
     apiVersion: v1
@@ -65,8 +80,14 @@ objects:
         contextDir: /
       runPolicy: SerialLatestOnly
       triggers:
-        - imageChange:
+        - type: ImageChange
+          imageChange:
           from:
             kind: ImageStreamTag
             name: "node:14-slim"
+        - type: GitHub
+          github:
+            secretReference:
+              name: ${NAME}-webhook
+        - type: ConfigChange
           
