@@ -1,5 +1,6 @@
- # This script is designed to NOT delete the ImageStream, so recreation of the Image Stream will fail.
+ # This script is designed to NOT delete the ImageStream or Secret, so recreation of these objects will fail.
 Set-Variable -Name "name" -Value "api"
+
 Set-Variable -Name "tag" -Value "main"
 Set-Variable -Name "ref" -Value "master"
 oc delete all -n a4b31c-tools -l template=fom-$name-build,tag=$tag
