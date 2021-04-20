@@ -68,7 +68,7 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 - docker-compose up -d db
 - npm run db:migrate-main
 - npm run db:migrate-test
-- (Although migrations are also run when starting the API component)
+- (Although migrations are also run when starting the API component, test migrations only run if environment variable DB_TESTDATA = true)
 
 
 ## Application Specific Setup:
