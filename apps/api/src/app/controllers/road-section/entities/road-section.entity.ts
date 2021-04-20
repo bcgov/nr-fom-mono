@@ -18,6 +18,9 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   planned_development_date: string; // timestamp
 
   @Column()
+  name: string;
+
+  @Column()
   planned_length_km: number;
 
   @ManyToOne(() => Submission, (submission) => submission.road_sections)

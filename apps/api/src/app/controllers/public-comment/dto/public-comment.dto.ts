@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '@dto';
 import { Project } from '../../project/entities/project.entity';
 import { ResponseCode } from '../../response-code/entities/response-code.entity';
+import { CommentScopeCode } from '../../comment-scope-code/entities/comment-scope-code.entity';
 
 export class PublicCommentDto extends BaseDto {
   @ApiProperty()
@@ -25,4 +26,12 @@ export class PublicCommentDto extends BaseDto {
   responseCode: string;
   @ApiProperty()
   response: ResponseCode;
+  @ApiProperty()
+  commentScopeCode: string;
+  @ApiProperty()
+  commentScope: CommentScopeCode;
+  @ApiProperty()
+  scopeCutBlockId: number;
+  @ApiProperty()
+  scopeRoadSectionId: number;
 }

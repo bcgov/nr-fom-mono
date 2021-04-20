@@ -14,12 +14,12 @@ create extension if not exists postgis;
 
 -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.
 drop table if exists app_fom.interaction;
-drop table if exists app_fom.public_comment;
 drop table if exists app_fom.attachment;
 drop table if exists app_fom.cut_block;
 drop table if exists app_fom.retention_area;
 drop table if exists app_fom.road_section;
 drop table if exists app_fom.submission;
+drop table if exists app_fom.public_comment;
 drop table if exists app_fom.project;
 drop table if exists app_fom.district;
 drop table if exists app_fom.forest_client;
@@ -28,6 +28,38 @@ drop table if exists app_fom.forest_client;
 -- Creation of tables  listed in reverse dependency order (code tables, external tables, and parent tables listed first, in that order) in order to create foreign keys as part of table definition
 
 -- CODE TABLES
+
+/* ------- ddl script for app_fom.comment_scope_code ---------*/  
+drop table if exists app_fom.comment_scope_code ;  
+create table if not exists app_fom.comment_scope_code  
+( 
+code varchar not null primary key  ,
+description varchar not null ,  
+
+revision_count integer not null default 0 ,
+create_timestamp timestamptz not null default now() ,  
+create_user varchar not null ,  
+update_timestamp timestamptz  default now()  ,  
+update_user varchar  
+
+); 
+
+comment on table  app_fom.comment_scope_code is 'Specifies what aspect of the project a comment applies to.';
+
+comment on column app_fom.comment_scope_code.code is 'Code value ';
+comment on column app_fom.comment_scope_code.description is 'Code description ';
+
+comment on column app_fom.comment_scope_code.create_timestamp is 'Time of creation of the record.';
+comment on column app_fom.comment_scope_code.create_user is 'The user id who created the record. For citizens creating comments, a common hardcoded user id will be used.';
+comment on column app_fom.comment_scope_code.update_timestamp is 'Time of most recent update to the record.';
+comment on column app_fom.comment_scope_code.update_user is 'The user id who last updated the record. For citizens creating comments, a common hardcoded user id will be used.';
+comment on column app_fom.comment_scope_code.revision_count is 'Standard column for optimistic locking on updates.';
+
+INSERT INTO app_fom.comment_scope_code(code, description, create_user) VALUES
+('CUT_BLOCK', 'Cut Block', CURRENT_USER),
+('ROAD_SECTION', 'Road Section', CURRENT_USER),
+('OVERALL', 'Overall', CURRENT_USER);
+
 
 /* ------- ddl script for app_fom.response_code ---------*/  
 drop table if exists app_fom.response_code ;  
@@ -325,6 +357,7 @@ cut_block_id serial not null primary key ,
 submission_id integer not null references app_fom.submission (submission_id) , 
 geometry GEOMETRY(POLYGON, 3005) not null  ,  
 planned_development_date date not null  ,  
+name varchar ,
 planned_area_ha real not null , 
 
 revision_count integer not null default 0 ,
@@ -340,6 +373,7 @@ comment on column app_fom.cut_block.cut_block_id is 'Primary key ';
 comment on column app_fom.cut_block.submission_Id is 'Parent submission. ';
 comment on column app_fom.cut_block.geometry is 'The spatial area ';
 comment on column app_fom.cut_block.planned_development_date is 'Date when activity is planned to start. ';
+comment on column app_fom.cut_block.name is 'Business name for the spatial object. ';
 comment on column app_fom.cut_block.planned_area_ha is 'Area of the cutbock in which trees will be removed. Units of Hectares. ';
 
 comment on column app_fom.cut_block.create_timestamp is 'Time of creation of the record.';
@@ -387,6 +421,7 @@ road_section_id serial not null primary key ,
 submission_id integer not null references app_fom.submission (submission_id) , 
 geometry GEOMETRY(LINESTRING, 3005) not null , 
 planned_development_date date not null  ,  
+name varchar,
 planned_length_km real not null , 
 
 revision_count integer not null default 0 ,
@@ -403,6 +438,7 @@ comment on column app_fom.road_section.road_section_id is 'Primary key ';
 comment on column app_fom.road_section.submission_id is 'Parent submission ';
 comment on column app_fom.road_section.geometry is 'The spatial line of the road section. Expected to be an open, simple line. ';
 comment on column app_fom.road_section.planned_development_date is 'Date when activity is planned to start. ';
+comment on column app_fom.road_section.name is 'Business name for the spatial object. ';
 comment on column app_fom.road_section.planned_length_km is 'Length of the road section. Units of Kilometers. ';
 
 comment on column app_fom.road_section.create_timestamp is 'Time of creation of the record.';
@@ -450,6 +486,9 @@ create table if not exists app_fom.public_comment
 (  
 public_comment_id serial not null primary key ,  
 project_id integer not null references app_fom.project(project_id) ,  
+comment_scope_code varchar not null references app_fom.comment_scope_code(code) ,
+scope_road_section_id integer references app_fom.road_section(road_section_id) ,
+scope_cut_block_id integer references app_fom.cut_block(cut_block_id) ,
 feedback varchar not null  ,  
 name varchar ,  
 location varchar ,  
@@ -469,6 +508,9 @@ comment on table  app_fom.public_comment is 'A comment made by a member of the p
 
 comment on column app_fom.public_comment.public_comment_id is 'Primary key ';
 comment on column app_fom.public_comment.project_id is 'Parent project ';
+comment on column app_fom.public_comment.comment_scope_code is 'The scope that the comment applies to - either the entire submission or a specific block or section. ';
+comment on column app_fom.public_comment.scope_road_section_id is 'The road section that this comment applies to. ';
+comment on column app_fom.public_comment.scope_cut_block_id is 'The cut block that this comment applies to. ';
 comment on column app_fom.public_comment.feedback is 'The comment text provided by a citizen. ';
 comment on column app_fom.public_comment.name is 'The name of the citizen. ';
 comment on column app_fom.public_comment.location is 'The location of the citizen.  ';
@@ -524,11 +566,11 @@ comment on column app_fom.interaction.revision_count is 'Standard column for opt
         await queryRunner.query(`
         -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.
         drop table if exists app_fom.interaction;
-        drop table if exists app_fom.public_comment;
         drop table if exists app_fom.attachment;
         drop table if exists app_fom.cut_block;
         drop table if exists app_fom.retention_area;
         drop table if exists app_fom.road_section;
+        drop table if exists app_fom.public_comment;
         drop table if exists app_fom.submission;
         drop table if exists app_fom.project;
 
@@ -542,6 +584,7 @@ comment on column app_fom.interaction.revision_count is 'Standard column for opt
         drop table if exists app_fom.response_code;
         drop table if exists app_fom.submission_type_code;
         drop table if exists app_fom.workflow_state_code;
+        drop table if exists app_fom.comment_scope_code;
         `);
 
     }

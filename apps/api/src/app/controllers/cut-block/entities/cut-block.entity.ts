@@ -18,6 +18,9 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   planned_development_date: string; // timestamp
 
   @Column()
+  name: string;
+  
+  @Column()
   planned_area_ha: number;
 
   @ManyToOne(() => Submission, (submission) => submission.cut_blocks)
