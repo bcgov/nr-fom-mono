@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
@@ -14,6 +6,7 @@ import { SubmissionService } from './submission.service';
 import { Submission } from './entities/submission.entity';
 import { SubmissionDto } from './dto/submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
+import { UpdateResult } from 'typeorm';
 
 @ApiTags('submissions')
 @Controller('submissions')

@@ -19,9 +19,10 @@ import {
   OperationOpts,
   RawAjaxResponse,
 } from '../runtime';
+import { SubmissionTypeCodeDto } from '../models';
 
 export interface SubmissionTypeCodeControllerFindOneRequest {
-  id: number;
+  id: string;
 }
 
 /**
@@ -30,14 +31,18 @@ export interface SubmissionTypeCodeControllerFindOneRequest {
 export class SubmissionTypeCodeApi extends BaseAPI {
   /**
    */
-  submissionTypeCodeControllerFindAll(): Observable<void>;
+  submissionTypeCodeControllerFindAll(): Observable<
+    Array<SubmissionTypeCodeDto>
+  >;
   submissionTypeCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<Array<SubmissionTypeCodeDto>>>;
   submissionTypeCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
-    return this.request<void>(
+  ): Observable<
+    Array<SubmissionTypeCodeDto> | RawAjaxResponse<Array<SubmissionTypeCodeDto>>
+  > {
+    return this.request<Array<SubmissionTypeCodeDto>>(
       {
         url: '/api/submission-type-code',
         method: 'GET',
@@ -50,18 +55,20 @@ export class SubmissionTypeCodeApi extends BaseAPI {
    */
   submissionTypeCodeControllerFindOne({
     id,
-  }: SubmissionTypeCodeControllerFindOneRequest): Observable<void>;
+  }: SubmissionTypeCodeControllerFindOneRequest): Observable<SubmissionTypeCodeDto>;
   submissionTypeCodeControllerFindOne(
     { id }: SubmissionTypeCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<SubmissionTypeCodeDto>>;
   submissionTypeCodeControllerFindOne(
     { id }: SubmissionTypeCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
+  ): Observable<
+    SubmissionTypeCodeDto | RawAjaxResponse<SubmissionTypeCodeDto>
+  > {
     throwIfNullOrUndefined(id, 'id', 'submissionTypeCodeControllerFindOne');
 
-    return this.request<void>(
+    return this.request<SubmissionTypeCodeDto>(
       {
         url: '/api/submission-type-code/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',

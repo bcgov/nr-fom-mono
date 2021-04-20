@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 apis/AttachmentApi.ts
 apis/AttachmentTypeCodeApi.ts
 apis/AttachmentsApi.ts
@@ -31,6 +30,7 @@ apis/WorkflowStateCodeApi.ts
 apis/index.ts
 index.ts
 models/AttachmentDto.ts
+models/AttachmentTypeCodeDto.ts
 models/CreateUserDto.ts
 models/CutBlockDto.ts
 models/ForestStewardshipPlanDto.ts
@@ -38,9 +38,11 @@ models/FspDistrictXrefDto.ts
 models/InteractionDto.ts
 models/ProjectDto.ts
 models/PublicCommentDto.ts
+models/ResponseCodeDto.ts
 models/RetentionAreaDto.ts
 models/RoadSectionDto.ts
 models/SubmissionDto.ts
+models/SubmissionTypeCodeDto.ts
 models/UpdateAttachmentDto.ts
 models/UpdateCutBlockDto.ts
 models/UpdateForestStewardshipPlanDto.ts
@@ -52,6 +54,7 @@ models/UpdateRetentionAreaDto.ts
 models/UpdateRoadSectionDto.ts
 models/UpdateSubmissionDto.ts
 models/UpdateUserDto.ts
+models/WorkflowStateCodeDto.ts
 models/index.ts
 runtime.ts
 servers.ts
