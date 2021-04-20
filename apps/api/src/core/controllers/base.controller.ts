@@ -1,17 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Put,
-  Param,
-  Delete,
-  Res,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
-import {FindOneOptions} from 'typeorm/find-options/FindOneOptions';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
 @Controller()
 export class BaseCollectionController<E, C, U> {

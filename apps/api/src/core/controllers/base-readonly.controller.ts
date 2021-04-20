@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly-provider.model';
 

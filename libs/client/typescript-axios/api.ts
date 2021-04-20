@@ -107,6 +107,25 @@ export interface AttachmentDto {
 /**
  *
  * @export
+ * @interface AttachmentTypeCodeDto
+ */
+export interface AttachmentTypeCodeDto {
+  /**
+   *
+   * @type {string}
+   * @memberof AttachmentTypeCodeDto
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof AttachmentTypeCodeDto
+   */
+  description: string;
+}
+/**
+ *
+ * @export
  * @interface CreateUserDto
  */
 export interface CreateUserDto {
@@ -564,6 +583,25 @@ export interface PublicCommentDto {
 /**
  *
  * @export
+ * @interface ResponseCodeDto
+ */
+export interface ResponseCodeDto {
+  /**
+   *
+   * @type {string}
+   * @memberof ResponseCodeDto
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ResponseCodeDto
+   */
+  description: string;
+}
+/**
+ *
+ * @export
  * @interface RetentionAreaDto
  */
 export interface RetentionAreaDto {
@@ -761,6 +799,25 @@ export interface SubmissionDto {
    * @memberof SubmissionDto
    */
   submissionType: object;
+}
+/**
+ *
+ * @export
+ * @interface SubmissionTypeCodeDto
+ */
+export interface SubmissionTypeCodeDto {
+  /**
+   *
+   * @type {string}
+   * @memberof SubmissionTypeCodeDto
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof SubmissionTypeCodeDto
+   */
+  description: string;
 }
 /**
  *
@@ -1421,6 +1478,25 @@ export interface UpdateUserDto {
    */
   username: string;
 }
+/**
+ *
+ * @export
+ * @interface WorkflowStateCodeDto
+ */
+export interface WorkflowStateCodeDto {
+  /**
+   *
+   * @type {string}
+   * @memberof WorkflowStateCodeDto
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof WorkflowStateCodeDto
+   */
+  description: string;
+}
 
 /**
  * AttachmentApi - axios parameter creator
@@ -1925,12 +2001,12 @@ export const AttachmentTypeCodeApiAxiosParamCreator = function (
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     attachmentTypeCodeControllerFindOne: async (
-      id: number,
+      id: string,
       options: any = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -1990,7 +2066,10 @@ export const AttachmentTypeCodeApiFp = function (
     async attachmentTypeCodeControllerFindAll(
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<AttachmentTypeCodeDto>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.attachmentTypeCodeControllerFindAll(
         options
@@ -2004,15 +2083,18 @@ export const AttachmentTypeCodeApiFp = function (
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async attachmentTypeCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<AttachmentTypeCodeDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.attachmentTypeCodeControllerFindOne(
         id,
@@ -2044,21 +2126,23 @@ export const AttachmentTypeCodeApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    attachmentTypeCodeControllerFindAll(options?: any): AxiosPromise<void> {
+    attachmentTypeCodeControllerFindAll(
+      options?: any
+    ): AxiosPromise<Array<AttachmentTypeCodeDto>> {
       return localVarFp
         .attachmentTypeCodeControllerFindAll(options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     attachmentTypeCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<AttachmentTypeCodeDto> {
       return localVarFp
         .attachmentTypeCodeControllerFindOne(id, options)
         .then((request) => request(axios, basePath));
@@ -2087,12 +2171,12 @@ export class AttachmentTypeCodeApi extends BaseAPI {
 
   /**
    *
-   * @param {number} id
+   * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof AttachmentTypeCodeApi
    */
-  public attachmentTypeCodeControllerFindOne(id: number, options?: any) {
+  public attachmentTypeCodeControllerFindOne(id: string, options?: any) {
     return AttachmentTypeCodeApiFp(this.configuration)
       .attachmentTypeCodeControllerFindOne(id, options)
       .then((request) => request(this.axios, this.basePath));
@@ -6526,12 +6610,12 @@ export const ResponseCodeApiAxiosParamCreator = function (
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     responseCodeControllerFindOne: async (
-      id: number,
+      id: string,
       options: any = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -6589,7 +6673,10 @@ export const ResponseCodeApiFp = function (configuration?: Configuration) {
     async responseCodeControllerFindAll(
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<ResponseCodeDto>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.responseCodeControllerFindAll(
         options
@@ -6603,15 +6690,18 @@ export const ResponseCodeApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async responseCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ResponseCodeDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.responseCodeControllerFindOne(
         id,
@@ -6643,21 +6733,23 @@ export const ResponseCodeApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    responseCodeControllerFindAll(options?: any): AxiosPromise<void> {
+    responseCodeControllerFindAll(
+      options?: any
+    ): AxiosPromise<Array<ResponseCodeDto>> {
       return localVarFp
         .responseCodeControllerFindAll(options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     responseCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<ResponseCodeDto> {
       return localVarFp
         .responseCodeControllerFindOne(id, options)
         .then((request) => request(axios, basePath));
@@ -6686,12 +6778,12 @@ export class ResponseCodeApi extends BaseAPI {
 
   /**
    *
-   * @param {number} id
+   * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ResponseCodeApi
    */
-  public responseCodeControllerFindOne(id: number, options?: any) {
+  public responseCodeControllerFindOne(id: string, options?: any) {
     return ResponseCodeApiFp(this.configuration)
       .responseCodeControllerFindOne(id, options)
       .then((request) => request(this.axios, this.basePath));
@@ -8370,12 +8462,12 @@ export const SubmissionTypeCodeApiAxiosParamCreator = function (
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     submissionTypeCodeControllerFindOne: async (
-      id: number,
+      id: string,
       options: any = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -8435,7 +8527,10 @@ export const SubmissionTypeCodeApiFp = function (
     async submissionTypeCodeControllerFindAll(
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<SubmissionTypeCodeDto>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.submissionTypeCodeControllerFindAll(
         options
@@ -8449,15 +8544,18 @@ export const SubmissionTypeCodeApiFp = function (
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async submissionTypeCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<SubmissionTypeCodeDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.submissionTypeCodeControllerFindOne(
         id,
@@ -8489,21 +8587,23 @@ export const SubmissionTypeCodeApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    submissionTypeCodeControllerFindAll(options?: any): AxiosPromise<void> {
+    submissionTypeCodeControllerFindAll(
+      options?: any
+    ): AxiosPromise<Array<SubmissionTypeCodeDto>> {
       return localVarFp
         .submissionTypeCodeControllerFindAll(options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     submissionTypeCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<SubmissionTypeCodeDto> {
       return localVarFp
         .submissionTypeCodeControllerFindOne(id, options)
         .then((request) => request(axios, basePath));
@@ -8532,12 +8632,12 @@ export class SubmissionTypeCodeApi extends BaseAPI {
 
   /**
    *
-   * @param {number} id
+   * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof SubmissionTypeCodeApi
    */
-  public submissionTypeCodeControllerFindOne(id: number, options?: any) {
+  public submissionTypeCodeControllerFindOne(id: string, options?: any) {
     return SubmissionTypeCodeApiFp(this.configuration)
       .submissionTypeCodeControllerFindOne(id, options)
       .then((request) => request(this.axios, this.basePath));
@@ -9159,12 +9259,12 @@ export const WorkflowStateCodeApiAxiosParamCreator = function (
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     workflowStateCodeControllerFindOne: async (
-      id: number,
+      id: string,
       options: any = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
@@ -9222,7 +9322,10 @@ export const WorkflowStateCodeApiFp = function (configuration?: Configuration) {
     async workflowStateCodeControllerFindAll(
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<WorkflowStateCodeDto>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.workflowStateCodeControllerFindAll(
         options
@@ -9236,15 +9339,18 @@ export const WorkflowStateCodeApiFp = function (configuration?: Configuration) {
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async workflowStateCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<WorkflowStateCodeDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.workflowStateCodeControllerFindOne(
         id,
@@ -9276,21 +9382,23 @@ export const WorkflowStateCodeApiFactory = function (
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    workflowStateCodeControllerFindAll(options?: any): AxiosPromise<void> {
+    workflowStateCodeControllerFindAll(
+      options?: any
+    ): AxiosPromise<Array<WorkflowStateCodeDto>> {
       return localVarFp
         .workflowStateCodeControllerFindAll(options)
         .then((request) => request(axios, basePath));
     },
     /**
      *
-     * @param {number} id
+     * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     workflowStateCodeControllerFindOne(
-      id: number,
+      id: string,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<WorkflowStateCodeDto> {
       return localVarFp
         .workflowStateCodeControllerFindOne(id, options)
         .then((request) => request(axios, basePath));
@@ -9319,12 +9427,12 @@ export class WorkflowStateCodeApi extends BaseAPI {
 
   /**
    *
-   * @param {number} id
+   * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof WorkflowStateCodeApi
    */
-  public workflowStateCodeControllerFindOne(id: number, options?: any) {
+  public workflowStateCodeControllerFindOne(id: string, options?: any) {
     return WorkflowStateCodeApiFp(this.configuration)
       .workflowStateCodeControllerFindOne(id, options)
       .then((request) => request(this.axios, this.basePath));

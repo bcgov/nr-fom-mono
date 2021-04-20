@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { SubmissionTypeCodeService } from './submission-type-code.service';
@@ -19,12 +19,14 @@ export class SubmissionTypeCodeController extends CodeTableController<
   }
 
   @Get()
-  async findAll() {
+  @ApiResponse({ status: 200, type: [SubmissionTypeCodeDto] })
+  async findAll(): Promise<SubmissionTypeCodeDto[]> {
     return super.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @ApiResponse({ status: 200, type: SubmissionTypeCodeDto })
+  async findOne(@Param('id') id: string): Promise<SubmissionTypeCodeDto> {
     return super.findOne(id);
   }
 }

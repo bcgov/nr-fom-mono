@@ -19,9 +19,10 @@ import {
   OperationOpts,
   RawAjaxResponse,
 } from '../runtime';
+import { ResponseCodeDto } from '../models';
 
 export interface ResponseCodeControllerFindOneRequest {
-  id: number;
+  id: string;
 }
 
 /**
@@ -30,14 +31,16 @@ export interface ResponseCodeControllerFindOneRequest {
 export class ResponseCodeApi extends BaseAPI {
   /**
    */
-  responseCodeControllerFindAll(): Observable<void>;
+  responseCodeControllerFindAll(): Observable<Array<ResponseCodeDto>>;
   responseCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<Array<ResponseCodeDto>>>;
   responseCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
-    return this.request<void>(
+  ): Observable<
+    Array<ResponseCodeDto> | RawAjaxResponse<Array<ResponseCodeDto>>
+  > {
+    return this.request<Array<ResponseCodeDto>>(
       {
         url: '/api/response-code',
         method: 'GET',
@@ -50,18 +53,18 @@ export class ResponseCodeApi extends BaseAPI {
    */
   responseCodeControllerFindOne({
     id,
-  }: ResponseCodeControllerFindOneRequest): Observable<void>;
+  }: ResponseCodeControllerFindOneRequest): Observable<ResponseCodeDto>;
   responseCodeControllerFindOne(
     { id }: ResponseCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<ResponseCodeDto>>;
   responseCodeControllerFindOne(
     { id }: ResponseCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
+  ): Observable<ResponseCodeDto | RawAjaxResponse<ResponseCodeDto>> {
     throwIfNullOrUndefined(id, 'id', 'responseCodeControllerFindOne');
 
-    return this.request<void>(
+    return this.request<ResponseCodeDto>(
       {
         url: '/api/response-code/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
