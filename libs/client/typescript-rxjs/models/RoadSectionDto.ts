@@ -57,6 +57,11 @@ export interface RoadSectionDto {
    */
   plannedDevelopmentDate: string;
   /**
+   * @type {string}
+   * @memberof RoadSectionDto
+   */
+  name: string;
+  /**
    * @type {number}
    * @memberof RoadSectionDto
    */

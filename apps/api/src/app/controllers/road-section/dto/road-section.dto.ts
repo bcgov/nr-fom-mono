@@ -8,7 +8,7 @@ export class RoadSectionDto extends BaseDto {
   plannedDevelopmentDate: string; // timestamp
   @ApiProperty()
   name: string;
-  
+
   @ApiProperty()
   plannedLengthKm: number;
   // Relationships

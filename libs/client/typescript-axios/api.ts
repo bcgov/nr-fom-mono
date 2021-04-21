@@ -126,6 +126,25 @@ export interface AttachmentTypeCodeDto {
 /**
  *
  * @export
+ * @interface CommentScopeCodeDto
+ */
+export interface CommentScopeCodeDto {
+  /**
+   *
+   * @type {string}
+   * @memberof CommentScopeCodeDto
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CommentScopeCodeDto
+   */
+  description: string;
+}
+/**
+ *
+ * @export
  * @interface CreateUserDto
  */
 export interface CreateUserDto {
@@ -196,6 +215,12 @@ export interface CutBlockDto {
    * @memberof CutBlockDto
    */
   plannedDevelopmentDate: string;
+  /**
+   *
+   * @type {string}
+   * @memberof CutBlockDto
+   */
+  name: string;
   /**
    *
    * @type {number}
@@ -677,6 +702,30 @@ export interface PublicCommentDto {
    * @memberof PublicCommentDto
    */
   response: object;
+  /**
+   *
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  commentScopeCode: string;
+  /**
+   *
+   * @type {object}
+   * @memberof PublicCommentDto
+   */
+  commentScope: object;
+  /**
+   *
+   * @type {number}
+   * @memberof PublicCommentDto
+   */
+  scopeCutBlockId: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PublicCommentDto
+   */
+  scopeRoadSectionId: number;
 }
 /**
  *
@@ -812,6 +861,12 @@ export interface RoadSectionDto {
    * @memberof RoadSectionDto
    */
   plannedDevelopmentDate: string;
+  /**
+   *
+   * @type {string}
+   * @memberof RoadSectionDto
+   */
+  name: string;
   /**
    *
    * @type {number}
@@ -1026,6 +1081,12 @@ export interface UpdateCutBlockDto {
    * @memberof UpdateCutBlockDto
    */
   plannedDevelopmentDate: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateCutBlockDto
+   */
+  name: string;
   /**
    *
    * @type {number}
@@ -1379,6 +1440,30 @@ export interface UpdatePublicCommentDto {
    * @memberof UpdatePublicCommentDto
    */
   response: object;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdatePublicCommentDto
+   */
+  commentScopeCode: string;
+  /**
+   *
+   * @type {object}
+   * @memberof UpdatePublicCommentDto
+   */
+  commentScope: object;
+  /**
+   *
+   * @type {number}
+   * @memberof UpdatePublicCommentDto
+   */
+  scopeCutBlockId: number;
+  /**
+   *
+   * @type {number}
+   * @memberof UpdatePublicCommentDto
+   */
+  scopeRoadSectionId: number;
 }
 /**
  *
@@ -1483,6 +1568,12 @@ export interface UpdateRoadSectionDto {
    * @memberof UpdateRoadSectionDto
    */
   plannedDevelopmentDate: string;
+  /**
+   *
+   * @type {string}
+   * @memberof UpdateRoadSectionDto
+   */
+  name: string;
   /**
    *
    * @type {number}
@@ -2407,6 +2498,234 @@ export class AttachmentsApi extends BaseAPI {
 }
 
 /**
+ * CommentScopeCodeApi - axios parameter creator
+ * @export
+ */
+export const CommentScopeCodeApiAxiosParamCreator = function (
+  configuration?: Configuration
+) {
+  return {
+    /**
+     *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commentScopeCodeControllerFindAll: async (
+      options: any = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/api/comment-scope-code`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commentScopeCodeControllerFindOne: async (
+      id: string,
+      options: any = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commentScopeCodeControllerFindOne', 'id', id);
+      const localVarPath = `/api/comment-scope-code/{id}`.replace(
+        `{${'id'}}`,
+        encodeURIComponent(String(id))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * CommentScopeCodeApi - functional programming interface
+ * @export
+ */
+export const CommentScopeCodeApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = CommentScopeCodeApiAxiosParamCreator(
+    configuration
+  );
+  return {
+    /**
+     *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commentScopeCodeControllerFindAll(
+      options?: any
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<CommentScopeCodeDto>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commentScopeCodeControllerFindAll(
+        options
+      );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commentScopeCodeControllerFindOne(
+      id: string,
+      options?: any
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<CommentScopeCodeDto>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commentScopeCodeControllerFindOne(
+        id,
+        options
+      );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+  };
+};
+
+/**
+ * CommentScopeCodeApi - factory interface
+ * @export
+ */
+export const CommentScopeCodeApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = CommentScopeCodeApiFp(configuration);
+  return {
+    /**
+     *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commentScopeCodeControllerFindAll(
+      options?: any
+    ): AxiosPromise<Array<CommentScopeCodeDto>> {
+      return localVarFp
+        .commentScopeCodeControllerFindAll(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commentScopeCodeControllerFindOne(
+      id: string,
+      options?: any
+    ): AxiosPromise<CommentScopeCodeDto> {
+      return localVarFp
+        .commentScopeCodeControllerFindOne(id, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * CommentScopeCodeApi - object-oriented interface
+ * @export
+ * @class CommentScopeCodeApi
+ * @extends {BaseAPI}
+ */
+export class CommentScopeCodeApi extends BaseAPI {
+  /**
+   *
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommentScopeCodeApi
+   */
+  public commentScopeCodeControllerFindAll(options?: any) {
+    return CommentScopeCodeApiFp(this.configuration)
+      .commentScopeCodeControllerFindAll(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommentScopeCodeApi
+   */
+  public commentScopeCodeControllerFindOne(id: string, options?: any) {
+    return CommentScopeCodeApiFp(this.configuration)
+      .commentScopeCodeControllerFindOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
  * CutBlockApi - axios parameter creator
  * @export
  */
@@ -3108,6 +3427,44 @@ export const DistrictApiAxiosParamCreator = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    districtControllerFindAll: async (
+      options: any = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/api/district`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3118,7 +3475,7 @@ export const DistrictApiAxiosParamCreator = function (
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('districtControllerFindOne', 'id', id);
-      const localVarPath = `/api/district`.replace(
+      const localVarPath = `/api/district/{id}`.replace(
         `{${'id'}}`,
         encodeURIComponent(String(id))
       );
@@ -3163,6 +3520,29 @@ export const DistrictApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async districtControllerFindAll(
+      options?: any
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<DistrictDto>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.districtControllerFindAll(
+        options
+      );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3200,6 +3580,16 @@ export const DistrictApiFactory = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    districtControllerFindAll(options?: any): AxiosPromise<Array<DistrictDto>> {
+      return localVarFp
+        .districtControllerFindAll(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3224,6 +3614,18 @@ export const DistrictApiFactory = function (
 export class DistrictApi extends BaseAPI {
   /**
    *
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DistrictApi
+   */
+  public districtControllerFindAll(options?: any) {
+    return DistrictApiFp(this.configuration)
+      .districtControllerFindAll(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
    * @param {number} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -3246,6 +3648,44 @@ export const ForestClientApiAxiosParamCreator = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    forestClientControllerFindAll: async (
+      options: any = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/api/forest-client`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = {
+        method: 'GET',
+        ...baseOptions,
+        ...options,
+      };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
+      let headersFromBaseOptions =
+        baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = {
+        ...localVarHeaderParameter,
+        ...headersFromBaseOptions,
+        ...options.headers,
+      };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3256,7 +3696,7 @@ export const ForestClientApiAxiosParamCreator = function (
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('forestClientControllerFindOne', 'id', id);
-      const localVarPath = `/api/forest-client`.replace(
+      const localVarPath = `/api/forest-client/{id}`.replace(
         `{${'id'}}`,
         encodeURIComponent(String(id))
       );
@@ -3303,6 +3743,29 @@ export const ForestClientApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async forestClientControllerFindAll(
+      options?: any
+    ): Promise<
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<Array<ForestClientDto>>
+    > {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.forestClientControllerFindAll(
+        options
+      );
+      return createRequestFunction(
+        localVarAxiosArgs,
+        globalAxios,
+        BASE_PATH,
+        configuration
+      );
+    },
+    /**
+     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3343,6 +3806,18 @@ export const ForestClientApiFactory = function (
   return {
     /**
      *
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    forestClientControllerFindAll(
+      options?: any
+    ): AxiosPromise<Array<ForestClientDto>> {
+      return localVarFp
+        .forestClientControllerFindAll(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3365,6 +3840,18 @@ export const ForestClientApiFactory = function (
  * @extends {BaseAPI}
  */
 export class ForestClientApi extends BaseAPI {
+  /**
+   *
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ForestClientApi
+   */
+  public forestClientControllerFindAll(options?: any) {
+    return ForestClientApiFp(this.configuration)
+      .forestClientControllerFindAll(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
   /**
    *
    * @param {number} id

@@ -1,14 +1,21 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  Column,
+  ManyToOne,
+  RelationId,
+} from 'typeorm';
 import { Submission } from '../../submission/entities/submission.entity';
 
-@Entity('road_section', {schema: 'app_fom'})
+@Entity('road_section', { schema: 'app_fom' })
 export class RoadSection extends ApiBaseEntity<RoadSection> {
   constructor(roadSection?: Partial<RoadSection>) {
     super(roadSection);
   }
 
-  @PrimaryGeneratedColumn('increment', {name: 'road_section_id'})
+  @PrimaryGeneratedColumn('increment', { name: 'road_section_id' })
   public id: number;
 
   @Column({ type: 'geometry', spatialFeatureType: 'LineString', srid: 3005 })

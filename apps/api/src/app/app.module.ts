@@ -73,7 +73,7 @@ import { AppConfigService } from './modules/app-config/app-config.provider';
     // User & Auth Modules
     UserModule,
     // Other Modules
-    LoggerModule.forRoot()
+    LoggerModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

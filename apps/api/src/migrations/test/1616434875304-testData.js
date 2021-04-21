@@ -1,9 +1,8 @@
-const { MigrationInterface, QueryRunner } = require("typeorm");
+const { MigrationInterface, QueryRunner } = require('typeorm');
 
 module.exports = class testdata1616434875304 {
-
-    async up(queryRunner) {
-        await queryRunner.query(`
+  async up(queryRunner) {
+    await queryRunner.query(`
 
         -- app_fom.project
         INSERT INTO app_fom.project(
@@ -25,13 +24,12 @@ module.exports = class testdata1616434875304 {
             'Fort Nelson Natural Resource', 'anonymous@test.com', null, 'CONSIDERED', 'This comment will be dealt with later', 'testdata')
         ;
         `);
-    }
+  }
 
-    async down(queryRunner) {
-        await queryRunner.query(`
+  async down(queryRunner) {
+    await queryRunner.query(`
         DELETE FROM app_fom.public_comment where public_comment_id in (10,11);
         DELETE FROM app_fom.project where project_id in (1, 2);
         `);
-    }
-
-}
+  }
+};

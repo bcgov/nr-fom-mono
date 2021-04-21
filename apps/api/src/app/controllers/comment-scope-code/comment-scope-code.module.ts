@@ -9,6 +9,6 @@ import { CommentScopeCodeController } from './comment-scope-code.controller';
   imports: [TypeOrmModule.forFeature([CommentScopeCode])],
   controllers: [CommentScopeCodeController],
   providers: [CommentScopeCodeService],
-  exports: [CommentScopeCodeService]
+  exports: [CommentScopeCodeService],
 })
 export class CommentScopeCodeModule {}

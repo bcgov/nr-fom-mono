@@ -22,7 +22,7 @@ export class DistrictController extends BaseReadOnlyController<
     return super.findAll();
   }
 
-  @Get()
+  @Get(':id')
   @ApiResponse({ status: 200, type: DistrictDto })
   async findOne(@Param('id') id: number): Promise<DistrictDto> {
     return super.findOne(id);

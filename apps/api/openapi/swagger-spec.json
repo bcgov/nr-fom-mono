@@ -132,6 +132,9 @@
           "plannedDevelopmentDate": {
             "type": "string"
           },
+          "name": {
+            "type": "string"
+          },
           "plannedAreaHa": {
             "type": "number"
           },
@@ -148,6 +151,7 @@
           "updateUser",
           "geometry",
           "plannedDevelopmentDate",
+          "name",
           "plannedAreaHa",
           "submissionId"
         ]
@@ -176,6 +180,9 @@
           "plannedDevelopmentDate": {
             "type": "string"
           },
+          "name": {
+            "type": "string"
+          },
           "plannedAreaHa": {
             "type": "number"
           },
@@ -191,6 +198,7 @@
           "updateUser",
           "geometry",
           "plannedDevelopmentDate",
+          "name",
           "plannedAreaHa",
           "submissionId"
         ]
@@ -661,6 +669,10 @@
         "type": "object",
         "properties": {}
       },
+      "CommentScopeCode": {
+        "type": "object",
+        "properties": {}
+      },
       "PublicCommentDto": {
         "type": "object",
         "properties": {
@@ -711,6 +723,18 @@
           },
           "response": {
             "$ref": "#/components/schemas/ResponseCode"
+          },
+          "commentScopeCode": {
+            "type": "string"
+          },
+          "commentScope": {
+            "$ref": "#/components/schemas/CommentScopeCode"
+          },
+          "scopeCutBlockId": {
+            "type": "number"
+          },
+          "scopeRoadSectionId": {
+            "type": "number"
           }
         },
         "required": [
@@ -729,7 +753,11 @@
           "projectId",
           "project",
           "responseCode",
-          "response"
+          "response",
+          "commentScopeCode",
+          "commentScope",
+          "scopeCutBlockId",
+          "scopeRoadSectionId"
         ]
       },
       "UpdatePublicCommentDto": {
@@ -779,6 +807,18 @@
           },
           "response": {
             "$ref": "#/components/schemas/ResponseCode"
+          },
+          "commentScopeCode": {
+            "type": "string"
+          },
+          "commentScope": {
+            "$ref": "#/components/schemas/CommentScopeCode"
+          },
+          "scopeCutBlockId": {
+            "type": "number"
+          },
+          "scopeRoadSectionId": {
+            "type": "number"
           }
         },
         "required": [
@@ -796,7 +836,11 @@
           "projectId",
           "project",
           "responseCode",
-          "response"
+          "response",
+          "commentScopeCode",
+          "commentScope",
+          "scopeCutBlockId",
+          "scopeRoadSectionId"
         ]
       },
       "ResponseCodeDto": {
@@ -920,6 +964,9 @@
           "plannedDevelopmentDate": {
             "type": "string"
           },
+          "name": {
+            "type": "string"
+          },
           "plannedLengthKm": {
             "type": "number"
           },
@@ -936,6 +983,7 @@
           "updateUser",
           "geometry",
           "plannedDevelopmentDate",
+          "name",
           "plannedLengthKm",
           "submissionId"
         ]
@@ -964,6 +1012,9 @@
           "plannedDevelopmentDate": {
             "type": "string"
           },
+          "name": {
+            "type": "string"
+          },
           "plannedLengthKm": {
             "type": "number"
           },
@@ -979,6 +1030,7 @@
           "updateUser",
           "geometry",
           "plannedDevelopmentDate",
+          "name",
           "plannedLengthKm",
           "submissionId"
         ]
@@ -1098,6 +1150,18 @@
         "required": ["code", "description"]
       },
       "AttachmentTypeCodeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": ["code", "description"]
+      },
+      "CommentScopeCodeDto": {
         "type": "object",
         "properties": {
           "code": {
@@ -1661,6 +1725,28 @@
     },
     "/api/district": {
       "get": {
+        "operationId": "DistrictController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DistrictDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["district"]
+      }
+    },
+    "/api/district/{id}": {
+      "get": {
         "operationId": "DistrictController_findOne",
         "parameters": [
           {
@@ -1688,6 +1774,28 @@
       }
     },
     "/api/forest-client": {
+      "get": {
+        "operationId": "ForestClientController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ForestClientDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["forest-client"]
+      }
+    },
+    "/api/forest-client/{id}": {
       "get": {
         "operationId": "ForestClientController_findOne",
         "parameters": [
@@ -2518,6 +2626,56 @@
           }
         },
         "tags": ["attachment-type-code"]
+      }
+    },
+    "/api/comment-scope-code": {
+      "get": {
+        "operationId": "CommentScopeCodeController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CommentScopeCodeDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": ["comment-scope-code"]
+      }
+    },
+    "/api/comment-scope-code/{id}": {
+      "get": {
+        "operationId": "CommentScopeCodeController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentScopeCodeDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["comment-scope-code"]
       }
     },
     "/api/user": {

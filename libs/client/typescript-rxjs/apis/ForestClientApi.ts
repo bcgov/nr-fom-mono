@@ -31,6 +31,26 @@ export interface ForestClientControllerFindOneRequest {
 export class ForestClientApi extends BaseAPI {
   /**
    */
+  forestClientControllerFindAll(): Observable<Array<ForestClientDto>>;
+  forestClientControllerFindAll(
+    opts?: OperationOpts
+  ): Observable<RawAjaxResponse<Array<ForestClientDto>>>;
+  forestClientControllerFindAll(
+    opts?: OperationOpts
+  ): Observable<
+    Array<ForestClientDto> | RawAjaxResponse<Array<ForestClientDto>>
+  > {
+    return this.request<Array<ForestClientDto>>(
+      {
+        url: '/api/forest-client',
+        method: 'GET',
+      },
+      opts ? opts.responseOpts : undefined
+    );
+  }
+
+  /**
+   */
   forestClientControllerFindOne({
     id,
   }: ForestClientControllerFindOneRequest): Observable<ForestClientDto>;
@@ -46,7 +66,7 @@ export class ForestClientApi extends BaseAPI {
 
     return this.request<ForestClientDto>(
       {
-        url: '/api/forest-client'.replace('{id}', encodeURI(id)),
+        url: '/api/forest-client/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
       opts ? opts.responseOpts : undefined

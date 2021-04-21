@@ -22,7 +22,7 @@ export class ForestClientController extends BaseReadOnlyController<
     return super.findAll();
   }
 
-  @Get()
+  @Get(':id')
   @ApiResponse({ status: 200, type: ForestClientDto })
   async findOne(@Param('id') id: number): Promise<ForestClientDto> {
     return super.findOne(id);

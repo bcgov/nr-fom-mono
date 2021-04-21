@@ -6,7 +6,10 @@ import { CodeTableService } from 'apps/api/src/core/models/code-provider.model';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class CommentScopeCodeService extends CodeTableService<CommentScopeCode, Repository<CommentScopeCode>> {
+export class CommentScopeCodeService extends CodeTableService<
+  CommentScopeCode,
+  Repository<CommentScopeCode>
+> {
   constructor(
     @InjectRepository(CommentScopeCode)
     repository: Repository<CommentScopeCode>,

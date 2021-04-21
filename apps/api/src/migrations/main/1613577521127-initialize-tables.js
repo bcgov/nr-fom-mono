@@ -1,11 +1,9 @@
-const { MigrationInterface, QueryRunner } = require("typeorm");
+const { MigrationInterface, QueryRunner } = require('typeorm');
 
 module.exports = class initializeTables1613577521127 {
-
-    async up(queryRunner) {
-
-        // Run the master DDL script
-        await queryRunner.query(`
+  async up(queryRunner) {
+    // Run the master DDL script
+    await queryRunner.query(`
 
 create schema if not exists app_fom;
 
@@ -559,11 +557,10 @@ comment on column app_fom.interaction.update_user is 'The user id who last updat
 comment on column app_fom.interaction.revision_count is 'Standard column for optimistic locking on updates.';
 
         `);
-    }
+  }
 
-    async down(queryRunner) {
-
-        await queryRunner.query(`
+  async down(queryRunner) {
+    await queryRunner.query(`
         -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.
         drop table if exists app_fom.interaction;
         drop table if exists app_fom.attachment;
@@ -586,6 +583,5 @@ comment on column app_fom.interaction.revision_count is 'Standard column for opt
         drop table if exists app_fom.workflow_state_code;
         drop table if exists app_fom.comment_scope_code;
         `);
-
-    }
-}
+  }
+};
