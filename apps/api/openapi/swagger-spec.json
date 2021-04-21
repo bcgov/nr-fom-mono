@@ -409,6 +409,76 @@
           "attachmentId"
         ]
       },
+      "DistrictDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "revisionCount": {
+            "type": "number"
+          },
+          "createTimestamp": {
+            "type": "string"
+          },
+          "createUser": {
+            "type": "string"
+          },
+          "updateTimestamp": {
+            "type": "string"
+          },
+          "updateUser": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revisionCount",
+          "createTimestamp",
+          "createUser",
+          "updateTimestamp",
+          "updateUser",
+          "name"
+        ]
+      },
+      "ForestClientDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "revisionCount": {
+            "type": "number"
+          },
+          "createTimestamp": {
+            "type": "string"
+          },
+          "createUser": {
+            "type": "string"
+          },
+          "updateTimestamp": {
+            "type": "string"
+          },
+          "updateUser": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "revisionCount",
+          "createTimestamp",
+          "createUser",
+          "updateTimestamp",
+          "updateUser",
+          "name"
+        ]
+      },
       "District": {
         "type": "object",
         "properties": {}
@@ -1591,18 +1661,6 @@
     },
     "/api/district": {
       "get": {
-        "operationId": "DistrictController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["district"]
-      }
-    },
-    "/api/district/{id}": {
-      "get": {
         "operationId": "DistrictController_findOne",
         "parameters": [
           {
@@ -1616,25 +1674,20 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictDto"
+                }
+              }
+            }
           }
         },
         "tags": ["district"]
       }
     },
     "/api/forest-client": {
-      "get": {
-        "operationId": "ForestClientController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["forest-client"]
-      }
-    },
-    "/api/forest-client/{id}": {
       "get": {
         "operationId": "ForestClientController_findOne",
         "parameters": [
@@ -1649,7 +1702,14 @@
         ],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForestClientDto"
+                }
+              }
+            }
           }
         },
         "tags": ["forest-client"]
