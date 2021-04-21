@@ -2,6 +2,8 @@ export * from './AttachmentDto';
 export * from './AttachmentTypeCodeDto';
 export * from './CreateUserDto';
 export * from './CutBlockDto';
+export * from './DistrictDto';
+export * from './ForestClientDto';
 export * from './ForestStewardshipPlanDto';
 export * from './FspDistrictXrefDto';
 export * from './InteractionDto';

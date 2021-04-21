@@ -1,11 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-// import { OptionalId } from 'mongodb';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
-import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { ApiBaseEntity } from '@entities';
 
-// export type MsDocumentType<T> = OptionalId<T>;
+import { mapFromEntity } from '../utils';
+
 /**
  * Base class to extend for interacting with the database through a repository pattern.
  *
@@ -20,7 +19,7 @@ export abstract class DataReadOnlyService<
   E extends ApiBaseEntity<E>,
   R extends Repository<E>
 > {
-  constructor(
+  protected constructor(
     protected repository: R,
     private entity: E,
     private readonly logger: PinoLogger
@@ -35,31 +34,33 @@ export abstract class DataReadOnlyService<
    * @return {*}
    * @memberof DataService
    */
-  async findOne(id: number | string): Promise<E> {
+  async findOne<C>(id: number): Promise<C> {
     this.logger.info(`${this.constructor.name}findOne props`, id);
 
     try {
-      const document = await this.repository.findOne(id);
-      this.logger.info('${this.constructor.name}findOne result', document);
-      return document;
+      const record = await this.repository.findOne(id);
+      this.logger.info('${this.constructor.name}findOne result', record);
+
+      const dto = {} as C;
+      return mapFromEntity(record, dto);
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findOne ${error}`);
     }
   }
 
   /**
-   * Findall documents in collection
+   * Find all records in collection
    *
    * @return {*}
    * @memberof DataService
    */
-  async findAll(options?: FindManyOptions<E> | undefined): Promise<E[]> {
-    this.logger.info(`${this.constructor.name}.findAll options = ` + JSON.stringify(options));
-    
+  async findAll<C>(): Promise<C[]> {
+    this.logger.info(`${this.constructor.name}.findAll`);
+
     try {
-      const findAll = await this.repository.find(options);
+      const findAll = await this.repository.find();
       this.logger.info('findAll result', findAll);
-      return findAll;
+      return findAll.map((r) => mapFromEntity(r, {} as C));
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findAll ${error}`);
       throw new HttpException(
@@ -68,5 +69,4 @@ export abstract class DataReadOnlyService<
       );
     }
   }
-
 }

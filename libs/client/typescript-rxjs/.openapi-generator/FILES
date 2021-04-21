@@ -33,6 +33,8 @@ models/AttachmentDto.ts
 models/AttachmentTypeCodeDto.ts
 models/CreateUserDto.ts
 models/CutBlockDto.ts
+models/DistrictDto.ts
+models/ForestClientDto.ts
 models/ForestStewardshipPlanDto.ts
 models/FspDistrictXrefDto.ts
 models/InteractionDto.ts

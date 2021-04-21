@@ -212,6 +212,104 @@ export interface CutBlockDto {
 /**
  *
  * @export
+ * @interface DistrictDto
+ */
+export interface DistrictDto {
+  /**
+   *
+   * @type {number}
+   * @memberof DistrictDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DistrictDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof DistrictDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DistrictDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DistrictDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DistrictDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DistrictDto
+   */
+  name: string;
+}
+/**
+ *
+ * @export
+ * @interface ForestClientDto
+ */
+export interface ForestClientDto {
+  /**
+   *
+   * @type {number}
+   * @memberof ForestClientDto
+   */
+  id: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ForestClientDto
+   */
+  revisionCount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestClientDto
+   */
+  createTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestClientDto
+   */
+  createUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestClientDto
+   */
+  updateTimestamp: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestClientDto
+   */
+  updateUser: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ForestClientDto
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface ForestStewardshipPlanDto
  */
 export interface ForestStewardshipPlanDto {
@@ -3010,44 +3108,6 @@ export const DistrictApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    districtControllerFindAll: async (
-      options: any = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/api/district`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3058,7 +3118,7 @@ export const DistrictApiAxiosParamCreator = function (
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('districtControllerFindOne', 'id', id);
-      const localVarPath = `/api/district/{id}`.replace(
+      const localVarPath = `/api/district`.replace(
         `{${'id'}}`,
         encodeURIComponent(String(id))
       );
@@ -3103,26 +3163,6 @@ export const DistrictApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async districtControllerFindAll(
-      options?: any
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
-    > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.districtControllerFindAll(
-        options
-      );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
-    /**
-     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3131,7 +3171,7 @@ export const DistrictApiFp = function (configuration?: Configuration) {
       id: number,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<DistrictDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.districtControllerFindOne(
         id,
@@ -3160,21 +3200,14 @@ export const DistrictApiFactory = function (
   return {
     /**
      *
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    districtControllerFindAll(options?: any): AxiosPromise<void> {
-      return localVarFp
-        .districtControllerFindAll(options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    districtControllerFindOne(id: number, options?: any): AxiosPromise<void> {
+    districtControllerFindOne(
+      id: number,
+      options?: any
+    ): AxiosPromise<DistrictDto> {
       return localVarFp
         .districtControllerFindOne(id, options)
         .then((request) => request(axios, basePath));
@@ -3189,18 +3222,6 @@ export const DistrictApiFactory = function (
  * @extends {BaseAPI}
  */
 export class DistrictApi extends BaseAPI {
-  /**
-   *
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof DistrictApi
-   */
-  public districtControllerFindAll(options?: any) {
-    return DistrictApiFp(this.configuration)
-      .districtControllerFindAll(options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    *
    * @param {number} id
@@ -3225,44 +3246,6 @@ export const ForestClientApiAxiosParamCreator = function (
   return {
     /**
      *
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    forestClientControllerFindAll: async (
-      options: any = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/api/forest-client`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = {
-        method: 'GET',
-        ...baseOptions,
-        ...options,
-      };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter, options.query);
-      let headersFromBaseOptions =
-        baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = {
-        ...localVarHeaderParameter,
-        ...headersFromBaseOptions,
-        ...options.headers,
-      };
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
-     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3273,7 +3256,7 @@ export const ForestClientApiAxiosParamCreator = function (
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('forestClientControllerFindOne', 'id', id);
-      const localVarPath = `/api/forest-client/{id}`.replace(
+      const localVarPath = `/api/forest-client`.replace(
         `{${'id'}}`,
         encodeURIComponent(String(id))
       );
@@ -3320,26 +3303,6 @@ export const ForestClientApiFp = function (configuration?: Configuration) {
   return {
     /**
      *
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async forestClientControllerFindAll(
-      options?: any
-    ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
-    > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.forestClientControllerFindAll(
-        options
-      );
-      return createRequestFunction(
-        localVarAxiosArgs,
-        globalAxios,
-        BASE_PATH,
-        configuration
-      );
-    },
-    /**
-     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3348,7 +3311,10 @@ export const ForestClientApiFp = function (configuration?: Configuration) {
       id: number,
       options?: any
     ): Promise<
-      (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
+      (
+        axios?: AxiosInstance,
+        basePath?: string
+      ) => AxiosPromise<ForestClientDto>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.forestClientControllerFindOne(
         id,
@@ -3377,16 +3343,6 @@ export const ForestClientApiFactory = function (
   return {
     /**
      *
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    forestClientControllerFindAll(options?: any): AxiosPromise<void> {
-      return localVarFp
-        .forestClientControllerFindAll(options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
-     *
      * @param {number} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -3394,7 +3350,7 @@ export const ForestClientApiFactory = function (
     forestClientControllerFindOne(
       id: number,
       options?: any
-    ): AxiosPromise<void> {
+    ): AxiosPromise<ForestClientDto> {
       return localVarFp
         .forestClientControllerFindOne(id, options)
         .then((request) => request(axios, basePath));
@@ -3409,18 +3365,6 @@ export const ForestClientApiFactory = function (
  * @extends {BaseAPI}
  */
 export class ForestClientApi extends BaseAPI {
-  /**
-   *
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof ForestClientApi
-   */
-  public forestClientControllerFindAll(options?: any) {
-    return ForestClientApiFp(this.configuration)
-      .forestClientControllerFindAll(options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
   /**
    *
    * @param {number} id
