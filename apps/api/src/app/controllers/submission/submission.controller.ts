@@ -7,6 +7,7 @@ import { Submission } from './entities/submission.entity';
 import { SubmissionDto } from './dto/submission.dto';
 import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { UpdateResult } from 'typeorm';
+import { SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 
 @ApiTags('submissions')
 @Controller('submissions')
@@ -34,6 +35,11 @@ export class SubmissionController extends BaseController<
 > {
   constructor(protected readonly service: SubmissionService) {
     super(service);
+  }
+
+  @Post()
+  async processSpatialSubmission(@Body() dto: SubmissionWithJsonDto) {
+    return this.service.processSpatialSubmission(dto);
   }
 
   @Post()
