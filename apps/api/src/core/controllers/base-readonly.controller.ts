@@ -4,8 +4,8 @@ import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly-prov
 
 @Controller()
 export class BaseReadOnlyController<E, C> {
-  // @ts-ignore
   constructor(
+    // @ts-ignore
     protected readonly service: DataReadOnlyService<E, Repository<E>>
   ) {}
 

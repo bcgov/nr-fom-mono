@@ -96,4 +96,24 @@ export interface PublicCommentDto {
    * @memberof PublicCommentDto
    */
   response: object;
+  /**
+   * @type {string}
+   * @memberof PublicCommentDto
+   */
+  commentScopeCode: string;
+  /**
+   * @type {object}
+   * @memberof PublicCommentDto
+   */
+  commentScope: object;
+  /**
+   * @type {number}
+   * @memberof PublicCommentDto
+   */
+  scopeCutBlockId: number;
+  /**
+   * @type {number}
+   * @memberof PublicCommentDto
+   */
+  scopeRoadSectionId: number;
 }

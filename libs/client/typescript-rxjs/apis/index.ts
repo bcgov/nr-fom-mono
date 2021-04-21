@@ -1,6 +1,7 @@
 export * from './AttachmentApi';
 export * from './AttachmentTypeCodeApi';
 export * from './AttachmentsApi';
+export * from './CommentScopeCodeApi';
 export * from './CutBlockApi';
 export * from './CutBlocksApi';
 export * from './DefaultApi';

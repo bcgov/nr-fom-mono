@@ -1,5 +1,6 @@
 export * from './AttachmentDto';
 export * from './AttachmentTypeCodeDto';
+export * from './CommentScopeCodeDto';
 export * from './CreateUserDto';
 export * from './CutBlockDto';
 export * from './DistrictDto';

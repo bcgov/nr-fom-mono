@@ -31,6 +31,24 @@ export interface DistrictControllerFindOneRequest {
 export class DistrictApi extends BaseAPI {
   /**
    */
+  districtControllerFindAll(): Observable<Array<DistrictDto>>;
+  districtControllerFindAll(
+    opts?: OperationOpts
+  ): Observable<RawAjaxResponse<Array<DistrictDto>>>;
+  districtControllerFindAll(
+    opts?: OperationOpts
+  ): Observable<Array<DistrictDto> | RawAjaxResponse<Array<DistrictDto>>> {
+    return this.request<Array<DistrictDto>>(
+      {
+        url: '/api/district',
+        method: 'GET',
+      },
+      opts ? opts.responseOpts : undefined
+    );
+  }
+
+  /**
+   */
   districtControllerFindOne({
     id,
   }: DistrictControllerFindOneRequest): Observable<DistrictDto>;
@@ -46,7 +64,7 @@ export class DistrictApi extends BaseAPI {
 
     return this.request<DistrictDto>(
       {
-        url: '/api/district'.replace('{id}', encodeURI(id)),
+        url: '/api/district/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',
       },
       opts ? opts.responseOpts : undefined
