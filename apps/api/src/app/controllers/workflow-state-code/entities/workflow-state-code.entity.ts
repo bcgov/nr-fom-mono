@@ -6,4 +6,13 @@ export class WorkflowStateCode extends ApiCodeTableEntity<WorkflowStateCode> {
   constructor(workflowStateCode?: Partial<WorkflowStateCode>) {
     super(workflowStateCode);
   }
+
+  static CODES = {
+    INITIAL: "INITIAL",
+    COMMENT_OPEN: "COMMENT_OPEN",
+    COMMENT_CLOSED: "COMMENT_CLOSED",
+    FINALIZED: "FINALIZED",
+    EXPIRED: "EXPIRED",
+  };
+
 }

@@ -25,7 +25,7 @@ export abstract class DataService<
   protected constructor(
     protected repository: R,
     private entity: E,
-    private readonly logger: PinoLogger
+    protected readonly logger: PinoLogger
   ) {
     logger.setContext(this.constructor.name);
   }
