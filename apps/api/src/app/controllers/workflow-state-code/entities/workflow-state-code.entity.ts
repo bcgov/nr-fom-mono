@@ -12,6 +12,6 @@ export class WorkflowStateCode extends ApiCodeTableEntity<WorkflowStateCode> {
     COMMENT_OPEN: 'COMMENT_OPEN',
     COMMENT_CLOSED: 'COMMENT_CLOSED',
     FINALIZED: 'FINALIZED',
-    EXPIRED: 'EXPIRED',
+    EXPIRED: 'EXPIRED'
   };
 }

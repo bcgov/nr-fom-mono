@@ -6,9 +6,15 @@ export class SubmissionTypeCode extends ApiCodeTableEntity<SubmissionTypeCode> {
   constructor(submissionTypeCode?: Partial<SubmissionTypeCode>) {
     super(submissionTypeCode);
   }
-
+  
   static CODES = {
     PROPOSED: 'PROPOSED',
-    FINAL: 'FINAL',
+    FINAL: 'FINAL'
+  };
+
+  static CODES = {
+    PROPOSED: "PROPOSED",
+    FINAL: "FINAL",
   };
 }
+
