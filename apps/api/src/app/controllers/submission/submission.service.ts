@@ -10,7 +10,10 @@ import { SubmissionTypeCode } from '../submission-type-code/entities/submission-
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 
 @Injectable()
-export class SubmissionService extends DataService<Submission, Repository<Submission>> {
+export class SubmissionService extends DataService<
+  Submission,
+  Repository<Submission>
+> {
   constructor(
     @InjectRepository(Submission)
     repository: Repository<Submission>,
@@ -28,7 +31,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     // Check for existing submission for this project.
     const existingSubmissions: Submission[] = await this.repository.find({
       where: { project_id: dto.projectId },
-//      relations: ['district', 'forest_client', 'workflow_state'],
+      // relations: ['district', 'forest_client', 'workflow_state'],
     });
 
     const existingSubmission: Submission = existingSubmissions[0];
@@ -36,11 +39,10 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     }
 
     const project: Project = {} as Project;
-//    const project: Project = await this.projectService.findOne(dto.projectId); 
-    if (project.workflow_state_code == WorkflowStateCode.CODES.INITIAL) {
+    if (project.workflow_state_code === WorkflowStateCode.CODES.INITIAL) {
     }
 
-    if (dto.submissionTypeCode == SubmissionTypeCode.CODES.FINAL) {
+    if (dto.submissionTypeCode === SubmissionTypeCode.CODES.FINAL) {
     }
 
     // Scenarios:
@@ -58,22 +60,19 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     // 1 | any      | FINAL             | Should not be possible (have only a final fom, no proposed)
     // 2 | FINAL    | PROPOSED+PROPOSED | Should not be possible (cannot have two proposed submissions).
 
+    /*    
+    dto.createUser = 'FAKED USER';
+    dto.revisionCount = 0;
+    dto.updateUser = null;
+    dto.updateTimestamp = null;
 
-/*      
-      dto.createUser = 'FAKED USER';
-      dto.revisionCount = 0;
-      dto.updateUser = null;
-      dto.updateTimestamp = null;
-  
-      const model = this.entity.factory(mapToEntity(dto as C, {} as E));
-      const created = await this.repository.save(model);
-  
-      this.logger.info(`${this.constructor.name}.create result`, created);
-  
-      const createdDto = {} as C;
-      return mapFromEntity(created, createdDto);
-*/
+    const model = this.entity.factory(mapToEntity(dto as C, {} as E));
+    const created = await this.repository.save(model);
 
-    }
+    this.logger.info(`${this.constructor.name}.create result`, created);
 
+    const createdDto = {} as C;
+    return mapFromEntity(created, createdDto);
+    */
+  }
 }
