@@ -9,12 +9,8 @@ export class SubmissionTypeCode extends ApiCodeTableEntity<SubmissionTypeCode> {
   
   static CODES = {
     PROPOSED: 'PROPOSED',
-    FINAL: 'FINAL'
+    FINAL: 'FINAL',
   };
 
-  static CODES = {
-    PROPOSED: "PROPOSED",
-    FINAL: "FINAL",
-  };
 }
 
