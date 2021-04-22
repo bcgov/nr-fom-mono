@@ -10,7 +10,10 @@ import { SubmissionTypeCode } from '../submission-type-code/entities/submission-
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 
 @Injectable()
-export class SubmissionService extends DataService<Submission, Repository<Submission>> {
+export class SubmissionService extends DataService<
+  Submission,
+  Repository<Submission>
+> {
   constructor(
     @InjectRepository(Submission)
     repository: Repository<Submission>,
@@ -22,21 +25,26 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   /**
    * Create or replace a spatial submission.
    */
-  async processSpatialSubmission(dto: Partial<SubmissionWithJsonDto>): Promise<any> {       
+  async processSpatialSubmission(
+    dto: Partial<SubmissionWithJsonDto>
+  ): Promise<any> {
     this.logger.info(`${this.constructor.name}.create props`, dto);
-  
+
     // Check for existing submission for this project.
     const existingSubmissions: Submission[] = await this.repository.find({
       where: { project_id: dto.projectId },
-//      relations: ['district', 'forest_client', 'workflow_state'],
+      //      relations: ['district', 'forest_client', 'workflow_state'],
     });
 
     const existingSubmission: Submission = existingSubmissions[0];
-    if (existingSubmission.submission_type_code == SubmissionTypeCode.CODES.PROPOSED) {
+    if (
+      existingSubmission.submission_type_code ==
+      SubmissionTypeCode.CODES.PROPOSED
+    ) {
     }
 
     const project: Project = {} as Project;
-//    const project: Project = await this.projectService.findOne(dto.projectId); 
+    //    const project: Project = await this.projectService.findOne(dto.projectId);
     if (project.workflow_state_code == WorkflowStateCode.CODES.INITIAL) {
     }
 
@@ -58,8 +66,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     // 1 | any      | FINAL             | Should not be possible (have only a final fom, no proposed)
     // 2 | FINAL    | PROPOSED+PROPOSED | Should not be possible (cannot have two proposed submissions).
 
-
-/*      
+    /*      
       dto.createUser = 'FAKED USER';
       dto.revisionCount = 0;
       dto.updateUser = null;
@@ -73,7 +80,5 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       const createdDto = {} as C;
       return mapFromEntity(created, createdDto);
 */
-
-    }
-
+  }
 }
