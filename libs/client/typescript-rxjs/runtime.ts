@@ -100,7 +100,6 @@ export class BaseAPI {
       map((res) => {
         const { status, response } = res;
         if (status >= 200 && status < 300) {
-          // TODO: Why does this say respone? Is that some kind of typo? Can we change it?
           return (responseOpts ? responseOpts.respone : responseOpts) === 'raw'
             ? res
             : response;
