@@ -76,7 +76,7 @@ export class BaseAPI {
                 const { status, response } = res;
                 if (status >= 200 && status < 300) {
                     // TODO: Why does this say respone? Is that some kind of typo? Can we change it?
-                    return (responseOpts ? responseOpts.respone : responseOpts) === 'raw' ? res : response;
+                    return (responseOpts ? responseOpts.respone : responseOpts) === 'raw' ? res : JSON.parse(response);
                 }
                 throw res;
             })
