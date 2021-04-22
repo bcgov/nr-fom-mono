@@ -37,7 +37,7 @@ description varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 
 ); 
@@ -69,7 +69,7 @@ description varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 
 ); 
@@ -101,7 +101,7 @@ description varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 
 ); 
@@ -135,7 +135,7 @@ description varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 
 ); 
@@ -166,7 +166,7 @@ description varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 ); 
 
@@ -200,7 +200,7 @@ name varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 
 ); 
@@ -227,7 +227,7 @@ name varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 
 ); 
@@ -256,7 +256,7 @@ keycloak_id varchar not null unique ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar 
 );  
 
@@ -293,7 +293,7 @@ commenting_closed_date date ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar 
 
 ); 
@@ -324,12 +324,12 @@ create table if not exists app_fom.submission
 submission_id serial not null primary key ,  
 project_id integer not null references app_fom.project (project_id) , 
 submission_type_code varchar not null references app_fom.submission_type_code(code) , 
-geometry GEOMETRY(POINT, 3005) not null , 
+geometry GEOMETRY(POINT, 3005) , 
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 );  
 
@@ -356,12 +356,12 @@ submission_id integer not null references app_fom.submission (submission_id) ,
 geometry GEOMETRY(POLYGON, 3005) not null  ,  
 planned_development_date date not null  ,  
 name varchar ,
-planned_area_ha real not null , 
+planned_area_ha real , 
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar 
 ); 
 
@@ -388,12 +388,12 @@ create table if not exists app_fom.retention_area
 retention_area_id serial not null primary key ,  
 submission_id integer not null references app_fom.submission (submission_id) , 
 geometry GEOMETRY(POLYGON, 3005) not null  ,  
-planned_area_ha real not null , 
+planned_area_ha real , 
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar 
 );  
 
@@ -420,12 +420,12 @@ submission_id integer not null references app_fom.submission (submission_id) ,
 geometry GEOMETRY(LINESTRING, 3005) not null , 
 planned_development_date date not null  ,  
 name varchar,
-planned_length_km real not null , 
+planned_length_km real , 
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar 
 
 ); 
@@ -459,7 +459,7 @@ file_contents bytea not null  ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 ); 
 
@@ -498,7 +498,7 @@ response_details varchar ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 );  
 
@@ -538,7 +538,7 @@ communication_details varchar not null ,
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
-update_timestamp timestamptz  default now()  ,  
+update_timestamp timestamptz ,  
 update_user varchar  
 ); 
 comment on table  app_fom.interaction is 'A record of interaction between a stakeholder (e.g. citizen, special interest group) and the forest client regarding a proposed FOM project.';

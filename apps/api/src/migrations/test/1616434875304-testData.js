@@ -23,12 +23,45 @@ module.exports = class testdata1616434875304 {
             concern. In addition, how long will your work take?', 'Anonymous', 
             'Fort Nelson Natural Resource', 'anonymous@test.com', null, 'CONSIDERED', 'This comment will be dealt with later', 'testdata')
         ;
+
+        -- app_fom.submission
+        INSERT INTO app_fom.submission(submission_id, project_id, submission_type_code, create_user) values
+        (20, 1, 'PROPOSED', 'testdata')
+        ;
+       
+        -- app_fom.cut_block
+		INSERT INTO app_fom.cut_block (cut_block_id, submission_id, name, planned_development_date, geometry, create_user) VALUES
+		(200, 20, 'my cut block', '2021-04-22', ST_GeomFromText('POLYGON((1474614 555392, 1474818 555392, 1474818 555080, 1474614 555080, 1474614 555392))', 3005), 'testdata')
+		;
+          
+		-- app_fom.road_section
+		INSERT INTO app_fom.road_section(road_section_id, submission_id, name, planned_development_date, geometry, create_user) VALUES 
+		(201, 20, 'my road', '2021-04-23', ST_GeomFromText('LINESTRING(1473871.1 555638.3, 1474543.9 555285.1, 1474940.2 555143.5)', 3005), 'testdata')		
+		;
+
+		-- Update geometric-derived fields to simulate what the application would do
+		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = 20;
+		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = 20;
+
+		with submission_geometries as (
+			select submission_id, geometry from app_fom.cut_block 
+			union 
+			select submission_id, geometry from app_fom.road_section  
+			union 
+			select submission_id, geometry from app_fom.retention_area ra 
+		)
+		update app_fom.submission s set geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from submission_geometries g where g.submission_id = s.submission_id) 
+		where s.submission_id = 20;
+
         `);
   }
 
   async down(queryRunner) {
     await queryRunner.query(`
         DELETE FROM app_fom.public_comment where public_comment_id in (10,11);
+        DELETE FROM app_fom.cut_block where submission_id in (20);
+        DELETE FROM app_fom.road_section where submission_id in (20);
+        DELETE FROM app_fom.submission where submission_id in (20);
         DELETE FROM app_fom.project where project_id in (1, 2);
         `);
   }

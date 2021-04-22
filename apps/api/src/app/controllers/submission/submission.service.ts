@@ -60,6 +60,28 @@ export class SubmissionService extends DataService<
     // 1 | any      | FINAL             | Should not be possible (have only a final fom, no proposed)
     // 2 | FINAL    | PROPOSED+PROPOSED | Should not be possible (cannot have two proposed submissions).
 
+    // Confirm that all geometrics fall within the BC bounds (to catch errors using e.g. lat/lon coordinates)
+    // As a first approximation, the bounds for BC/Albers 3005 are:
+    // Projected Bounds: 35043.6538, 440006.8768, 1885895.3117, 1735643.8497
+
+    // Update geometry-derived fields:
+//		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
+//		update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
+//		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
+/*
+		with submission_geometries as (
+			select geometry from app_fom.cut_block where submission_id = {}
+			union 
+			select geometry from app_fom.road_section where submission_id = {}
+			union 
+			select geometry from app_fom.retention_area ra where submission_id = {}
+		)
+		update app_fom.submission s set geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from submission_geometries g) 
+		where s.submission_id = {}
+
+*/
+
+
     /*    
     dto.createUser = 'FAKED USER';
     dto.revisionCount = 0;
