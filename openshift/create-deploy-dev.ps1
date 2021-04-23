@@ -5,7 +5,7 @@ function CreateApiStack {
     Write-Output "Create API stack for suffix $Suffix and env $Env ..."
 
     Write-Output "Deleting existing resources..."
-    oc delete all,NetworkPolicy -n a4b31c-$Env -l template=fom-api-deploy,tag=$Suffix
+    oc delete all,NetworkPolicy,ConfigMap -n a4b31c-$Env -l template=fom-api-deploy,tag=$Suffix
 
     oc delete all,NetworkPolicy,ConfigMap -n a4b31c-$Env -l template=fom-db-deploy,suffix=$Suffix
     # WARNING: Non-reversible destructive operation: This will destroy the existing database and credentials to access it.
