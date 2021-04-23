@@ -49,6 +49,7 @@ export class ProjectController extends BaseController<
   @Post()
   @ApiResponse({ status: 201, type: ProjectDto })
   async create(@Body() createDto: ProjectDto): Promise<ProjectDto> {
+    // add buisiness logic here
     return super.create(createDto);
   }
 
