@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { WorkflowStateCodeService } from './workflow-state-code.service';
@@ -19,12 +19,14 @@ export class WorkflowStateCodeController extends CodeTableController<
   }
 
   @Get()
-  async findAll() {
+  @ApiResponse({ status: 200, type: [WorkflowStateCodeDto] })
+  async findAll(): Promise<WorkflowStateCodeDto[]> {
     return super.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @ApiResponse({ status: 200, type: WorkflowStateCodeDto })
+  async findOne(@Param('id') id: string): Promise<WorkflowStateCodeDto> {
     return super.findOne(id);
   }
 }

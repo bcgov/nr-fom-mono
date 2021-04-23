@@ -19,6 +19,7 @@ import {
   OperationOpts,
   RawAjaxResponse,
 } from '../runtime';
+import { DistrictDto } from '../models';
 
 export interface DistrictControllerFindOneRequest {
   id: number;
@@ -30,14 +31,14 @@ export interface DistrictControllerFindOneRequest {
 export class DistrictApi extends BaseAPI {
   /**
    */
-  districtControllerFindAll(): Observable<void>;
+  districtControllerFindAll(): Observable<Array<DistrictDto>>;
   districtControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<Array<DistrictDto>>>;
   districtControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
-    return this.request<void>(
+  ): Observable<Array<DistrictDto> | RawAjaxResponse<Array<DistrictDto>>> {
+    return this.request<Array<DistrictDto>>(
       {
         url: '/api/district',
         method: 'GET',
@@ -50,18 +51,18 @@ export class DistrictApi extends BaseAPI {
    */
   districtControllerFindOne({
     id,
-  }: DistrictControllerFindOneRequest): Observable<void>;
+  }: DistrictControllerFindOneRequest): Observable<DistrictDto>;
   districtControllerFindOne(
     { id }: DistrictControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<DistrictDto>>;
   districtControllerFindOne(
     { id }: DistrictControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
+  ): Observable<DistrictDto | RawAjaxResponse<DistrictDto>> {
     throwIfNullOrUndefined(id, 'id', 'districtControllerFindOne');
 
-    return this.request<void>(
+    return this.request<DistrictDto>(
       {
         url: '/api/district/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',

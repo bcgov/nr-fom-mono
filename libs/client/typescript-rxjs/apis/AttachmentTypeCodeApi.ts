@@ -19,9 +19,10 @@ import {
   OperationOpts,
   RawAjaxResponse,
 } from '../runtime';
+import { AttachmentTypeCodeDto } from '../models';
 
 export interface AttachmentTypeCodeControllerFindOneRequest {
-  id: number;
+  id: string;
 }
 
 /**
@@ -30,14 +31,18 @@ export interface AttachmentTypeCodeControllerFindOneRequest {
 export class AttachmentTypeCodeApi extends BaseAPI {
   /**
    */
-  attachmentTypeCodeControllerFindAll(): Observable<void>;
+  attachmentTypeCodeControllerFindAll(): Observable<
+    Array<AttachmentTypeCodeDto>
+  >;
   attachmentTypeCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<Array<AttachmentTypeCodeDto>>>;
   attachmentTypeCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
-    return this.request<void>(
+  ): Observable<
+    Array<AttachmentTypeCodeDto> | RawAjaxResponse<Array<AttachmentTypeCodeDto>>
+  > {
+    return this.request<Array<AttachmentTypeCodeDto>>(
       {
         url: '/api/attachment-type-code',
         method: 'GET',
@@ -50,18 +55,20 @@ export class AttachmentTypeCodeApi extends BaseAPI {
    */
   attachmentTypeCodeControllerFindOne({
     id,
-  }: AttachmentTypeCodeControllerFindOneRequest): Observable<void>;
+  }: AttachmentTypeCodeControllerFindOneRequest): Observable<AttachmentTypeCodeDto>;
   attachmentTypeCodeControllerFindOne(
     { id }: AttachmentTypeCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<AttachmentTypeCodeDto>>;
   attachmentTypeCodeControllerFindOne(
     { id }: AttachmentTypeCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
+  ): Observable<
+    AttachmentTypeCodeDto | RawAjaxResponse<AttachmentTypeCodeDto>
+  > {
     throwIfNullOrUndefined(id, 'id', 'attachmentTypeCodeControllerFindOne');
 
-    return this.request<void>(
+    return this.request<AttachmentTypeCodeDto>(
       {
         url: '/api/attachment-type-code/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',

@@ -19,9 +19,10 @@ import {
   OperationOpts,
   RawAjaxResponse,
 } from '../runtime';
+import { WorkflowStateCodeDto } from '../models';
 
 export interface WorkflowStateCodeControllerFindOneRequest {
-  id: number;
+  id: string;
 }
 
 /**
@@ -30,14 +31,16 @@ export interface WorkflowStateCodeControllerFindOneRequest {
 export class WorkflowStateCodeApi extends BaseAPI {
   /**
    */
-  workflowStateCodeControllerFindAll(): Observable<void>;
+  workflowStateCodeControllerFindAll(): Observable<Array<WorkflowStateCodeDto>>;
   workflowStateCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<Array<WorkflowStateCodeDto>>>;
   workflowStateCodeControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
-    return this.request<void>(
+  ): Observable<
+    Array<WorkflowStateCodeDto> | RawAjaxResponse<Array<WorkflowStateCodeDto>>
+  > {
+    return this.request<Array<WorkflowStateCodeDto>>(
       {
         url: '/api/workflow-state-code',
         method: 'GET',
@@ -50,18 +53,18 @@ export class WorkflowStateCodeApi extends BaseAPI {
    */
   workflowStateCodeControllerFindOne({
     id,
-  }: WorkflowStateCodeControllerFindOneRequest): Observable<void>;
+  }: WorkflowStateCodeControllerFindOneRequest): Observable<WorkflowStateCodeDto>;
   workflowStateCodeControllerFindOne(
     { id }: WorkflowStateCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<WorkflowStateCodeDto>>;
   workflowStateCodeControllerFindOne(
     { id }: WorkflowStateCodeControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
+  ): Observable<WorkflowStateCodeDto | RawAjaxResponse<WorkflowStateCodeDto>> {
     throwIfNullOrUndefined(id, 'id', 'workflowStateCodeControllerFindOne');
 
-    return this.request<void>(
+    return this.request<WorkflowStateCodeDto>(
       {
         url: '/api/workflow-state-code/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',

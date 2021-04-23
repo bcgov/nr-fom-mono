@@ -1,14 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Put,
-  Res,
-  Response,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
@@ -34,7 +24,7 @@ export class ProjectsController extends BaseCollectionController<
   async findByFspId(@Param('id') id: number): Promise<ProjectDto[]> {
     return super.findAll({
       where: { fsp_id: id },
-      relations: ['district', 'forest_client', 'workflow_state']
+      relations: ['district', 'forest_client', 'workflow_state'],
     });
   }
 
@@ -59,6 +49,7 @@ export class ProjectController extends BaseController<
   @Post()
   @ApiResponse({ status: 201, type: ProjectDto })
   async create(@Body() createDto: ProjectDto): Promise<ProjectDto> {
+    // add buisiness logic here
     return super.create(createDto);
   }
 
@@ -66,7 +57,7 @@ export class ProjectController extends BaseController<
   @ApiResponse({ status: 200, type: ProjectDto })
   async findOne(@Param('id') id: number): Promise<ProjectDto> {
     return super.findOne(id, {
-      relations: ['district', 'forest_client', 'workflow_state']
+      relations: ['district', 'forest_client', 'workflow_state'],
     });
   }
 

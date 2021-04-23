@@ -36,6 +36,7 @@
     "start:api": "nest start --path apps/api/tsconfig.json --watch",
     "start:db:postgres": "docker-compose up db",
     "stop:db:postgres": "docker-compose stop db",
+    "gen:client-api:ng": "openapi-generator-cli generate -g typescript-angular -i apps/api/openapi/swagger-spec.json -o libs/client/typescript-ng && npm run format:write",
     "gen:client-api:rxjs": "npm run gen:fetch-template:rxjs && npm run gen:models:rxjs && npm run format:write",
     "gen:client-api:axios": "npm run gen:fetch-template:axios && npm run gen:models:axios && npm run format:write",
     "gen:models:rxjs": "openapi-generator-cli generate -g typescript-rxjs -t apps/api/openapi/template/typescript-rxjs -i apps/api/openapi/swagger-spec.json -o libs/client/typescript-rxjs",
@@ -54,6 +55,7 @@
     "@nestjs/swagger": "^4.8.0",
     "@nestjs/typeorm": "^7.1.5",
     "@types/faker": "^5.1.7",
+    "@types/geojson": "^7946.0.7",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
     "dotenv": "^6.2.0",
@@ -71,6 +73,8 @@
     "typeorm-naming-strategies": "^2.0.0"
   },
   "devDependencies": {
+    "@angular/common": "~11.2.9",
+    "@angular/core": "~11.2.9",
     "@devniel/nestjs-typeorm-testing": "^0.1.1-alpha",
     "@nestjs/cli": "^7.5.6",
     "@nestjs/schematics": "^7.3.0",

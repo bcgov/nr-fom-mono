@@ -1,5 +1,6 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
+
 import { CodeTableController } from '@controllers';
 import { ResponseCodeService } from './response-code.service';
 import { ResponseCode } from './entities/response-code.entity';
@@ -18,12 +19,14 @@ export class ResponseCodeController extends CodeTableController<
   }
 
   @Get()
-  async findAll() {
+  @ApiResponse({ status: 200, type: [ResponseCodeDto] })
+  async findAll(): Promise<ResponseCodeDto[]> {
     return super.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @ApiResponse({ status: 200, type: ResponseCodeDto })
+  async findOne(@Param('id') id: string): Promise<ResponseCodeDto> {
     return super.findOne(id);
   }
 }

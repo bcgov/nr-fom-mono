@@ -19,6 +19,7 @@ import { RoadSectionModule } from './controllers/road-section/road-section.modul
 import { SubmissionModule } from './controllers/submission/submission.module';
 // Code Table Modules
 import { AttachmentTypeCodeModule } from './controllers/attachment-type-code/attachment-type-code.module';
+import { CommentScopeCodeModule } from './controllers/comment-scope-code/comment-scope-code.module';
 import { ResponseCodeModule } from './controllers/response-code/response-code.module';
 import { SubmissionTypeCodeModule } from './controllers/submission-type-code/submission-type-code.module';
 import { WorkflowStateCodeModule } from './controllers/workflow-state-code/workflow-state-code.module';
@@ -65,13 +66,14 @@ import { AppConfigService } from './modules/app-config/app-config.provider';
     SubmissionModule,
     // Code Table Modules
     AttachmentTypeCodeModule,
+    CommentScopeCodeModule,
     ResponseCodeModule,
     SubmissionTypeCodeModule,
     WorkflowStateCodeModule,
     // User & Auth Modules
     UserModule,
     // Other Modules
-    LoggerModule.forRoot()
+    LoggerModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

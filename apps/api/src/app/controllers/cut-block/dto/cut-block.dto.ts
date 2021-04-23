@@ -7,6 +7,8 @@ export class CutBlockDto extends BaseDto {
   @ApiProperty()
   plannedDevelopmentDate: string; // timestamp
   @ApiProperty()
+  name: string;
+  @ApiProperty()
   plannedAreaHa: number;
   // Relationships
   @ApiProperty()

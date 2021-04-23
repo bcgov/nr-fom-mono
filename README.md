@@ -51,6 +51,7 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 - Navigate to http://localhost:3333/api
 
 ### Run API Backend as open-shift style container
+
 - docker build -f docker/api/Dockerfile.local -t api .
 - docker run -d --name api -p 3333:3333 -u 1001 --read-only -e DB_PASSWORD=test -e DB_NAME=api-db -e DB_USERNAME=postgres -e DB_HOST=localhost -e DB_TYPE=postgres -e DB_PORT=5432 api
 - WARNING: Currently doesn't work - fails with Error: connect ECONNREFUSED 127.0.0.1:5432
@@ -68,8 +69,7 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 - docker-compose up -d db
 - npm run db:migrate-main
 - npm run db:migrate-test
-- (Although migrations are also run when starting the API component)
-
+- (Although migrations are also run when starting the API component, test migrations only run if environment variable DB_TESTDATA = true)
 
 ## Application Specific Setup:
 

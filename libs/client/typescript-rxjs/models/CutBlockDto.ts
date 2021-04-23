@@ -57,6 +57,11 @@ export interface CutBlockDto {
    */
   plannedDevelopmentDate: string;
   /**
+   * @type {string}
+   * @memberof CutBlockDto
+   */
+  name: string;
+  /**
    * @type {number}
    * @memberof CutBlockDto
    */

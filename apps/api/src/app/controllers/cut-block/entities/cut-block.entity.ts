@@ -1,14 +1,21 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  JoinColumn,
+  Column,
+  ManyToOne,
+  RelationId,
+} from 'typeorm';
 import { Submission } from '../../submission/entities/submission.entity';
 
-@Entity('cut_block', {schema: 'app_fom'})
+@Entity('cut_block', { schema: 'app_fom' })
 export class CutBlock extends ApiBaseEntity<CutBlock> {
   constructor(cutBlock?: Partial<CutBlock>) {
     super(cutBlock);
   }
 
-  @PrimaryGeneratedColumn('increment', {name: 'cut_block_id'})
+  @PrimaryGeneratedColumn('increment', { name: 'cut_block_id' })
   public id: number;
 
   @Column({ type: 'geometry', spatialFeatureType: 'Polygon', srid: 3005 })
@@ -16,6 +23,9 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
 
   @Column()
   planned_development_date: string; // timestamp
+
+  @Column()
+  name: string;
 
   @Column()
   planned_area_ha: number;

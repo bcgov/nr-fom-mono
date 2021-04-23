@@ -91,4 +91,24 @@ export interface UpdatePublicCommentDto {
    * @memberof UpdatePublicCommentDto
    */
   response: object;
+  /**
+   * @type {string}
+   * @memberof UpdatePublicCommentDto
+   */
+  commentScopeCode: string;
+  /**
+   * @type {object}
+   * @memberof UpdatePublicCommentDto
+   */
+  commentScope: object;
+  /**
+   * @type {number}
+   * @memberof UpdatePublicCommentDto
+   */
+  scopeCutBlockId: number;
+  /**
+   * @type {number}
+   * @memberof UpdatePublicCommentDto
+   */
+  scopeRoadSectionId: number;
 }

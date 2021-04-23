@@ -19,6 +19,7 @@ import {
   OperationOpts,
   RawAjaxResponse,
 } from '../runtime';
+import { ForestClientDto } from '../models';
 
 export interface ForestClientControllerFindOneRequest {
   id: number;
@@ -30,14 +31,16 @@ export interface ForestClientControllerFindOneRequest {
 export class ForestClientApi extends BaseAPI {
   /**
    */
-  forestClientControllerFindAll(): Observable<void>;
+  forestClientControllerFindAll(): Observable<Array<ForestClientDto>>;
   forestClientControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<Array<ForestClientDto>>>;
   forestClientControllerFindAll(
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
-    return this.request<void>(
+  ): Observable<
+    Array<ForestClientDto> | RawAjaxResponse<Array<ForestClientDto>>
+  > {
+    return this.request<Array<ForestClientDto>>(
       {
         url: '/api/forest-client',
         method: 'GET',
@@ -50,18 +53,18 @@ export class ForestClientApi extends BaseAPI {
    */
   forestClientControllerFindOne({
     id,
-  }: ForestClientControllerFindOneRequest): Observable<void>;
+  }: ForestClientControllerFindOneRequest): Observable<ForestClientDto>;
   forestClientControllerFindOne(
     { id }: ForestClientControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>>;
+  ): Observable<RawAjaxResponse<ForestClientDto>>;
   forestClientControllerFindOne(
     { id }: ForestClientControllerFindOneRequest,
     opts?: OperationOpts
-  ): Observable<void | RawAjaxResponse<void>> {
+  ): Observable<ForestClientDto | RawAjaxResponse<ForestClientDto>> {
     throwIfNullOrUndefined(id, 'id', 'forestClientControllerFindOne');
 
-    return this.request<void>(
+    return this.request<ForestClientDto>(
       {
         url: '/api/forest-client/{id}'.replace('{id}', encodeURI(id)),
         method: 'GET',

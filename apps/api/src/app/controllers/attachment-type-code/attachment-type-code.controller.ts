@@ -1,5 +1,5 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { AttachmentTypeCodeService } from './attachment-type-code.service';
@@ -19,12 +19,14 @@ export class AttachmentTypeCodeController extends CodeTableController<
   }
 
   @Get()
-  async findAll() {
+  @ApiResponse({ status: 200, type: [AttachmentTypeCodeDto] })
+  async findAll(): Promise<AttachmentTypeCodeDto[]> {
     return super.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
+  @ApiResponse({ status: 200, type: AttachmentTypeCodeDto })
+  async findOne(@Param('id') id: string): Promise<AttachmentTypeCodeDto> {
     return super.findOne(id);
   }
 }
