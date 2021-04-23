@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
 import { SubmissionService } from './submission.service';
@@ -26,42 +26,23 @@ export class SubmissionsController extends BaseCollectionController<
   }
 }
 
+// Don't need all the normal CRUD operations accessible via API so don't extend BaseController.
 @ApiTags('submission')
 @Controller('submission')
-export class SubmissionController extends BaseController<
-  Submission,
-  SubmissionDto,
-  UpdateSubmissionDto
-> {
-  constructor(protected readonly service: SubmissionService) {
-    super(service);
-  }
+export class SubmissionController {
+ 
+  constructor(readonly service: SubmissionService) {}
 
+  // TODO: need to figure out return type, if any.
   @Post()
+  @ApiResponse({ status: 200 })
   async processSpatialSubmission(@Body() dto: SubmissionWithJsonDto) {
     return this.service.processSpatialSubmission(dto);
   }
 
-  @Post()
-  async create(@Body() createDto: SubmissionDto) {
-    return super.create(createDto);
-  }
-
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return super.findOne(id);
+    return this.service.findOne(id);
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateDto: UpdateSubmissionDto
-  ) {
-    return super.update(id, updateDto);
-  }
-
-  @Delete(':id')
-  async remove(@Param('id') id: number) {
-    return super.remove(id);
-  }
 }
