@@ -15,9 +15,6 @@ export class Submission extends ApiBaseEntity<Submission> {
   @PrimaryGeneratedColumn('increment', {name: 'submission_id'})
   public id: number;
 
-  @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
-  geometry: string;
-
   @ManyToOne(() => Project, { eager: true })
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
   project: Project;

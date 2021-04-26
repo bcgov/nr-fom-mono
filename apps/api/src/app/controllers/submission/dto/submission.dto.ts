@@ -4,8 +4,7 @@ import { Project } from '../../project/entities/project.entity';
 import { SubmissionTypeCode } from '../../submission-type-code/entities/submission-type-code.entity';
 
 export class SubmissionDto extends BaseDto {
-  @ApiProperty()
-  geometry: any;
+
   // Relationships
   @ApiProperty()
   projectId: number;

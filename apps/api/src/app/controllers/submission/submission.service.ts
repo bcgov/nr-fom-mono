@@ -69,15 +69,18 @@ export class SubmissionService extends DataService<
 //		update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
 //		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
 /*
-		with submission_geometries as (
-			select geometry from app_fom.cut_block where submission_id = {}
+		with project_geometries as (
+			select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
 			union 
-			select geometry from app_fom.road_section where submission_id = {}
+			select s.project_id, rs.geometry from app_fom.road_section rs join app_fom.submission s on rs.submission_id = s.submission_id 
 			union 
-			select geometry from app_fom.retention_area ra where submission_id = {}
+			select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
 		)
-		update app_fom.submission s set geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from submission_geometries g) 
-		where s.submission_id = {}
+		update app_fom.project p set 
+      geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from project_geometries g where g.project_id = p.project_id),
+ 			update_timestamp = now(),
+			update_user = 'FAKEUSER'
+		where p.project_id = {};
 
 */
 
