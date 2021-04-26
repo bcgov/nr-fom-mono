@@ -28,6 +28,8 @@ FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim 
 USER 0
 RUN mkdir "/.npm"
 RUN chown -R 1001:0 "/.npm"
+RUN mkdir "/app"
+RUN chown -R 1001:0 "/app"
 USER 1001
 
 WORKDIR /app
