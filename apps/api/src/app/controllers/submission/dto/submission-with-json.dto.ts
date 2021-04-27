@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SubmissionDto } from './submission.dto';
-import { FeatureCollection } from 'geojson'
+import { FeatureCollection } from 'geojson';
 
 export class SubmissionWithJsonDto extends SubmissionDto {
   @ApiProperty()

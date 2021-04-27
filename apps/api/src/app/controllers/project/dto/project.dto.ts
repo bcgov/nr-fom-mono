@@ -3,6 +3,8 @@ import { BaseDto } from '@dto';
 import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
+import { Point } from 'geojson';
+
 
 export class ProjectDto extends BaseDto {
   @ApiProperty()
@@ -13,8 +15,8 @@ export class ProjectDto extends BaseDto {
   commentingOpenDate: string; // timestamp
   @ApiProperty()
   commentingClosedDate: string; // timestamp
-  @ApiProperty()
-  geometry: any;
+  @ApiProperty({example: ` { "type": "Point", "crs": { "type": "name", "properties": { "name": "EPSG:3005" } }, "coordinates": [1474716, 555236]}`})
+  geometry: FomPoint;
   // Relationships
   @ApiProperty()
   fspId: number;
@@ -30,4 +32,8 @@ export class ProjectDto extends BaseDto {
   workflowStateCode: string;
   @ApiProperty()
   workflowState: WorkflowStateCode;
+}
+
+export interface FomPoint extends Point {
+  // Need to do this to get to compile, rather than using Point directly. Not sure why...
 }

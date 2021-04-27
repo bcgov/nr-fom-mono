@@ -211,6 +211,10 @@ objects:
     apiVersion: v1
     metadata:
       name: ${NAME}-${TAG}
+      annotations: 
+        haproxy.router.openshift.io/rate-limit-connections: "true"
+        # Number of HTTP requests that a client IP can make in a 3-second period
+        haproxy.router.openshift.io/rate-limit-connections.rate-http: "5"
     spec:
       host: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
       to:
