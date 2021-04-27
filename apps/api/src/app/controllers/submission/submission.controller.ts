@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 import { BaseController, BaseCollectionController } from '@controllers';
 import { SubmissionService } from './submission.service';
@@ -35,6 +35,7 @@ export class SubmissionController {
 
   // TODO: need to figure out return type, if any.
   @Post()
+  @ApiBody({ type: SubmissionWithJsonDto })
   @ApiResponse({ status: 200 })
   async processSpatialSubmission(@Body() dto: SubmissionWithJsonDto) {
     return this.service.processSpatialSubmission(dto);

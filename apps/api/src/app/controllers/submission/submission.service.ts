@@ -6,7 +6,7 @@ import { SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { Project } from '../project/entities/project.entity';
 import { PinoLogger } from 'nestjs-pino';
-import { SubmissionTypeCode } from '../submission-type-code/entities/submission-type-code.entity';
+import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 
 @Injectable()
@@ -35,14 +35,14 @@ export class SubmissionService extends DataService<
     });
 
     const existingSubmission: Submission = existingSubmissions[0];
-    if (existingSubmission.submission_type_code == SubmissionTypeCode.CODES.PROPOSED) {
+    if (existingSubmission.submission_type_code.code == SubmissionTypeCodeEnum.PROPOSED) {
     }
 
     const project: Project = {} as Project;
     if (project.workflow_state_code === WorkflowStateCode.CODES.INITIAL) {
     }
 
-    if (dto.submissionTypeCode === SubmissionTypeCode.CODES.FINAL) {
+    if (dto.submissionTypeCode === SubmissionTypeCodeEnum.FINAL) {
     }
 
     // Scenarios:
