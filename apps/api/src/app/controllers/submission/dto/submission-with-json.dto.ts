@@ -2,15 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { SubmissionDto } from './submission.dto';
 import { FeatureCollection } from 'geojson';
 
-export class SubmissionWithJsonDto extends SubmissionDto {
-  @ApiProperty()
-  spatialObjectCode: SpatialObjectCodeEnum;
-  
-  @ApiProperty()
-  jsonSpatialSubmission: FomSpatialJson;
-
-}
-
 // Using GeoJSON types, won't have the API documentation but that's okay.
 export interface FomSpatialJson extends FeatureCollection {
   crs: { 
@@ -24,3 +15,12 @@ export enum SpatialObjectCodeEnum {
   ROAD_SECTION = 'ROAD_SECTION',
   WTRA = 'WTRA'
 };
+
+export class SubmissionWithJsonDto extends SubmissionDto {
+  @ApiProperty({ enum: SpatialObjectCodeEnum, enumName: 'SpatialObjectCodeEnum'})
+  spatialObjectCode: SpatialObjectCodeEnum;
+  
+  @ApiProperty()
+  jsonSpatialSubmission: FomSpatialJson;
+
+}
