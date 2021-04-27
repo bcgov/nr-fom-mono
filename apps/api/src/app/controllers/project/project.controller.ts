@@ -19,6 +19,16 @@ export class ProjectsController extends BaseCollectionController<
     super(service);
   }
 
+  // TODO: Could consider having this return a ProjectWithSubmissionDTO with SubmissionDTO[], which in turn has children, or add Submission to ProjectDto.
+  @Get('/byIdWithGeoDetails/:id')
+  @ApiResponse({ status: 200, type: [ProjectDto] })
+  async findByIdWithGeoDetails(@Param('id') id: number): Promise<ProjectDto[]> {
+    return super.findAll({
+      where: { id: id },
+      relations: ['district', 'forest_client', 'workflow_state', 'submissions', 'submissions.submission_type', 'submissions.cut_blocks', 'submissions.retention_areas', 'submissions.road_sections'],
+    });
+  }
+
   @Get('/byFspId/:id')
   @ApiResponse({ status: 200, type: [ProjectDto] })
   async findByFspId(@Param('id') id: number): Promise<ProjectDto[]> {
