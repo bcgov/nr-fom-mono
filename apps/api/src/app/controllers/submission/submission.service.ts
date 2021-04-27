@@ -28,46 +28,62 @@ export class SubmissionService extends DataService<
   async processSpatialSubmission(dto: Partial<SubmissionWithJsonDto>): Promise<any> {       
     this.logger.info(`${this.constructor.name}.create props`, dto);
   
-    // Check for existing submission for this project.
-    const existingSubmissions: Submission[] = await this.repository.find({
-      where: { project_id: dto.projectId },
-      // relations: ['district', 'forest_client', 'workflow_state'],
-    });
-
-    const existingSubmission: Submission = existingSubmissions[0];
-    if (existingSubmission.submission_type_code == SubmissionTypeCode.CODES.PROPOSED) {
-    }
-
+    // Load the existing project to obtain the project's workflow state
     const project: Project = {} as Project;
     if (project.workflow_state_code === WorkflowStateCode.CODES.INITIAL) {
     }
 
+    // The submission type that is allowed to be done depends on the workflow state:
+    // INITIAL = PROPOSED
+    // COMMENTING_OPEN = FINAL
+    // COMMENTING_CLOSED = FINAL
+    // FINALIZED/EXPIRED = none (return an error)
+
+    // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error.
     if (dto.submissionTypeCode === SubmissionTypeCode.CODES.FINAL) {
     }
 
-    // Scenarios:
-    // It is possible for the 'cannot submit' options to restrict the choice of submission type in the UI to only the allowed option.
+    // Obtain existing submission for the submission type
+    const existingSubmissions: Submission[] = await this.repository.find({
+      where: { project_id: dto.projectId, submission_type_code: dto.submissionTypeCode },
+      // relations: ['district', 'forest_client', 'workflow_state'],
+    });
 
-    // # of existing submissions for the project | specified submission type | type(s) of the existing submission(s) | action to take
-    // existingSubmissions.length | dto.submissionTypeCode | existingSubmissions[].submision_type_code
-    // 0 | FINAL    | n/a               | invalid - cannot submit a final submission if there is no proposed submission.
-    // 0 | PROPOSED | n/a               | valid - create the new submission along with the supplied spatial objects of the specified type (block/section/wtra)
-    // 1 | PROPOSED | PROPOSED          | if project.workflow_state != INITIAL then invalid - cannot update a proposed submission once commenting has started. Otherwise valid - update the submission. For the specified spatial object type (block/section/wtra), delete all existing spatial objects and populate with what was supplied.
-    // 1 | FINAL    | PROPOSED          | if project.workflow_state != COMMENT_CLOSED  then invalid - cannot submit a final submission until commenting is closed, or after the FOM is finalized. Otherwise valid - create a new submission along with the supplied spatial objects.
-    // 2 | FINAL    | PROPOSED+FINAL    | if project.workflow state != COMMENT_CLOSED then invalid - cannot update a final submission before commenting is closed or after the FOM is finalized. Otherwise, update the existing FINAL submission.
-    // 2 | PROPOSED | any               | invalid - cannot submit a proposed submission once a final submission exists.
-    // Any other scenario is invalid:
-    // 1 | any      | FINAL             | Should not be possible (have only a final fom, no proposed)
-    // 2 | FINAL    | PROPOSED+PROPOSED | Should not be possible (cannot have two proposed submissions).
+    // If existing submission of type doesn't exist create it.
+    var submission: Submission;
+    var existing = false;
+    if (existingSubmissions.length == 0) {
+      submission = new Submission;
+      // Populate fields
+    } else {
+      submission = existingSubmissions[0]
+      existing=true;
+    }
+
+    if (existing) {
+      // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
+    }
+
+    if (!existing) {
+      // Save the submission first in order to populate primary key.
+    }
+
+    // Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission. 
+
+    // Validate that the dto.jsonSpatialSubmission is valid. Parse into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode
 
     // Confirm that all geometrics fall within the BC bounds (to catch errors using e.g. lat/lon coordinates)
     // As a first approximation, the bounds for BC/Albers 3005 are:
     // Projected Bounds: 35043.6538, 440006.8768, 1885895.3117, 1735643.8497
 
-    // Update geometry-derived fields:
+    // Save the geospatial objects
+
+    // Update geometry-derived columns on the geospatial objects
 //		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
 //		update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
 //		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
+
+    // Update project location
 /*
 		with project_geometries as (
 			select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
@@ -83,21 +99,8 @@ export class SubmissionService extends DataService<
 		where p.project_id = {};
 
 */
+      // Remember to populate audit columns createUser, revisionCount, updateUser, updateTimestamp.
 
-
-    /*    
-    dto.createUser = 'FAKED USER';
-    dto.revisionCount = 0;
-    dto.updateUser = null;
-    dto.updateTimestamp = null;
-
-    const model = this.entity.factory(mapToEntity(dto as C, {} as E));
-    const created = await this.repository.save(model);
-
-    this.logger.info(`${this.constructor.name}.create result`, created);
-
-    const createdDto = {} as C;
-    return mapFromEntity(created, createdDto);
-    */
+    // Unsure if need to return anything. Probably not, just have screen reload the project details.
   }
 }
