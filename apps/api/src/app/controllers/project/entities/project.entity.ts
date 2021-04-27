@@ -25,6 +25,9 @@ export class Project extends ApiBaseEntity<Project> {
   @Column()
   commenting_closed_date: string; // timestamp
 
+  @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
+  geometry: string;
+
   @Column()
   fsp_id: number;
 

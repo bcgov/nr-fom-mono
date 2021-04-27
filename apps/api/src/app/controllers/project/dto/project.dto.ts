@@ -13,6 +13,8 @@ export class ProjectDto extends BaseDto {
   commentingOpenDate: string; // timestamp
   @ApiProperty()
   commentingClosedDate: string; // timestamp
+  @ApiProperty()
+  geometry: any;
   // Relationships
   @ApiProperty()
   fspId: number;

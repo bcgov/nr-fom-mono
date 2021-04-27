@@ -31,15 +31,18 @@ module.exports = class testdata1616434875304 {
 		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = 20;
 		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = 20;
 
-		with submission_geometries as (
-			select submission_id, geometry from app_fom.cut_block 
+		with project_geometries as (
+			select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
 			union 
-			select submission_id, geometry from app_fom.road_section  
+			select s.project_id, rs.geometry from app_fom.road_section rs join app_fom.submission s on rs.submission_id = s.submission_id 
 			union 
-			select submission_id, geometry from app_fom.retention_area ra 
+			select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
 		)
-		update app_fom.submission s set geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from submission_geometries g where g.submission_id = s.submission_id) 
-		where s.submission_id = 20;
+		update app_fom.project p set 
+			geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from project_geometries g where g.project_id = p.project_id),
+			update_timestamp = now(),
+			update_user = 'testdata'
+		where p.project_id = 1;
 
         -- app_fom.public_comment
         INSERT INTO app_fom.public_comment(

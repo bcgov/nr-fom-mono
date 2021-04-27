@@ -289,6 +289,7 @@ forest_client_number varchar not null references app_fom.forest_client(forest_cl
 workflow_state_code  varchar not null references app_fom.workflow_state_code(code) ,
 commenting_open_date date ,  
 commenting_closed_date date , 
+geometry GEOMETRY(POINT, 3005) , 
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
@@ -310,6 +311,7 @@ comment on column app_fom.project.forest_client_number is 'Each project is owned
 comment on column app_fom.project.workflow_state_code is 'Tracks which step in the business process the project is in.  ';
 comment on column app_fom.project.commenting_open_date is 'Date when this project is available for public comment. ';
 comment on column app_fom.project.commenting_closed_date is 'Date when this project is no longer available for public comment. ';
+comment on column app_fom.project.geometry is ' Central point geographically for the FOM project. Used as a performance optimization for plotting the FOM on the overview map. Calculated value based on the cut blocks and road sections making up the submissions. ';
 
 comment on column app_fom.project.revision_count is 'Standard column for optimistic locking on updates.';
 comment on column app_fom.project.create_timestamp is 'Time of creation of the record.';
@@ -325,7 +327,6 @@ create table if not exists app_fom.submission
 submission_id serial not null primary key ,  
 project_id integer not null references app_fom.project (project_id) , 
 submission_type_code varchar not null references app_fom.submission_type_code(code) , 
-geometry GEOMETRY(POINT, 3005) , 
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
@@ -340,7 +341,6 @@ comment on table  app_fom.submission is 'For each FOM project the proposed submi
 comment on column app_fom.submission.submission_id is ' Primary key ';
 comment on column app_fom.submission.project_id is ' Parent project. ';
 comment on column app_fom.submission.submission_type_code is ' Specifies whether this is the initial or final submission. ';
-comment on column app_fom.submission.geometry is ' Central point geographically for the FOM submission. Used as a performance optimization for plotting the FOM on the overview map. Calculated value based on the cut blocks and road sections making up the submission. ';
 
 comment on column app_fom.submission.create_timestamp is 'Time of creation of the record.';
 comment on column app_fom.submission.create_user is 'The user id who created the record. For citizens creating comments, a common hardcoded user id will be used.';
