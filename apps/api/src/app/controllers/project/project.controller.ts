@@ -7,6 +7,8 @@ import { Project } from './entities/project.entity';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { UpdateResult } from 'typeorm';
+import { ProjectSpatialDetailService } from './project-spatial-detail.service'
+import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 
 @ApiTags('projects')
 @Controller('projects')
@@ -19,15 +21,15 @@ export class ProjectsController extends BaseCollectionController<
     super(service);
   }
 
-  // TODO: Could consider having this return a ProjectWithSubmissionDTO with SubmissionDTO[], which in turn has children, or add Submission to ProjectDto.
-  @Get('/byIdWithGeoDetails/:id')
-  @ApiResponse({ status: 200, type: [ProjectDto] })
-  async findByIdWithGeoDetails(@Param('id') id: number): Promise<ProjectDto[]> {
-    return super.findAll({
-      where: { id: id },
-      relations: ['district', 'forest_client', 'workflow_state', 'submissions', 'submissions.submission_type', 'submissions.cut_blocks', 'submissions.retention_areas', 'submissions.road_sections'],
-    });
-  }
+  // TODO: REMOVE THIS + SubmissionWithGeoDetailsDto
+  // @Get('/byIdWithGeoDetails/:id')
+  // @ApiResponse({ status: 200, type: [ProjectDto] })
+  // async findByIdWithGeoDetails(@Param('id') id: number): Promise<ProjectDto[]> {
+  //   return super.findAll({
+  //     where: { id: id },
+  //     relations: ['district', 'forest_client', 'workflow_state', 'submissions', 'submissions.submission_type', 'submissions.cut_blocks', 'submissions.retention_areas', 'submissions.road_sections'],
+  //   });
+  // }
 
   @Get('/byFspId/:id')
   @ApiResponse({ status: 200, type: [ProjectDto] })
@@ -52,8 +54,17 @@ export class ProjectController extends BaseController<
   ProjectDto,
   UpdateProjectDto
 > {
-  constructor(protected readonly service: ProjectService) {
+  constructor(
+    protected readonly service: ProjectService,
+    private projectSpatialDetailService: ProjectSpatialDetailService) {
     super(service);
+  }
+
+  @Get('/spatialDetails/:id') 
+  @ApiResponse({ status: 201, type: ProjectSpatialDetail })
+  async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
+    return this.projectSpatialDetailService.findByProjectId(id);
+
   }
 
   @Post()
