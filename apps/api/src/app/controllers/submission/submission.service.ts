@@ -37,7 +37,7 @@ export class SubmissionService extends DataService<
     // Load the existing project to obtain the project's workflow state
     const project: Project = await this.projectService.findOne(dto.projectId);
     const workflowStateCode = project.workflow_state_code;
-    const submissionTypeCode = this.getPermittedSubmissoinTypeCode(workflowStateCode);
+    const submissionTypeCode = this.getPermittedSubmissionTypeCode(workflowStateCode);
 
     // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
     // @see {getPermittedSubmissoinStatus} comment.
@@ -118,7 +118,7 @@ export class SubmissionService extends DataService<
    *   FINALIZED/EXPIRED = none (return an error)
    * @param workFlowStateCode workflow_state_code that the FOM currently is having
    */
-  getPermittedSubmissoinTypeCode(workFlowStateCode: string): SubmissionTypeCodeEnum {
+  getPermittedSubmissionTypeCode(workFlowStateCode: string): SubmissionTypeCodeEnum {
     let submissionTypeCode: SubmissionTypeCodeEnum;
     switch (workFlowStateCode) {
       case WorkflowStateCode.CODES.INITIAL:
