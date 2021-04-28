@@ -565,11 +565,43 @@ comment on column app_fom.interaction.update_timestamp is 'Time of most recent u
 comment on column app_fom.interaction.update_user is 'The user id who last updated the record. For citizens creating comments, a common hardcoded user id will be used.';
 comment on column app_fom.interaction.revision_count is 'Standard column for optimistic locking on updates.';
 
+/* ------- ddl script for app_fom.project_spatial_detail ---------*/  
+/* This converts geometries to lat/long for consumption by leaflet. */
+drop view if exists app_fom.project_spatial_detail;
+create view app_fom.project_spatial_detail as 
+  select o.cut_block_id as object_id, 'cut_block' as source_table,
+  p.project_id, s.submission_type_code,  
+  o.name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, o.planned_development_date, o.planned_area_ha, 0.0 as planned_length_km
+  from app_fom.cut_block o
+  inner join app_fom.submission s on o.submission_id = s.submission_id
+  inner join app_fom.project p on s.project_id = p.project_id
+union       
+  select o.retention_area_id as object_id, 'retention_area' as source_table,
+  p.project_id, s.submission_type_code,  
+  null as name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, null as planned_development_date, o.planned_area_ha, 0.0 as planned_length_km
+  from app_fom.retention_area o
+  inner join app_fom.submission s on o.submission_id = s.submission_id
+  inner join app_fom.project p on s.project_id = p.project_id
+union
+  select o.road_section_id as object_id, 'road_section' as source_table,
+  p.project_id, s.submission_type_code,  
+  o.name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, o.planned_development_date, null as planned_area_ha, o.planned_length_km
+  from app_fom.road_section o
+  inner join app_fom.submission s on o.submission_id = s.submission_id
+  inner join app_fom.project p on s.project_id = p.project_id
+;
+
+comment on view app_fom.project_spatial_detail is 'Denormalized table of spatial objects of FOM projects converting geometry columns to geojson with lat/long for consumption by leaflet.';
+
+
         `);
   }
 
   async down(queryRunner) {
     await queryRunner.query(`
+        -- Drop views
+        drop view if exists app_fom.project_spatial_detail;
+
         -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.
         drop table if exists app_fom.interaction;
         drop table if exists app_fom.attachment;

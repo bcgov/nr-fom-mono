@@ -1,8 +1,9 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId, OneToMany } from 'typeorm';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
+import { Submission } from '../../submission/entities/submission.entity';
 
 @Entity('project', {schema: 'app_fom'})
 export class Project extends ApiBaseEntity<Project> {
@@ -54,4 +55,8 @@ export class Project extends ApiBaseEntity<Project> {
   @Column()
   @RelationId((project: Project) => project.workflow_state)
   workflow_state_code?: string;
+
+  @OneToMany(type => Submission, (submission) => submission.project)
+  submissions: Submission[];
+
 }
