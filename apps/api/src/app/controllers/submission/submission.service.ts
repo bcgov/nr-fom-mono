@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
@@ -35,19 +35,15 @@ export class SubmissionService extends DataService<
   
     // Load the existing project to obtain the project's workflow state
     const project: Project = await this.projectService.findOne(dto.projectId);
-    const wfStateCode = project.workflow_state_code;
-    
-    if (project.workflow_state_code === WorkflowStateCode.CODES.INITIAL) {
-    }
+    const workflowStateCode = project.workflow_state_code;
+    const submissionTypeCode = this.getPermittedSubmissoinTypeCode(workflowStateCode);
 
-    // The submission type that is allowed to be done depends on the workflow state:
-    // INITIAL = PROPOSED
-    // COMMENTING_OPEN = FINAL
-    // COMMENTING_CLOSED = FINAL
-    // FINALIZED/EXPIRED = none (return an error)
-
-    // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error.
-    if (dto.submissionTypeCode === SubmissionTypeCodeEnum.PROPOSED) {
+    // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
+    // @see {getPermittedSubmissoinStatus} comment.
+    if (!submissionTypeCode || submissionTypeCode !== dto.submissionTypeCode) {
+      const errMsg = `Submission (${dto.submissionTypeCode}) is not allowed for workflow_state_code ${workflowStateCode}.`;
+      this.logger.error(errMsg);
+      throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     // Obtain existing submission for the submission type
@@ -110,4 +106,31 @@ export class SubmissionService extends DataService<
 
     // Unsure if need to return anything. Probably not, just have screen reload the project details.
   }
+
+  /**
+   * Get the permitted submission_type_code based on the FOM workflow_state_code.
+   * The submission type that is allowed to be done depends on the workflow state:
+   *   INITIAL = PROPOSED
+   *   COMMENTING_OPEN = none (no submission can be done)
+   *   COMMENTING_CLOSED = FINAL
+   *   FINALIZED/EXPIRED = none (return an error)
+   * @param workFlowStateCode workflow_state_code that the FOM currently is having
+   */
+  getPermittedSubmissoinTypeCode(workFlowStateCode: string): SubmissionTypeCodeEnum {
+    let submissionTypeCode: SubmissionTypeCodeEnum;
+    switch (workFlowStateCode) {
+      case WorkflowStateCode.CODES.INITIAL:
+        submissionTypeCode = SubmissionTypeCodeEnum.PROPOSED;
+        break;
+
+      case WorkflowStateCode.CODES.COMMENT_CLOSED:
+        submissionTypeCode = SubmissionTypeCodeEnum.FINAL;
+        break;
+      
+      default:
+        submissionTypeCode = null;
+    }
+    return submissionTypeCode;
+  }
+
 }
