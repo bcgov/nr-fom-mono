@@ -29,7 +29,7 @@ export class Submission extends ApiBaseEntity<Submission> {
 
   @Column()
   @RelationId((submission: Submission) => submission.submission_type)
-  submission_type_code: SubmissionTypeCode;
+  submission_type_code: string;
 
   @OneToMany(type => CutBlock, (cutBlock) => cutBlock.submission)
   cut_blocks: CutBlock[];

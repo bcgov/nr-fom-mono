@@ -9,6 +9,7 @@ import { ProjectService } from '../project/project.service';
 import { PinoLogger } from 'nestjs-pino';
 import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
+import { SubmissionTypeCodeService } from '../submission-type-code/submission-type-code.service';
 
 @Injectable()
 export class SubmissionService extends DataService<
@@ -53,22 +54,23 @@ export class SubmissionService extends DataService<
     });
 
     // If existing submission of type doesn't exist create it.
-    var submission: Submission;
-    var existing = false;
-    if (existingSubmissions.length == 0) {
-      submission = new Submission;
-      // Populate fields
-    } else {
-      submission = existingSubmissions[0]
-      existing=true;
-    }
-
-    if (existing) {
-      // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
-    }
+    let submission: Submission;
+    let existing = (existingSubmissions.length == 0) ? true: false;
 
     if (!existing) {
       // Save the submission first in order to populate primary key.
+      // Populate fields
+      // TODO: populate user/time?
+      submission = new Submission({             
+        project_id: dto.projectId,
+        submission_type_code: submissionTypeCode
+      })
+      await this.repository.save(submission);
+
+    } else {
+      submission = existingSubmissions[0];
+
+      // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
     }
 
     // Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission. 
