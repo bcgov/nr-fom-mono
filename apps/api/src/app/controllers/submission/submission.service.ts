@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { Project } from '../project/entities/project.entity';
+import { ProjectService } from '../project/project.service';
 import { PinoLogger } from 'nestjs-pino';
 import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
@@ -14,6 +15,10 @@ export class SubmissionService extends DataService<
   Submission,
   Repository<Submission>
 > {
+
+  @Inject('ProjectService')
+  private projectService: ProjectService;
+
   constructor(
     @InjectRepository(Submission)
     repository: Repository<Submission>,
@@ -29,7 +34,9 @@ export class SubmissionService extends DataService<
     this.logger.info(`${this.constructor.name}.create props`, dto);
   
     // Load the existing project to obtain the project's workflow state
-    const project: Project = {} as Project;
+    const project: Project = await this.projectService.findOne(dto.projectId);
+    const wfStateCode = project.workflow_state_code;
+    
     if (project.workflow_state_code === WorkflowStateCode.CODES.INITIAL) {
     }
 

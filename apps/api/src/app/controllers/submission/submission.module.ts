@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
 import { Submission } from './entities/submission.entity';
 import { SubmissionService } from './submission.service';
 import {
@@ -19,6 +18,6 @@ import { SubmissionTypeCodeModule } from '../submission-type-code/submission-typ
   ],
   controllers: [SubmissionController, SubmissionsController],
   providers: [SubmissionService],
-  exports: [],
+  exports: [SubmissionService],
 })
 export class SubmissionModule {}
