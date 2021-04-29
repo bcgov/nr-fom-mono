@@ -47,31 +47,9 @@ export class SubmissionService extends DataService<
       throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    // Obtain existing submission for the submission type
-    const existingSubmissions: Submission[] = await this.repository.find({
-      where: { project_id: dto.projectId, submission_type_code: dto.submissionTypeCode },
-      // relations: ['district', 'forest_client', 'workflow_state'],
-    });
+    let submission = await this.obtainExistingOrNewSubmission(dto.projectId, submissionTypeCode);
 
-    // If existing submission of type doesn't exist create it.
-    let submission: Submission;
-    let existing = (existingSubmissions.length == 0) ? true: false;
-
-    if (!existing) {
-      // Save the submission first in order to populate primary key.
-      // Populate fields
-      // TODO: populate user/time?
-      submission = new Submission({             
-        project_id: dto.projectId,
-        submission_type_code: submissionTypeCode
-      })
-      await this.repository.save(submission);
-
-    } else {
-      submission = existingSubmissions[0];
-
-      // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
-    }
+    // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
 
     // Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission. 
 
@@ -133,6 +111,30 @@ export class SubmissionService extends DataService<
         submissionTypeCode = null;
     }
     return submissionTypeCode;
+  }
+
+  async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum): Promise<Submission>  {
+    // Obtain existing submission for the submission type
+    const existingSubmissions: Submission[] = await this.repository.find({
+      where: { project_id: projectId, submission_type_code: submissionTypeCode },
+      // relations: ['district', 'forest_client', 'workflow_state'],
+    });
+
+    let submission: Submission;
+    if (existingSubmissions.length == 0) {
+      // Save the submission first in order to populate primary key.
+      // Populate fields
+      // TODO: populate user/time?
+      submission = new Submission({             
+        project_id: projectId,
+        submission_type_code: submissionTypeCode
+      })
+      submission = await this.repository.save(submission);
+
+    } else {
+      submission = existingSubmissions[0];
+    }
+    return submission;
   }
 
 }
