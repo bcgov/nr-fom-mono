@@ -58,6 +58,7 @@
     "@types/geojson": "^7946.0.7",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
+    "dayjs": "^1.10.4",
     "dotenv": "^6.2.0",
     "express-session": "^1.17.1",
     "joi": "^17.4.0",
