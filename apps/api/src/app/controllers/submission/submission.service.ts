@@ -1,19 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { Project } from '../project/entities/project.entity';
+import { ProjectService } from '../project/project.service';
 import { PinoLogger } from 'nestjs-pino';
-import { SubmissionTypeCode } from '../submission-type-code/entities/submission-type-code.entity';
+import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
+import { SubmissionTypeCodeService } from '../submission-type-code/submission-type-code.service';
 
 @Injectable()
 export class SubmissionService extends DataService<
   Submission,
   Repository<Submission>
 > {
+
+  @Inject('ProjectService')
+  private projectService: ProjectService;
+
   constructor(
     @InjectRepository(Submission)
     repository: Repository<Submission>,
@@ -29,44 +35,21 @@ export class SubmissionService extends DataService<
     this.logger.info(`${this.constructor.name}.create props`, dto);
   
     // Load the existing project to obtain the project's workflow state
-    const project: Project = {} as Project;
-    if (project.workflow_state_code === WorkflowStateCode.CODES.INITIAL) {
+    const project: Project = await this.projectService.findOne(dto.projectId);
+    const workflowStateCode = project.workflow_state_code;
+    const submissionTypeCode = this.getPermittedSubmissionTypeCode(workflowStateCode);
+
+    // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
+    // @see {getPermittedSubmissoinStatus} comment.
+    if (!submissionTypeCode || submissionTypeCode !== dto.submissionTypeCode) {
+      const errMsg = `Submission (${dto.submissionTypeCode}) is not allowed for workflow_state_code ${workflowStateCode}.`;
+      this.logger.error(errMsg);
+      throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    // The submission type that is allowed to be done depends on the workflow state:
-    // INITIAL = PROPOSED
-    // COMMENTING_OPEN = FINAL
-    // COMMENTING_CLOSED = FINAL
-    // FINALIZED/EXPIRED = none (return an error)
+    let submission = await this.obtainExistingOrNewSubmission(dto.projectId, submissionTypeCode);
 
-    // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error.
-    if (dto.submissionTypeCode === SubmissionTypeCode.CODES.FINAL) {
-    }
-
-    // Obtain existing submission for the submission type
-    const existingSubmissions: Submission[] = await this.repository.find({
-      where: { project_id: dto.projectId, submission_type_code: dto.submissionTypeCode },
-      // relations: ['district', 'forest_client', 'workflow_state'],
-    });
-
-    // If existing submission of type doesn't exist create it.
-    var submission: Submission;
-    var existing = false;
-    if (existingSubmissions.length == 0) {
-      submission = new Submission;
-      // Populate fields
-    } else {
-      submission = existingSubmissions[0]
-      existing=true;
-    }
-
-    if (existing) {
-      // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
-    }
-
-    if (!existing) {
-      // Save the submission first in order to populate primary key.
-    }
+    // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
 
     // Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission. 
 
@@ -103,4 +86,55 @@ export class SubmissionService extends DataService<
 
     // Unsure if need to return anything. Probably not, just have screen reload the project details.
   }
+
+  /**
+   * Get the permitted submission_type_code based on the FOM workflow_state_code.
+   * The submission type that is allowed to be done depends on the workflow state:
+   *   INITIAL = PROPOSED
+   *   COMMENTING_OPEN = none (no submission can be done)
+   *   COMMENTING_CLOSED = FINAL
+   *   FINALIZED/EXPIRED = none (return an error)
+   * @param workFlowStateCode workflow_state_code that the FOM currently is having
+   */
+  getPermittedSubmissionTypeCode(workFlowStateCode: string): SubmissionTypeCodeEnum {
+    let submissionTypeCode: SubmissionTypeCodeEnum;
+    switch (workFlowStateCode) {
+      case WorkflowStateCode.CODES.INITIAL:
+        submissionTypeCode = SubmissionTypeCodeEnum.PROPOSED;
+        break;
+
+      case WorkflowStateCode.CODES.COMMENT_CLOSED:
+        submissionTypeCode = SubmissionTypeCodeEnum.FINAL;
+        break;
+      
+      default:
+        submissionTypeCode = null;
+    }
+    return submissionTypeCode;
+  }
+
+  async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum): Promise<Submission>  {
+    // Obtain existing submission for the submission type
+    const existingSubmissions: Submission[] = await this.repository.find({
+      where: { project_id: projectId, submission_type_code: submissionTypeCode },
+      // relations: ['district', 'forest_client', 'workflow_state'],
+    });
+
+    let submission: Submission;
+    if (existingSubmissions.length == 0) {
+      // Save the submission first in order to populate primary key.
+      // Populate fields
+      // TODO: populate user/time?
+      submission = new Submission({             
+        project_id: projectId,
+        submission_type_code: submissionTypeCode
+      })
+      submission = await this.repository.save(submission);
+
+    } else {
+      submission = existingSubmissions[0];
+    }
+    return submission;
+  }
+
 }
