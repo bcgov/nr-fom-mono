@@ -15,8 +15,8 @@ export class ProjectDto extends BaseDto {
   commentingOpenDate: string; // timestamp
   @ApiProperty()
   commentingClosedDate: string; // timestamp
-  @ApiProperty({example: ` { "type": "Point", "crs": { "type": "name", "properties": { "name": "EPSG:3005" } }, "coordinates": [1474716, 555236]}`})
-  geometry: FomPoint;
+  @ApiProperty({example: ` { "type": "Point", "coordinates": [-119.396071939, 49.813816629]}`})
+  geojson: FomPoint;
   // Relationships
   @ApiProperty()
   fspId: number;
