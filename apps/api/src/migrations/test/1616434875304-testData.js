@@ -39,9 +39,10 @@ module.exports = class testdata1616434875304 {
 			select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
 		)
 		update app_fom.project p set 
-			geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from project_geometries g where g.project_id = p.project_id),
-			update_timestamp = now(),
-			update_user = 'testdata'
+			geometry_latlong = (select ST_Transform(ST_centroid(ST_COLLECT(g.geometry)),4326) from project_geometries g where g.project_id = p.project_id),
+            update_timestamp = now(),
+			update_user = 'testdata',
+            revision_count = (select revision_count+1 from app_fom.project p2 where p.project_id = p2.project_id )
 		where p.project_id = 1;
 
         -- app_fom.public_comment
