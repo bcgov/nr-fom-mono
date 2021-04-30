@@ -19,7 +19,7 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   public id: number;
 
   @Column({ type: 'geometry', spatialFeatureType: 'LineString', srid: 3005 })
-  geometry: string;
+  geometry: any;
 
   @Column()
   planned_development_date: string; // timestamp

@@ -2,14 +2,19 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
-import { SubmissionWithJsonDto } from './dto/submission-with-json.dto';
+import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { Project } from '../project/entities/project.entity';
 import { ProjectService } from '../project/project.service';
 import { PinoLogger } from 'nestjs-pino';
 import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
-import { SubmissionTypeCodeService } from '../submission-type-code/submission-type-code.service';
+import { CutBlock } from '../cut-block/entities/cut-block.entity';
+import { RoadSection } from '../road-section/entities/road-section.entity';
+import { RetentionArea } from '../retention-area/entities/retention-area.entity';
+import { GeoJsonProperties } from 'geojson';
+import * as dayjs from 'dayjs';
+import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
 
 @Injectable()
 export class SubmissionService extends DataService<
@@ -26,6 +31,7 @@ export class SubmissionService extends DataService<
     logger: PinoLogger
   ) {
     super(repository, new Submission(), logger);
+    dayjs.extend(customParseFormat)
   }
 
   /**
@@ -47,41 +53,36 @@ export class SubmissionService extends DataService<
       throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
+    // Obtain Submission(or new one) so we have the id.
     let submission = await this.obtainExistingOrNewSubmission(dto.projectId, submissionTypeCode);
 
+    let spatialObjects: (CutBlock | RoadSection | RetentionArea)[];
+    spatialObjects = await this.prepareFomSpatialObjects(dto.spatialObjectCode, dto.jsonSpatialSubmission);
+
     // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
-
-    // Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission. 
-
-    // Validate that the dto.jsonSpatialSubmission is valid. Parse into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode
-
-    // Confirm that all geometrics fall within the BC bounds (to catch errors using e.g. lat/lon coordinates)
-    // As a first approximation, the bounds for BC/Albers 3005 are:
-    // Projected Bounds: 35043.6538, 440006.8768, 1885895.3117, 1735643.8497
-
-    // Save the geospatial objects
+    // And save the geospatial objects
 
     // Update geometry-derived columns on the geospatial objects
-//		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
-//		update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
-//		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
+    // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
+    // update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
+    // update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
 
     // Update project location
-/*
-		with project_geometries as (
-			select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
-			union 
-			select s.project_id, rs.geometry from app_fom.road_section rs join app_fom.submission s on rs.submission_id = s.submission_id 
-			union 
-			select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
-		)
-		update app_fom.project p set 
-      geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from project_geometries g where g.project_id = p.project_id),
- 			update_timestamp = now(),
-			update_user = 'FAKEUSER'
-		where p.project_id = {};
+    /*
+        with project_geometries as (
+          select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
+          union 
+          select s.project_id, rs.geometry from app_fom.road_section rs join app_fom.submission s on rs.submission_id = s.submission_id 
+          union 
+          select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
+        )
+        update app_fom.project p set 
+          geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from project_geometries g where g.project_id = p.project_id),
+          update_timestamp = now(),
+          update_user = 'FAKEUSER'
+        where p.project_id = {};
 
-*/
+    */
       // Remember to populate audit columns createUser, revisionCount, updateUser, updateTimestamp.
 
     // Unsure if need to return anything. Probably not, just have screen reload the project details.
@@ -113,6 +114,12 @@ export class SubmissionService extends DataService<
     return submissionTypeCode;
   }
 
+  /**
+   * Return existing Submisson for the Submission type if found or create new one (saved new record).
+   * @param projectId submission.project_id
+   * @param submissionTypeCode @see {SubmissionTypeCodeEnum}
+   * @returns existing or new Submission for that submissionTypeCode
+   */
   async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum): Promise<Submission>  {
     // Obtain existing submission for the submission type
     const existingSubmissions: Submission[] = await this.repository.find({
@@ -137,4 +144,90 @@ export class SubmissionService extends DataService<
     return submission;
   }
 
+  /**
+   * // Validate that the dto.jsonSpatialSubmission is valid.( TODO: do we need to parse jsonSpatialSubmission for its validity as GeoJSON?)
+   * // Validate required field exists in 'properties'.
+   * // Validate shape is correct? (TODO: do we need to validate this or assume user know what he is submitting?)
+   * // Parse into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode
+   * 
+   * @param spatialObjectCode 
+   * @param jsonSpatialSubmission 
+   * @returns spatial objects into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode.
+   */
+  validateFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): 
+    (CutBlock | RoadSection | RetentionArea)[] {
+
+    // spatial objects holder to be parse into.
+    let spatialObjs: (CutBlock | RoadSection | RetentionArea)[];
+    const features = jsonSpatialSubmission.features;
+    const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
+    const OPTIONAL_PROP_NAME = "NAME";
+    const DATE_FORMAT = "YYYY-MM-DD";
+
+    spatialObjs = features.map(f => {
+      const geometry = f.geometry;
+      const properties = f.properties;
+      let name: string;
+      if (properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
+        name = properties[OPTIONAL_PROP_NAME];
+      }
+
+      if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK) {
+        // validate required properties.
+        validateDevelopmentDate(properties);
+        return new CutBlock({name, geometry, 'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+      }
+      else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
+        // validate required properties.
+        validateDevelopmentDate(properties);
+        return new RoadSection({name, geometry, 'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]}); // TODO: properties assign detail
+      }
+      else {
+        return new RetentionArea({geometry});
+      }
+    });
+
+    // validation - devvelopment_date
+    const validateDevelopmentDate = (properties: GeoJsonProperties) => {
+      if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK || 
+          spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
+        if (!properties.hasOwnProperty(REQUIRED_PROP_DEVELOPMENT_DATE)) {
+          const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} missing for ${spatialObjectCode}`;
+          this.logger.error(errMsg);
+          throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+        else {
+          // validate date format: YYYY-MM-DD
+          const developmentDate = properties[REQUIRED_PROP_DEVELOPMENT_DATE];
+          if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
+            const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} has wrong date format. Valid format: '${DATE_FORMAT}'`;
+            this.logger.error(errMsg);
+            throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+          }
+        }
+      }
+    };
+
+    return spatialObjs;
+  }
+
+  /** 
+   * @param spatialObjectCode 
+   * @param jsonSpatialSubmission 
+   * @returns Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission.
+   */
+  async prepareFomSpatialObjects(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson) 
+    :Promise<(CutBlock | RoadSection | RetentionArea)[]> {
+
+    let spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission);
+
+    // TODO:
+    // Confirm that all geometrics fall within the BC bounds (to catch errors using e.g. lat/lon coordinates)
+    // As a first approximation, the bounds for BC/Albers 3005 are:
+    // Projected Bounds: 35043.6538, 440006.8768, 1885895.3117, 1735643.8497
+
+    return spatialObjs;
+  }
+
 }
+

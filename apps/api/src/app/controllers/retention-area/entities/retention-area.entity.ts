@@ -12,7 +12,7 @@ export class RetentionArea extends ApiBaseEntity<RetentionArea> {
   public id: number;
 
   @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
-  geometry: string;
+  geometry: any;
 
   @Column()
   planned_area_ha: number;
