@@ -60,7 +60,28 @@ export class SubmissionService extends DataService<
     spatialObjects = await this.prepareFomSpatialObjects(dto.spatialObjectCode, dto.jsonSpatialSubmission);
 
     // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
+    if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
+      submission.cut_blocks = [];
+    }
+    else if (SpatialObjectCodeEnum.ROAD_SECTION === dto.spatialObjectCode) {
+      submission.road_sections = [];
+    }
+    else {
+      submission.retention_areas = [];
+    }
+    submission = await this.repository.save(submission);
+
     // And save the geospatial objects
+    if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
+      submission.cut_blocks = <CutBlock[]>spatialObjects;
+    }
+    else if (SpatialObjectCodeEnum.ROAD_SECTION === dto.spatialObjectCode) {
+      submission.road_sections = <RoadSection[]>spatialObjects;
+    }
+    else {
+      submission.retention_areas = <RetentionArea[]>spatialObjects;
+    }
+    submission = await this.repository.save(submission);
 
     // Update geometry-derived columns on the geospatial objects
     // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
