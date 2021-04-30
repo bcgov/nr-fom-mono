@@ -8,16 +8,18 @@ import { ProjectController, ProjectsController } from './project.controller';
 import { DistrictModule } from '../district/district.module';
 import { ForestClientModule } from '../forest-client/forest-client.module';
 import { WorkflowStateCodeModule } from '../workflow-state-code/workflow-state-code.module';
+import { ProjectSpatialDetailService } from './project-spatial-detail.service';
+import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Project]),
+    TypeOrmModule.forFeature([Project, ProjectSpatialDetail]),
     DistrictModule,
     ForestClientModule,
     WorkflowStateCodeModule,
   ],
   controllers: [ProjectController, ProjectsController],
-  providers: [ProjectService],
+  providers: [ProjectService, ProjectSpatialDetailService],
   exports: [ProjectService],
 })
 export class ProjectModule {}

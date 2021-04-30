@@ -12,18 +12,6 @@ module.exports = class testdata1616434875304 {
         , (2, 'Corner of SunFlower village deforestation', 'This is the description of the Corner of the world ....', 10, 43, 1012, 'INITIAL', '2021-03-03', '2021-04-03', 'testdata')
         ;
         
-        -- app_fom.public_comment
-        INSERT INTO app_fom.public_comment(
-            public_comment_id, project_id, comment_scope_code, feedback, name, location, email, phone_number, response_code, response_details, create_user) VALUES
-        (10, 1, 'OVERALL', 'Hi there. The trees you are trying to cut are absolutely amazing and the entiry community 
-            just love them. Actually, we rely on them for our birds and would like to know if you could go on the other side of the creek and work there.', 'Anonymous', 
-            'Quesnel Natural RESOURCE', 'test@test.com', '+14034442266', null, 'I dont really like this comment', 'testdata')
-        , (11, 1, 'OVERALL', 'Hi there? When are you actually planning on executing this work? Will there be any further
-            notification? I''m planing on building a house very close to where the cut will be, that''s why the
-            concern. In addition, how long will your work take?', 'Anonymous', 
-            'Fort Nelson Natural Resource', 'anonymous@test.com', null, 'CONSIDERED', 'This comment will be dealt with later', 'testdata')
-        ;
-
         -- app_fom.submission
         INSERT INTO app_fom.submission(submission_id, project_id, submission_type_code, create_user) values
         (20, 1, 'PROPOSED', 'testdata')
@@ -43,22 +31,64 @@ module.exports = class testdata1616434875304 {
 		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = 20;
 		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = 20;
 
-		with submission_geometries as (
-			select submission_id, geometry from app_fom.cut_block 
+		with project_geometries as (
+			select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
 			union 
-			select submission_id, geometry from app_fom.road_section  
+			select s.project_id, rs.geometry from app_fom.road_section rs join app_fom.submission s on rs.submission_id = s.submission_id 
 			union 
-			select submission_id, geometry from app_fom.retention_area ra 
+			select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
 		)
-		update app_fom.submission s set geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from submission_geometries g where g.submission_id = s.submission_id) 
-		where s.submission_id = 20;
+		update app_fom.project p set 
+			geometry_latlong = (select ST_Transform(ST_centroid(ST_COLLECT(g.geometry)),4326) from project_geometries g where g.project_id = p.project_id),
+            update_timestamp = now(),
+			update_user = 'testdata',
+            revision_count = (select revision_count+1 from app_fom.project p2 where p.project_id = p2.project_id )
+		where p.project_id = 1;
+
+        -- app_fom.public_comment
+        INSERT INTO app_fom.public_comment(
+            public_comment_id, project_id, comment_scope_code, scope_cut_block_id, name, location, email, phone_number, response_code, response_details, create_user, feedback) VALUES
+        (10, 1, 'OVERALL', null, 'John Smith', 'Prince George', 'john.smith@fakedomain.com', '+12345551234', 'CONSIDERED', 'I dont really like this comment', 'testdata', 
+            'Hi there. The trees you are trying to cut are absolutely amazing and the entiry community just love them. Actually, we rely on them for our birds and would like to know if you could go on the other side of the creek and work there.')
+        , (11, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Hi there? When are you actually planning on executing this work? Will there be any further notification? I''m planing on building a house very close to where the cut will be, that''s why the concern. In addition, how long will your work take?')
+        , (12, 1, 'CUT_BLOCK', 200, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+            'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (13, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (14, 1, 'CUT_BLOCK', 200, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+            'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (15, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (16, 1, 'CUT_BLOCK', 200, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+            'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (17, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (18, 1, 'CUT_BLOCK', 200, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+            'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (19, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (20, 1, 'CUT_BLOCK', 200, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+            'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (21, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (22, 1, 'CUT_BLOCK', 200, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+            'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (23, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (24, 1, 'CUT_BLOCK', 200, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+            'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        , (25, 1, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
+            'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        ;
+
 
         `);
   }
 
   async down(queryRunner) {
     await queryRunner.query(`
-        DELETE FROM app_fom.public_comment where public_comment_id in (10,11);
+        DELETE FROM app_fom.public_comment where public_comment_id < 1000;
         DELETE FROM app_fom.cut_block where submission_id in (20);
         DELETE FROM app_fom.road_section where submission_id in (20);
         DELETE FROM app_fom.submission where submission_id in (20);

@@ -289,6 +289,7 @@ forest_client_number varchar not null references app_fom.forest_client(forest_cl
 workflow_state_code  varchar not null references app_fom.workflow_state_code(code) ,
 commenting_open_date date ,  
 commenting_closed_date date , 
+geometry_latlong GEOMETRY(POINT, 4326) ,
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
@@ -297,6 +298,7 @@ update_timestamp timestamptz ,
 update_user varchar 
 
 ); 
+alter sequence app_fom.project_project_id_seq restart with 1000;
 
 comment on table  app_fom.project is 'Root entity for the FOM application by a Forest Client. Contains the proposed FOM submission, the public comments and responses, the stakeholder interactions and attachments, and the final FOM submission. Design note: The business is not interested in what the Forest Client does prior to finalization other than capturing the proposed and final spatial submissions, so any updates to attributes in a proposed project will overwrite existing values.';
 
@@ -309,6 +311,7 @@ comment on column app_fom.project.forest_client_number is 'Each project is owned
 comment on column app_fom.project.workflow_state_code is 'Tracks which step in the business process the project is in.  ';
 comment on column app_fom.project.commenting_open_date is 'Date when this project is available for public comment. ';
 comment on column app_fom.project.commenting_closed_date is 'Date when this project is no longer available for public comment. ';
+comment on column app_fom.project.geometry_latlong is ' Central point geographically for the FOM project in EPSG 4326 CRS. Used as a performance optimization for plotting the FOM on the overview map. Calculated value based on the cut blocks and road sections making up the submissions. ';
 
 comment on column app_fom.project.revision_count is 'Standard column for optimistic locking on updates.';
 comment on column app_fom.project.create_timestamp is 'Time of creation of the record.';
@@ -324,7 +327,6 @@ create table if not exists app_fom.submission
 submission_id serial not null primary key ,  
 project_id integer not null references app_fom.project (project_id) , 
 submission_type_code varchar not null references app_fom.submission_type_code(code) , 
-geometry GEOMETRY(POINT, 3005) , 
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
@@ -332,13 +334,13 @@ create_user varchar not null ,
 update_timestamp timestamptz ,  
 update_user varchar  
 );  
+alter sequence app_fom.submission_submission_id_seq restart with 1000;
 
 comment on table  app_fom.submission is 'For each FOM project the proposed submission submitted for commenting and the finalized submission (updated in response) are tracked as separate submission. Each submission consists of one or more geometries (shapes) that defines the area where logging of trees and related forestry activities is planned. A shape can be for a cut block, road section, or wildlife tree retention area (WTRA) within a cutblock.';
 
 comment on column app_fom.submission.submission_id is ' Primary key ';
 comment on column app_fom.submission.project_id is ' Parent project. ';
 comment on column app_fom.submission.submission_type_code is ' Specifies whether this is the initial or final submission. ';
-comment on column app_fom.submission.geometry is ' Central point geographically for the FOM submission. Used as a performance optimization for plotting the FOM on the overview map. Calculated value based on the cut blocks and road sections making up the submission. ';
 
 comment on column app_fom.submission.create_timestamp is 'Time of creation of the record.';
 comment on column app_fom.submission.create_user is 'The user id who created the record. For citizens creating comments, a common hardcoded user id will be used.';
@@ -364,6 +366,7 @@ create_user varchar not null ,
 update_timestamp timestamptz ,  
 update_user varchar 
 ); 
+alter sequence app_fom.cut_block_cut_block_id_seq restart with 1000;
 
 comment on table  app_fom.cut_block is 'An area in which trees will be cut down.';
 
@@ -396,6 +399,7 @@ create_user varchar not null ,
 update_timestamp timestamptz ,  
 update_user varchar 
 );  
+alter sequence app_fom.retention_area_retention_area_id_seq restart with 1000;
 
 comment on table  app_fom.retention_area is 'A Wildlife Tree Retention Area (WTRA). Each WTRA is a subset (inner polyon) of an associated cut block specifying where trees/wildlife will be retained (not cut down). There is no business need to have a relationship between a WTRA and its corresponding cut block.';
 
@@ -429,6 +433,7 @@ update_timestamp timestamptz ,
 update_user varchar 
 
 ); 
+alter sequence app_fom.road_section_road_section_id_seq restart with 1000;
 
 comment on table  app_fom.road_section is 'A section of road that will be created.';
 
@@ -462,6 +467,7 @@ create_user varchar not null ,
 update_timestamp timestamptz ,  
 update_user varchar  
 ); 
+alter sequence app_fom.attachment_attachment_id_seq restart with 1000;
 
 comment on table  app_fom.attachment is 'A document or other type of file that provides evidence of a stakeholder interaction or posting of a public notice.';
 
@@ -501,6 +507,7 @@ create_user varchar not null ,
 update_timestamp timestamptz ,  
 update_user varchar  
 );  
+alter sequence app_fom.public_comment_public_comment_id_seq restart with 1000;
 
 comment on table  app_fom.public_comment is 'A comment made by a member of the public regarding a proposed FOM project.';
 
@@ -541,6 +548,8 @@ create_user varchar not null ,
 update_timestamp timestamptz ,  
 update_user varchar  
 ); 
+alter sequence app_fom.interaction_interaction_id_seq restart with 1000;
+
 comment on table  app_fom.interaction is 'A record of interaction between a stakeholder (e.g. citizen, special interest group) and the forest client regarding a proposed FOM project.';
 
 comment on column app_fom.interaction.interaction_id is 'Primary key ';
@@ -556,11 +565,43 @@ comment on column app_fom.interaction.update_timestamp is 'Time of most recent u
 comment on column app_fom.interaction.update_user is 'The user id who last updated the record. For citizens creating comments, a common hardcoded user id will be used.';
 comment on column app_fom.interaction.revision_count is 'Standard column for optimistic locking on updates.';
 
+/* ------- ddl script for app_fom.project_spatial_detail ---------*/  
+/* This converts geometries to lat/long for consumption by leaflet. */
+drop view if exists app_fom.project_spatial_detail;
+create view app_fom.project_spatial_detail as 
+  select o.cut_block_id as object_id, 'cut_block' as source_table,
+  p.project_id, s.submission_type_code,  
+  o.name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, o.planned_development_date, o.planned_area_ha, 0.0 as planned_length_km
+  from app_fom.cut_block o
+  inner join app_fom.submission s on o.submission_id = s.submission_id
+  inner join app_fom.project p on s.project_id = p.project_id
+union       
+  select o.retention_area_id as object_id, 'retention_area' as source_table,
+  p.project_id, s.submission_type_code,  
+  null as name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, null as planned_development_date, o.planned_area_ha, 0.0 as planned_length_km
+  from app_fom.retention_area o
+  inner join app_fom.submission s on o.submission_id = s.submission_id
+  inner join app_fom.project p on s.project_id = p.project_id
+union
+  select o.road_section_id as object_id, 'road_section' as source_table,
+  p.project_id, s.submission_type_code,  
+  o.name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, o.planned_development_date, null as planned_area_ha, o.planned_length_km
+  from app_fom.road_section o
+  inner join app_fom.submission s on o.submission_id = s.submission_id
+  inner join app_fom.project p on s.project_id = p.project_id
+;
+
+comment on view app_fom.project_spatial_detail is 'Denormalized table of spatial objects of FOM projects converting geometry columns to geojson with lat/long for consumption by leaflet.';
+
+
         `);
   }
 
   async down(queryRunner) {
     await queryRunner.query(`
+        -- Drop views
+        drop view if exists app_fom.project_spatial_detail;
+
         -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.
         drop table if exists app_fom.interaction;
         drop table if exists app_fom.attachment;
