@@ -8,7 +8,8 @@ function CreateApiStack {
     oc delete all,NetworkPolicy,ConfigMap -n a4b31c-$Env -l template=fom-api-deploy,tag=$Suffix
 
     oc delete all,NetworkPolicy,ConfigMap -n a4b31c-$Env -l template=fom-db-deploy,suffix=$Suffix
-    # WARNING: Non-reversible destructive operation: This will destroy the existing database and credentials to access it.
+    Write-Output "WARNING: Non-reversible deletion of existing database and its storage and related credentials..."
+    Read-Host "*** Confirm database destruction ***"
     oc delete Secret,PersistentVolumeClaim -n a4b31c-$Env -l template=fom-db-deploy,suffix=$Suffix
 
     Write-Output "Creating database..."
@@ -17,8 +18,3 @@ function CreateApiStack {
     Write-Output "Creating api backend..."
     oc process -f fom-api-deploy.yml -p ENV=$Env -p TAG=$Suffix -p HOSTNAME="nr-fom-api-$Suffix-$Env" -p IMAGE_STREAM_VERSION=$ApiVersion -p DB_TESTDATA=$TestData | oc create -n a4b31c-$Env -f -
 }
-
-CreateApiStack -Suffix "working" -Env "dev" -ApiVersion "dev" -TestData "true"
-CreateApiStack -Suffix "main" -Env "dev" -ApiVersion "main" -TestData "true"
-
-
