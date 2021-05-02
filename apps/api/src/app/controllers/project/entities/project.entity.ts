@@ -4,6 +4,7 @@ import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-s
 import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
 import { Submission } from '../../submission/entities/submission.entity';
+import { FomPoint } from '../dto/project.dto';
 
 @Entity('project', {schema: 'app_fom'})
 export class Project extends ApiBaseEntity<Project> {
@@ -27,7 +28,7 @@ export class Project extends ApiBaseEntity<Project> {
   commenting_closed_date: string; // timestamp
 
   @Column({ name: 'geometry_latlong', type: 'geometry', spatialFeatureType: 'Point', srid: 4326 })
-  geojson: string;
+  geojson: FomPoint;
 
   @Column()
   fsp_id: number;
