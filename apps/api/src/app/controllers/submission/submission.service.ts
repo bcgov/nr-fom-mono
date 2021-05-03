@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
@@ -73,13 +73,7 @@ export class SubmissionService extends DataService<
     }
     submission = await this.repository.save(submission);
 
-
-    // using getRepository(CutBlock).createQueryBuilder or await getConnection().createQueryBuilder().
-
-    // Update geometry-derived columns on the geospatial objects
-    // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
-    // update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
-    // update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
+    await this.updateGeospatialAreaOrLength(dto.spatialObjectCode, submission.id, spatialObjects);
 
     // Update project location
     /*
@@ -252,5 +246,39 @@ export class SubmissionService extends DataService<
     this.logger.info(`FOM spatial objects prepares: ${JSON.stringify(spatialObjs)}`);
     return spatialObjs;
   }
-}
 
+  
+  // Update geometry-derived columns on the geospatial objects
+  // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
+  // update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
+  // update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
+  async updateGeospatialAreaOrLength(spatialObjectCode: SpatialObjectCodeEnum, submissionId: number, spatialObjects: (CutBlock | RoadSection | RetentionArea)[]) {
+    this.logger.info(`Method updateGeospatialAreaOrLength called with spatialObjectCode:${spatialObjectCode}, 
+      submissionId:${submissionId} and spatialObjects:${JSON.stringify(spatialObjects)}`)
+    let entityName: string;
+    let setClause: object;
+    switch (spatialObjectCode) {
+      case SpatialObjectCodeEnum.ROAD_SECTION:
+        entityName = RoadSection.name;
+        setClause = { planned_length_km: () => 'ST_Length(geometry)/1000' };
+        break;
+      case SpatialObjectCodeEnum.WTRA:
+        entityName = RetentionArea.name;
+        setClause = { planned_area_ha: () => 'ST_AREA(geometry)/10000' };
+        break;
+      default:
+        entityName = CutBlock.name;
+        setClause = { planned_area_ha: () => 'ST_AREA(geometry)/10000' };
+    }
+
+    await Promise.all(spatialObjects.map(async (s) => {
+      await getConnection()
+      .createQueryBuilder()
+      .update(entityName)
+      .set(setClause)
+      .where("submission_id = :submissionId", { submissionId })
+      .execute();
+    }));
+
+  }
+}
