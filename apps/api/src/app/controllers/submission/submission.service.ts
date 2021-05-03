@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
-import { Project } from '../project/entities/project.entity';
 import { ProjectService } from '../project/project.service';
 import { PinoLogger } from 'nestjs-pino';
 import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
@@ -15,6 +14,7 @@ import { RetentionArea } from '../retention-area/entities/retention-area.entity'
 import { GeoJsonProperties } from 'geojson';
 import * as dayjs from 'dayjs';
 import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
+import { ProjectDto } from '../project/dto/project.dto';
 
 @Injectable()
 export class SubmissionService extends DataService<
@@ -24,6 +24,8 @@ export class SubmissionService extends DataService<
 
   @Inject('ProjectService')
   private projectService: ProjectService;
+
+  private user: string = 'testdata'; // TODO: find out where user is from
 
   constructor(
     @InjectRepository(Submission)
@@ -41,8 +43,8 @@ export class SubmissionService extends DataService<
     this.logger.info(`${this.constructor.name}.create props`, dto);
   
     // Load the existing project to obtain the project's workflow state
-    const project: Project = await this.projectService.findOne(dto.projectId);
-    const workflowStateCode = project.workflow_state_code;
+    const project: ProjectDto = await this.projectService.findOne(dto.projectId);
+    const workflowStateCode = project.workflowStateCode;
     const submissionTypeCode = this.getPermittedSubmissionTypeCode(workflowStateCode);
 
     // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
@@ -57,21 +59,9 @@ export class SubmissionService extends DataService<
     let submission = await this.obtainExistingOrNewSubmission(dto.projectId, submissionTypeCode);
 
     let spatialObjects: (CutBlock | RoadSection | RetentionArea)[];
-    spatialObjects = await this.prepareFomSpatialObjects(dto.spatialObjectCode, dto.jsonSpatialSubmission);
+    spatialObjects = await this.prepareFomSpatialObjects(submission.id, dto.spatialObjectCode, dto.jsonSpatialSubmission);
 
-    // Delete all existing geospatial objects corresponding to the dto.spatialObjectCode
-    if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
-      submission.cut_blocks = [];
-    }
-    else if (SpatialObjectCodeEnum.ROAD_SECTION === dto.spatialObjectCode) {
-      submission.road_sections = [];
-    }
-    else {
-      submission.retention_areas = [];
-    }
-    submission = await this.repository.save(submission);
-
-    // And save the geospatial objects
+    // And save the geospatial objects (will update/replace previous ones)
     if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
       submission.cut_blocks = <CutBlock[]>spatialObjects;
     }
@@ -82,6 +72,9 @@ export class SubmissionService extends DataService<
       submission.retention_areas = <RetentionArea[]>spatialObjects;
     }
     submission = await this.repository.save(submission);
+
+
+    // using getRepository(CutBlock).createQueryBuilder or await getConnection().createQueryBuilder().
 
     // Update geometry-derived columns on the geospatial objects
     // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
@@ -145,7 +138,7 @@ export class SubmissionService extends DataService<
     // Obtain existing submission for the submission type
     const existingSubmissions: Submission[] = await this.repository.find({
       where: { project_id: projectId, submission_type_code: submissionTypeCode },
-      // relations: ['district', 'forest_client', 'workflow_state'],
+      relations: ['cut_blocks', 'retention_areas', 'road_sections'],
     });
 
     let submission: Submission;
@@ -155,13 +148,16 @@ export class SubmissionService extends DataService<
       // TODO: populate user/time?
       submission = new Submission({             
         project_id: projectId,
-        submission_type_code: submissionTypeCode
+        submission_type_code: submissionTypeCode,
+        create_user: this.user
       })
       submission = await this.repository.save(submission);
 
     } else {
       submission = existingSubmissions[0];
     }
+
+    this.logger.debug(`Obtained submission: ${JSON.stringify(submission)}`);
     return submission;
   }
 
@@ -185,29 +181,6 @@ export class SubmissionService extends DataService<
     const OPTIONAL_PROP_NAME = "NAME";
     const DATE_FORMAT = "YYYY-MM-DD";
 
-    spatialObjs = features.map(f => {
-      const geometry = f.geometry;
-      const properties = f.properties;
-      let name: string;
-      if (properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
-        name = properties[OPTIONAL_PROP_NAME];
-      }
-
-      if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK) {
-        // validate required properties.
-        validateDevelopmentDate(properties);
-        return new CutBlock({name, geometry, 'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
-      }
-      else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
-        // validate required properties.
-        validateDevelopmentDate(properties);
-        return new RoadSection({name, geometry, 'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]}); // TODO: properties assign detail
-      }
-      else {
-        return new RetentionArea({geometry});
-      }
-    });
-
     // validation - devvelopment_date
     const validateDevelopmentDate = (properties: GeoJsonProperties) => {
       if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK || 
@@ -229,6 +202,33 @@ export class SubmissionService extends DataService<
       }
     };
 
+    spatialObjs = features.map(s => {
+      const geometry = s.geometry;
+      const properties = s.properties;
+      let name: string;
+      if (properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
+        name = properties[OPTIONAL_PROP_NAME];
+      }
+
+      if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK) {
+        // validate required properties.
+        validateDevelopmentDate(properties);
+        return new CutBlock({name, geometry,
+          create_user: this.user,
+          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+      }
+      else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
+        // validate required properties.
+        validateDevelopmentDate(properties);
+        return new RoadSection({name, geometry,
+          create_user: this.user,
+          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]}); // TODO: properties assign detail
+      }
+      else {
+        return new RetentionArea({geometry, create_user: this.user});
+      }
+    });
+
     return spatialObjs;
   }
 
@@ -237,18 +237,20 @@ export class SubmissionService extends DataService<
    * @param jsonSpatialSubmission 
    * @returns Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission.
    */
-  async prepareFomSpatialObjects(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson) 
+  async prepareFomSpatialObjects(submissionId: number, spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson) 
     :Promise<(CutBlock | RoadSection | RetentionArea)[]> {
-
+    this.logger.info(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
+        and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
     let spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission);
+    spatialObjs.forEach((s) => {s.submission_id = submissionId}); // assign them to the submission 
 
     // TODO:
     // Confirm that all geometrics fall within the BC bounds (to catch errors using e.g. lat/lon coordinates)
     // As a first approximation, the bounds for BC/Albers 3005 are:
     // Projected Bounds: 35043.6538, 440006.8768, 1885895.3117, 1735643.8497
 
+    this.logger.info(`FOM spatial objects prepares: ${JSON.stringify(spatialObjs)}`);
     return spatialObjs;
   }
-
 }
 

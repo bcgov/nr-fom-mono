@@ -6,7 +6,9 @@ import {
   Column,
   ManyToOne,
   RelationId,
+  OneToMany,
 } from 'typeorm';
+import { PublicComment } from '../../public-comment/entities/public-comment.entity';
 import { Submission } from '../../submission/entities/submission.entity';
 
 @Entity('cut_block', { schema: 'app_fom' })
@@ -30,11 +32,15 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column()
   planned_area_ha: number;
 
-  @ManyToOne(() => Submission, (submission) => submission.cut_blocks)
+  @ManyToOne(() => Submission, (submission) => submission.cut_blocks, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
   @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
   submission: Submission;
 
   @Column()
   @RelationId((cutBlock: CutBlock) => cutBlock.submission)
   submission_id: number;
+
+  @OneToMany(type => PublicComment, (publicComment) => publicComment.cutBlock, 
+    {cascade: true})
+  publicComments: PublicComment[];
 }
