@@ -31,12 +31,12 @@ export class Submission extends ApiBaseEntity<Submission> {
   @RelationId((submission: Submission) => submission.submission_type)
   submission_type_code: string;
 
-  @OneToMany(type => CutBlock, (cutBlock) => cutBlock.submission, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+  @OneToMany(type => CutBlock, (cutBlock) => cutBlock.submission, {cascade: true})
   cut_blocks: CutBlock[];
 
-  @OneToMany(type => RetentionArea, (retentionArea) => retentionArea.submission, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+  @OneToMany(type => RetentionArea, (retentionArea) => retentionArea.submission, {cascade: true})
   retention_areas: RetentionArea[];
 
-  @OneToMany(type => RoadSection, (roadSection) => roadSection.submission, {onDelete: 'CASCADE', onUpdate: 'CASCADE'})
+  @OneToMany(type => RoadSection, (roadSection) => roadSection.submission, {cascade: true})
   road_sections: RoadSection[];
 }

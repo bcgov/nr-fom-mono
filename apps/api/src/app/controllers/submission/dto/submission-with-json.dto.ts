@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { SubmissionDto } from './submission.dto';
 import { FeatureCollection } from 'geojson';
 import { IsJSON, IsNotEmpty } from 'class-validator';
@@ -17,7 +17,10 @@ export enum SpatialObjectCodeEnum {
   WTRA = 'WTRA'
 };
 
-export class SubmissionWithJsonDto extends SubmissionDto {
+// export class SubmissionWithJsonDto extends SubmissionDto {
+export class SubmissionWithJsonDto extends OmitType(SubmissionDto, 
+  // TODO: perhaps, it is better to create a new "createDTO" with below annotations there and extends from that DTO.
+  ['id', 'revisionCount', 'createTimestamp', 'createUser', 'updateTimestamp', 'updateUser', 'project', 'submissionType']) {
   @ApiProperty({ enum: SpatialObjectCodeEnum, enumName: 'SpatialObjectCodeEnum'})
   @IsNotEmpty()
   spatialObjectCode: SpatialObjectCodeEnum;
