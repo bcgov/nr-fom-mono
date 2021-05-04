@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags, ApiBody, ApiResponse } from '@nestjs/swagger';
-
+import { Controller, Get, Post, Put, Delete, Body, Param, Logger, Query } from '@nestjs/common';
+import { ApiTags, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { BaseController, BaseCollectionController } from '@controllers';
 import { ProjectService } from './project.service';
 import { Project } from './entities/project.entity';
@@ -9,6 +8,7 @@ import { UpdateProjectDto } from './dto/update-project.dto';
 import { UpdateResult } from 'typeorm';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
+import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 
 @ApiTags('projects')
 @Controller('projects')
@@ -21,7 +21,24 @@ export class ProjectsController extends BaseCollectionController<
     super(service);
   }
 
-  // TODO: REMOVE THIS + SubmissionWithGeoDetailsDto
+  @Get('/publicSummary')
+  @ApiQuery({ name: 'includeCommentOpen', required: false})
+  @ApiQuery({ name: 'includePostCommentOpen', required: false})
+  @ApiQuery({ name: 'clientName', required: false})
+  @ApiQuery({ name: 'openedOnOrAfter', required: false})
+  @ApiResponse({ status: 200, type: [ProjectPublicSummaryDto] })
+  async findPublicSummary(
+    @Query('includeCommentOpen') includeCommentOpen: boolean = false, 
+    @Query('includePostCommentOpen') includePostCommentOpen: boolean = false, 
+    @Query('clientName') clientName?: string,
+    @Query('openedOnOrAfter') openedOnOrAfter?: string,
+    ): Promise<ProjectPublicSummaryDto[]> {
+      // console.log(`includeCommentOpen ${includeCommentOpen}, includeNotCommentOpen ${includePostCommentOpen}, fomHolderName ${clientName}, openedAfter ${openedOnOrAfter}`);
+
+      return await this.service.findPublicSummaries();
+  }
+
+  // TODO: REMOVE THIS + SubmissionWithGeoDetailsDto might be useful for Admin?
   // @Get('/byIdWithGeoDetails/:id')
   // @ApiResponse({ status: 200, type: [ProjectDto] })
   // async findByIdWithGeoDetails(@Param('id') id: number): Promise<ProjectDto[]> {

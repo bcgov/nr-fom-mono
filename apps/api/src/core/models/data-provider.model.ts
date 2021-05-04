@@ -141,7 +141,6 @@ export abstract class DataService<
 
     try {
       const findAll = await this.repository.find(options);
-      this.logger.info('findAll result', findAll);
       return findAll.map((r) => mapFromEntity(r, {} as C));
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findAll ${error}`);
