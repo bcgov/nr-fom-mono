@@ -1,4 +1,5 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
 
 # Forest Operation Map (FOM)
 
@@ -14,11 +15,6 @@ This repo is for the Node.js API backend.
 
 <!--- product/library and path to the LICENSE --->
 <!--- Example: <library_name> - [![GitHub](<shield_icon_link>)](<path_to_library_LICENSE>) --->
-
-## Project Status
-
-- [x] Development
-- [ ] Production/Maintenance
 
 ## Documentation
 
