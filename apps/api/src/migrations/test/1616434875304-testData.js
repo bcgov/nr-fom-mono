@@ -16,12 +16,12 @@ module.exports = class testdata1616434875304 {
         INSERT INTO app_fom.project(
             project_id, name, description, fsp_id, district_id, forest_client_number, workflow_state_code,
             commenting_open_date, commenting_closed_date, create_user ) VALUES
-        (1, 'Initial  no submission', 'This is the description of the Corner of ....', 10, null, 1011, 'INITIAL', null, null, 'testdata')
-        , (2, 'Initial with submission', 'This is the description of the Corner of the world ....', 10, 43, 1012, 'INITIAL', '2021-03-03', null, 'testdata')
-        , (3, 'Commenting open with submission', 'This is the description of the Corner of the world ....', 10, 43, 1012, 'COMMENT_OPEN', '2021-04-01', '2022-04-01', 'testdata')
-        , (4, 'Commenting closed with only proposed submission', 'This is the description of the Corner of the world ....', 10, 43, 1012, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
-        , (5, 'Commenting closed with proposed + final submissions', 'This is the description of the Corner of the world ....', 10, 43, 1012, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
-        , (6, 'Finalized', 'This is the description of the Corner of the world ....', 10, 43, 1012, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
+        (1, 'Fake name 1', 'Initial no submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, null, 1011, 'INITIAL', null, null, 'testdata')
+        , (2, 'Fake name 2 a bit longer', 'Initial with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'INITIAL', '2021-03-03', null, 'testdata')
+        , (3, 'Fake name 3 even more longer', 'Commenting open with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_OPEN', '2021-04-01', '2022-04-01', 'testdata')
+        , (4, 'Fake name 4 50 char long 123456789 123456789 123456789', 'Commenting closed with only proposed submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
+        , (5, 'Fake name 5', 'Commenting closed with proposed + final submissions project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
+        , (6, 'Fake name 6', 'Finalized project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
         ;
         
         -- app_fom.submission
