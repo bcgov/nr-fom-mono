@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
+import { getConnection, getManager, Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
@@ -25,7 +25,7 @@ export class SubmissionService extends DataService<
   @Inject('ProjectService')
   private projectService: ProjectService;
 
-  private user: string = 'testdata'; // TODO: find out where user is from
+  private user: string = 'testdata'; // TODO: !find out where user is from!
 
   constructor(
     @InjectRepository(Submission)
@@ -41,7 +41,7 @@ export class SubmissionService extends DataService<
    */
   async processSpatialSubmission(dto: Partial<SubmissionWithJsonDto>): Promise<any> {       
     this.logger.info(`${this.constructor.name}.create props`, dto);
-  
+
     // Load the existing project to obtain the project's workflow state
     const project: ProjectDto = await this.projectService.findOne(dto.projectId);
     const workflowStateCode = project.workflowStateCode;
@@ -75,25 +75,7 @@ export class SubmissionService extends DataService<
 
     await this.updateGeospatialAreaOrLength(dto.spatialObjectCode, submission.id, spatialObjects);
 
-    // Update project location
-    /*
-        with project_geometries as (
-          select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
-          union 
-          select s.project_id, rs.geometry from app_fom.road_section rs join app_fom.submission s on rs.submission_id = s.submission_id 
-          union 
-          select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
-        )
-        update app_fom.project p set 
-          geometry = (select ST_centroid(ST_COLLECT(g.geometry)) from project_geometries g where g.project_id = p.project_id),
-          update_timestamp = now(),
-          update_user = 'FAKEUSER'
-        where p.project_id = {};
-
-    */
-      // Remember to populate audit columns createUser, revisionCount, updateUser, updateTimestamp.
-
-    // Unsure if need to return anything. Probably not, just have screen reload the project details.
+    await this.updateProjectLocation(project.id);
   }
 
   /**
@@ -139,7 +121,6 @@ export class SubmissionService extends DataService<
     if (existingSubmissions.length == 0) {
       // Save the submission first in order to populate primary key.
       // Populate fields
-      // TODO: populate user?
       submission = new Submission({             
         project_id: projectId,
         submission_type_code: submissionTypeCode,
@@ -246,7 +227,6 @@ export class SubmissionService extends DataService<
     this.logger.info(`FOM spatial objects prepares: ${JSON.stringify(spatialObjs)}`);
     return spatialObjs;
   }
-
   
   // Update geometry-derived columns on the geospatial objects
   // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
@@ -279,6 +259,27 @@ export class SubmissionService extends DataService<
       .where("submission_id = :submissionId", { submissionId })
       .execute();
     }));
-
   }
+
+  // Update project location
+  async updateProjectLocation(projectId: number) {
+    this.logger.info(`Updating project location for projectId: ${projectId}`);
+    await getManager().query(`
+      with project_geometries as (
+        select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
+        union 
+        select s.project_id, rs.geometry from app_fom.road_section rs join app_fom.submission s on rs.submission_id = s.submission_id 
+        union 
+        select s.project_id, ra.geometry from app_fom.retention_area ra join app_fom.submission s on ra.submission_id = s.submission_id
+      )
+      update app_fom.project p set 
+        geometry_latlong = (select ST_Transform(ST_centroid(ST_COLLECT(g.geometry)),4326) from project_geometries g where g.project_id = p.project_id),
+              update_timestamp = now(),
+        update_user = $2,
+              revision_count = (select revision_count+1 from app_fom.project p2 where p.project_id = p2.project_id )
+      where p.project_id = $1;
+    `, [projectId, this.user]);
+    this.logger.info(`Project location updated for projectId: ${projectId}`);
+  }
+
 }
