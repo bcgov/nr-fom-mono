@@ -39,9 +39,11 @@ module.exports = class testdata1616434875304 {
 		INSERT INTO app_fom.cut_block (cut_block_id, submission_id, name, planned_development_date, geometry, create_user) VALUES
 		(200, 20, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1474614 555392, 1474818 555392, 1474818 555080, 1474614 555080, 1474614 555392))', 3005), 'testdata')
 		, (300, 30, 'my cut block with comments', '2022-04-01', ST_GeomFromText('POLYGON((1474614 555392, 1474818 555392, 1474818 555080, 1474614 555080, 1474614 555392))', 3005), 'testdata')
-		, (400, 40, 'my cut block with comments', '2022-04-01', ST_GeomFromText('POLYGON((1474714 555492, 1474918 555492, 1474918 555180, 1474714 555280, 1474714 555492))', 3005), 'testdata')
-		, (500, 50, 'my cut block with comments', '2022-04-01', ST_GeomFromText('POLYGON((1474714 555492, 1474918 555492, 1474918 555180, 1474714 555280, 1474714 555492))', 3005), 'testdata')
-		, (510, 51, 'my cut block with comments', '2022-04-01', ST_GeomFromText('POLYGON((1474814 555392, 1475018 555392, 1475018 555080, 1474814 555180, 1474814 555392))', 3005), 'testdata')
+		, (400, 40, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1474714 555492, 1474918 555492, 1474918 555180, 1474714 555280, 1474714 555492))', 3005), 'testdata')
+		, (500, 50, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1454714 555492, 1454918 555492, 1454918 555180, 1454714 555280, 1454714 555492))', 3005), 'testdata')
+		, (510, 51, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1454814 555392, 1455018 555392, 1455018 555080, 1454814 555180, 1454814 555392))', 3005), 'testdata')
+		, (600, 60, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1464714 555492, 1464918 555492, 1464918 555180, 1464714 555280, 1464714 555492))', 3005), 'testdata')
+		, (610, 61, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1464814 555392, 1465018 555392, 1465018 555080, 1464814 555180, 1464814 555392))', 3005), 'testdata')
 		;
           
 		-- app_fom.road_section
@@ -49,6 +51,12 @@ module.exports = class testdata1616434875304 {
 		(200, 20, 'my road', '2021-04-23', ST_GeomFromText('LINESTRING(1473871.1 555638.3, 1474543.9 555285.1, 1474940.2 555143.5)', 3005), 'testdata')		
 		, (300, 30, 'my road with comments', '2021-04-23', ST_GeomFromText('LINESTRING(1473871.1 555638.3, 1474543.9 555285.1, 1474940.2 555143.5)', 3005), 'testdata')		
 		;
+
+        -- app_fom.retention_area
+		INSERT INTO app_fom.retention_area(retention_area_id, submission_id, geometry, create_user) VALUES 
+		(300, 30, ST_GeomFromText('POLYGON((1474750 555200, 1474950 555200, 1474950 555080, 1474750 555080, 1474750 555200))', 3005), 'testdata')
+		;
+
 
 		-- Update geometric-derived fields to simulate what the application would do
 		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id < 1000;
@@ -105,7 +113,6 @@ module.exports = class testdata1616434875304 {
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         ;
 
-
         `);
   }
 
@@ -114,6 +121,7 @@ module.exports = class testdata1616434875304 {
         DELETE FROM app_fom.public_comment where public_comment_id < 1000;
         DELETE FROM app_fom.cut_block where submission_id < 1000;
         DELETE FROM app_fom.road_section where submission_id < 1000;
+        DELETE FROM app_fom.retention_area where submission_id < 1000;
         DELETE FROM app_fom.submission where submission_id < 1000;
         DELETE FROM app_fom.project where project_id < 1000;
         `);
