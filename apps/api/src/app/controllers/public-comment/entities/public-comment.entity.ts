@@ -10,7 +10,6 @@ import {
 import { ResponseCode } from '../../response-code/entities/response-code.entity';
 import { CommentScopeCode } from '../../comment-scope-code/entities/comment-scope-code.entity';
 import { Project } from '../../project/entities/project.entity';
-import { CutBlock } from '../../cut-block/entities/cut-block.entity';
 
 @Entity('public_comment', { schema: 'app_fom' })
 export class PublicComment extends ApiBaseEntity<PublicComment> {
