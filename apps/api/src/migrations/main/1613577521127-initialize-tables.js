@@ -300,6 +300,11 @@ update_user varchar
 ); 
 alter sequence app_fom.project_project_id_seq restart with 1000;
 
+create index on app_fom.project (fsp_id);
+create index on app_fom.project (district_id);
+create index on app_fom.project (workflow_state_code);
+create index on app_fom.project (commenting_open_date);
+
 comment on table  app_fom.project is 'Root entity for the FOM application by a Forest Client. Contains the proposed FOM submission, the public comments and responses, the stakeholder interactions and attachments, and the final FOM submission. Design note: The business is not interested in what the Forest Client does prior to finalization other than capturing the proposed and final spatial submissions, so any updates to attributes in a proposed project will overwrite existing values.';
 
 comment on column app_fom.project.project_id is 'Primary Key. Will be exposed to users for reference. ';
@@ -336,6 +341,8 @@ update_user varchar
 );  
 alter sequence app_fom.submission_submission_id_seq restart with 1000;
 
+create index on app_fom.submission (project_id);
+
 comment on table  app_fom.submission is 'For each FOM project the proposed submission submitted for commenting and the finalized submission (updated in response) are tracked as separate submission. Each submission consists of one or more geometries (shapes) that defines the area where logging of trees and related forestry activities is planned. A shape can be for a cut block, road section, or wildlife tree retention area (WTRA) within a cutblock.';
 
 comment on column app_fom.submission.submission_id is ' Primary key ';
@@ -367,6 +374,8 @@ update_timestamp timestamptz ,
 update_user varchar 
 ); 
 alter sequence app_fom.cut_block_cut_block_id_seq restart with 1000;
+
+create index on app_fom.cut_block (submission_id);
 
 comment on table  app_fom.cut_block is 'An area in which trees will be cut down.';
 
@@ -400,6 +409,8 @@ update_timestamp timestamptz ,
 update_user varchar 
 );  
 alter sequence app_fom.retention_area_retention_area_id_seq restart with 1000;
+
+create index on app_fom.retention_area (submission_id);
 
 comment on table  app_fom.retention_area is 'A Wildlife Tree Retention Area (WTRA). Each WTRA is a subset (inner polyon) of an associated cut block specifying where trees/wildlife will be retained (not cut down). There is no business need to have a relationship between a WTRA and its corresponding cut block.';
 
@@ -435,6 +446,8 @@ update_user varchar
 ); 
 alter sequence app_fom.road_section_road_section_id_seq restart with 1000;
 
+create index on app_fom.road_section (submission_id);
+
 comment on table  app_fom.road_section is 'A section of road that will be created.';
 
 comment on column app_fom.road_section.road_section_id is 'Primary key ';
@@ -468,6 +481,8 @@ update_timestamp timestamptz ,
 update_user varchar  
 ); 
 alter sequence app_fom.attachment_attachment_id_seq restart with 1000;
+
+create index on app_fom.attachment (project_id);
 
 comment on table  app_fom.attachment is 'A document or other type of file that provides evidence of a stakeholder interaction or posting of a public notice.';
 
@@ -509,6 +524,8 @@ update_user varchar
 );  
 alter sequence app_fom.public_comment_public_comment_id_seq restart with 1000;
 
+create index on app_fom.public_comment (project_id);
+
 comment on table  app_fom.public_comment is 'A comment made by a member of the public regarding a proposed FOM project.';
 
 comment on column app_fom.public_comment.public_comment_id is 'Primary key ';
@@ -549,6 +566,8 @@ update_timestamp timestamptz ,
 update_user varchar  
 ); 
 alter sequence app_fom.interaction_interaction_id_seq restart with 1000;
+
+create index on app_fom.interaction (project_id);
 
 comment on table  app_fom.interaction is 'A record of interaction between a stakeholder (e.g. citizen, special interest group) and the forest client regarding a proposed FOM project.';
 
