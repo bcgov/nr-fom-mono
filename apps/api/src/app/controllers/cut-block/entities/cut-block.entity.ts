@@ -5,10 +5,8 @@ import {
   JoinColumn,
   Column,
   ManyToOne,
-  RelationId,
-  OneToMany,
+  RelationId
 } from 'typeorm';
-import { PublicComment } from '../../public-comment/entities/public-comment.entity';
 import { Submission } from '../../submission/entities/submission.entity';
 
 @Entity('cut_block', { schema: 'app_fom' })
@@ -39,8 +37,4 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column()
   @RelationId((cutBlock: CutBlock) => cutBlock.submission)
   submission_id: number;
-
-  @OneToMany(type => PublicComment, (publicComment) => publicComment.cutBlock, 
-    {cascade: true})
-  publicComments: PublicComment[];
 }
