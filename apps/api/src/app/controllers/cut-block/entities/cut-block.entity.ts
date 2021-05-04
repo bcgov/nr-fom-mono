@@ -5,7 +5,7 @@ import {
   JoinColumn,
   Column,
   ManyToOne,
-  RelationId,
+  RelationId
 } from 'typeorm';
 import { Submission } from '../../submission/entities/submission.entity';
 
@@ -30,7 +30,7 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column()
   planned_area_ha: number;
 
-  @ManyToOne(() => Submission, (submission) => submission.cut_blocks)
+  @ManyToOne(() => Submission, (submission) => submission.cut_blocks, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
   @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
   submission: Submission;
 

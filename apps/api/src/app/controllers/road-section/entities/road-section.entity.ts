@@ -19,7 +19,7 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   public id: number;
 
   @Column({ type: 'geometry', spatialFeatureType: 'LineString', srid: 3005 })
-  geometry: string;
+  geometry: any;
 
   @Column()
   planned_development_date: string; // timestamp
@@ -30,7 +30,7 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   @Column()
   planned_length_km: number;
 
-  @ManyToOne(() => Submission, (submission) => submission.road_sections)
+  @ManyToOne(() => Submission, (submission) => submission.road_sections, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
   @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
   submission: Submission;
 

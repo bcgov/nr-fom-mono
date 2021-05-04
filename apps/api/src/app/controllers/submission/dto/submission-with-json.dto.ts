@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SubmissionDto } from './submission.dto';
 import { FeatureCollection } from 'geojson';
+import { IsEnum, IsNotEmpty } from 'class-validator';
+import { SubmissionTypeCodeEnum } from '../../submission-type-code/entities/submission-type-code.entity';
 
 // Using GeoJSON types, won't have the API documentation but that's okay.
 export interface FomSpatialJson extends FeatureCollection {
@@ -16,11 +17,22 @@ export enum SpatialObjectCodeEnum {
   WTRA = 'WTRA'
 };
 
-export class SubmissionWithJsonDto extends SubmissionDto {
+export class SubmissionWithJsonDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  projectId: number;
+
+  @ApiProperty({ enum: SubmissionTypeCodeEnum, enumName: 'SubmissionTypeCodeEnum'})
+  @IsEnum(SubmissionTypeCodeEnum)
+  submissionTypeCode: SubmissionTypeCodeEnum;
+  
   @ApiProperty({ enum: SpatialObjectCodeEnum, enumName: 'SpatialObjectCodeEnum'})
+  @IsNotEmpty()
+  @IsEnum(SpatialObjectCodeEnum)
   spatialObjectCode: SpatialObjectCodeEnum;
   
   @ApiProperty()
+  @IsNotEmpty()
   jsonSpatialSubmission: FomSpatialJson;
 
 }
