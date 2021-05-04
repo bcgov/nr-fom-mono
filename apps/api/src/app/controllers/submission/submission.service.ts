@@ -139,7 +139,7 @@ export class SubmissionService extends DataService<
     if (existingSubmissions.length == 0) {
       // Save the submission first in order to populate primary key.
       // Populate fields
-      // TODO: populate user/time?
+      // TODO: populate user?
       submission = new Submission({             
         project_id: projectId,
         submission_type_code: submissionTypeCode,
@@ -216,7 +216,7 @@ export class SubmissionService extends DataService<
         validateDevelopmentDate(properties);
         return new RoadSection({name, geometry,
           create_user: this.user,
-          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]}); // TODO: properties assign detail
+          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
       else {
         return new RetentionArea({geometry, create_user: this.user});

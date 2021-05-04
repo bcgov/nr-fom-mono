@@ -66,14 +66,6 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   @Column()
   scope_cut_block_id: number;
 
-  @ManyToOne(() => CutBlock, (cutBlock) => cutBlock.publicComments, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
-  @JoinColumn({ name: 'cutBlock_id', referencedColumnName: 'id' })
-  cutBlock: CutBlock;
-
-  @Column({name: "scope_cut_block_id"})
-  @RelationId((publicComment: PublicComment) => publicComment.cutBlock)
-  cutBlock_id: number;
-
   @Column()
   scope_road_section_id: number;
 }
