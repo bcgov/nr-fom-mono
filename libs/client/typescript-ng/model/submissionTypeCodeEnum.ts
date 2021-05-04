@@ -11,8 +11,10 @@
  */
 
 
-export interface ResponseCodeDto { 
-    code: string;
-    description: string;
-}
+export type SubmissionTypeCodeEnum = 'PROPOSED' | 'FINAL';
+
+export const SubmissionTypeCodeEnum = {
+    Proposed: 'PROPOSED' as SubmissionTypeCodeEnum,
+    Final: 'FINAL' as SubmissionTypeCodeEnum
+};
 

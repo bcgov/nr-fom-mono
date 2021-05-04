@@ -56,34 +56,4 @@ export * from './user.service';
 import { UserService } from './user.service';
 export * from './workflowStateCode.service';
 import { WorkflowStateCodeService } from './workflowStateCode.service';
-export const APIS = [
-  AttachmentService,
-  AttachmentTypeCodeService,
-  AttachmentsService,
-  CommentScopeCodeService,
-  CutBlockService,
-  CutBlocksService,
-  DefaultService,
-  DistrictService,
-  ForestClientService,
-  ForestStewardshipPlanService,
-  ForestStewardshipPlansService,
-  FspDistrictXrefService,
-  FspDistrictXrefsService,
-  InteractionService,
-  InteractionsService,
-  ProjectService,
-  ProjectsService,
-  PublicCommentService,
-  PublicCommentsService,
-  ResponseCodeService,
-  RetentionAreaService,
-  RetentionAreasService,
-  RoadSectionService,
-  RoadSectionsService,
-  SubmissionService,
-  SubmissionTypeCodeService,
-  SubmissionsService,
-  UserService,
-  WorkflowStateCodeService,
-];
+export const APIS = [AttachmentService, AttachmentTypeCodeService, AttachmentsService, CommentScopeCodeService, CutBlockService, CutBlocksService, DefaultService, DistrictService, ForestClientService, ForestStewardshipPlanService, ForestStewardshipPlansService, FspDistrictXrefService, FspDistrictXrefsService, InteractionService, InteractionsService, ProjectService, ProjectsService, PublicCommentService, PublicCommentsService, ResponseCodeService, RetentionAreaService, RetentionAreasService, RoadSectionService, RoadSectionsService, SubmissionService, SubmissionTypeCodeService, SubmissionsService, UserService, WorkflowStateCodeService];
