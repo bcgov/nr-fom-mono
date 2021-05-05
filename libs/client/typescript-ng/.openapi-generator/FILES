@@ -8,7 +8,6 @@ api/attachments.service.ts
 api/commentScopeCode.service.ts
 api/cutBlock.service.ts
 api/cutBlocks.service.ts
-api/default.service.ts
 api/district.service.ts
 api/forestClient.service.ts
 api/forestStewardshipPlan.service.ts
@@ -41,12 +40,14 @@ model/commentScopeCodeDto.ts
 model/createUserDto.ts
 model/cutBlockDto.ts
 model/districtDto.ts
+model/forestClient.ts
 model/forestClientDto.ts
 model/forestStewardshipPlanDto.ts
 model/fspDistrictXrefDto.ts
 model/interactionDto.ts
 model/models.ts
 model/projectDto.ts
+model/projectPublicSummaryDto.ts
 model/projectSpatialDetail.ts
 model/publicCommentDto.ts
 model/responseCodeDto.ts

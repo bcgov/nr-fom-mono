@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ForestClient } from './forestClient';
 
 
 export interface ProjectDto { 
@@ -27,7 +28,7 @@ export interface ProjectDto {
     districtId: number;
     district: object;
     forestClientNumber: string;
-    forestClient: object;
+    forestClient: ForestClient;
     workflowStateCode: string;
     workflowState: object;
 }

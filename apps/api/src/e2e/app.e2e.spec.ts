@@ -1,13 +1,13 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
-import { AppModule } from './app.module';
-import { PublicCommentDto } from './controllers/public-comment/dto/public-comment.dto';
-import { ProjectDto } from './controllers/project/dto/project.dto';
-import { SubmissionDto } from './controllers/submission/dto/submission.dto';
-import { CutBlockDto } from './controllers/cut-block/dto/cut-block.dto';
-import { RetentionAreaDto } from './controllers/retention-area/dto/retention-area.dto';
-import { RoadSectionDto } from './controllers/road-section/dto/road-section.dto';
+import { AppModule } from '../app/app.module';
+import { PublicCommentDto } from '../app/modules/public-comment/dto/public-comment.dto';
+import { ProjectDto } from '../app/modules/project/dto/project.dto';
+import { SubmissionDto } from '../app/modules/submission/dto/submission.dto';
+import { CutBlockDto } from '../app/modules/cut-block/dto/cut-block.dto';
+import { RetentionAreaDto } from '../app/modules/retention-area/dto/retention-area.dto';
+import { RoadSectionDto } from '../app/modules/road-section/dto/road-section.dto';
 
 const randomNumber = () => Math.trunc(Math.random() * 5000) + 1;
 
@@ -411,7 +411,6 @@ describe('API endpoints testing (e2e)', () => {
 
       // Create a submission
       const createSubmissionData = {
-        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
       } as SubmissionDto;
@@ -438,7 +437,6 @@ describe('API endpoints testing (e2e)', () => {
 
       // Create a submission
       const createSubmissionData = {
-        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
       } as SubmissionDto;
@@ -480,7 +478,6 @@ describe('API endpoints testing (e2e)', () => {
 
       // Create a submission
       const createSubmissionData = {
-        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
       } as SubmissionDto;
@@ -522,7 +519,6 @@ describe('API endpoints testing (e2e)', () => {
 
       // Create a submission
       const createSubmissionData = {
-        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
       } as SubmissionDto;
@@ -563,7 +559,6 @@ describe('API endpoints testing (e2e)', () => {
 
       // Create a submission
       const createSubmissionData = {
-        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
       } as SubmissionDto;
@@ -604,7 +599,6 @@ describe('API endpoints testing (e2e)', () => {
 
       // Create a submission
       const createSubmissionData = {
-        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
       } as SubmissionDto;
@@ -654,7 +648,6 @@ describe('API endpoints testing (e2e)', () => {
 
       // Create a submission
       const createSubmissionData = {
-        geometry: { type: 'Point', coordinates: [102.0, 0.5] },
         projectId: projectId,
         submissionTypeCode: 'PROPOSED',
       } as SubmissionDto;

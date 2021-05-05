@@ -189,9 +189,9 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerGetSpatialDetails(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectSpatialDetail>;
-    public projectControllerGetSpatialDetails(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectSpatialDetail>>;
-    public projectControllerGetSpatialDetails(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectSpatialDetail>>;
+    public projectControllerGetSpatialDetails(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectSpatialDetail>>;
+    public projectControllerGetSpatialDetails(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectSpatialDetail>>>;
+    public projectControllerGetSpatialDetails(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectSpatialDetail>>>;
     public projectControllerGetSpatialDetails(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling projectControllerGetSpatialDetails.');
@@ -217,7 +217,7 @@ export class ProjectService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<ProjectSpatialDetail>(`${this.configuration.basePath}/api/project/spatialDetails/${encodeURIComponent(String(id))}`,
+        return this.httpClient.get<Array<ProjectSpatialDetail>>(`${this.configuration.basePath}/api/project/spatialDetails/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
@@ -7,9 +8,11 @@ export class ForestClient extends ApiBaseEntity<ForestClient> {
     super(forestClient);
   }
 
+  @ApiProperty()
   @PrimaryColumn({name: 'forest_client_number'})
   public id: string;
 
+  @ApiProperty()
   @Column()
   name: string;
 

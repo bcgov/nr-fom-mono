@@ -8,7 +8,6 @@ import { AttachmentsService } from './api/attachments.service';
 import { CommentScopeCodeService } from './api/commentScopeCode.service';
 import { CutBlockService } from './api/cutBlock.service';
 import { CutBlocksService } from './api/cutBlocks.service';
-import { DefaultService } from './api/default.service';
 import { DistrictService } from './api/district.service';
 import { ForestClientService } from './api/forestClient.service';
 import { ForestStewardshipPlanService } from './api/forestStewardshipPlan.service';

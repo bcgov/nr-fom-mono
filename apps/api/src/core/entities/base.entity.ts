@@ -17,7 +17,7 @@ export type DeepPartial<T> = {
 
 export abstract class ApiBaseEntity<M> {
   // Needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.
-  // @PrimaryGeneratedColumn('increment')
+  // @PrimaryGeneratedColumn('entity_id')
   // public id: number;
 
   // Metadata columns
