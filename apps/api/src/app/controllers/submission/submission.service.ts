@@ -157,7 +157,7 @@ export class SubmissionService extends DataService<
     const OPTIONAL_PROP_NAME = "NAME";
     const DATE_FORMAT = "YYYY-MM-DD";
 
-    // Validate each point(Position) is within BC bounding box.
+    // validation - Validate each point(Position) is within BC bounding box.
     // BC bounding box: 1665146.77055,1725046.3621 to 33240.8114887,445948.165738.
     const validateCoordWithinBounding = (geometry: Geometry) => {
       const bb = {ix: 33240.8114887, iy: 445948.165738, ax: 1665146.77055, ay: 1725046.3621};
@@ -169,7 +169,7 @@ export class SubmissionService extends DataService<
           throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
         }
       });
-    }
+    };
 
     // validation - development_date
     const validateDevelopmentDate = (properties: GeoJsonProperties) => {
