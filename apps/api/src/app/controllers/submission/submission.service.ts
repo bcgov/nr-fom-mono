@@ -11,7 +11,7 @@ import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-stat
 import { CutBlock } from '../cut-block/entities/cut-block.entity';
 import { RoadSection } from '../road-section/entities/road-section.entity';
 import { RetentionArea } from '../retention-area/entities/retention-area.entity';
-import { GeoJsonProperties, Geometry, Polygon, Position } from 'geojson';
+import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import * as dayjs from 'dayjs';
 import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
 import { ProjectDto } from '../project/dto/project.dto';
@@ -161,7 +161,7 @@ export class SubmissionService extends DataService<
     // BC bounding box: 1665146.77055,1725046.3621 to 33240.8114887,445948.165738.
     const validateCoordWithinBounding = (geometry: Geometry) => {
       const bb = {ix: 33240.8114887, iy: 445948.165738, ax: 1665146.77055, ay: 1725046.3621};
-      const coordinates = (<Polygon>geometry).coordinates;
+      const coordinates = (<Polygon | LineString> geometry).coordinates;
       flatDeep(coordinates).forEach( (p: Position) => {
         if( !(bb.ix <= p[0] && p[0] <= bb.ax && bb.iy <= p[1] && p[1] <= bb.ay) ) {
           const errMsg = `Coordinate (${p}) is not within BC bounding box ${JSON.stringify(bb)}.`;
