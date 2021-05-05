@@ -11,10 +11,11 @@ import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-stat
 import { CutBlock } from '../cut-block/entities/cut-block.entity';
 import { RoadSection } from '../road-section/entities/road-section.entity';
 import { RetentionArea } from '../retention-area/entities/retention-area.entity';
-import { GeoJsonProperties } from 'geojson';
+import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import * as dayjs from 'dayjs';
 import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
 import { ProjectDto } from '../project/dto/project.dto';
+import { flatDeep } from '../../../core/utils';
 
 @Injectable()
 export class SubmissionService extends DataService<
@@ -137,7 +138,7 @@ export class SubmissionService extends DataService<
   }
 
   /**
-   * // Validate that the dto.jsonSpatialSubmission is valid.( TODO: do we need to parse jsonSpatialSubmission for its validity as GeoJSON?)
+   * // Validate that the dto.jsonSpatialSubmission is valid.
    * // Validate required field exists in 'properties'.
    * // Validate shape is correct? (TODO: do we need to validate this or assume user know what he is submitting?)
    * // Parse into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode
@@ -149,14 +150,28 @@ export class SubmissionService extends DataService<
   validateFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): 
     (CutBlock | RoadSection | RetentionArea)[] {
 
-    // spatial objects holder to be parse into.
+    // spatial objects holder to be parsed into.
     let spatialObjs: (CutBlock | RoadSection | RetentionArea)[];
     const features = jsonSpatialSubmission.features;
     const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
     const OPTIONAL_PROP_NAME = "NAME";
     const DATE_FORMAT = "YYYY-MM-DD";
 
-    // validation - devvelopment_date
+    // validation - Validate each point(Position) is within BC bounding box.
+    // BC bounding box: 1665146.77055,1725046.3621 to 33240.8114887,445948.165738.
+    const validateCoordWithinBounding = (geometry: Geometry) => {
+      const bb = {ix: 33240.8114887, iy: 445948.165738, ax: 1665146.77055, ay: 1725046.3621};
+      const coordinates = (<Polygon | LineString> geometry).coordinates;
+      flatDeep(coordinates).forEach( (p: Position) => {
+        if( !(bb.ix <= p[0] && p[0] <= bb.ax && bb.iy <= p[1] && p[1] <= bb.ay) ) {
+          const errMsg = `Coordinate (${p}) is not within BC bounding box ${JSON.stringify(bb)}.`;
+          this.logger.error(errMsg);
+          throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+      });
+    };
+
+    // validation - development_date
     const validateDevelopmentDate = (properties: GeoJsonProperties) => {
       if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK || 
           spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
@@ -177,13 +192,15 @@ export class SubmissionService extends DataService<
       }
     };
 
-    spatialObjs = features.map(s => {
-      const geometry = s.geometry;
-      const properties = s.properties;
+    spatialObjs = features.map(f => {
+      const geometry = f.geometry;
+      const properties = f.properties;
       let name: string;
       if (properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
         name = properties[OPTIONAL_PROP_NAME];
       }
+
+      validateCoordWithinBounding(geometry);
 
       if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK) {
         // validate required properties.
@@ -216,15 +233,11 @@ export class SubmissionService extends DataService<
     :Promise<(CutBlock | RoadSection | RetentionArea)[]> {
     this.logger.info(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
         and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
+
     let spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission);
     spatialObjs.forEach((s) => {s.submission_id = submissionId}); // assign them to the submission 
 
-    // TODO:
-    // Confirm that all geometrics fall within the BC bounds (to catch errors using e.g. lat/lon coordinates)
-    // As a first approximation, the bounds for BC/Albers 3005 are:
-    // Projected Bounds: 35043.6538, 440006.8768, 1885895.3117, 1735643.8497
-
-    this.logger.info(`FOM spatial objects prepares: ${JSON.stringify(spatialObjs)}`);
+    this.logger.info(`FOM spatial objects prepared: ${JSON.stringify(spatialObjs)}`);
     return spatialObjs;
   }
   
