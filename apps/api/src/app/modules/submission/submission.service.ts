@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, getManager, Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
-import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionWithJsonDto } from './dto/submission-with-json.dto';
+import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionDto } from './dto/submission.dto';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { ProjectService } from '../project/project.service';
 import { PinoLogger } from 'nestjs-pino';
@@ -40,7 +40,7 @@ export class SubmissionService extends DataService<
   /**
    * Create or replace a spatial submission.
    */
-  async processSpatialSubmission(dto: Partial<SubmissionWithJsonDto>): Promise<any> {       
+  async processSpatialSubmission(dto: Partial<SubmissionDto>): Promise<any> {       
     this.logger.info(`${this.constructor.name}.create props`, dto);
 
     // Load the existing project to obtain the project's workflow state
@@ -287,9 +287,9 @@ export class SubmissionService extends DataService<
       )
       update app_fom.project p set 
         geometry_latlong = (select ST_Transform(ST_centroid(ST_COLLECT(g.geometry)),4326) from project_geometries g where g.project_id = p.project_id),
-              update_timestamp = now(),
+        update_timestamp = now(),
         update_user = $2,
-              revision_count = (select revision_count+1 from app_fom.project p2 where p.project_id = p2.project_id )
+        revision_count = (select revision_count+1 from app_fom.project p2 where p.project_id = p2.project_id )
       where p.project_id = $1;
     `, [projectId, this.user]);
     this.logger.info(`Project location updated for projectId: ${projectId}`);

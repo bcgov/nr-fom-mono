@@ -1,13 +1,8 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body} from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiBody } from '@nestjs/swagger';
 
-import { BaseController, BaseCollectionController } from '@controllers';
 import { SubmissionService } from './submission.service';
-import { Submission } from './entities/submission.entity';
 import { SubmissionDto } from './dto/submission.dto';
-import { UpdateSubmissionDto } from './dto/update-submission.dto';
-import { UpdateResult } from 'typeorm';
-import { SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 
 // Don't need all the normal CRUD operations accessible via API so don't extend BaseController.
 @ApiTags('submission')
@@ -18,9 +13,9 @@ export class SubmissionController {
 
   // TODO: need to figure out return type, if any.
   @Post()
-  @ApiBody({ type: SubmissionWithJsonDto })
+  @ApiBody({ type: SubmissionDto })
   @ApiResponse({ status: 201 })
-  async processSpatialSubmission(@Body() dto: SubmissionWithJsonDto) {
+  async processSpatialSubmission(@Body() dto: SubmissionDto) {
     return this.service.processSpatialSubmission(dto);
   }
 
