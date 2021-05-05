@@ -21,23 +21,6 @@ export class ProjectsController extends BaseCollectionController<
     super(service);
   }
 
-  @Get('/publicSummary')
-  @ApiQuery({ name: 'includeCommentOpen', required: false})
-  @ApiQuery({ name: 'includePostCommentOpen', required: false})
-  @ApiQuery({ name: 'clientName', required: false})
-  @ApiQuery({ name: 'openedOnOrAfter', required: false})
-  @ApiResponse({ status: 200, type: [ProjectPublicSummaryDto] })
-  async findPublicSummary(
-    @Query('includeCommentOpen') includeCommentOpen: boolean = false, 
-    @Query('includePostCommentOpen') includePostCommentOpen: boolean = false, 
-    @Query('clientName') clientName?: string,
-    @Query('openedOnOrAfter') openedOnOrAfter?: string,
-    ): Promise<ProjectPublicSummaryDto[]> {
-      // console.log(`includeCommentOpen ${includeCommentOpen}, includeNotCommentOpen ${includePostCommentOpen}, fomHolderName ${clientName}, openedAfter ${openedOnOrAfter}`);
-
-      return await this.service.findPublicSummaries();
-  }
-
   // TODO: REMOVE THIS + SubmissionWithGeoDetailsDto might be useful for Admin?
   // @Get('/byIdWithGeoDetails/:id')
   // @ApiResponse({ status: 200, type: [ProjectDto] })
@@ -47,15 +30,6 @@ export class ProjectsController extends BaseCollectionController<
   //     relations: ['district', 'forest_client', 'workflow_state', 'submissions', 'submissions.submission_type', 'submissions.cut_blocks', 'submissions.retention_areas', 'submissions.road_sections'],
   //   });
   // }
-
-  @Get('/byFspId/:id')
-  @ApiResponse({ status: 200, type: [ProjectDto] })
-  async findByFspId(@Param('id') id: number): Promise<ProjectDto[]> {
-    return super.findAll({
-      where: { fsp_id: id },
-      relations: ['district', 'forest_client', 'workflow_state'],
-    });
-  }
 
   @Post()
   @ApiResponse({ status: 200, type: [ProjectDto] })
@@ -76,6 +50,34 @@ export class ProjectController extends BaseController<
     private projectSpatialDetailService: ProjectSpatialDetailService) {
     super(service);
   }
+
+  @Get('/publicSummary')
+  @ApiQuery({ name: 'includeCommentOpen', required: false})
+  @ApiQuery({ name: 'includePostCommentOpen', required: false})
+  @ApiQuery({ name: 'forestClientName', required: false})
+  @ApiQuery({ name: 'openedOnOrAfter', required: false})
+  @ApiResponse({ status: 200, type: [ProjectPublicSummaryDto] })
+  async findPublicSummary(
+    @Query('includeCommentOpen') includeCommentOpen: boolean = false, 
+    @Query('includePostCommentOpen') includePostCommentOpen: boolean = false, 
+    @Query('forestClientName') forestClientName?: string,
+    @Query('openedOnOrAfter') openedOnOrAfter?: string,
+    ): Promise<ProjectPublicSummaryDto[]> {
+      // console.log(`includeCommentOpen ${includeCommentOpen}, includeNotCommentOpen ${includePostCommentOpen}, fomHolderName ${clientName}, openedAfter ${openedOnOrAfter}`);
+
+      return await this.service.findPublicSummaries();
+  }
+
+  // TODO: Replace with more generic search.
+  @Get('/byFspId/:id')
+  @ApiResponse({ status: 200, type: [ProjectDto] })
+  async findByFspId(@Param('id') id: number): Promise<ProjectDto[]> {
+    return super.findAll({
+      where: { fsp_id: id },
+      relations: ['district', 'forest_client', 'workflow_state'],
+    });
+  }
+
 
   @Get('/spatialDetails/:id') 
   @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })

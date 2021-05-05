@@ -1,4 +1,5 @@
 import { ApiBaseEntity } from '@entities';
+import { ApiProperty } from '@nestjs/swagger';
 import { Entity, PrimaryColumn, PrimaryGeneratedColumn, JoinColumn, Column } from 'typeorm';
 
 @Entity('district', {schema: 'app_fom'})
@@ -7,9 +8,11 @@ export class District extends ApiBaseEntity<District> {
     super(district);
   }
 
+  @ApiProperty()
   @PrimaryColumn({name: 'district_id'})
   public id: number;
 
+  @ApiProperty()
   @Column()
   name: string;
 

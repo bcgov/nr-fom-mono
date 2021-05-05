@@ -9,23 +9,6 @@ import { UpdateSubmissionDto } from './dto/update-submission.dto';
 import { UpdateResult } from 'typeorm';
 import { SubmissionWithJsonDto } from './dto/submission-with-json.dto';
 
-@ApiTags('submissions')
-@Controller('submissions')
-export class SubmissionsController extends BaseCollectionController<
-  Submission,
-  SubmissionDto,
-  UpdateSubmissionDto
-> {
-  constructor(protected readonly service: SubmissionService) {
-    super(service);
-  }
-
-  @Post()
-  async findAll(@Body() options) {
-    return super.findAll(options);
-  }
-}
-
 // Don't need all the normal CRUD operations accessible via API so don't extend BaseController.
 @ApiTags('submission')
 @Controller('submission')
@@ -36,14 +19,9 @@ export class SubmissionController {
   // TODO: need to figure out return type, if any.
   @Post()
   @ApiBody({ type: SubmissionWithJsonDto })
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 201 })
   async processSpatialSubmission(@Body() dto: SubmissionWithJsonDto) {
     return this.service.processSpatialSubmission(dto);
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return this.service.findOne(id);
   }
 
 }

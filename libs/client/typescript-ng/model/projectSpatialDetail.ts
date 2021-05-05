@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { SubmissionTypeCode } from './submissionTypeCode';
 
 
 export interface ProjectSpatialDetail { 
@@ -20,7 +21,7 @@ export interface ProjectSpatialDetail {
     plannedAreaHa: number;
     plannedLengthKm: number;
     submissionTypeCode: string;
-    submissionType: object;
+    submissionType: SubmissionTypeCode;
     projectId: number;
 }
 

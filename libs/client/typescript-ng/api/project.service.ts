@@ -18,6 +18,7 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { ProjectDto } from '../model/models';
+import { ProjectPublicSummaryDto } from '../model/models';
 import { ProjectSpatialDetail } from '../model/models';
 import { UpdateProjectDto } from '../model/models';
 
@@ -145,6 +146,50 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
+    public projectControllerFindByFspId(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectDto>>;
+    public projectControllerFindByFspId(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectDto>>>;
+    public projectControllerFindByFspId(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectDto>>>;
+    public projectControllerFindByFspId(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling projectControllerFindByFspId.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<Array<ProjectDto>>(`${this.configuration.basePath}/api/project/byFspId/${encodeURIComponent(String(id))}`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param id 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
     public projectControllerFindOne(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectDto>;
     public projectControllerFindOne(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectDto>>;
     public projectControllerFindOne(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectDto>>;
@@ -175,6 +220,69 @@ export class ProjectService {
 
         return this.httpClient.get<ProjectDto>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
             {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param includeCommentOpen 
+     * @param includePostCommentOpen 
+     * @param forestClientName 
+     * @param openedOnOrAfter 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectPublicSummaryDto>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectPublicSummaryDto>>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectPublicSummaryDto>>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (includeCommentOpen !== undefined && includeCommentOpen !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>includeCommentOpen, 'includeCommentOpen');
+        }
+        if (includePostCommentOpen !== undefined && includePostCommentOpen !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>includePostCommentOpen, 'includePostCommentOpen');
+        }
+        if (forestClientName !== undefined && forestClientName !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>forestClientName, 'forestClientName');
+        }
+        if (openedOnOrAfter !== undefined && openedOnOrAfter !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>openedOnOrAfter, 'openedOnOrAfter');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<Array<ProjectPublicSummaryDto>>(`${this.configuration.basePath}/api/project/publicSummary`,
+            {
+                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

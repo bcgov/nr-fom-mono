@@ -78,6 +78,7 @@ See FRAMEWORK.md for nrwl nx documentation.
 These are the steps to generate the client library used by the frontend components (Admin + Public)
 - Code changes to the API that are documented in Swagger using Swagger annotations like @ApiTags, @ApiProperty 
 - Start the API component (npm run start:api) and access http://localhost:3333/api-json. Copy this content to '/apps/api/openapi/swagger-spec.json'
+- Remove the existing generated client library files. Delete the directories /libs/client/typescript-ng/{api|models}.
 - Generate the client library using 'npm run gen:client-api:ng'. Generated files will be placed into '/libs/client/typescript-ng'
 - Copy the client library into the Admin and Public components in /src/core/api
 

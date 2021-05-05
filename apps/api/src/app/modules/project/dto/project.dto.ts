@@ -5,7 +5,6 @@ import { ForestClient } from '../../forest-client/entities/forest-client.entity'
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { Point } from 'geojson';
 
-
 export class ProjectDto extends BaseDto {
   @ApiProperty()
   name: string;
@@ -34,6 +33,7 @@ export class ProjectDto extends BaseDto {
   workflowState: WorkflowStateCode;
 }
 
+// Need to do this to get to compile, rather than using Point directly. Not sure why...
 export interface FomPoint extends Point {
-  // Need to do this to get to compile, rather than using Point directly. Not sure why...
+
 }

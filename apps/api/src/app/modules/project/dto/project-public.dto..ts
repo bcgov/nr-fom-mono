@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Point } from 'geojson';
 import { FomPoint } from './project.dto';
 
 // DTO optimized for Public FE map view

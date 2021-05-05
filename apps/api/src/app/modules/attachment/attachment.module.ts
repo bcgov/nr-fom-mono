@@ -4,13 +4,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Attachment } from './entities/attachment.entity';
 import { AttachmentService } from './attachment.service';
 import {
-  AttachmentController,
-  AttachmentsController,
+  AttachmentController
 } from './attachment.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Attachment])],
-  controllers: [AttachmentController, AttachmentsController],
+  controllers: [AttachmentController],
   providers: [AttachmentService],
   exports: [],
 })

@@ -11,11 +11,8 @@
  */
 
 
-export interface UpdateFspDistrictXrefDto { 
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
+export interface CommentScopeCode { 
+    code: string;
+    description: string;
 }
 

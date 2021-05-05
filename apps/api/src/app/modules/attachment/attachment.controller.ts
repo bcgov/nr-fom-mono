@@ -7,23 +7,6 @@ import { Attachment } from './entities/attachment.entity';
 import { AttachmentDto } from './dto/attachment.dto';
 import { UpdateAttachmentDto } from './dto/update-attachment.dto';
 
-@ApiTags('attachments')
-@Controller('attachments')
-export class AttachmentsController extends BaseCollectionController<
-  Attachment,
-  AttachmentDto,
-  UpdateAttachmentDto
-> {
-  constructor(protected readonly service: AttachmentService) {
-    super(service);
-  }
-
-  @Post()
-  async findAll(@Body() options) {
-    return super.findAll(options);
-  }
-}
-
 @ApiTags('attachment')
 @Controller('attachment')
 export class AttachmentController extends BaseController<

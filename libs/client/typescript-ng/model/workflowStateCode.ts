@@ -11,12 +11,8 @@
  */
 
 
-export interface FspDistrictXrefDto { 
-    id: number;
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
+export interface WorkflowStateCode { 
+    code: string;
+    description: string;
 }
 

@@ -3,10 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { PublicComment } from './entities/public-comment.entity';
 import { PublicCommentService } from './public-comment.service';
-import {
-  PublicCommentController,
-  PublicCommentsController,
-} from './public-comment.controller';
+import { PublicCommentController } from './public-comment.controller';
 import { ProjectModule } from '../project/project.module';
 import { ResponseCodeModule } from '../response-code/response-code.module';
 
@@ -16,7 +13,7 @@ import { ResponseCodeModule } from '../response-code/response-code.module';
     ProjectModule,
     ResponseCodeModule,
   ],
-  controllers: [PublicCommentController, PublicCommentsController],
+  controllers: [PublicCommentController],
   providers: [PublicCommentService],
   exports: [],
 })

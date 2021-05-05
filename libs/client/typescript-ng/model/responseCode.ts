@@ -11,11 +11,8 @@
  */
 
 
-export interface UpdateForestStewardshipPlanDto { 
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
+export interface ResponseCode { 
+    code: string;
+    description: string;
 }
 

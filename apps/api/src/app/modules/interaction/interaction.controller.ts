@@ -7,23 +7,6 @@ import { Interaction } from './entities/interaction.entity';
 import { InteractionDto } from './dto/interaction.dto';
 import { UpdateInteractionDto } from './dto/update-interaction.dto';
 
-@ApiTags('interactions')
-@Controller('interactions')
-export class InteractionsController extends BaseCollectionController<
-  Interaction,
-  InteractionDto,
-  UpdateInteractionDto
-> {
-  constructor(protected readonly service: InteractionService) {
-    super(service);
-  }
-
-  @Post()
-  async findAll(@Body() options) {
-    return super.findAll(options);
-  }
-}
-
 @ApiTags('interaction')
 @Controller('interaction')
 export class InteractionController extends BaseController<

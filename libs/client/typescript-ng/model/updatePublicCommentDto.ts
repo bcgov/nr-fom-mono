@@ -9,6 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ResponseCode } from './responseCode';
+import { CommentScopeCode } from './commentScopeCode';
 
 
 export interface UpdatePublicCommentDto { 
@@ -26,9 +28,9 @@ export interface UpdatePublicCommentDto {
     projectId: number;
     project: object;
     responseCode: string;
-    response: object;
+    response: ResponseCode;
     commentScopeCode: string;
-    commentScope: object;
+    commentScope: CommentScopeCode;
     scopeCutBlockId: number;
     scopeRoadSectionId: number;
 }

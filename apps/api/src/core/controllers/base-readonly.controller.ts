@@ -9,12 +9,12 @@ export class BaseReadOnlyController<E, C> {
     protected readonly service: DataReadOnlyService<E, Repository<E>>
   ) {}
 
-  @Get()
+  // @Get()
   findAll(): Promise<C[]> {
     return this.service.findAll<C>();
   }
 
-  @Get(':id')
+  // @Get(':id')
   findOne(@Param('id') id: number): Promise<C> {
     return this.service.findOne<C>(id);
   }
