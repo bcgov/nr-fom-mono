@@ -78,7 +78,7 @@ export class ProjectController extends BaseController<
   }
 
   @Get('/spatialDetails/:id') 
-  @ApiResponse({ status: 201, type: ProjectSpatialDetail })
+  @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })
   async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
     return this.projectSpatialDetailService.findByProjectId(id);
 

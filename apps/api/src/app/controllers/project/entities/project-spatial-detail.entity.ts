@@ -11,13 +11,13 @@ export class ProjectSpatialDetail {
     Object.assign(this, projectSpatialDetail);
   }
 
-  @ViewColumn()
+  @ViewColumn({name: 'object_id'})
   @ApiProperty()
-  object_id: number;
+  objectId: number;
 
-  @ViewColumn()
+  @ViewColumn({name: 'source_table'})
   @ApiProperty()
-  source_table: string;
+  sourceTable: string;
 
   @ViewColumn()
   @ApiProperty()
@@ -28,29 +28,29 @@ export class ProjectSpatialDetail {
   @ApiProperty()
   geometry: object | string;
 
-  @ViewColumn()
+  @ViewColumn({name: 'planned_development_date'})
   @ApiProperty()
-  planned_development_date: string;
+  plannedDevelopmentDate: string;
 
-  @ViewColumn()
+  @ViewColumn({name: 'planned_area_ha'})
   @ApiProperty()
-  planned_area_ha: number;
+  plannedAreaHa: number;
 
-  @ViewColumn()
+  @ViewColumn({name: 'planned_length_km'})
   @ApiProperty()
-  planned_length_km: number;
+  plannedLengthKm: number;
 
-  @ViewColumn()
+  @ViewColumn({name: 'submission_type_code'})
   @ApiProperty()
-  submission_type_code: string;
+  submissionTypeCode: string;
 
   @ManyToOne(() => SubmissionTypeCode)
   @JoinColumn({ name: 'submission_type_code', referencedColumnName: 'code' })
   @ApiProperty()
-  submission_type: SubmissionTypeCode;
+  submissionType: SubmissionTypeCode;
 
-  @Column()
+  @ViewColumn({name: 'project_id'})
   @ApiProperty()
-  project_id: number;
+  projectId: number;
 
 }

@@ -15,14 +15,14 @@ export class ProjectSpatialDetailService {
     logger.setContext(this.constructor.name);
   }
 
-  async findByProjectId(project_id: number): Promise<ProjectSpatialDetail[]> {
-    this.logger.info(`${this.constructor.name}.findByProjectId id = ` + project_id);
+  async findByProjectId(projectId: number): Promise<ProjectSpatialDetail[]> {
+    this.logger.info(`${this.constructor.name}.findByProjectId id = ` + projectId);
 
     try {
 
       const findAll = await this.repository.find({
-        where: { project_id: project_id },
-        relations: ['submission_type'],
+        where: { projectId: projectId },
+        relations: ['submissionType'],
       });
 
       return findAll.map((item) => {
