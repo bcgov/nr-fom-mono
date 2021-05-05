@@ -21,7 +21,7 @@ module.exports = class testdata1616434875304 {
         , (3, 'Fake name 3 even more longer', 'Commenting open with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_OPEN', '2021-04-01', '2022-04-01', 'testdata')
         , (4, 'Fake name 4 50 char long 123456789 123456789 123456789', 'Commenting closed with only proposed submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
         , (5, 'Fake name 5', 'Commenting closed with proposed + final submissions project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
-        , (6, 'Fake name 6', 'Finalized project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
+        , (6, 'Fake name 6', 'Finalized project with identical proposed/final shapes. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
         ;
         
         -- app_fom.submission
@@ -42,21 +42,24 @@ module.exports = class testdata1616434875304 {
 		, (400, 40, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1474714 555492, 1474918 555492, 1474918 555180, 1474714 555280, 1474714 555492))', 3005), 'testdata')
 		, (500, 50, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1454714 555492, 1454918 555492, 1454918 555180, 1454714 555280, 1454714 555492))', 3005), 'testdata')
 		, (510, 51, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1454814 555392, 1455018 555392, 1455018 555080, 1454814 555180, 1454814 555392))', 3005), 'testdata')
-		, (600, 60, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1464714 555492, 1464918 555492, 1464918 555180, 1464714 555280, 1464714 555492))', 3005), 'testdata')
-		, (610, 61, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1464814 555392, 1465018 555392, 1465018 555080, 1464814 555180, 1464814 555392))', 3005), 'testdata')
+		, (600, 60, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1090000 850000, 1100000 860000, 1110000 850000, 1110000 840000, 1090000 840000, 1090000 850000))', 3005), 'testdata')
+		, (610, 61, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1090000 850000, 1100000 860000, 1110000 850000, 1110000 840000, 1090000 840000, 1090000 850000))', 3005), 'testdata')
 		;
-          
+
 		-- app_fom.road_section
 		INSERT INTO app_fom.road_section(road_section_id, submission_id, name, planned_development_date, geometry, create_user) VALUES 
 		(200, 20, 'my road', '2021-04-23', ST_GeomFromText('LINESTRING(1473871.1 555638.3, 1474543.9 555285.1, 1474940.2 555143.5)', 3005), 'testdata')		
 		, (300, 30, 'my road with comments', '2021-04-23', ST_GeomFromText('LINESTRING(1473871.1 555638.3, 1474543.9 555285.1, 1474940.2 555143.5)', 3005), 'testdata')		
+		, (600, 60, 'my road', '2021-04-23', ST_GeomFromText('LINESTRING(1090000 850000, 1085000 855000, 1080000 845000)', 3005), 'testdata')		
+		, (610, 61, 'my road', '2021-04-23', ST_GeomFromText('LINESTRING(1090000 850000, 1085000 855000, 1080000 845000)', 3005), 'testdata')		
 		;
 
         -- app_fom.retention_area
 		INSERT INTO app_fom.retention_area(retention_area_id, submission_id, geometry, create_user) VALUES 
 		(300, 30, ST_GeomFromText('POLYGON((1474750 555200, 1474950 555200, 1474950 555080, 1474750 555080, 1474750 555200))', 3005), 'testdata')
+		, (600, 60, ST_GeomFromText('POLYGON((1095000 853000, 1100000 857000, 1105000 853000, 1100000 846000, 1095000 853000))', 3005), 'testdata')
+		, (610, 61, ST_GeomFromText('POLYGON((1095000 853000, 1100000 857000, 1105000 853000, 1100000 846000, 1095000 853000))', 3005), 'testdata')
 		;
-
 
 		-- Update geometric-derived fields to simulate what the application would do
 		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id < 1000;
