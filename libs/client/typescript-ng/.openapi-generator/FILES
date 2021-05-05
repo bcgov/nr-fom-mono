@@ -47,12 +47,15 @@ model/fspDistrictXrefDto.ts
 model/interactionDto.ts
 model/models.ts
 model/projectDto.ts
+model/projectSpatialDetail.ts
 model/publicCommentDto.ts
 model/responseCodeDto.ts
 model/retentionAreaDto.ts
 model/roadSectionDto.ts
-model/submissionDto.ts
+model/spatialObjectCodeEnum.ts
 model/submissionTypeCodeDto.ts
+model/submissionTypeCodeEnum.ts
+model/submissionWithJsonDto.ts
 model/updateAttachmentDto.ts
 model/updateCutBlockDto.ts
 model/updateForestStewardshipPlanDto.ts
@@ -62,7 +65,6 @@ model/updateProjectDto.ts
 model/updatePublicCommentDto.ts
 model/updateRetentionAreaDto.ts
 model/updateRoadSectionDto.ts
-model/updateSubmissionDto.ts
 model/updateUserDto.ts
 model/workflowStateCodeDto.ts
 variables.ts

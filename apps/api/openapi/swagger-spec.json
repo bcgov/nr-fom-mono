@@ -487,6 +487,57 @@
           "name"
         ]
       },
+      "SubmissionTypeCode": {
+        "type": "object",
+        "properties": {}
+      },
+      "ProjectSpatialDetail": {
+        "type": "object",
+        "properties": {
+          "object_id": {
+            "type": "number"
+          },
+          "source_table": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "geometry": {
+            "type": "object"
+          },
+          "planned_development_date": {
+            "type": "string"
+          },
+          "planned_area_ha": {
+            "type": "number"
+          },
+          "planned_length_km": {
+            "type": "number"
+          },
+          "submission_type_code": {
+            "type": "string"
+          },
+          "submission_type": {
+            "$ref": "#/components/schemas/SubmissionTypeCode"
+          },
+          "project_id": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "object_id",
+          "source_table",
+          "name",
+          "geometry",
+          "planned_development_date",
+          "planned_area_ha",
+          "planned_length_km",
+          "submission_type_code",
+          "submission_type",
+          "project_id"
+        ]
+      },
       "District": {
         "type": "object",
         "properties": {}
@@ -532,6 +583,10 @@
           "commentingClosedDate": {
             "type": "string"
           },
+          "geojson": {
+            "type": "object",
+            "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
+          },
           "fspId": {
             "type": "number"
           },
@@ -565,6 +620,7 @@
           "description",
           "commentingOpenDate",
           "commentingClosedDate",
+          "geojson",
           "fspId",
           "districtId",
           "district",
@@ -604,6 +660,10 @@
           "commentingClosedDate": {
             "type": "string"
           },
+          "geojson": {
+            "type": "object",
+            "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
+          },
           "fspId": {
             "type": "number"
           },
@@ -636,6 +696,7 @@
           "description",
           "commentingOpenDate",
           "commentingClosedDate",
+          "geojson",
           "fspId",
           "districtId",
           "district",
@@ -1035,106 +1096,35 @@
           "submissionId"
         ]
       },
-      "SubmissionTypeCode": {
-        "type": "object",
-        "properties": {}
+      "SubmissionTypeCodeEnum": {
+        "type": "string",
+        "enum": ["PROPOSED", "FINAL"]
       },
-      "SubmissionDto": {
+      "SpatialObjectCodeEnum": {
+        "type": "string",
+        "enum": ["CUT_BLOCK", "ROAD_SECTION", "WTRA"]
+      },
+      "SubmissionWithJsonDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
           "projectId": {
             "type": "number"
           },
-          "project": {
-            "$ref": "#/components/schemas/Project"
-          },
           "submissionTypeCode": {
-            "type": "string"
+            "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
           },
-          "submissionType": {
-            "$ref": "#/components/schemas/SubmissionTypeCode"
-          }
-        },
-        "required": [
-          "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "projectId",
-          "project",
-          "submissionTypeCode",
-          "submissionType"
-        ]
-      },
-      "UpdateSubmissionDto": {
-        "type": "object",
-        "properties": {
-          "revisionCount": {
-            "type": "number"
+          "spatialObjectCode": {
+            "$ref": "#/components/schemas/SpatialObjectCodeEnum"
           },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
+          "jsonSpatialSubmission": {
             "type": "object"
-          },
-          "projectId": {
-            "type": "number"
-          },
-          "project": {
-            "$ref": "#/components/schemas/Project"
-          },
-          "submissionTypeCode": {
-            "type": "string"
-          },
-          "submissionType": {
-            "$ref": "#/components/schemas/SubmissionTypeCode"
           }
         },
         "required": [
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
           "projectId",
-          "project",
           "submissionTypeCode",
-          "submissionType"
+          "spatialObjectCode",
+          "jsonSpatialSubmission"
         ]
       },
       "SubmissionTypeCodeDto": {
@@ -1823,6 +1813,34 @@
         "tags": ["forest-client"]
       }
     },
+    "/api/project/spatialDetails/{id}": {
+      "get": {
+        "operationId": "ProjectController_getSpatialDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectSpatialDetail"
+                }
+              }
+            }
+          }
+        },
+        "tags": ["project"]
+      }
+    },
     "/api/project": {
       "post": {
         "operationId": "ProjectController_create",
@@ -2427,20 +2445,20 @@
     },
     "/api/submission": {
       "post": {
-        "operationId": "SubmissionController_create",
+        "operationId": "SubmissionController_processSpatialSubmission",
         "parameters": [],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubmissionDto"
+                "$ref": "#/components/schemas/SubmissionWithJsonDto"
               }
             }
           }
         },
         "responses": {
-          "201": {
+          "200": {
             "description": ""
           }
         },
@@ -2450,54 +2468,6 @@
     "/api/submission/{id}": {
       "get": {
         "operationId": "SubmissionController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["submission"]
-      },
-      "put": {
-        "operationId": "SubmissionController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSubmissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["submission"]
-      },
-      "delete": {
-        "operationId": "SubmissionController_remove",
         "parameters": [
           {
             "name": "id",
