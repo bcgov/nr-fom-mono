@@ -1,6 +1,0 @@
-# RxJs
-rm -rf apps/api/openapi/template/typescript-rxjs/.  # Clear any existing artifacts
-git clone --depth 1 https://github.com/OpenAPITools/openapi-generator.git apps/api/openapi/template/typescript-rxjs/temp # Clone openapi-generator into temp dir
-cp -rvf apps/api/openapi/template/typescript-rxjs/temp/modules/openapi-generator/src/main/resources/typescript-rxjs/. apps/api/openapi/template/typescript-rxjs # Copy the typescript-rxjs template
-rm -rf apps/api/openapi/template/typescript-rxjs/temp # Delete the temp directory
-cp -rvf apps/api/openapi/patch/typescript-rxjs/. apps/api/openapi/template/typescript-rxjs
