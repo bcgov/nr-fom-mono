@@ -9,7 +9,6 @@ import { DistrictService } from './api/district.service';
 import { ForestClientService } from './api/forestClient.service';
 import { InteractionService } from './api/interaction.service';
 import { ProjectService } from './api/project.service';
-import { ProjectsService } from './api/projects.service';
 import { PublicCommentService } from './api/publicComment.service';
 import { ResponseCodeService } from './api/responseCode.service';
 import { SubmissionService } from './api/submission.service';

@@ -142,6 +142,47 @@ export class ProjectService {
     }
 
     /**
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public projectControllerFindAll(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectDto>>;
+    public projectControllerFindAll(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectDto>>>;
+    public projectControllerFindAll(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectDto>>>;
+    public projectControllerFindAll(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.post<Array<ProjectDto>>(`${this.configuration.basePath}/api/project/findAll`,
+            null,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -237,10 +278,10 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectPublicSummaryDto>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectPublicSummaryDto>>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectPublicSummaryDto>>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: boolean, includePostCommentOpen?: boolean, forestClientName?: string, openedOnOrAfter?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectPublicSummaryDto>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectPublicSummaryDto>>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectPublicSummaryDto>>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (includeCommentOpen !== undefined && includeCommentOpen !== null) {

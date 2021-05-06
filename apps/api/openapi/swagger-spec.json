@@ -6,12 +6,7 @@
         "version": "1.0",
         "contact": {}
     },
-    "tags": [
-        {
-            "name": "api",
-            "description": ""
-        }
-    ],
+    "tags": [],
     "servers": [],
     "components": {
         "schemas": {
@@ -791,7 +786,7 @@
                     "WTRA"
                 ]
             },
-            "SubmissionWithJsonDto": {
+            "SubmissionDto": {
                 "type": "object",
                 "properties": {
                     "projectId": {
@@ -1147,7 +1142,7 @@
                         "required": false,
                         "in": "query",
                         "schema": {
-                            "type": "boolean"
+                            "type": "string"
                         }
                     },
                     {
@@ -1155,7 +1150,7 @@
                         "required": false,
                         "in": "query",
                         "schema": {
-                            "type": "boolean"
+                            "type": "string"
                         }
                     },
                     {
@@ -1184,6 +1179,30 @@
                                     "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/ProjectPublicSummaryDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "project"
+                ]
+            }
+        },
+        "/api/project/findAll": {
+            "post": {
+                "operationId": "ProjectController_findAll",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProjectDto"
                                     }
                                 }
                             }
@@ -1385,30 +1404,6 @@
                 },
                 "tags": [
                     "project"
-                ]
-            }
-        },
-        "/api/projects": {
-            "post": {
-                "operationId": "ProjectsController_findAll",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ProjectDto"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "projects"
                 ]
             }
         },
@@ -1622,7 +1617,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/SubmissionWithJsonDto"
+                                "$ref": "#/components/schemas/SubmissionDto"
                             }
                         }
                     }

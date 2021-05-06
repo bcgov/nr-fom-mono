@@ -1,4 +1,5 @@
 .gitignore
+.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
@@ -9,7 +10,6 @@ api/district.service.ts
 api/forestClient.service.ts
 api/interaction.service.ts
 api/project.service.ts
-api/projects.service.ts
 api/publicComment.service.ts
 api/responseCode.service.ts
 api/submission.service.ts
@@ -34,9 +34,9 @@ model/projectSpatialDetail.ts
 model/publicCommentDto.ts
 model/responseCode.ts
 model/spatialObjectCodeEnum.ts
+model/submissionDto.ts
 model/submissionTypeCode.ts
 model/submissionTypeCodeEnum.ts
-model/submissionWithJsonDto.ts
 model/updateAttachmentDto.ts
 model/updateInteractionDto.ts
 model/updateProjectDto.ts

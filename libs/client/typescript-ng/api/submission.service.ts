@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { SubmissionWithJsonDto } from '../model/models';
+import { SubmissionDto } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -85,16 +85,16 @@ export class SubmissionService {
     }
 
     /**
-     * @param submissionWithJsonDto 
+     * @param submissionDto 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public submissionControllerProcessSpatialSubmission(submissionWithJsonDto: SubmissionWithJsonDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public submissionControllerProcessSpatialSubmission(submissionWithJsonDto: SubmissionWithJsonDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public submissionControllerProcessSpatialSubmission(submissionWithJsonDto: SubmissionWithJsonDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public submissionControllerProcessSpatialSubmission(submissionWithJsonDto: SubmissionWithJsonDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
-        if (submissionWithJsonDto === null || submissionWithJsonDto === undefined) {
-            throw new Error('Required parameter submissionWithJsonDto was null or undefined when calling submissionControllerProcessSpatialSubmission.');
+    public submissionControllerProcessSpatialSubmission(submissionDto: SubmissionDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public submissionControllerProcessSpatialSubmission(submissionDto: SubmissionDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public submissionControllerProcessSpatialSubmission(submissionDto: SubmissionDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public submissionControllerProcessSpatialSubmission(submissionDto: SubmissionDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+        if (submissionDto === null || submissionDto === undefined) {
+            throw new Error('Required parameter submissionDto was null or undefined when calling submissionControllerProcessSpatialSubmission.');
         }
 
         let headers = this.defaultHeaders;
@@ -126,7 +126,7 @@ export class SubmissionService {
         }
 
         return this.httpClient.post<any>(`${this.configuration.basePath}/api/submission`,
-            submissionWithJsonDto,
+            submissionDto,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
