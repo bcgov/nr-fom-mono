@@ -6,7 +6,7 @@ import { PublicCommentService } from './public-comment.service';
 import { PublicComment } from './entities/public-comment.entity';
 import { PublicCommentDto } from './dto/public-comment.dto';
 import { UpdatePublicCommentDto } from './dto/update-public-comment.dto';
-import { UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 
 @ApiTags('public-comment')
 @Controller('public-comment')
@@ -50,7 +50,7 @@ export class PublicCommentController extends BaseController<
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number): Promise<UpdateResult> {
+  async remove(@Param('id') id: number): Promise<DeleteResult> {
     return super.remove(id);
   }
 }

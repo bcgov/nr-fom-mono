@@ -65,6 +65,7 @@ export const mapFromEntity = (entity, dto) => {
     // - https://github.com/typeorm/typeorm/blob/master/docs/connection-options.md namingStrategy won't handle our needs
     // - TypeORM won't handle @RelationId decorator properly if the relation id is not suffixed with _id
     //   eg. forest_client_number instead of forest_client_id
+    // TODO: This copies all entity properties, even if they don't exist on the DTO.
     const dtoKey = camelCase(modelKey);
     dto[dtoKey] = entity[modelKey];
   });

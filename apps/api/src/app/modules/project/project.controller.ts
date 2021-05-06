@@ -5,7 +5,7 @@ import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './entities/project.entity';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { UpdateResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
@@ -69,6 +69,38 @@ export class ProjectController extends BaseController<
       return await this.service.findPublicSummaries(findCriteria);
   }
 
+  @Get()
+  @ApiQuery({ name: 'fspId', required: false})
+  @ApiQuery({ name: 'districtId', required: false})
+  @ApiQuery({ name: 'workflowStateCode', required: false})
+  @ApiQuery({ name: 'forestClientName', required: false})
+  @ApiResponse({ status: 200, type: [ProjectDto] })
+  async find(
+    @Query('fspId') fspId?: number,
+    @Query('districtId') districtId?: number,
+    @Query('workflowStateCode') workflowStateCode?: string,
+    @Query('forestClientName') forestClientName?: string,
+    ): Promise<ProjectDto[]> {
+
+      const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
+
+      if (fspId) {
+        findCriteria.fspId = fspId;
+      }
+      if (districtId) {
+        findCriteria.districtId = districtId;
+      }
+      if (workflowStateCode) {
+        findCriteria.includeWorkflowStateCodes.push(workflowStateCode);
+      }
+      if (forestClientName) {
+        findCriteria.likeForestClientName = forestClientName;
+      }
+
+      return await this.service.find(findCriteria);
+  }
+
+
   // TODO: Replace with limited-criteria search
   @Post('/findAll')
   @ApiResponse({ status: 200, type: [ProjectDto] })
@@ -96,7 +128,7 @@ export class ProjectController extends BaseController<
   @Post()
   @ApiResponse({ status: 201, type: ProjectDto })
   async create(@Body() createDto: ProjectDto): Promise<ProjectDto> {
-    // add buisiness logic here
+    // TODO: add buisiness logic (to service)
     return super.create(createDto);
   }
 
@@ -119,8 +151,8 @@ export class ProjectController extends BaseController<
   }
 
   @Delete(':id')
-  @ApiResponse({ status: 200, type: UpdateResult })
-  async remove(@Param('id') id: number): Promise<UpdateResult> {
+  @ApiResponse({ status: 200, type: DeleteResult })
+  async remove(@Param('id') id: number): Promise<DeleteResult> {
     return super.remove(id);
   }
 }

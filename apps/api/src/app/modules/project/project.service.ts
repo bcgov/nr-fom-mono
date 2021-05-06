@@ -1,12 +1,14 @@
 import { HttpException, HttpStatus, Injectable, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsUtils, Repository } from 'typeorm';
+import { FindOptionsUtils, Repository, SelectQueryBuilder } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { PinoLogger } from 'nestjs-pino';
+import { ProjectDto } from './dto/project.dto';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 import * as dayjs from 'dayjs';
+import { mapFromEntity } from '@core';
 
 
 export class ProjectFindCriteria {
@@ -14,6 +16,25 @@ export class ProjectFindCriteria {
   likeForestClientName?: string;
   commentingOpenedOnOrAfter?: string; // format YYYY-MM-DD
   fspId?: number;
+  districtId?: number;
+
+  applyFindCriteria(query: SelectQueryBuilder<Project>) {
+    if (this.fspId) {
+      query.andWhere("p.fsp_id = :fspId", {fspId: `${this.fspId}`});
+    }
+    if (this.districtId) {
+      query.andWhere("p.district_id = :districtId", {districtId: `${this.districtId}`});
+    }
+    if (this.includeWorkflowStateCodes && this.includeWorkflowStateCodes.length > 0) {
+      query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
+    }
+    if (this.likeForestClientName) {
+      query.andWhere("forest_client.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
+    }
+    if (this.commentingOpenedOnOrAfter) {
+      query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${this.commentingOpenedOnOrAfter}`});
+    }
+  }
 }
 
 @Injectable()
@@ -26,39 +47,41 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     super(repository, new Project(), logger);
   }
 
+  async find(findCriteria: ProjectFindCriteria):Promise<ProjectDto[]> {
+    this.logger.trace(`Find criteria: ${JSON.stringify(findCriteria)}`);
+    try {
+      const query = this.repository.createQueryBuilder("p")
+        .leftJoinAndSelect("p.forest_client", "forest_client")
+        .leftJoinAndSelect("p.workflow_state", "workflow_state")
+        .leftJoinAndSelect("p.district", "district")
+        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
+        .addOrderBy('p.project_id', 'DESC'); // Newest first
+        ;
+      findCriteria.applyFindCriteria(query);
+
+      const result:Project[] = await query.getMany();
+
+      return result.map(project => mapFromEntity(project, {} as ProjectDto));
+
+    } catch (error) {
+      this.logger.error(`${this.constructor.name}.find ${error}`);
+      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryDto[]> {
 
-    this.logger.info(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
+    this.logger.trace(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
 
     try {
       const query = this.repository.createQueryBuilder("p")
-        // .relation('workflowState', 'forestClient')
-        // .leftJoinAndSelect('p.workflowState', 'workflowState')
-        // .leftJoin('workflow_state', 'workflow_state')
-        // .leftJoinAndSelect('forest_client', 'forest_client')
-        // .where("user.name = :name", { name: "Timber" })
         .leftJoinAndSelect("p.forest_client", "forest_client")
         .leftJoinAndSelect("p.workflow_state", "workflow_state")
-        // .andWhere("p.workflow_state_code not in ('EXPIRED')")
-        // .andWhere("p.commenting_open_date >= :openDate", { openDate: '2020-01-01'})
-        // .where("user.name IN (:...names)", { names: [ "Timber", "Cristal", "Lina" ] })
-        // .take(5000) // Limit number of results. TODO: display warning on public front-end if limit reached.
         .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC');
+        .addOrderBy('p.project_id', 'DESC'); // Newest first
         ;
-      if (findCriteria.includeWorkflowStateCodes && findCriteria.includeWorkflowStateCodes.length > 0) {
-        query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: findCriteria.includeWorkflowStateCodes});
-      }
-      if (findCriteria.likeForestClientName) {
-        query.andWhere("forest_client.name like :forestClientName", { forestClientName:`%${findCriteria.likeForestClientName}%`});
-      }
-      if (findCriteria.commentingOpenedOnOrAfter) {
-        query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${findCriteria.commentingOpenedOnOrAfter}`});
-      }
-
-      // TODO: Clean up.
-      console.log(query.getQuery());
+      findCriteria.applyFindCriteria(query);
 
       const result:Project[] = await query.getMany();
 
@@ -74,10 +97,7 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
       });
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findPublicSummaries ${error}`);
-      throw new HttpException(
-        'InternalServerErrorException',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
