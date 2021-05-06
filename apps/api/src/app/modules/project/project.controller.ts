@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Logger, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
-import { BaseController, BaseCollectionController } from '@controllers';
-import { ProjectService } from './project.service';
+import { BaseController } from '@controllers';
+import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './entities/project.entity';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -9,34 +9,8 @@ import { UpdateResult } from 'typeorm';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
-
-@ApiTags('projects')
-@Controller('projects')
-export class ProjectsController extends BaseCollectionController<
-  Project,
-  ProjectDto,
-  UpdateProjectDto
-> {
-  constructor(protected readonly service: ProjectService) {
-    super(service);
-  }
-
-  // TODO: REMOVE THIS + SubmissionWithGeoDetailsDto might be useful for Admin?
-  // @Get('/byIdWithGeoDetails/:id')
-  // @ApiResponse({ status: 200, type: [ProjectDto] })
-  // async findByIdWithGeoDetails(@Param('id') id: number): Promise<ProjectDto[]> {
-  //   return super.findAll({
-  //     where: { id: id },
-  //     relations: ['district', 'forest_client', 'workflow_state', 'submissions', 'submissions.submission_type', 'submissions.cut_blocks', 'submissions.retention_areas', 'submissions.road_sections'],
-  //   });
-  // }
-
-  @Post()
-  @ApiResponse({ status: 200, type: [ProjectDto] })
-  async findAll(@Body() options = {}): Promise<ProjectDto[]> {
-    return super.findAll(options);
-  }
-}
+import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
+import * as dayjs from 'dayjs';
 
 @ApiTags('project')
 @Controller('project')
@@ -58,17 +32,52 @@ export class ProjectController extends BaseController<
   @ApiQuery({ name: 'openedOnOrAfter', required: false})
   @ApiResponse({ status: 200, type: [ProjectPublicSummaryDto] })
   async findPublicSummary(
-    @Query('includeCommentOpen') includeCommentOpen: boolean = false, 
-    @Query('includePostCommentOpen') includePostCommentOpen: boolean = false, 
+    @Query('includeCommentOpen') includeCommentOpen: string = 'true',
+    @Query('includePostCommentOpen') includePostCommentOpen: string = 'true',
     @Query('forestClientName') forestClientName?: string,
     @Query('openedOnOrAfter') openedOnOrAfter?: string,
     ): Promise<ProjectPublicSummaryDto[]> {
-      // console.log(`includeCommentOpen ${includeCommentOpen}, includeNotCommentOpen ${includePostCommentOpen}, fomHolderName ${clientName}, openedAfter ${openedOnOrAfter}`);
 
-      return await this.service.findPublicSummaries();
+      const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
+
+      if (forestClientName) {
+        findCriteria.likeForestClientName = forestClientName;
+      }
+
+      if (includeCommentOpen == 'true') {
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.COMMENT_OPEN);
+      } 
+      if (includePostCommentOpen == 'true') {
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.COMMENT_CLOSED);
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.FINALIZED);
+      }
+      if (includeCommentOpen != 'true' && includePostCommentOpen != 'true') {
+        throw new HttpException("Either includeCommentOpen or includePostCommentOpen must be true", HttpStatus.BAD_REQUEST);
+      }
+
+      const DATE_FORMAT='YYYY-MM-DD';
+      if (openedOnOrAfter) {
+        findCriteria.commentingOpenedOnOrAfter = dayjs(openedOnOrAfter).format(DATE_FORMAT);
+        // TODO: Need to ensure this date is not in the future, not necessary if use a publish state
+      } else {
+        // TODO: This logic is wrong . Exclude records with workflow state = comment open and comment open date > today
+        // Had to open for commenting no later than today or wouldn't be visible. 
+        // TODO: Not necessary if use a Publish state
+        // findCriteria.commentingOpenedOnOrAfter = dayjs().format(DATE_FORMAT);
+      }
+
+      return await this.service.findPublicSummaries(findCriteria);
   }
 
-  // TODO: Replace with more generic search.
+  // TODO: Replace with limited-criteria search
+  @Post('/findAll')
+  @ApiResponse({ status: 200, type: [ProjectDto] })
+  async findAll(@Body() options = {}): Promise<ProjectDto[]> {
+    return super.findAll(options);
+  }
+
+
+  // TODO: Replace with more generic limited-criteria search.
   @Get('/byFspId/:id')
   @ApiResponse({ status: 200, type: [ProjectDto] })
   async findByFspId(@Param('id') id: number): Promise<ProjectDto[]> {
@@ -78,12 +87,10 @@ export class ProjectController extends BaseController<
     });
   }
 
-
   @Get('/spatialDetails/:id') 
   @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })
   async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
     return this.projectSpatialDetailService.findByProjectId(id);
-
   }
 
   @Post()

@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { Project } from './entities/project.entity';
 import { ProjectService } from './project.service';
-import { ProjectController, ProjectsController } from './project.controller';
+import { ProjectController } from './project.controller';
 
 import { DistrictModule } from '../district/district.module';
 import { ForestClientModule } from '../forest-client/forest-client.module';
@@ -18,7 +18,7 @@ import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
     ForestClientModule,
     WorkflowStateCodeModule,
   ],
-  controllers: [ProjectController, ProjectsController],
+  controllers: [ProjectController],
   providers: [ProjectService, ProjectSpatialDetailService],
   exports: [ProjectService],
 })

@@ -4,20 +4,6 @@ import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
-// TODO: Consider eliminating this.
-@Controller()
-export class BaseCollectionController<E, C, U> {
-  // @ts-ignore
-  constructor(protected readonly service: DataService<E, Repository<E>>) {}
-
-  @Post()
-  async findAll(
-    @Body() options?: FindManyOptions<E> | undefined
-  ): Promise<C[]> {
-    return this.service.findAll<C>(options);
-  }
-}
-
 @Controller()
 export class BaseController<E, C, U> {
   // @ts-ignore

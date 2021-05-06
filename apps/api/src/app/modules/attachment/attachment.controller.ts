@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController, BaseCollectionController } from '@controllers';
+import { BaseController } from '@controllers';
 import { AttachmentService } from './attachment.service';
 import { Attachment } from './entities/attachment.entity';
 import { AttachmentDto } from './dto/attachment.dto';

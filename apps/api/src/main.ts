@@ -43,7 +43,6 @@ async function bootstrap() {
     .setTitle('FOM API')
     .setDescription('API for FOM backend')
     .setVersion('1.0')
-    .addTag('api')
     .build();
   const port = appConfig.get('port') || 3333;
   const document = SwaggerModule.createDocument(app, config);
