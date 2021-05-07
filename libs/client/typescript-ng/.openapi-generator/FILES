@@ -22,9 +22,7 @@ index.ts
 model/attachmentDto.ts
 model/attachmentTypeCode.ts
 model/commentScopeCode.ts
-model/district.ts
 model/districtDto.ts
-model/forestClient.ts
 model/forestClientDto.ts
 model/interactionDto.ts
 model/models.ts

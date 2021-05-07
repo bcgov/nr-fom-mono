@@ -12,12 +12,7 @@
 
 
 export interface ForestClientDto { 
-    id: number;
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
+    id: string;
     name: string;
 }
 

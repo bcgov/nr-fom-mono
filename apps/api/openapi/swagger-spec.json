@@ -204,32 +204,12 @@
                     "id": {
                         "type": "number"
                     },
-                    "revisionCount": {
-                        "type": "number"
-                    },
-                    "createTimestamp": {
-                        "type": "string"
-                    },
-                    "createUser": {
-                        "type": "string"
-                    },
-                    "updateTimestamp": {
-                        "type": "string"
-                    },
-                    "updateUser": {
-                        "type": "string"
-                    },
                     "name": {
                         "type": "string"
                     }
                 },
                 "required": [
                     "id",
-                    "revisionCount",
-                    "createTimestamp",
-                    "createUser",
-                    "updateTimestamp",
-                    "updateUser",
                     "name"
                 ]
             },
@@ -237,21 +217,6 @@
                 "type": "object",
                 "properties": {
                     "id": {
-                        "type": "number"
-                    },
-                    "revisionCount": {
-                        "type": "number"
-                    },
-                    "createTimestamp": {
-                        "type": "string"
-                    },
-                    "createUser": {
-                        "type": "string"
-                    },
-                    "updateTimestamp": {
-                        "type": "string"
-                    },
-                    "updateUser": {
                         "type": "string"
                     },
                     "name": {
@@ -260,11 +225,6 @@
                 },
                 "required": [
                     "id",
-                    "revisionCount",
-                    "createTimestamp",
-                    "createUser",
-                    "updateTimestamp",
-                    "updateUser",
                     "name"
                 ]
             },
@@ -298,36 +258,6 @@
                     "forestClientName",
                     "workflowStateName",
                     "commentingOpenDate"
-                ]
-            },
-            "District": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "number"
-                    },
-                    "name": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "name"
-                ]
-            },
-            "ForestClient": {
-                "type": "object",
-                "properties": {
-                    "id": {
-                        "type": "string"
-                    },
-                    "name": {
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "id",
-                    "name"
                 ]
             },
             "WorkflowStateCode": {
@@ -389,13 +319,13 @@
                         "type": "number"
                     },
                     "district": {
-                        "$ref": "#/components/schemas/District"
+                        "$ref": "#/components/schemas/DistrictDto"
                     },
                     "forestClientNumber": {
                         "type": "string"
                     },
                     "forestClient": {
-                        "$ref": "#/components/schemas/ForestClient"
+                        "$ref": "#/components/schemas/ForestClientDto"
                     },
                     "workflowStateCode": {
                         "type": "string"
@@ -528,13 +458,13 @@
                         "type": "number"
                     },
                     "district": {
-                        "$ref": "#/components/schemas/District"
+                        "$ref": "#/components/schemas/DistrictDto"
                     },
                     "forestClientNumber": {
                         "type": "string"
                     },
                     "forestClient": {
-                        "$ref": "#/components/schemas/ForestClient"
+                        "$ref": "#/components/schemas/ForestClientDto"
                     },
                     "workflowStateCode": {
                         "type": "string"
@@ -1266,63 +1196,6 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/ProjectDto"
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "project"
-                ]
-            }
-        },
-        "/api/project/findAll": {
-            "post": {
-                "operationId": "ProjectController_findAll",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ProjectDto"
-                                    }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "project"
-                ]
-            }
-        },
-        "/api/project/byFspId/{id}": {
-            "get": {
-                "operationId": "ProjectController_findByFspId",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "required": true,
-                        "in": "path",
-                        "schema": {
-                            "type": "number"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/ProjectDto"
-                                    }
                                 }
                             }
                         }

@@ -13,11 +13,6 @@
 
 export interface DistrictDto { 
     id: number;
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
     name: string;
 }
 
