@@ -563,7 +563,7 @@
                     "workflowState"
                 ]
             },
-            "UpdateResult": {
+            "DeleteResult": {
                 "type": "object",
                 "properties": {}
             },
@@ -1190,6 +1190,92 @@
                 ]
             }
         },
+        "/api/project": {
+            "get": {
+                "operationId": "ProjectController_find",
+                "parameters": [
+                    {
+                        "name": "fspId",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "districtId",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "workflowStateCode",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "forestClientName",
+                        "required": false,
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/ProjectDto"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "project"
+                ]
+            },
+            "post": {
+                "operationId": "ProjectController_create",
+                "parameters": [],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProjectDto"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProjectDto"
+                                }
+                            }
+                        }
+                    }
+                },
+                "tags": [
+                    "project"
+                ]
+            }
+        },
         "/api/project/findAll": {
             "post": {
                 "operationId": "ProjectController_findAll",
@@ -1270,37 +1356,6 @@
                                     "items": {
                                         "$ref": "#/components/schemas/ProjectSpatialDetail"
                                     }
-                                }
-                            }
-                        }
-                    }
-                },
-                "tags": [
-                    "project"
-                ]
-            }
-        },
-        "/api/project": {
-            "post": {
-                "operationId": "ProjectController_create",
-                "parameters": [],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/ProjectDto"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ProjectDto"
                                 }
                             }
                         }
@@ -1396,7 +1451,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/UpdateResult"
+                                    "$ref": "#/components/schemas/DeleteResult"
                                 }
                             }
                         }
