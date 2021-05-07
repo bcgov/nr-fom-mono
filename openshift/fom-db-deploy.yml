@@ -3,7 +3,8 @@ kind: Template
 labels:
   app.kubernetes.io/part-of: fom
   template: fom-db-deploy
-  suffix: ${SUFFIX}
+  # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
+  suffix: fom${SUFFIX}
   app: fom
   app-component: ${NAME}
 metadata:
@@ -13,7 +14,7 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-db
-  - description: Suffix specifying the release/build/environment being deployed.
+  - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
     displayName: Suffix
     name: SUFFIX
     value: main
@@ -108,16 +109,16 @@ objects:
         -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
         -- ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
     metadata:
-      name: ${NAME}-${SUFFIX}-${ENV}
+      name: ${NAME}${SUFFIX}
     # SECRET - db/user/pwd
   - kind: Secret
     apiVersion: v1
     metadata:
       annotations:
-      name: ${NAME}-${SUFFIX}-${ENV}
+      name: ${NAME}${SUFFIX}
     stringData:
       # The unqualified hostname is the name of the db service. Easier to look up in fom-api-deploy than recreate.
-      database-host: ${NAME}-${SUFFIX}-${ENV}.${PROJECT}-${ENV}.svc.cluster.local
+      database-host: ${NAME}${SUFFIX}.${PROJECT}-${ENV}.svc.cluster.local
       database-name: ${POSTGRESQL_DATABASE}
       database-password: ${POSTGRESQL_PASSWORD}
       database-user: ${POSTGRESQL_USER}
@@ -125,7 +126,7 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${NAME}-${SUFFIX}-${ENV}
+      name: ${NAME}${SUFFIX}
     spec:
       ports:
         - name: postgresql
@@ -133,14 +134,14 @@ objects:
           protocol: TCP
           targetPort: ${{POSTGRESQL_PORT}}
       selector:
-        name: ${NAME}-${SUFFIX}-${ENV}
+        name: ${NAME}${SUFFIX}
       sessionAffinity: None
       type: ClusterIP
     # Persistent Storage - DB
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
-      name: ${NAME}-${SUFFIX}-${ENV}
+      name: ${NAME}${SUFFIX}
       annotations:
     spec:
       accessModes:
@@ -155,17 +156,17 @@ objects:
     metadata:
       annotations:
         template.alpha.openshift.io/wait-for-ready: "true"
-      name: ${NAME}-${SUFFIX}-${ENV}
+      name: ${NAME}${SUFFIX}
     spec:
       replicas: 1
       selector:
-        name: ${NAME}-${SUFFIX}-${ENV}
+        name: ${NAME}${SUFFIX}
       strategy:
         type: Recreate
       template:
         metadata:
           labels:           
-            name: ${NAME}-${SUFFIX}-${ENV}
+            name: ${NAME}${SUFFIX}
         spec:
           containers:
             - capabilities: {}
@@ -174,17 +175,17 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: ${NAME}-${SUFFIX}-${ENV}
+                      name: ${NAME}${SUFFIX}
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: ${NAME}-${SUFFIX}-${ENV}
+                      name: ${NAME}${SUFFIX}
                 - name: POSTGRES_DB
                   valueFrom:
                     secretKeyRef:
                       key: database-name
-                      name: ${NAME}-${SUFFIX}-${ENV}
+                      name: ${NAME}${SUFFIX}
                 - name: POSTGRES_PORT
                   value: '${POSTGRESQL_PORT}'
                 - name: PGDATA
@@ -239,12 +240,12 @@ objects:
           volumes:
             - name: db-data
               persistentVolumeClaim:
-                claimName: ${NAME}-${SUFFIX}-${ENV}
+                claimName: ${NAME}${SUFFIX}
             - name: db-run
               emptyDir: {}
             - name: db-initconfig
               configMap:
-                name: ${NAME}-${SUFFIX}-${ENV}
+                name: ${NAME}${SUFFIX}
       triggers:
         - imageChangeParams:
             automatic: true

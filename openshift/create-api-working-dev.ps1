@@ -1,3 +1,5 @@
 . ./create-api-stack-function.ps1
 
-CreateApiStack -Suffix "working" -Env "dev" -ApiVersion "dev" -TestData "true"
+#DeleteApiStack -Suffix "-working-dev" -Env "dev"
+
+CreateApiStack -Suffix "-working-dev" -Env "dev" -ApiVersion "dev" -TestData "true"
