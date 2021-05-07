@@ -119,6 +119,7 @@ comment on column app_fom.workflow_state_code.revision_count is 'Standard column
 
 INSERT INTO app_fom.workflow_state_code(code, description, create_user) VALUES
 ('INITIAL', 'Initial', CURRENT_USER), 
+('PUBLISHED', 'Published', CURRENT_USER), 
 ('COMMENT_OPEN', 'Commenting Open', CURRENT_USER),
 ('COMMENT_CLOSED', 'Commenting Closed', CURRENT_USER),
 ('FINALIZED', 'Finalized', CURRENT_USER),
@@ -223,6 +224,7 @@ create table if not exists app_fom.district
 (  
 district_id integer not null primary key ,  
 name varchar not null , 
+email varchar not null ,
 
 revision_count integer not null default 0 ,
 create_timestamp timestamptz not null default now() ,  
@@ -235,7 +237,8 @@ update_user varchar
 comment on table  app_fom.district is 'FOM local copy of the list of districts from an external system (Oracle database DB, Schema THE, Table ORG_UNIT).';
 
 comment on column app_fom.district.district_id is 'Primary key. Corresponds to ORG_UNIT_NO in source system. ';
-comment on column app_fom.district.name is 'Primary key Corresponds to column ORG_UNIT_NAME in source system. ';
+comment on column app_fom.district.name is 'Corresponds to column ORG_UNIT_NAME in source system. ';
+comment on column app_fom.district.name is 'Email address for the district. ';
 
 comment on column app_fom.district.create_timestamp is 'Time of creation of the record.';
 comment on column app_fom.district.create_user is 'The user id who created the record. For citizens creating comments, a common hardcoded user id will be used.';

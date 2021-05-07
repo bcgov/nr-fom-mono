@@ -10,7 +10,9 @@ module.exports = class testdata1616434875304 {
         -- Project #3 - COMMENTING_OPEN state, proposed submission, lots of public comments
         -- Project #4 - COMMENTING_CLOSED state, proposed submission
         -- Project #5 - COMMENTING_CLOSED state, proposed + final submissions
-        -- Project #5 - FINALIZED state, proposed + final submission
+        -- Project #6 - FINALIZED state, proposed + final submission, identical shapes
+        -- Project #7 - PUBLISHED state, proposed submission
+        -- Project #8 - EXPIRED state, proposed + final submission
 
         -- app_fom.project 
         INSERT INTO app_fom.project(
@@ -18,10 +20,12 @@ module.exports = class testdata1616434875304 {
             commenting_open_date, commenting_closed_date, create_user ) VALUES
         (1, 'Fake name 1', 'Initial no submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, null, 1011, 'INITIAL', null, null, 'testdata')
         , (2, 'Fake name 2 a bit longer', 'Initial with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'INITIAL', '2021-03-03', null, 'testdata')
-        , (3, 'Fake name 3 even more longer', 'Commenting open with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_OPEN', '2021-04-01', '2022-04-01', 'testdata')
-        , (4, 'Fake name 4 50 char long 123456789 123456789 123456789', 'Commenting closed with only proposed submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
-        , (5, 'Fake name 5', 'Commenting closed with proposed + final submissions project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
-        , (6, 'Fake name 6', 'Finalized project with identical proposed/final shapes. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
+        , (3, 'Fake name 3 with lots of comments', 'Commenting open with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_OPEN', '2021-04-01', '2022-04-01', 'testdata')
+        , (4, 'Fake name 4 50 char long 123456789 123456789 123456789', 'Commenting closed with only proposed submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1016, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
+        , (5, 'Fake name 5', 'Commenting closed with proposed + final submissions project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1016, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
+        , (6, 'Fake name 6', 'Finalized project with identical proposed/final shapes. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 46, 1021, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
+        , (7, 'Fake name 7', 'Published project with proposed submission. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 46, 1021, 'PUBLISHED', '2022-04-01', '2022-05-01', 'testdata')
+        , (8, 'Fake name 8', 'Expired project with proposed+final submissions. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 18, 1026, 'EXPIRED', '2019-12-01', '2019-12-31', 'testdata')
         ;
         
         -- app_fom.submission
@@ -33,6 +37,9 @@ module.exports = class testdata1616434875304 {
         , (51, 5, 'FINAL', 'testdata')
         , (60, 6, 'PROPOSED', 'testdata')
         , (61, 6, 'FINAL', 'testdata')
+        , (70, 7, 'FINAL', 'testdata')
+        , (80, 8, 'PROPOSED', 'testdata')
+        , (81, 8, 'FINAL', 'testdata')
         ;
        
         -- app_fom.cut_block
@@ -44,6 +51,9 @@ module.exports = class testdata1616434875304 {
 		, (510, 51, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1454814 555392, 1455018 555392, 1455018 555080, 1454814 555180, 1454814 555392))', 3005), 'testdata')
 		, (600, 60, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1090000 850000, 1100000 860000, 1110000 850000, 1110000 840000, 1090000 840000, 1090000 850000))', 3005), 'testdata')
 		, (610, 61, 'my cut block', '2022-04-01', ST_GeomFromText('POLYGON((1090000 850000, 1100000 860000, 1110000 850000, 1110000 840000, 1090000 840000, 1090000 850000))', 3005), 'testdata')
+		, (700, 70, null, '2023-04-01', ST_GeomFromText('POLYGON((1300000 750000, 1310000 760000, 1320000 750000, 1320000 740000, 1300000 740000, 1300000 750000))', 3005), 'testdata')
+		, (800, 80, null, '2023-04-01', ST_GeomFromText('POLYGON((1300000 750000, 1310000 760000, 1320000 750000, 1320000 740000, 1300000 740000, 1300000 750000))', 3005), 'testdata')
+		, (810, 81, null, '2023-04-01', ST_GeomFromText('POLYGON((1300000 750000, 1310000 760000, 1320000 750000, 1320000 740000, 1300000 740000, 1300000 750000))', 3005), 'testdata')
 		;
 
 		-- app_fom.road_section

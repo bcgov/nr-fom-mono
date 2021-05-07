@@ -16,4 +16,7 @@ export class District extends ApiBaseEntity<District> {
   @Column()
   name: string;
 
+  @Column()
+  email: string;
+
 }
