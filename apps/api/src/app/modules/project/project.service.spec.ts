@@ -9,6 +9,8 @@ import { projectPropsFactory } from '../../factories/project.factory';
 import { mockLoggerFactory } from '../../factories/mock-logger.factory';
 import { AppConfigModule } from '../../modules/app-config/app-config.module';
 import { AppConfigService } from '../../modules/app-config/app-config.provider';
+import { DistrictService } from '../district/district.service';
+import { ForestClientService } from '../forest-client/forest-client.service';
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -56,7 +58,7 @@ describe('ProjectService', () => {
     // await repository.deleteMany({});
 
     const logger = module.get(PinoLogger);
-    service = new ProjectService(repository, logger);
+    service = new ProjectService(repository, logger, new DistrictService(null, logger), new ForestClientService(null, logger));
   });
   afterEach(async () => {
     // await repository.deleteMany({});

@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ForestClient } from './entities/forest-client.entity';
 import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly-provider.model';
 import { PinoLogger } from 'nestjs-pino';
+import { ForestClientDto } from './dto/forest-client.dto';
 
 @Injectable()
 export class ForestClientService extends DataReadOnlyService<ForestClient, Repository<ForestClient>> {
@@ -14,4 +15,13 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
   ) {
     super(repository, new ForestClient(), logger);
   }
+
+  convertEntity(entity: ForestClient):ForestClientDto {
+    var dto = new ForestClientDto();
+    // Read-only so don't bother returning audit columns
+    dto.id = entity.id;
+    dto.name = entity.name;
+    return dto;
+  }
+
 }

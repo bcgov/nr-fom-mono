@@ -100,25 +100,6 @@ export class ProjectController extends BaseController<
       return await this.service.find(findCriteria);
   }
 
-
-  // TODO: Replace with limited-criteria search
-  @Post('/findAll')
-  @ApiResponse({ status: 200, type: [ProjectDto] })
-  async findAll(@Body() options = {}): Promise<ProjectDto[]> {
-    return super.findAll(options);
-  }
-
-
-  // TODO: Replace with more generic limited-criteria search.
-  @Get('/byFspId/:id')
-  @ApiResponse({ status: 200, type: [ProjectDto] })
-  async findByFspId(@Param('id') id: number): Promise<ProjectDto[]> {
-    return super.findAll({
-      where: { fsp_id: id },
-      relations: ['district', 'forest_client', 'workflow_state'],
-    });
-  }
-
   @Get('/spatialDetails/:id') 
   @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })
   async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {

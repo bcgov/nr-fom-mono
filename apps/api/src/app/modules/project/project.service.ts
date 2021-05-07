@@ -9,6 +9,8 @@ import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 import * as dayjs from 'dayjs';
 import { mapFromEntity } from '@core';
+import { DistrictService } from '../district/district.service';
+import { ForestClientService } from '../forest-client/forest-client.service';
 
 
 export class ProjectFindCriteria {
@@ -42,7 +44,9 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
   constructor(
     @InjectRepository(Project)
     repository: Repository<Project>,
-    logger: PinoLogger
+    logger: PinoLogger,
+    private districtService: DistrictService,
+    private forestClientService: ForestClientService,
   ) {
     super(repository, new Project(), logger);
   }
@@ -61,7 +65,7 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
 
       const result:Project[] = await query.getMany();
 
-      return result.map(project => mapFromEntity(project, {} as ProjectDto));
+      return result.map(project => this.convertEntity(project));
 
     } catch (error) {
       this.logger.error(`${this.constructor.name}.find ${error}`);
@@ -69,7 +73,17 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     }
   }
 
-
+  convertEntity(entity: Project): ProjectDto {
+    var dto = super.convertEntity(entity);
+    if (entity.district != null) {
+      dto.district = this.districtService.convertEntity(entity.district);
+    }
+    if (entity.forest_client != null) {
+      dto.forestClient = this.forestClientService.convertEntity(entity.forest_client);
+    }
+    return dto;
+  }
+  
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryDto[]> {
 
     this.logger.trace(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);

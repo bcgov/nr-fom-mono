@@ -57,6 +57,10 @@ export abstract class DataService<
     return mapFromEntity(created, createdDto);
   }
 
+  convertEntity(entity: E): any {
+    return mapFromEntity(entity, {});
+  }
+
   /**
    * Find a record by Id
    *
@@ -75,8 +79,7 @@ export abstract class DataService<
       const record = await this.repository.findOne(id, options);
       this.logger.info('${this.constructor.name}findOne result', record);
 
-      const dto = {} as C;
-      return mapFromEntity(record, dto);
+      return this.convertEntity(record) as C;
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findOne ${error}`);
     }
@@ -144,7 +147,7 @@ export abstract class DataService<
 
     try {
       const findAll = await this.repository.find(options);
-      return findAll.map((r) => mapFromEntity(r, {} as C));
+      return findAll.map((r) => this.convertEntity(r) as C);
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findAll ${error}`);
       throw new HttpException(

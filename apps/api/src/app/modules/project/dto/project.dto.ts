@@ -4,6 +4,8 @@ import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { Point } from 'geojson';
+import { DistrictDto } from '../../district/dto/district.dto';
+import { ForestClientDto } from '../../forest-client/dto/forest-client.dto';
 
 export class ProjectDto extends BaseDto {
   @ApiProperty()
@@ -22,11 +24,11 @@ export class ProjectDto extends BaseDto {
   @ApiProperty()
   districtId: number;
   @ApiProperty()
-  district: District;
+  district: DistrictDto;
   @ApiProperty()
   forestClientNumber: string;
   @ApiProperty()
-  forestClient: ForestClient;
+  forestClient: ForestClientDto;
   @ApiProperty()
   workflowStateCode: string;
   @ApiProperty()

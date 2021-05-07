@@ -1,7 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@dto';
 
-export class ForestClientDto extends BaseDto {
+export class ForestClientDto {
+  @ApiProperty()
+  id: string;
+
   @ApiProperty()
   name: string;
 }
