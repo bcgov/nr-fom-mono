@@ -6,7 +6,7 @@ import { PublicCommentService } from './public-comment.service';
 import { PublicComment } from './entities/public-comment.entity';
 import { PublicCommentDto } from './dto/public-comment.dto';
 import { UpdatePublicCommentDto } from './dto/update-public-comment.dto';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 
 @ApiTags('public-comment')
 @Controller('public-comment')

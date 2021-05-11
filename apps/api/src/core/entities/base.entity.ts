@@ -33,9 +33,7 @@ export abstract class ApiBaseReadOnlyEntity<M> {
 };
 
 export abstract class ApiBaseEntity<M> extends ApiBaseReadOnlyEntity<M> {
-  // Needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.
-  // @PrimaryGeneratedColumn('entity_id')
-  // public id: number;
+  // Primary key needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.
 
   // Metadata columns
   @VersionColumn()

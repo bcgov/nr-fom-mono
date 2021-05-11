@@ -11,4 +11,4 @@ export class SubmissionTypeCode extends ApiCodeTableEntity<SubmissionTypeCode> {
 export enum SubmissionTypeCodeEnum {
   PROPOSED = 'PROPOSED',
   FINAL = 'FINAL'
-};
+}

@@ -1,14 +1,12 @@
-import { HttpException, HttpStatus, Injectable, Query } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsUtils, Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Project } from './entities/project.entity';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectDto } from './dto/project.dto';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
-import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 import * as dayjs from 'dayjs';
-import { mapFromEntity } from '@core';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 
@@ -59,7 +57,7 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
         .leftJoinAndSelect("p.workflow_state", "workflow_state")
         .leftJoinAndSelect("p.district", "district")
         .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC'); // Newest first
+        .addOrderBy('p.project_id', 'DESC') // Newest first
         ;
       findCriteria.applyFindCriteria(query);
 
@@ -93,7 +91,7 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
         .leftJoinAndSelect("p.forest_client", "forest_client")
         .leftJoinAndSelect("p.workflow_state", "workflow_state")
         .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC'); // Newest first
+        .addOrderBy('p.project_id', 'DESC') // Newest first
         ;
       findCriteria.applyFindCriteria(query);
 

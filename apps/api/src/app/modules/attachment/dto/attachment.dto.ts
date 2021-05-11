@@ -5,8 +5,7 @@ export class AttachmentDto extends BaseDto {
   @ApiProperty()
   fileName: string;
   @ApiProperty()
-  fileContents: string; // bytearray
-  // Relationships
+  fileContents: string; // This is actually a bytearray
   @ApiProperty()
   projectId: number;
   @ApiProperty()

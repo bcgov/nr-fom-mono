@@ -1,4 +1,4 @@
-import { ViewEntity, JoinColumn, Column, ManyToOne, ViewColumn } from 'typeorm';
+import { ViewEntity, JoinColumn, ManyToOne, ViewColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { SubmissionTypeCode } from '../../submission-type-code/entities/submission-type-code.entity';
 

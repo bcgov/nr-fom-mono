@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { CodeTableService } from 'apps/api/src/core/models/code-provider.model';
 

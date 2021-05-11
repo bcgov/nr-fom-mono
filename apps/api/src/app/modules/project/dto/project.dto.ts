@@ -1,7 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from '@dto';
-import { District } from '../../district/entities/district.entity';
-import { ForestClient } from '../../forest-client/entities/forest-client.entity';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { Point } from 'geojson';
 import { DistrictDto } from '../../district/dto/district.dto';

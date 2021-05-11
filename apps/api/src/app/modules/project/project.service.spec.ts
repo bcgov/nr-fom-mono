@@ -96,20 +96,4 @@ describe('ProjectService', () => {
     });
   });
 
-  describe('checkIfProjectExists', () => {
-    it('should have a project with the same name', async () => {
-      const expected = await service.create<Project>(projectPropsFactory());
-      // @ts-ignore
-      /* const result: { name: string } = await service.checkIfProjectExists(expected.name);
-      expect(result).toBeDefined();
-
-      expect(result.name).toBe(expected.name); */
-    });
-    it('should throw if the project does not exist', async () => {
-      /* const email = 'fake@example.com';
-      const spy = jest.fn(service.checkIfProjectExists);
-      const result = await service.checkIfProjectExists(email);
-      expect(spy).toThrowError(); */
-    });
-  });
 });

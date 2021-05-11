@@ -17,6 +17,8 @@ import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
 import { ProjectDto } from '../project/dto/project.dto';
 import { flatDeep } from '../../../core/utils';
 
+type SpatialObject = CutBlock | RoadSection | RetentionArea;
+
 @Injectable()
 export class SubmissionService extends DataService<
   Submission,
@@ -59,7 +61,7 @@ export class SubmissionService extends DataService<
     // Obtain Submission(or new one) so we have the id.
     let submission = await this.obtainExistingOrNewSubmission(dto.projectId, submissionTypeCode);
 
-    let spatialObjects: (CutBlock | RoadSection | RetentionArea)[];
+    let spatialObjects: SpatialObject[];
     spatialObjects = await this.prepareFomSpatialObjects(submission.id, dto.spatialObjectCode, dto.jsonSpatialSubmission);
 
     // And save the geospatial objects (will update/replace previous ones)
@@ -148,10 +150,10 @@ export class SubmissionService extends DataService<
    * @returns spatial objects into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode.
    */
   validateFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): 
-    (CutBlock | RoadSection | RetentionArea)[] {
+    SpatialObject[] {
 
     // spatial objects holder to be parsed into.
-    let spatialObjs: (CutBlock | RoadSection | RetentionArea)[];
+    let spatialObjs: SpatialObject[];
     const features = jsonSpatialSubmission.features;
     const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
     const OPTIONAL_PROP_NAME = "NAME";
@@ -230,7 +232,7 @@ export class SubmissionService extends DataService<
    * @returns Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission.
    */
   async prepareFomSpatialObjects(submissionId: number, spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson) 
-    :Promise<(CutBlock | RoadSection | RetentionArea)[]> {
+    :Promise<SpatialObject[]> {
     this.logger.info(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
         and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
 
@@ -245,7 +247,7 @@ export class SubmissionService extends DataService<
   // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
   // update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
   // update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
-  async updateGeospatialAreaOrLength(spatialObjectCode: SpatialObjectCodeEnum, submissionId: number, spatialObjects: (CutBlock | RoadSection | RetentionArea)[]) {
+  async updateGeospatialAreaOrLength(spatialObjectCode: SpatialObjectCodeEnum, submissionId: number, spatialObjects: SpatialObject[]) {
     this.logger.info(`Method updateGeospatialAreaOrLength called with spatialObjectCode:${spatialObjectCode}, 
       submissionId:${submissionId} and spatialObjects:${JSON.stringify(spatialObjects)}`)
     let entityName: string;

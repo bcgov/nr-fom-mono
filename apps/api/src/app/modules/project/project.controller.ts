@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Logger, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './entities/project.entity';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { DeleteResult } from 'typeorm';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
@@ -66,7 +66,7 @@ export class ProjectController extends BaseController<
         // findCriteria.commentingOpenedOnOrAfter = dayjs().format(DATE_FORMAT);
       }
 
-      return await this.service.findPublicSummaries(findCriteria);
+      return this.service.findPublicSummaries(findCriteria);
   }
 
   @Get()
@@ -97,7 +97,7 @@ export class ProjectController extends BaseController<
         findCriteria.likeForestClientName = forestClientName;
       }
 
-      return await this.service.find(findCriteria);
+      return this.service.find(findCriteria);
   }
 
   @Get('/spatialDetails/:id') 

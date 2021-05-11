@@ -9,8 +9,6 @@ import { CutBlockDto } from '../app/modules/cut-block/dto/cut-block.dto';
 import { RetentionAreaDto } from '../app/modules/retention-area/dto/retention-area.dto';
 import { RoadSectionDto } from '../app/modules/road-section/dto/road-section.dto';
 
-const randomNumber = () => Math.trunc(Math.random() * 5000) + 1;
-
 const verifyCreateMetadata = (data) => {
   expect(data.createTimestamp).not.toBeNull();
   expect(data.createUser).not.toBeNull();
@@ -363,15 +361,14 @@ describe('API endpoints testing (e2e)', () => {
     });
 
     it('should return a list of projects by fsp id', async () => {
-      const randomId = randomNumber();
-      // TODO: Reset DB data for these tests... random number test could randomly fail :)
+
       // Create a project
       const createProjectData = {
         name: 'Test',
         description: 'Test',
         commentingOpenDate: '2020-10-10',
         commentingClosedDate: '2020-10-10',
-        fspId: randomId,
+        fspId: 10,
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',

@@ -15,7 +15,7 @@ export enum SpatialObjectCodeEnum {
   CUT_BLOCK = 'CUT_BLOCK',
   ROAD_SECTION = 'ROAD_SECTION',
   WTRA = 'WTRA'
-};
+}
 
 export class SubmissionDto {
   @ApiProperty()

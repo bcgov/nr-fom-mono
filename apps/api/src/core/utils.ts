@@ -41,7 +41,7 @@ export const deepMapKeys = (
 };
 
 export const mapToEntity = (dto, entity) => {
-  Object.keys(dto).map((dtoKey, idx) => {
+  Object.keys(dto).forEach((dtoKey, idx) => {
     // Convert to snake_case here!
     // TypeORM model properties need to be snake_case when using with Postgres
     // - TypeORM prefers a camelCase naming convention by default
@@ -58,7 +58,7 @@ export const mapToEntity = (dto, entity) => {
 };
 
 export const mapFromEntity = (entity, dto) => {
-  Object.keys(entity).map((modelKey, idx) => {
+  Object.keys(entity).forEach((modelKey, idx) => {
     // Convert to camelCase here!
     // TypeORM model properties need to be snake_case when using with Postgres
     // - TypeORM prefers a camelCase naming convention by default
