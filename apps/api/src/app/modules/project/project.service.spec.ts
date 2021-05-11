@@ -24,7 +24,7 @@ describe('ProjectService', () => {
         TypeOrmModule.forRootAsync({
           imports: [AppConfigModule],
           useFactory: (configService: AppConfigService) => {
-            const config = {
+            return {
               autoLoadEntities: true,
               type: configService.db('type'),
               name: configService.db('username'),
@@ -38,8 +38,6 @@ describe('ProjectService', () => {
               useUnifiedTopology: true,
               useNewUrlParser: true,
             };
-
-            return config;
           },
           inject: [AppConfigService],
         }),

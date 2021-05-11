@@ -30,7 +30,7 @@ export abstract class ApiBaseReadOnlyEntity<M> {
 
     return model;
   }
-};
+}
 
 export abstract class ApiBaseEntity<M> extends ApiBaseReadOnlyEntity<M> {
   // Primary key needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.

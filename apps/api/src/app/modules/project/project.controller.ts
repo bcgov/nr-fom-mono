@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus } from '@nestjs/common';
-import { ApiTags, ApiBody, ApiResponse, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus, Headers } from '@nestjs/common';
+import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './entities/project.entity';
@@ -50,6 +50,7 @@ export class ProjectController extends BaseController<
       if (includePostCommentOpen == 'true') {
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.COMMENT_CLOSED);
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.FINALIZED);
+        // Deliberately exclude EXPIRED
       }
       if (includeCommentOpen != 'true' && includePostCommentOpen != 'true') {
         throw new HttpException("Either includeCommentOpen or includePostCommentOpen must be true", HttpStatus.BAD_REQUEST);
@@ -58,29 +59,31 @@ export class ProjectController extends BaseController<
       const DATE_FORMAT='YYYY-MM-DD';
       if (openedOnOrAfter) {
         findCriteria.commentingOpenedOnOrAfter = dayjs(openedOnOrAfter).format(DATE_FORMAT);
-        // TODO: Need to ensure this date is not in the future, not necessary if use a publish state
-      } else {
-        // TODO: This logic is wrong . Exclude records with workflow state = comment open and comment open date > today
-        // Had to open for commenting no later than today or wouldn't be visible. 
-        // TODO: Not necessary if use a Publish state
-        // findCriteria.commentingOpenedOnOrAfter = dayjs().format(DATE_FORMAT);
-      }
+      } 
 
       return this.service.findPublicSummaries(findCriteria);
   }
 
   @Get()
+  @ApiBearerAuth()
   @ApiQuery({ name: 'fspId', required: false})
   @ApiQuery({ name: 'districtId', required: false})
   @ApiQuery({ name: 'workflowStateCode', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiResponse({ status: 200, type: [ProjectDto] })
   async find(
+    @Headers() headers: string,
     @Query('fspId') fspId?: number,
     @Query('districtId') districtId?: number,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectDto[]> {
+
+      console.log("Auth " + headers['authorization']); // TODO: REMOVE
+      // If role = FOM_MINISTRY then continue
+      // else if role = FOM_CLIENT filter by clientId that user is authorized for.
+      // else return 403.
+      // Auth service to parse token return level of access. Provide stub for locally.
 
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 

@@ -127,8 +127,7 @@ export abstract class DataService<
   async remove(id: number | string) {
     try {
       this.logger.info('remove props', id);
-      const removed = await this.repository.delete(id);
-      return removed;
+      return this.repository.delete(id);
     } catch (error) {
       this.logger.error(`${this.constructor.name}.remove ${error}`);
     }

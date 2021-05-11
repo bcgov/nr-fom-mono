@@ -43,9 +43,11 @@ async function bootstrap() {
     .setTitle('FOM API')
     .setDescription('API for FOM backend')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
   const port = appConfig.get('port') || 3333;
   const document = SwaggerModule.createDocument(app, config);
+  // TODO: Disable this in test/prod.
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({
