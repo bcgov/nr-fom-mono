@@ -9,6 +9,7 @@ create schema if not exists app_fom;
 
 create extension if not exists plpgsql; 
 create extension if not exists postgis;
+create extension if not exists pgcrypto;
 
 -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.
 drop table if exists app_fom.interaction;

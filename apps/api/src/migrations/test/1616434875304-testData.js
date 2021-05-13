@@ -1,7 +1,9 @@
+require('dotenv').config();
 const { MigrationInterface, QueryRunner } = require('typeorm');
 
 module.exports = class testdata1616434875304 {
   async up(queryRunner) {
+    var key = process.env.DATA_ENCRYPTION_KEY || 'defaultkey';
     await queryRunner.query(`
 
         -- Test Data Overview
@@ -125,6 +127,12 @@ module.exports = class testdata1616434875304 {
         , (45, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         ;
+
+        -- INSERT INTO app_fom.public_comment(
+        --    public_comment_id, project_id, comment_scope_code, scope_cut_block_id, name, location, email, phone_number, response_code, response_details, create_user, feedback) VALUES
+        -- (50, 3, 'OVERALL', null, pgp_sym_encrypt('Some Person', '${key}'), 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        --    'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
+        -- ;
 
         `);
   }
