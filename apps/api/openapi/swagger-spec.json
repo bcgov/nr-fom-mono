@@ -9,6 +9,13 @@
     "tags": [],
     "servers": [],
     "components": {
+        "securitySchemes": {
+            "bearer": {
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+                "type": "http"
+            }
+        },
         "schemas": {
             "AttachmentDto": {
                 "type": "object",
@@ -757,6 +764,20 @@
         }
     },
     "paths": {
+        "/api/keycloakConfig": {
+            "get": {
+                "operationId": "AuthController_getKeycloakConfig",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    }
+                },
+                "tags": [
+                    "auth"
+                ]
+            }
+        },
         "/api/attachment": {
             "post": {
                 "operationId": "AttachmentController_create",
@@ -1174,6 +1195,11 @@
                 },
                 "tags": [
                     "project"
+                ],
+                "security": [
+                    {
+                        "bearer": []
+                    }
                 ]
             },
             "post": {

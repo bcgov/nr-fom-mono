@@ -22,11 +22,13 @@ import { WorkflowStateCodeModule } from './modules/workflow-state-code/workflow-
 import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './modules/app-config/app-config.module';
 import { AppConfigService } from './modules/app-config/app-config.provider';
+import { SecurityModule } from '../core/security/security.module'
 
 @Module({
   imports: [
     // Config
     AppConfigModule,
+    SecurityModule,
     LoggerModule.forRoot(),
     TypeOrmModule.forRootAsync({
       imports: [AppConfigModule],

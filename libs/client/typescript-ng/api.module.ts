@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { AttachmentService } from './api/attachment.service';
 import { AttachmentTypeCodeService } from './api/attachmentTypeCode.service';
+import { AuthService } from './api/auth.service';
 import { CommentScopeCodeService } from './api/commentScopeCode.service';
 import { DistrictService } from './api/district.service';
 import { ForestClientService } from './api/forestClient.service';

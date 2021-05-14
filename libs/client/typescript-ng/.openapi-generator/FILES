@@ -1,10 +1,10 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
 api/attachment.service.ts
 api/attachmentTypeCode.service.ts
+api/auth.service.ts
 api/commentScopeCode.service.ts
 api/district.service.ts
 api/forestClient.service.ts
