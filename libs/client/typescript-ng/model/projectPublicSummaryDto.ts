@@ -15,6 +15,7 @@ export interface ProjectPublicSummaryDto {
     id: number;
     name: string;
     geojson: object;
+    fspId: number;
     forestClientName: string;
     workflowStateName: string;
     commentingOpenDate: string;

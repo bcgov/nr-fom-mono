@@ -10,6 +10,8 @@ export class ProjectPublicSummaryDto {
   @ApiProperty({example: ` { "type": "Point", "coordinates": [-119.396071939, 49.813816629]}`})
   geojson: FomPoint;
   @ApiProperty()
+  fspId: number;
+  @ApiProperty()
   forestClientName: string;
   @ApiProperty()
   workflowStateName: string;
