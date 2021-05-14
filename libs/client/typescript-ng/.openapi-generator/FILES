@@ -25,6 +25,7 @@ model/commentScopeCode.ts
 model/districtDto.ts
 model/forestClientDto.ts
 model/interactionDto.ts
+model/keycloakConfig.ts
 model/models.ts
 model/projectDto.ts
 model/projectPublicSummaryDto.ts

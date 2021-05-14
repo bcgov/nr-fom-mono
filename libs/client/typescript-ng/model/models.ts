@@ -4,6 +4,7 @@ export * from './commentScopeCode';
 export * from './districtDto';
 export * from './forestClientDto';
 export * from './interactionDto';
+export * from './keycloakConfig';
 export * from './projectDto';
 export * from './projectPublicSummaryDto';
 export * from './projectSpatialDetail';
