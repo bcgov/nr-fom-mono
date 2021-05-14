@@ -104,6 +104,7 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
         summary.workflowStateName = project.workflow_state.description;
         summary.forestClientName = project.forest_client.name;
         summary.geojson = project.geojson;
+        summary.fspId = project.fsp_id;
         summary.commentingOpenDate = dayjs(project.commenting_open_date).format('YYYY-MM-DD');
         return summary;
       });
