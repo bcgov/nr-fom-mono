@@ -11,6 +11,8 @@ import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 import * as dayjs from 'dayjs';
+import { AuthService } from 'apps/api/src/core/security/auth.service';
+import { User } from 'apps/api/src/core/security/user';
 
 @ApiTags('project')
 @Controller('project')
@@ -21,7 +23,8 @@ export class ProjectController extends BaseController<
 > {
   constructor(
     protected readonly service: ProjectService,
-    private projectSpatialDetailService: ProjectSpatialDetailService) {
+    private projectSpatialDetailService: ProjectSpatialDetailService,
+    private authService: AuthService) {
     super(service);
   }
 
@@ -79,7 +82,8 @@ export class ProjectController extends BaseController<
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectDto[]> {
 
-      console.log("Auth " + headers['authorization']); // TODO: REMOVE
+      var user = this.authService.verifyToken(headers['authorization']);
+      console.log("User = " + JSON.stringify(user)); // TODO REMOVE
       // If role = FOM_MINISTRY then continue
       // else if role = FOM_CLIENT filter by clientId that user is authorized for.
       // else return 403.

@@ -9,6 +9,7 @@ export class AuthController {
   }
 
   @Get('/keycloakConfig')
+  @ApiResponse({ status: 200, type: KeycloakConfig })
   async getKeycloakConfig(): Promise<KeycloakConfig> {
       return this.authService.getKeycloakConfig();
   }

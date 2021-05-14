@@ -6,9 +6,13 @@ import { AttachmentService } from './attachment.service';
 import {
   AttachmentController
 } from './attachment.controller';
+import { SecurityModule } from 'apps/api/src/core/security/security.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Attachment])],
+  imports: [
+    TypeOrmModule.forFeature([Attachment]),
+    SecurityModule,  
+  ],
   controllers: [AttachmentController],
   providers: [AttachmentService],
   exports: [],
