@@ -41,7 +41,7 @@ export class AuthService {
 
     
 
-    verifyToken(authorizationHeader: string):User {
+    async verifyToken(authorizationHeader: string):Promise<User> {
         const issuer = this.config.url + "/realms/" + this.config.realm;
         const certsUri = issuer + "/protocol/openid-connect/certs";
         const bearer = 'Bearer ';
@@ -52,15 +52,10 @@ export class AuthService {
         const token = authorizationHeader.substr(tokenStartIndex);
 
         if (!this.config.enabled) {
-            return JSON.parse(token) as User;
+          // TODO: Handle disabled case.
+            return Promise.resolve(JSON.parse(token) as User);
         }
         
-        const client = new JwksClient({
-            jwksUri: certsUri,
-            cache: true, // Accept cache defaults
-            rateLimit: true,
-          });
-
         const decodedToken = decode(token, { complete: true });
         /*
         Decoded token = {\"header\":
@@ -84,17 +79,18 @@ export class AuthService {
 
         const kid = decodedToken.header.kid;
 
-        var signingKey:string;
-        client.getSigningKey(kid)
-          .then(key => {
-            signingKey = key.getPublicKey();
-            this.logger.info("signing key inside = " + signingKey);
-          })
-          .catch(err => {
-            throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
-          });
-        this.logger.info("Signing key " + signingKey);
+        // TODO: Do I need to store this somewhere for the cache to work?
+        const client = new JwksClient({
+          jwksUri: certsUri,
+          cache: true, // Accept cache defaults
+          rateLimit: true,
+        });
 
+        var key = await client.getSigningKey(kid);
+        var signingKey = key.getPublicKey();
+
+        this.logger.info("Signing key outside " + signingKey);
+        // throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
 /*
         var signingKey:string;
         client.getSigningKey(kid, (err, key) => {

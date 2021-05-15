@@ -82,7 +82,12 @@ export class ProjectController extends BaseController<
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectDto[]> {
 
-      var user = this.authService.verifyToken(headers['authorization']);
+        var user = await this.authService.verifyToken(headers['authorization']);
+          // .catch(err => {
+          //   console.log("Caught error " + JSON.stringify(err));
+          //   throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
+          // });
+          
       console.log("User = " + JSON.stringify(user)); // TODO REMOVE
       // If role = FOM_MINISTRY then continue
       // else if role = FOM_CLIENT filter by clientId that user is authorized for.
