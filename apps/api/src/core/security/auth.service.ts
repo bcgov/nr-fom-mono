@@ -26,7 +26,7 @@ export class AuthService {
     config:KeycloakConfig = new KeycloakConfig();
 
     constructor(private logger: PinoLogger) {
-        // Defaults are for local development.
+        // Defaults are for local development. Keycloak enabled by default for maximum security.
         this.config.enabled = (process.env.KEYCLOAK_ENABLED || 'true') === 'true';
         this.config.realm = process.env.KEYCLOAK_REALM || 'ichqx89w';
         this.config.url = process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth';

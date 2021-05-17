@@ -75,7 +75,7 @@ export class ProjectController extends BaseController<
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiResponse({ status: 200, type: [ProjectDto] })
   async find(
-    @Headers() headers: string,
+    @Headers() headers: string, // TODO: Wrong type.
     @Query('fspId') fspId?: number,
     @Query('districtId') districtId?: number,
     @Query('workflowStateCode') workflowStateCode?: string,
