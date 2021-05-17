@@ -1,25 +1,27 @@
 class MockLogger {
   trace(...args: any) {
-    // console.log(args);
+    // Do nothing
   }
   debug(...args: any) {
-    // console.log(args);
+    // Do nothing
   }
   info(...args: any) {
-    // console.log(args);
+    // Do nothing
   }
   warn(...args: any) {
-    // console.log(args);
+    // Do nothing
   }
   error(...args: any) {
-    // console.log(args);
+    // Do nothing
   }
-  fatal(...args: any) {}
+  fatal(...args: any) {
+    // Do nothing
+  }
   setContext(...args: any) {
-    // console.log(args);
+    // Do nothing
   }
   private(...args: any) {
-    // console.log(args);
+    // Do nothing
   }
 }
 

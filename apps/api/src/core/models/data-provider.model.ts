@@ -40,18 +40,25 @@ export abstract class DataService<
   async create<C>(dto: Partial<any>): Promise<C> {
     this.logger.info(`${this.constructor.name}.create props`, dto);
 
-    dto.createUser = 'FAKED USER';
+    // TODO: Pass in user.
+    // TODO: Assign these to entity after it is created (to avoid overwrites?)
+    dto.createUser = 'TODO: user';
     dto.revisionCount = 0;
     dto.updateUser = null;
     dto.updateTimestamp = null;
 
     const model = this.entity.factory(mapToEntity(dto as C, {} as E));
+
     const created = await this.repository.save(model);
 
     this.logger.info(`${this.constructor.name}.create result`, created);
 
     const createdDto = {} as C;
     return mapFromEntity(created, createdDto);
+  }
+
+  convertEntity(entity: E): any {
+    return mapFromEntity(entity, {});
   }
 
   /**
@@ -72,8 +79,7 @@ export abstract class DataService<
       const record = await this.repository.findOne(id, options);
       this.logger.info('${this.constructor.name}findOne result', record);
 
-      const dto = {} as C;
-      return mapFromEntity(record, dto);
+      return this.convertEntity(record) as C;
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findOne ${error}`);
     }
@@ -121,8 +127,7 @@ export abstract class DataService<
   async remove(id: number | string) {
     try {
       this.logger.info('remove props', id);
-      const removed = await this.repository.softDelete(id);
-      return removed;
+      return this.repository.delete(id);
     } catch (error) {
       this.logger.error(`${this.constructor.name}.remove ${error}`);
     }
@@ -141,8 +146,7 @@ export abstract class DataService<
 
     try {
       const findAll = await this.repository.find(options);
-      this.logger.info('findAll result', findAll);
-      return findAll.map((r) => mapFromEntity(r, {} as C));
+      return findAll.map((r) => this.convertEntity(r) as C);
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findAll ${error}`);
       throw new HttpException(
@@ -152,23 +156,4 @@ export abstract class DataService<
     }
   }
 
-  /**
-   * Find record by any partial query of the entity.
-   *
-   * @param {Partial<E>} query
-   * @return {*}
-   * @memberof DataService
-   */
-  async findByQuery(query: Partial<E>): Promise<E> {
-    this.logger.info(`${this.constructor.name}.findByQuery`);
-
-    try {
-      /* const findByQuery = await this.repository.findOne(query);
-
-      return findByQuery; */
-      return {} as E;
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findAll ${error}`);
-    }
-  }
 }

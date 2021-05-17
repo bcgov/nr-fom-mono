@@ -4,7 +4,8 @@ labels:
   template: fom-api-deploy
   app: fom
   app-component: ${NAME}
-  tag: ${TAG}
+  # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
+  suffix: fom${SUFFIX}
   app.kubernetes.io/part-of: fom
 metadata:
   name: fom-api-deploy
@@ -21,10 +22,10 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-api
-  - description: Tag (e.g. release/build) being deployed. Changing tag not tested, might break.
-    displayName: Tag
-    name: TAG
-    value: main
+  - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
+    displayName: Suffix
+    name: SUFFIX
+    value: -main-dev
   - description: Port number
     displayName: Port number
     name: PORT
@@ -58,7 +59,7 @@ parameters:
     name: REPLICA_COUNT
     required: false
     value: '2'
-  - description: DNS Hostname for the public route. For dev should default to nr-fom-${NAME}-${TAG}-${ENV}. (But can't use other parameters in default value.)
+  - description: DNS Hostname for the public route. For dev should default to nr-fom-${NAME}${SUFFIX} where SUFFIX includes the environment (dev). Note - can't use other parameters in default value.
     displayName: DNS Hostname
     name: HOSTNAME
     required: true
@@ -79,13 +80,13 @@ objects:
     data: 
       hostname: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
     metadata:
-      name: ${NAME}-${TAG}-${ENV}
+      name: ${NAME}${SUFFIX}
 
   ### DeploymentConfig
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
     metadata:
-      name: ${NAME}-${TAG}-${ENV}
+      name: ${NAME}${SUFFIX}
     spec:
       replicas: ${{REPLICA_COUNT}}
       revisionHistoryLimit: 10
@@ -100,7 +101,7 @@ objects:
           maxUnavailable: 25%
           maxSurge: 25%
       selector:
-        deploymentconfig: ${NAME}-${TAG}-${ENV}
+        deploymentconfig: ${NAME}${SUFFIX}
       triggers:
         - type: ImageChange
           imageChangeParams:
@@ -116,33 +117,33 @@ objects:
         metadata:
           creationTimestamp: null
           labels:
-            deploymentconfig: ${NAME}-${TAG}-${ENV}
+            deploymentconfig: ${NAME}${SUFFIX}
         spec:
           containers:
             - name: app
               # Supply a space to image:, will use settings in ImageChange trigger.
-              image:  
+              image: " "  
               env:
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: fom-db-${TAG}-${ENV}
+                      name: fom-db${SUFFIX}
                 - name: DB_USERNAME 
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: fom-db-${TAG}-${ENV}
+                      name: fom-db${SUFFIX}
                 - name: DB_NAME
                   valueFrom:
                       secretKeyRef:
                         key: database-name
-                        name: fom-db-${TAG}-${ENV}
+                        name: fom-db${SUFFIX}
                 - name: DB_HOST
                   valueFrom:
                       secretKeyRef:
                         key: database-host
-                        name: fom-db-${TAG}-${ENV}
+                        name: fom-db${SUFFIX}
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 # This is the application port
@@ -195,7 +196,7 @@ objects:
   - kind: Service
     apiVersion: v1
     metadata:
-      name: ${NAME}-${TAG}
+      name: ${NAME}${SUFFIX}
     spec:
       ports:
         - name: ${SERVICE_PORT_NAME}
@@ -203,14 +204,14 @@ objects:
           port: ${{PORT}}
           targetPort: ${{PORT}}
       selector:
-        deploymentconfig: ${NAME}-${TAG}-${ENV}
+        deploymentconfig: ${NAME}${SUFFIX}
       type: ClusterIP
       sessionAffinity: None
   ### Route
   - kind: Route
     apiVersion: v1
     metadata:
-      name: ${NAME}-${TAG}
+      name: ${NAME}${SUFFIX}
       annotations: 
         haproxy.router.openshift.io/rate-limit-connections: "true"
         # Number of HTTP requests that a client IP can make in a 3-second period
@@ -220,7 +221,7 @@ objects:
       host: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
       to:
         kind: Service
-        name: ${NAME}-${TAG}
+        name: ${NAME}${SUFFIX}
         weight: 100
       port:
         targetPort: ${SERVICE_PORT_NAME}
@@ -232,27 +233,27 @@ objects:
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
-      name: web-allow-external-${NAME}-${TAG}
+      name: web-allow-external-${NAME}${SUFFIX}
     spec:
       podSelector:
         matchLabels:
-          deploymentconfig: ${NAME}-${TAG}-${ENV}
+          deploymentconfig: ${NAME}${SUFFIX}
       ingress:
         - {}
   ### Network Policy - App to DB Traffic
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
-      name: app-to-db-allow-${NAME}-${TAG}
+      name: app-to-db-allow-${NAME}${SUFFIX}
     spec:
       podSelector:
         matchLabels:
-          deploymentconfig: fom-db-${TAG}-${ENV}
+          deploymentconfig: fom-db${SUFFIX}
       ingress:
         - from:
             - podSelector:
                 matchLabels:
-                  deploymentconfig: ${NAME}-${TAG}-${ENV}
+                  deploymentconfig: ${NAME}${SUFFIX}
           ports:
             - protocol: TCP
               port: 5432

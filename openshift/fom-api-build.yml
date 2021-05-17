@@ -61,6 +61,7 @@ objects:
         to:
           kind: ImageStreamTag
           name: ${NAME}:${TAG}
+          namespace: ${PROJECT}-tools
       resources:
         limits:
           cpu: '2'

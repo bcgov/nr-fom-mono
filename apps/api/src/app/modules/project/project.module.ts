@@ -1,0 +1,27 @@
+import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Project } from './entities/project.entity';
+import { ProjectService } from './project.service';
+import { ProjectController } from './project.controller';
+
+import { DistrictModule } from '../district/district.module';
+import { ForestClientModule } from '../forest-client/forest-client.module';
+import { WorkflowStateCodeModule } from '../workflow-state-code/workflow-state-code.module';
+import { ProjectSpatialDetailService } from './project-spatial-detail.service';
+import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
+import { SecurityModule } from 'apps/api/src/core/security/security.module';
+
+@Module({
+  imports: [
+    TypeOrmModule.forFeature([Project, ProjectSpatialDetail]),
+    DistrictModule,
+    ForestClientModule,
+    WorkflowStateCodeModule,
+    SecurityModule,
+  ],
+  controllers: [ProjectController],
+  providers: [ProjectService, ProjectSpatialDetailService],
+  exports: [ProjectService],
+})
+export class ProjectModule {}

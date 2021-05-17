@@ -6,15 +6,40 @@
     "version": "1.0",
     "contact": {}
   },
-  "tags": [
-    {
-      "name": "api",
-      "description": ""
-    }
-  ],
+  "tags": [],
   "servers": [],
   "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
     "schemas": {
+      "KeycloakConfig": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "url": {
+            "type": "string"
+          },
+          "realm": {
+            "type": "string"
+          },
+          "clientId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "enabled",
+          "url",
+          "realm",
+          "clientId"
+        ]
+      },
       "AttachmentDto": {
         "type": "object",
         "properties": {
@@ -103,220 +128,6 @@
           "fileContents",
           "projectId",
           "attachmentTypeCode"
-        ]
-      },
-      "CutBlockDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
-          "plannedDevelopmentDate": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "plannedAreaHa": {
-            "type": "number"
-          },
-          "submissionId": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "plannedDevelopmentDate",
-          "name",
-          "plannedAreaHa",
-          "submissionId"
-        ]
-      },
-      "UpdateCutBlockDto": {
-        "type": "object",
-        "properties": {
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
-          "plannedDevelopmentDate": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "plannedAreaHa": {
-            "type": "number"
-          },
-          "submissionId": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "plannedDevelopmentDate",
-          "name",
-          "plannedAreaHa",
-          "submissionId"
-        ]
-      },
-      "ForestStewardshipPlanDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser"
-        ]
-      },
-      "UpdateForestStewardshipPlanDto": {
-        "type": "object",
-        "properties": {
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser"
-        ]
-      },
-      "FspDistrictXrefDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser"
-        ]
-      },
-      "UpdateFspDistrictXrefDto": {
-        "type": "object",
-        "properties": {
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser"
         ]
       },
       "InteractionDto": {
@@ -423,32 +234,12 @@
           "id": {
             "type": "number"
           },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
           "name": {
             "type": "string"
           }
         },
         "required": [
           "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
           "name"
         ]
       },
@@ -456,21 +247,6 @@
         "type": "object",
         "properties": {
           "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
             "type": "string"
           },
           "name": {
@@ -479,25 +255,59 @@
         },
         "required": [
           "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
           "name"
         ]
       },
-      "District": {
+      "ProjectPublicSummaryDto": {
         "type": "object",
-        "properties": {}
-      },
-      "ForestClient": {
-        "type": "object",
-        "properties": {}
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "geojson": {
+            "type": "object",
+            "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
+          },
+          "fspId": {
+            "type": "number"
+          },
+          "forestClientName": {
+            "type": "string"
+          },
+          "workflowStateName": {
+            "type": "string"
+          },
+          "commentingOpenDate": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "geojson",
+          "fspId",
+          "forestClientName",
+          "workflowStateName",
+          "commentingOpenDate"
+        ]
       },
       "WorkflowStateCode": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ]
       },
       "ProjectDto": {
         "type": "object",
@@ -532,6 +342,10 @@
           "commentingClosedDate": {
             "type": "string"
           },
+          "geojson": {
+            "type": "object",
+            "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
+          },
           "fspId": {
             "type": "number"
           },
@@ -539,13 +353,13 @@
             "type": "number"
           },
           "district": {
-            "$ref": "#/components/schemas/District"
+            "$ref": "#/components/schemas/DistrictDto"
           },
           "forestClientNumber": {
             "type": "string"
           },
           "forestClient": {
-            "$ref": "#/components/schemas/ForestClient"
+            "$ref": "#/components/schemas/ForestClientDto"
           },
           "workflowStateCode": {
             "type": "string"
@@ -565,6 +379,7 @@
           "description",
           "commentingOpenDate",
           "commentingClosedDate",
+          "geojson",
           "fspId",
           "districtId",
           "district",
@@ -572,6 +387,68 @@
           "forestClient",
           "workflowStateCode",
           "workflowState"
+        ]
+      },
+      "SubmissionTypeCode": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ]
+      },
+      "ProjectSpatialDetail": {
+        "type": "object",
+        "properties": {
+          "objectId": {
+            "type": "number"
+          },
+          "sourceTable": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "geometry": {
+            "type": "object"
+          },
+          "plannedDevelopmentDate": {
+            "type": "string"
+          },
+          "plannedAreaHa": {
+            "type": "number"
+          },
+          "plannedLengthKm": {
+            "type": "number"
+          },
+          "submissionTypeCode": {
+            "type": "string"
+          },
+          "submissionType": {
+            "$ref": "#/components/schemas/SubmissionTypeCode"
+          },
+          "projectId": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "objectId",
+          "sourceTable",
+          "name",
+          "geometry",
+          "plannedDevelopmentDate",
+          "plannedAreaHa",
+          "plannedLengthKm",
+          "submissionTypeCode",
+          "submissionType",
+          "projectId"
         ]
       },
       "UpdateProjectDto": {
@@ -604,6 +481,10 @@
           "commentingClosedDate": {
             "type": "string"
           },
+          "geojson": {
+            "type": "object",
+            "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
+          },
           "fspId": {
             "type": "number"
           },
@@ -611,13 +492,13 @@
             "type": "number"
           },
           "district": {
-            "$ref": "#/components/schemas/District"
+            "$ref": "#/components/schemas/DistrictDto"
           },
           "forestClientNumber": {
             "type": "string"
           },
           "forestClient": {
-            "$ref": "#/components/schemas/ForestClient"
+            "$ref": "#/components/schemas/ForestClientDto"
           },
           "workflowStateCode": {
             "type": "string"
@@ -636,6 +517,7 @@
           "description",
           "commentingOpenDate",
           "commentingClosedDate",
+          "geojson",
           "fspId",
           "districtId",
           "district",
@@ -645,11 +527,15 @@
           "workflowState"
         ]
       },
-      "UpdateResult": {
+      "DeleteResult": {
         "type": "object",
         "properties": {}
       },
-      "WorkflowStateCodeDto": {
+      "Project": {
+        "type": "object",
+        "properties": {}
+      },
+      "ResponseCode": {
         "type": "object",
         "properties": {
           "code": {
@@ -659,19 +545,25 @@
             "type": "string"
           }
         },
-        "required": ["code", "description"]
-      },
-      "Project": {
-        "type": "object",
-        "properties": {}
-      },
-      "ResponseCode": {
-        "type": "object",
-        "properties": {}
+        "required": [
+          "code",
+          "description"
+        ]
       },
       "CommentScopeCode": {
         "type": "object",
-        "properties": {}
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ]
       },
       "PublicCommentDto": {
         "type": "object",
@@ -843,301 +735,45 @@
           "scopeRoadSectionId"
         ]
       },
-      "ResponseCodeDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": ["code", "description"]
-      },
-      "RetentionAreaDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
-          "plannedAreaHa": {
-            "type": "number"
-          },
-          "submissionId": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "plannedAreaHa",
-          "submissionId"
+      "SubmissionTypeCodeEnum": {
+        "type": "string",
+        "enum": [
+          "PROPOSED",
+          "FINAL"
         ]
       },
-      "UpdateRetentionAreaDto": {
-        "type": "object",
-        "properties": {
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
-          "plannedAreaHa": {
-            "type": "number"
-          },
-          "submissionId": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "plannedAreaHa",
-          "submissionId"
+      "SpatialObjectCodeEnum": {
+        "type": "string",
+        "enum": [
+          "CUT_BLOCK",
+          "ROAD_SECTION",
+          "WTRA"
         ]
-      },
-      "RoadSectionDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
-          "plannedDevelopmentDate": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "plannedLengthKm": {
-            "type": "number"
-          },
-          "submissionId": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "plannedDevelopmentDate",
-          "name",
-          "plannedLengthKm",
-          "submissionId"
-        ]
-      },
-      "UpdateRoadSectionDto": {
-        "type": "object",
-        "properties": {
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
-          "plannedDevelopmentDate": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          },
-          "plannedLengthKm": {
-            "type": "number"
-          },
-          "submissionId": {
-            "type": "number"
-          }
-        },
-        "required": [
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "plannedDevelopmentDate",
-          "name",
-          "plannedLengthKm",
-          "submissionId"
-        ]
-      },
-      "SubmissionTypeCode": {
-        "type": "object",
-        "properties": {}
       },
       "SubmissionDto": {
         "type": "object",
         "properties": {
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
-            "type": "object"
-          },
           "projectId": {
             "type": "number"
           },
-          "project": {
-            "$ref": "#/components/schemas/Project"
-          },
           "submissionTypeCode": {
-            "type": "string"
+            "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
           },
-          "submissionType": {
-            "$ref": "#/components/schemas/SubmissionTypeCode"
-          }
-        },
-        "required": [
-          "id",
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
-          "projectId",
-          "project",
-          "submissionTypeCode",
-          "submissionType"
-        ]
-      },
-      "UpdateSubmissionDto": {
-        "type": "object",
-        "properties": {
-          "revisionCount": {
-            "type": "number"
+          "spatialObjectCode": {
+            "$ref": "#/components/schemas/SpatialObjectCodeEnum"
           },
-          "createTimestamp": {
-            "type": "string"
-          },
-          "createUser": {
-            "type": "string"
-          },
-          "updateTimestamp": {
-            "type": "string"
-          },
-          "updateUser": {
-            "type": "string"
-          },
-          "geometry": {
+          "jsonSpatialSubmission": {
             "type": "object"
-          },
-          "projectId": {
-            "type": "number"
-          },
-          "project": {
-            "$ref": "#/components/schemas/Project"
-          },
-          "submissionTypeCode": {
-            "type": "string"
-          },
-          "submissionType": {
-            "$ref": "#/components/schemas/SubmissionTypeCode"
           }
         },
         "required": [
-          "revisionCount",
-          "createTimestamp",
-          "createUser",
-          "updateTimestamp",
-          "updateUser",
-          "geometry",
           "projectId",
-          "project",
           "submissionTypeCode",
-          "submissionType"
+          "spatialObjectCode",
+          "jsonSpatialSubmission"
         ]
       },
-      "SubmissionTypeCodeDto": {
+      "AttachmentTypeCode": {
         "type": "object",
         "properties": {
           "code": {
@@ -1147,65 +783,33 @@
             "type": "string"
           }
         },
-        "required": ["code", "description"]
-      },
-      "AttachmentTypeCodeDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": ["code", "description"]
-      },
-      "CommentScopeCodeDto": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": ["code", "description"]
-      },
-      "CreateUserDto": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "username": {
-            "type": "string"
-          }
-        },
-        "required": ["id", "username"]
-      },
-      "UpdateUserDto": {
-        "type": "object",
-        "properties": {
-          "username": {
-            "type": "string"
-          }
-        },
-        "required": ["username"]
+        "required": [
+          "code",
+          "description"
+        ]
       }
     }
   },
   "paths": {
-    "/api/default": {
+    "/api/keycloakConfig": {
       "get": {
-        "operationId": "AppController_getData",
+        "operationId": "AuthController_getKeycloakConfig",
         "parameters": [],
         "responses": {
           "200": {
-            "description": ""
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeycloakConfig"
+                }
+              }
+            }
           }
-        }
+        },
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/attachment": {
@@ -1227,7 +831,9 @@
             "description": ""
           }
         },
-        "tags": ["attachment"]
+        "tags": [
+          "attachment"
+        ]
       }
     },
     "/api/attachment/{id}": {
@@ -1248,7 +854,9 @@
             "description": ""
           }
         },
-        "tags": ["attachment"]
+        "tags": [
+          "attachment"
+        ]
       },
       "put": {
         "operationId": "AttachmentController_update",
@@ -1277,7 +885,9 @@
             "description": ""
           }
         },
-        "tags": ["attachment"]
+        "tags": [
+          "attachment"
+        ]
       },
       "delete": {
         "operationId": "AttachmentController_remove",
@@ -1296,328 +906,9 @@
             "description": ""
           }
         },
-        "tags": ["attachment"]
-      }
-    },
-    "/api/attachments": {
-      "post": {
-        "operationId": "AttachmentsController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["attachments"]
-      }
-    },
-    "/api/cut-block": {
-      "post": {
-        "operationId": "CutBlockController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CutBlockDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["cut-block"]
-      }
-    },
-    "/api/cut-block/{id}": {
-      "get": {
-        "operationId": "CutBlockController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["cut-block"]
-      },
-      "put": {
-        "operationId": "CutBlockController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateCutBlockDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["cut-block"]
-      },
-      "delete": {
-        "operationId": "CutBlockController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["cut-block"]
-      }
-    },
-    "/api/cut-blocks": {
-      "post": {
-        "operationId": "CutBlocksController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["cut-blocks"]
-      }
-    },
-    "/api/forest-stewardship-plan": {
-      "post": {
-        "operationId": "ForestStewardshipPlanController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ForestStewardshipPlanDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["forest-stewardship-plan"]
-      }
-    },
-    "/api/forest-stewardship-plan/{id}": {
-      "get": {
-        "operationId": "ForestStewardshipPlanController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["forest-stewardship-plan"]
-      },
-      "put": {
-        "operationId": "ForestStewardshipPlanController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateForestStewardshipPlanDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["forest-stewardship-plan"]
-      },
-      "delete": {
-        "operationId": "ForestStewardshipPlanController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["forest-stewardship-plan"]
-      }
-    },
-    "/api/forest-stewardship-plans": {
-      "post": {
-        "operationId": "ForestStewardshipPlansController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["forest-stewardship-plans"]
-      }
-    },
-    "/api/fsp-district-xref": {
-      "post": {
-        "operationId": "FspDistrictXrefController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FspDistrictXrefDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["fsp-district-xref"]
-      }
-    },
-    "/api/fsp-district-xref/{id}": {
-      "get": {
-        "operationId": "FspDistrictXrefController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["fsp-district-xref"]
-      },
-      "put": {
-        "operationId": "FspDistrictXrefController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateFspDistrictXrefDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["fsp-district-xref"]
-      },
-      "delete": {
-        "operationId": "FspDistrictXrefController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["fsp-district-xref"]
-      }
-    },
-    "/api/fsp-district-xrefs": {
-      "post": {
-        "operationId": "FspDistrictXrefsController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["fsp-district-xrefs"]
+        "tags": [
+          "attachment"
+        ]
       }
     },
     "/api/interaction": {
@@ -1639,7 +930,9 @@
             "description": ""
           }
         },
-        "tags": ["interaction"]
+        "tags": [
+          "interaction"
+        ]
       }
     },
     "/api/interaction/{id}": {
@@ -1660,7 +953,9 @@
             "description": ""
           }
         },
-        "tags": ["interaction"]
+        "tags": [
+          "interaction"
+        ]
       },
       "put": {
         "operationId": "InteractionController_update",
@@ -1689,7 +984,9 @@
             "description": ""
           }
         },
-        "tags": ["interaction"]
+        "tags": [
+          "interaction"
+        ]
       },
       "delete": {
         "operationId": "InteractionController_remove",
@@ -1708,19 +1005,9 @@
             "description": ""
           }
         },
-        "tags": ["interaction"]
-      }
-    },
-    "/api/interactions": {
-      "post": {
-        "operationId": "InteractionsController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["interactions"]
+        "tags": [
+          "interaction"
+        ]
       }
     },
     "/api/district": {
@@ -1742,7 +1029,9 @@
             }
           }
         },
-        "tags": ["district"]
+        "tags": [
+          "district"
+        ]
       }
     },
     "/api/district/{id}": {
@@ -1770,7 +1059,9 @@
             }
           }
         },
-        "tags": ["district"]
+        "tags": [
+          "district"
+        ]
       }
     },
     "/api/forest-client": {
@@ -1792,7 +1083,9 @@
             }
           }
         },
-        "tags": ["forest-client"]
+        "tags": [
+          "forest-client"
+        ]
       }
     },
     "/api/forest-client/{id}": {
@@ -1820,10 +1113,129 @@
             }
           }
         },
-        "tags": ["forest-client"]
+        "tags": [
+          "forest-client"
+        ]
+      }
+    },
+    "/api/project/publicSummary": {
+      "get": {
+        "operationId": "ProjectController_findPublicSummary",
+        "parameters": [
+          {
+            "name": "includeCommentOpen",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includePostCommentOpen",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "forestClientName",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "openedOnOrAfter",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectPublicSummaryDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ]
       }
     },
     "/api/project": {
+      "get": {
+        "operationId": "ProjectController_find",
+        "parameters": [
+          {
+            "name": "fspId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "districtId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "workflowStateCode",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "forestClientName",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
       "post": {
         "operationId": "ProjectController_create",
         "parameters": [],
@@ -1849,7 +1261,42 @@
             }
           }
         },
-        "tags": ["project"]
+        "tags": [
+          "project"
+        ]
+      }
+    },
+    "/api/project/spatialDetails/{id}": {
+      "get": {
+        "operationId": "ProjectController_getSpatialDetails",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectSpatialDetail"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ]
       }
     },
     "/api/project/{id}": {
@@ -1877,7 +1324,9 @@
             }
           }
         },
-        "tags": ["project"]
+        "tags": [
+          "project"
+        ]
       },
       "put": {
         "operationId": "ProjectController_update",
@@ -1913,7 +1362,9 @@
             }
           }
         },
-        "tags": ["project"]
+        "tags": [
+          "project"
+        ]
       },
       "delete": {
         "operationId": "ProjectController_remove",
@@ -1933,66 +1384,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UpdateResult"
+                  "$ref": "#/components/schemas/DeleteResult"
                 }
               }
             }
           }
         },
-        "tags": ["project"]
-      }
-    },
-    "/api/projects/byFspId/{id}": {
-      "get": {
-        "operationId": "ProjectsController_findByFspId",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProjectDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": ["projects"]
-      }
-    },
-    "/api/projects": {
-      "post": {
-        "operationId": "ProjectsController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProjectDto"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": ["projects"]
+        "tags": [
+          "project"
+        ]
       }
     },
     "/api/workflow-state-code": {
@@ -2007,42 +1407,16 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/WorkflowStateCodeDto"
+                    "$ref": "#/components/schemas/WorkflowStateCode"
                   }
                 }
               }
             }
           }
         },
-        "tags": ["workflow-state-code"]
-      }
-    },
-    "/api/workflow-state-code/{id}": {
-      "get": {
-        "operationId": "WorkflowStateCodeController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/WorkflowStateCodeDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": ["workflow-state-code"]
+        "tags": [
+          "workflow-state-code"
+        ]
       }
     },
     "/api/public-comment": {
@@ -2064,7 +1438,63 @@
             "description": ""
           }
         },
-        "tags": ["public-comment"]
+        "tags": [
+          "public-comment"
+        ]
+      },
+      "get": {
+        "operationId": "PublicCommentController_find",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PublicCommentDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public-comment"
+        ]
+      }
+    },
+    "/api/public-comment/byProjectId/{id}": {
+      "get": {
+        "operationId": "PublicCommentController_findByProjectId",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "public-comment"
+        ]
       }
     },
     "/api/public-comment/{id}": {
@@ -2085,7 +1515,9 @@
             "description": ""
           }
         },
-        "tags": ["public-comment"]
+        "tags": [
+          "public-comment"
+        ]
       },
       "put": {
         "operationId": "PublicCommentController_update",
@@ -2114,7 +1546,9 @@
             "description": ""
           }
         },
-        "tags": ["public-comment"]
+        "tags": [
+          "public-comment"
+        ]
       },
       "delete": {
         "operationId": "PublicCommentController_remove",
@@ -2133,40 +1567,9 @@
             "description": ""
           }
         },
-        "tags": ["public-comment"]
-      }
-    },
-    "/api/public-comments": {
-      "post": {
-        "operationId": "PublicCommentsController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["public-comments"]
-      }
-    },
-    "/api/public-comments/byProjectId/{id}": {
-      "get": {
-        "operationId": "PublicCommentsController_findByProjectId",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["public-comments"]
+        "tags": [
+          "public-comment"
+        ]
       }
     },
     "/api/response-code": {
@@ -2181,253 +1584,21 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/ResponseCodeDto"
+                    "$ref": "#/components/schemas/ResponseCode"
                   }
                 }
               }
             }
           }
         },
-        "tags": ["response-code"]
-      }
-    },
-    "/api/response-code/{id}": {
-      "get": {
-        "operationId": "ResponseCodeController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ResponseCodeDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": ["response-code"]
-      }
-    },
-    "/api/retention-area": {
-      "post": {
-        "operationId": "RetentionAreaController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RetentionAreaDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["retention-area"]
-      }
-    },
-    "/api/retention-area/{id}": {
-      "get": {
-        "operationId": "RetentionAreaController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["retention-area"]
-      },
-      "put": {
-        "operationId": "RetentionAreaController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateRetentionAreaDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["retention-area"]
-      },
-      "delete": {
-        "operationId": "RetentionAreaController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["retention-area"]
-      }
-    },
-    "/api/retention-areas": {
-      "post": {
-        "operationId": "RetentionAreasController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["retention-areas"]
-      }
-    },
-    "/api/road-section": {
-      "post": {
-        "operationId": "RoadSectionController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RoadSectionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["road-section"]
-      }
-    },
-    "/api/road-section/{id}": {
-      "get": {
-        "operationId": "RoadSectionController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["road-section"]
-      },
-      "put": {
-        "operationId": "RoadSectionController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateRoadSectionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["road-section"]
-      },
-      "delete": {
-        "operationId": "RoadSectionController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["road-section"]
-      }
-    },
-    "/api/road-sections": {
-      "post": {
-        "operationId": "RoadSectionsController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["road-sections"]
+        "tags": [
+          "response-code"
+        ]
       }
     },
     "/api/submission": {
       "post": {
-        "operationId": "SubmissionController_create",
+        "operationId": "SubmissionController_processSpatialSubmission",
         "parameters": [],
         "requestBody": {
           "required": true,
@@ -2444,88 +1615,9 @@
             "description": ""
           }
         },
-        "tags": ["submission"]
-      }
-    },
-    "/api/submission/{id}": {
-      "get": {
-        "operationId": "SubmissionController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["submission"]
-      },
-      "put": {
-        "operationId": "SubmissionController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateSubmissionDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["submission"]
-      },
-      "delete": {
-        "operationId": "SubmissionController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["submission"]
-      }
-    },
-    "/api/submissions": {
-      "post": {
-        "operationId": "SubmissionsController_findAll",
-        "parameters": [],
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["submissions"]
+        "tags": [
+          "submission"
+        ]
       }
     },
     "/api/submission-type-code": {
@@ -2540,42 +1632,16 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/SubmissionTypeCodeDto"
+                    "$ref": "#/components/schemas/SubmissionTypeCode"
                   }
                 }
               }
             }
           }
         },
-        "tags": ["submission-type-code"]
-      }
-    },
-    "/api/submission-type-code/{id}": {
-      "get": {
-        "operationId": "SubmissionTypeCodeController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SubmissionTypeCodeDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": ["submission-type-code"]
+        "tags": [
+          "submission-type-code"
+        ]
       }
     },
     "/api/attachment-type-code": {
@@ -2590,42 +1656,16 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/AttachmentTypeCodeDto"
+                    "$ref": "#/components/schemas/AttachmentTypeCode"
                   }
                 }
               }
             }
           }
         },
-        "tags": ["attachment-type-code"]
-      }
-    },
-    "/api/attachment-type-code/{id}": {
-      "get": {
-        "operationId": "AttachmentTypeCodeController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/AttachmentTypeCodeDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": ["attachment-type-code"]
+        "tags": [
+          "attachment-type-code"
+        ]
       }
     },
     "/api/comment-scope-code": {
@@ -2640,133 +1680,16 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/CommentScopeCodeDto"
+                    "$ref": "#/components/schemas/CommentScopeCode"
                   }
                 }
               }
             }
           }
         },
-        "tags": ["comment-scope-code"]
-      }
-    },
-    "/api/comment-scope-code/{id}": {
-      "get": {
-        "operationId": "CommentScopeCodeController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CommentScopeCodeDto"
-                }
-              }
-            }
-          }
-        },
-        "tags": ["comment-scope-code"]
-      }
-    },
-    "/api/user": {
-      "post": {
-        "operationId": "UserController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateUserDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": ["user"]
-      }
-    },
-    "/api/user/{id}": {
-      "get": {
-        "operationId": "UserController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["user"]
-      },
-      "put": {
-        "operationId": "UserController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateUserDto"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["user"]
-      },
-      "delete": {
-        "operationId": "UserController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": ["user"]
+        "tags": [
+          "comment-scope-code"
+        ]
       }
     }
   }

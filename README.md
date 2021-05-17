@@ -1,4 +1,5 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
+[![Lifecycle:Experimental](https://img.shields.io/badge/Lifecycle-Experimental-339999)](<Redirect-URL>)
 
 # Forest Operation Map (FOM)
 
@@ -14,11 +15,6 @@ This repo is for the Node.js API backend.
 
 <!--- product/library and path to the LICENSE --->
 <!--- Example: <library_name> - [![GitHub](<shield_icon_link>)](<path_to_library_LICENSE>) --->
-
-## Project Status
-
-- [x] Development
-- [ ] Production/Maintenance
 
 ## Documentation
 
@@ -63,13 +59,12 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 - Create PostGRES connection to local database using connection information as defined in docker-compose.yml
 
 ### To rebuild local database from scratch
+This drops and recreates the database and runs all migrations including test ones. (Although migrations are also run when starting the API component, test migrations only run at startup if environment variable DB_TESTDATA = true)
+- npm run db:recreate
 
+To explicitly delete database: 
 - docker-compose down
 - docker volume rm nr-fom-api_ms-postgres-data
-- docker-compose up -d db
-- npm run db:migrate-main
-- npm run db:migrate-test
-- (Although migrations are also run when starting the API component, test migrations only run if environment variable DB_TESTDATA = true)
 
 ## Application Specific Setup:
 
@@ -79,12 +74,13 @@ This project uses the Nest API framework and the Nx monorepo platform / cli tool
 Nx is used to manage this repository and generate Nest components.
 See FRAMEWORK.md for nrwl nx documentation.
 
-Notes:
-
-- We use a custom OpenApi template when generating the frontend api clients from our Api
-- The `.fetch-template` bash script that does the clone and patch is in the `apps/api/openapi` dir
-- To generate the API client execute `npm run gen:client-api`
-- The generated client api library is located in `libs/client`
+## Client Library Generation
+These are the steps to generate the client library used by the frontend components (Admin + Public)
+- Code changes to the API that are documented in Swagger using Swagger annotations like @ApiTags, @ApiProperty 
+- Start the API component (npm run start:api) and access http://localhost:3333/api-json. Copy this content to '/apps/api/openapi/swagger-spec.json'
+- Remove the existing generated client library files. Delete the directories /libs/client/typescript-ng/{api|models}.
+- Generate the client library using 'npm run gen:client-api:ng'. Generated files will be placed into '/libs/client/typescript-ng'
+- Copy the client library into the Admin and Public components in /src/core/api
 
 ## Deployment (OpenShift)
 

@@ -41,11 +41,14 @@ export abstract class DataReadOnlyService<
       const record = await this.repository.findOne(id);
       this.logger.info('${this.constructor.name}findOne result', record);
 
-      const dto = {} as C;
-      return mapFromEntity(record, dto);
+      return this.convertEntity(record) as C;
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findOne ${error}`);
     }
+  }
+
+  convertEntity(entity: E):any {
+      return mapFromEntity(entity, {});
   }
 
   /**
@@ -60,7 +63,7 @@ export abstract class DataReadOnlyService<
     try {
       const findAll = await this.repository.find();
       this.logger.info('findAll result', findAll);
-      return findAll.map((r) => mapFromEntity(r, {} as C));
+      return findAll.map((r) => this.convertEntity(r));
     } catch (error) {
       this.logger.error(`${this.constructor.name}.findAll ${error}`);
       throw new HttpException(

@@ -1,19 +1,15 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { CodeTableService } from 'apps/api/src/core/models/code-provider.model';
 
 @Controller()
-export class CodeTableController<E, C, U> {
+export class CodeTableController<E> {
   // @ts-ignore
   constructor(protected readonly service: CodeTableService<E, Repository<E>>) {}
 
   @Get()
-  async findAll(): Promise<C[]> {
-    return this.service.findAll<C>();
+  async findAll(): Promise<E[]> {
+    return this.service.findAll<E>();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number | string): Promise<C> {
-    return this.service.findOne<C>(id);
-  }
 }

@@ -15,10 +15,25 @@ export type DeepPartial<T> = {
     : DeepPartial<T[P]> | T[P];
 };
 
-export abstract class ApiBaseEntity<M> {
-  // Needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.
-  // @PrimaryGeneratedColumn('increment')
-  // public id: number;
+export abstract class ApiBaseReadOnlyEntity<M> {
+
+  // Do not include any metadata columns.
+
+  constructor(model?: Partial<M>) {
+    Object.assign(this, model);
+  }
+
+  factory(props: Partial<M>): DeepPartial<M> {
+    const model = Object.create(this);
+
+    Object.assign(model, props);
+
+    return model;
+  }
+}
+
+export abstract class ApiBaseEntity<M> extends ApiBaseReadOnlyEntity<M> {
+  // Primary key needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.
 
   // Metadata columns
   @VersionColumn()
@@ -36,15 +51,4 @@ export abstract class ApiBaseEntity<M> {
   @Column()
   public update_user: string;
 
-  constructor(model?: Partial<M>) {
-    Object.assign(this, model);
-  }
-
-  factory(props: Partial<M>): DeepPartial<M> {
-    const model = Object.create(this);
-
-    Object.assign(model, props);
-
-    return model;
-  }
 }
