@@ -26,6 +26,9 @@ function CreateApiStack {
     Write-Output "Creating database..."
     oc process -f fom-db-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix | oc create -n a4b31c-$Env -f -
 
+    Write-Output "Delay creation of API to allow time for database to be created and start up..."
+    Start-Sleep -s 60
+
     Write-Output "Creating api backend..."
     oc process -f fom-api-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix -p HOSTNAME="nr-fom-api$Suffix" -p IMAGE_STREAM_VERSION=$ApiVersion -p DB_TESTDATA=$TestData | oc create -n a4b31c-$Env -f -
 }
