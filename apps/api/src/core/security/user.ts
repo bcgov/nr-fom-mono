@@ -1,5 +1,4 @@
-
-// TODO: Cloned to Admin/src/core/services
+// Note: This is copied into nr-fom-admin/src/core/services from nr_fom-api/apps/src/core/security
 
 // Represents a user's information extracted from Keycloak JWT.
 export class User {
@@ -38,19 +37,6 @@ export class User {
           }
         }
       })
-  
-      // JWT Structure in development - TODO: Confirm whether same in prod
-      // realm_access.roles []
-      // resource_access.fom.roles = fom_ministry, fom_forest_client
-      // resource_access.account.roles []
-      // name
-      // displayName
-      // username
-      // preferred_username
-      // email
-      // typ = Bearer
-      // azp = fom
-      // iss = https://dev.oidc.gov.bc.ca/auth/realms/ichqx89w
   
       return user;
     }
