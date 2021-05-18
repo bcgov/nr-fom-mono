@@ -53,14 +53,11 @@ describe('ProjectService', () => {
     }).compile();
 
     repository = getRepository(Project);
-    // await repository.deleteMany({});
 
     const logger = module.get(PinoLogger);
     service = new ProjectService(repository, logger, new DistrictService(null, logger), new ForestClientService(null, logger));
   });
-  afterEach(async () => {
-    // await repository.deleteMany({});
-  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });

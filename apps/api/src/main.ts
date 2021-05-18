@@ -38,7 +38,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-
+ 
   const config = new DocumentBuilder()
     .setTitle('FOM API')
     .setDescription('API for FOM backend')
@@ -47,7 +47,6 @@ async function bootstrap() {
     .build();
   const port = appConfig.get('port') || 3333;
   const document = SwaggerModule.createDocument(app, config);
-  // TODO: Disable this in test/prod.
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({

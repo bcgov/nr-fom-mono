@@ -16,9 +16,8 @@ export class ForestClientController extends BaseReadOnlyController<
     super(service);
   }
 
-  // TODO: Add a get authorized forest clients.
 
-  // TODO: Disable because won't be performant
+  // TODO: Disable because won't be performant - instead get a list of forest clients based on user's acccess.
   @Get()
   @ApiResponse({ status: 200, type: [ForestClientDto] })
   async findAll(): Promise<ForestClientDto[]> {

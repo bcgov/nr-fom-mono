@@ -1,11 +1,4 @@
-// import { ObjectId } from 'bson';
-import {
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
-  VersionColumn,
-} from 'typeorm';
-// import { Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Column, CreateDateColumn, UpdateDateColumn, VersionColumn } from 'typeorm';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Array<infer U>

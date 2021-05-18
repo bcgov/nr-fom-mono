@@ -376,7 +376,7 @@ describe('API endpoints testing (e2e)', () => {
       await createProjectAndVerifyResult(createProjectData);
 
       const byFspIdRes = await request(app.getHttpServer()).get(
-        `/projects/byFspId/${randomId}`
+        `/projects/byFspId/10`
       );
       expect(byFspIdRes.status).toBe(200);
       const byFspIdRecords = byFspIdRes.body.length;
