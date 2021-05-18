@@ -1,12 +1,12 @@
 import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
+import { PinoLogger } from 'nestjs-pino';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
 import { AuthService } from './auth.service';
 
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private logger: PinoLogger) { }
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
 
@@ -15,6 +15,7 @@ export class AuthInterceptor implements NestInterceptor {
     if (authHeader) {
       const user = this.authService.verifyToken(authHeader);
       request.headers['user'] = user;
+      this.logger.trace("Authenticated user = {%o}", user);
     }
     return next.handle();
   }
