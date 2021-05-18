@@ -6,36 +6,6 @@ import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly-prov
 import { PinoLogger } from 'nestjs-pino';
 import { ForestClientDto } from './dto/forest-client.dto';
 
-export class ProjectFindCriteria {
-  includeWorkflowStateCodes: string[] = [];
-  likeForestClientName?: string;
-  commentingOpenedOnOrAfter?: string; // format YYYY-MM-DD
-  fspId?: number;
-  districtId?: number;
-  includeForestClientNumbers: string[] = [];
-
-  applyFindCriteria(query: SelectQueryBuilder<Project>) {
-    if (this.fspId) {
-      query.andWhere("p.fsp_id = :fspId", {fspId: `${this.fspId}`});
-    }
-    if (this.districtId) {
-      query.andWhere("p.district_id = :districtId", {districtId: `${this.districtId}`});
-    }
-    if (this.includeWorkflowStateCodes && this.includeWorkflowStateCodes.length > 0) {
-      query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
-    }
-    if (this.likeForestClientName) {
-      query.andWhere("forest_client.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
-    }
-    if (this.commentingOpenedOnOrAfter) {
-      query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${this.commentingOpenedOnOrAfter}`});
-    }
-    if (this.includeForestClientNumbers && this.includeForestClientNumbers.length > 0) {
-      query.andWhere("p.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: this.includeForestClientNumbers});
-    }
-  }
-}
-
 @Injectable()
 export class ForestClientService extends DataReadOnlyService<ForestClient, Repository<ForestClient>> {
   constructor(
