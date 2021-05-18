@@ -17,6 +17,7 @@ export class ProjectFindCriteria {
   commentingOpenedOnOrAfter?: string; // format YYYY-MM-DD
   fspId?: number;
   districtId?: number;
+  includeForestClientNumbers: string[] = [];
 
   applyFindCriteria(query: SelectQueryBuilder<Project>) {
     if (this.fspId) {
@@ -33,6 +34,9 @@ export class ProjectFindCriteria {
     }
     if (this.commentingOpenedOnOrAfter) {
       query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${this.commentingOpenedOnOrAfter}`});
+    }
+    if (this.includeForestClientNumbers && this.includeForestClientNumbers.length > 0) {
+      query.andWhere("p.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: this.includeForestClientNumbers});
     }
   }
 }

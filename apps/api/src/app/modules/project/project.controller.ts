@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
@@ -11,8 +11,9 @@ import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 import * as dayjs from 'dayjs';
-import { AuthService } from 'apps/api/src/core/security/auth.service';
+import { AuthService, UserHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
+
 
 @ApiTags('project')
 @Controller('project')
@@ -75,14 +76,14 @@ export class ProjectController extends BaseController<
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiResponse({ status: 200, type: [ProjectDto] })
   async find(
-    @Headers() headers: string, // TODO: Wrong type.
+    @UserHeader() user: User,
     @Query('fspId') fspId?: number,
     @Query('districtId') districtId?: number,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectDto[]> {
 
-        var user = await this.authService.verifyToken(headers['authorization']);
+      // var user = await this.authService.verifyToken(authHeader);
           // .catch(err => {
           //   console.log("Caught error " + JSON.stringify(err));
           //   throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);

@@ -47,7 +47,7 @@ export class Project extends ApiBaseEntity<Project> {
 
   @Column()
   @RelationId((project: Project) => project.forest_client)
-  forest_client_number?: number;
+  forest_client_number?: string;
 
   @ManyToOne(() => WorkflowStateCode)
   @JoinColumn({ name: 'workflow_state_code' })

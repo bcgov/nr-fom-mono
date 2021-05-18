@@ -6,6 +6,14 @@ import { User } from './user';
 import { decode, verify } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 
+import { ExecutionContext } from '@nestjs/common';
+import { createParamDecorator } from '@nestjs/common';
+
+// This requires the global AuthInterceptor to add the User object to the request. If no bearer token is provided, the user object will be null.
+export const UserHeader = createParamDecorator( (data: unknown, ctx: ExecutionContext) => {
+  const request = ctx.switchToHttp().getRequest();
+  return request.headers['user'];
+});
 
 export class KeycloakConfig {
     @ApiProperty()
@@ -56,13 +64,13 @@ export class AuthService {
         return this.config;
     }
 
-    async verifyToken(authorizationHeader: string):Promise<User> {
+    async verifyToken(authHeader: string):Promise<User> {
         const bearer = 'Bearer ';
-        if (!authorizationHeader || !authorizationHeader.startsWith(bearer) || authorizationHeader.length <= bearer.length) {
+        if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
             throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
         }
         const tokenStartIndex = bearer.length;
-        const token = authorizationHeader.substr(tokenStartIndex);
+        const token = authHeader.substr(tokenStartIndex);
 
         if (!this.config.enabled) {
           // Expects token to be a User instance formatted in JSON.
