@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, HttpException, HttpStatus } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DataService } from 'apps/api/src/core/models/data-provider.model';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
@@ -31,5 +31,9 @@ export class BaseController<E, C, U> {
   @Delete(':id')
   async remove(@Param('id') id: number) {
     return this.service.remove(id);
+  }
+
+  protected createNotAuthorizedException() {
+    return new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
   }
 }

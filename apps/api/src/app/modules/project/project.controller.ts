@@ -83,18 +83,6 @@ export class ProjectController extends BaseController<
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectDto[]> {
 
-      // var user = await this.authService.verifyToken(authHeader);
-          // .catch(err => {
-          //   console.log("Caught error " + JSON.stringify(err));
-          //   throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
-          // });
-          
-      console.log("User = " + JSON.stringify(user)); // TODO REMOVE
-      // If role = FOM_MINISTRY then continue
-      // else if role = FOM_CLIENT filter by clientId that user is authorized for.
-      // else return 403.
-      // Auth service to parse token return level of access. Provide stub for locally.
-
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
       if (fspId) {
@@ -108,6 +96,13 @@ export class ProjectController extends BaseController<
       }
       if (forestClientName) {
         findCriteria.likeForestClientName = forestClientName;
+      }
+      // Ministry users can access all projects, while forest client users can only access projects for forest clients they are authorized for.
+      if (!user.isMinistry && user.isForestClient) {
+        findCriteria.includeForestClientNumbers = user.clientIds;
+      }
+      if (!user.isAuthorizedForAdminSite()) {
+        throw this.createNotAuthorizedException();
       }
 
       return this.service.find(findCriteria);

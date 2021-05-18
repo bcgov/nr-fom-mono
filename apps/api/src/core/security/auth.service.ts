@@ -48,9 +48,10 @@ export class AuthService {
         this.config.enabled = (process.env.KEYCLOAK_ENABLED || 'true') === 'true';
         this.config.realm = process.env.KEYCLOAK_REALM || 'ichqx89w';
         this.config.url = process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth';
+        // Sample User = {"isMinistry":true,"isForestClient":true,"clientIds":[1011, 1012],"userName":"bvandegr@idir","displayName":"Vandegriend, Basil IIT:EX"}
         // Other values for Keycloak URL: TEST: https://test.oidc.gov.bc.ca/auth, PROD: https://oidc.gov.bc.ca/auth
 
-        this.logger.info("Keycloak configuration {%o}", this.config);
+        this.logger.info("Keycloak configuration %o", this.config);
 
         this.jwksClient = new JwksClient({
           jwksUri: this.config.getCertsUri(),
@@ -73,8 +74,10 @@ export class AuthService {
         const token = authHeader.substr(tokenStartIndex);
 
         if (!this.config.enabled) {
-          // Expects token to be a User instance formatted in JSON.
-          return Promise.resolve(JSON.parse(token) as User);
+          // Expects token to be a User instance converted to JSON.
+          const user = new User();
+          Object.assign(user, JSON.parse(token)); // Use this syntax to start with a User object so its methods are available.
+          return Promise.resolve(user);
         }
         
         const untrustedDecodedToken = decode(token, { complete: true });
@@ -87,10 +90,10 @@ export class AuthService {
             { issuer: this.config.getIssuer(), 
               nonce: untrustedDecodedToken.payload.nonce 
             });
-          this.logger.trace("Trusted decoded token = {%o}" + decodedToken);
+          this.logger.trace("Trusted decoded token = %o" + decodedToken);
           return User.convertJwtToUser(decodedToken);
         } catch (err) {
-          this.logger.warn("Invalid token {%o}", err);
+          this.logger.warn("Invalid token %o", err);
           throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
         }
     }
