@@ -7,6 +7,8 @@ import { mapFromEntity } from '../utils';
 
 /**
  * Base class to extend for interacting with the database through a repository pattern.
+ * 
+ * Methods do NOT include handling of security as the read-only entities are assumed to be publically viewable.
  *
  * Add new standard database interaction methods here. Abstract away complex & nonstandard ones
  * @export
@@ -15,10 +17,7 @@ import { mapFromEntity } from '../utils';
  * @template R - repository extends Repository<Model>
  */
 @Injectable()
-export abstract class DataReadOnlyService<
-  E extends ApiBaseEntity<E>,
-  R extends Repository<E>
-> {
+export abstract class DataReadOnlyService<E extends ApiBaseEntity<E>, R extends Repository<E>> {
   protected constructor(
     protected repository: R,
     private entity: E,
@@ -35,19 +34,14 @@ export abstract class DataReadOnlyService<
    * @memberof DataService
    */
   async findOne<C>(id: number): Promise<C> {
-    this.logger.info(`${this.constructor.name}findOne props`, id);
+    this.logger.trace(`${this.constructor.name}.findOne id %o`, id);
 
-    try {
-      const record = await this.repository.findOne(id);
-      this.logger.info('${this.constructor.name}findOne result', record);
+    const record = await this.repository.findOne(id);
 
-      return this.convertEntity(record) as C;
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findOne ${error}`);
-    }
+    return this.convertEntity(record) as C;
   }
 
-  convertEntity(entity: E):any {
+  protected convertEntity(entity: E):any {
       return mapFromEntity(entity, {});
   }
 
@@ -58,18 +52,9 @@ export abstract class DataReadOnlyService<
    * @memberof DataService
    */
   async findAll<C>(): Promise<C[]> {
-    this.logger.info(`${this.constructor.name}.findAll`);
+    this.logger.trace(`${this.constructor.name}.findAll`);
 
-    try {
-      const findAll = await this.repository.find();
-      this.logger.info('findAll result', findAll);
-      return findAll.map((r) => this.convertEntity(r));
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findAll ${error}`);
-      throw new HttpException(
-        'InternalServerErrorException',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    const findAll = await this.repository.find();
+    return findAll.map((r) => this.convertEntity(r));
   }
 }

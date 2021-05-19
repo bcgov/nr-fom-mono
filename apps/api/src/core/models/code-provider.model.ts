@@ -7,6 +7,8 @@ import { mapFromEntity } from '@core';
 
 /**
  * Base class to extend for interacting with the database through a repository pattern.
+ * 
+ * No user authorization is done as all code tables are assumed to be publically accessible.
  *
  * Add new standard database interaction methods here. Abstract away complex & nonstandard ones
  * @export
@@ -15,10 +17,7 @@ import { mapFromEntity } from '@core';
  * @template R - repository extends Repository<Model>
  */
 @Injectable()
-export abstract class CodeTableService<
-  E extends ApiCodeTableEntity<E>,
-  R extends Repository<E>
-> {
+export abstract class CodeTableService<E extends ApiCodeTableEntity<E>, R extends Repository<E>> {
   protected constructor(
     protected repository: R,
     private entity: E,
@@ -35,17 +34,10 @@ export abstract class CodeTableService<
    * @memberof DataService
    */
   async findOne<C>(id: number | string): Promise<C> {
-    this.logger.info(`${this.constructor.name}findOne props`, id);
 
-    try {
-      const record = await this.repository.findOne(id);
-      this.logger.info('${this.constructor.name}findOne result', document);
-
-      const dto = {} as C;
-      return mapFromEntity(record, dto);
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findOne ${error}`);
-    }
+    const record = await this.repository.findOne(id);
+    const dto = {} as C;
+    return mapFromEntity(record, dto);
   }
 
   /**
@@ -55,18 +47,7 @@ export abstract class CodeTableService<
    * @memberof DataService
    */
   async findAll<C>(): Promise<C[]> {
-    this.logger.info(`${this.constructor.name}.findAll`);
-
-    try {
-      const findAll = await this.repository.find();
-      this.logger.info('findAll result', findAll);
-      return findAll.map((r) => mapFromEntity(r, {} as C));
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findAll ${error}`);
-      throw new HttpException(
-        'InternalServerErrorException',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    const findAll = await this.repository.find();
+    return findAll.map((r) => mapFromEntity(r, {} as C));
   }
 }

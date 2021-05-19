@@ -5,13 +5,12 @@ import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './entities/project.entity';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import { DeleteResult } from 'typeorm';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 import * as dayjs from 'dayjs';
-import { AuthService, UserHeader } from 'apps/api/src/core/security/auth.service';
+import { AuthService, UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 
 
@@ -29,6 +28,7 @@ export class ProjectController extends BaseController<
     super(service);
   }
 
+  // Anonymous access allowed
   @Get('/publicSummary')
   @ApiQuery({ name: 'includeCommentOpen', required: false})
   @ApiQuery({ name: 'includePostCommentOpen', required: false})
@@ -68,6 +68,25 @@ export class ProjectController extends BaseController<
       return this.service.findPublicSummaries(findCriteria);
   }
 
+  // Anonymous access allowed
+  @Get('/spatialDetails/:id') 
+  @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })
+  async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
+    return this.projectSpatialDetailService.findByProjectId(id);
+  }
+
+  // Anonymous access allowed
+  @Get(':id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200, type: ProjectDto })
+  async findOne(
+    @UserHeader() user: User,
+    @Param('id') id: number): Promise<ProjectDto> {
+    return this.service.findOne(id, user, {
+      relations: ['district', 'forest_client', 'workflow_state'],
+    });
+  }
+
   @Get()
   @ApiBearerAuth()
   @ApiQuery({ name: 'fspId', required: false})
@@ -76,7 +95,7 @@ export class ProjectController extends BaseController<
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiResponse({ status: 200, type: [ProjectDto] })
   async find(
-    @UserHeader() user: User,
+    @UserRequiredHeader() user: User,
     @Query('fspId') fspId?: number,
     @Query('districtId') districtId?: number,
     @Query('workflowStateCode') workflowStateCode?: string,
@@ -108,40 +127,35 @@ export class ProjectController extends BaseController<
       return this.service.find(findCriteria);
   }
 
-  @Get('/spatialDetails/:id') 
-  @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })
-  async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
-    return this.projectSpatialDetailService.findByProjectId(id);
-  }
-
   @Post()
+  @ApiBearerAuth()
   @ApiResponse({ status: 201, type: ProjectDto })
-  async create(@Body() createDto: ProjectDto): Promise<ProjectDto> {
+  async create(
+    @UserRequiredHeader() user: User,
+    @Body() createDto: ProjectDto
+    ): Promise<ProjectDto> {
     // TODO: add buisiness logic (to service)
-    return super.create(createDto);
-  }
-
-  @Get(':id')
-  @ApiResponse({ status: 200, type: ProjectDto })
-  async findOne(@Param('id') id: number): Promise<ProjectDto> {
-    return super.findOne(id, {
-      relations: ['district', 'forest_client', 'workflow_state'],
-    });
+    return this.service.create(createDto, user);
   }
 
   @Put(':id')
+  @ApiBearerAuth()
   @ApiResponse({ status: 200, type: UpdateProjectDto })
   @ApiBody({ type: UpdateProjectDto })
   async update(
+    @UserRequiredHeader() user: User,
     @Param('id') id: number,
     @Body() updateDto: UpdateProjectDto
   ): Promise<UpdateProjectDto> {
-    return super.update(id, updateDto);
+    return this.service.update(id, updateDto, user);
   }
 
   @Delete(':id')
-  @ApiResponse({ status: 200, type: DeleteResult })
-  async remove(@Param('id') id: number): Promise<DeleteResult> {
-    return super.remove(id);
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200 })
+  async remove(
+    @UserRequiredHeader() user: User,
+    @Param('id') id: number) {
+    this.service.remove(id, user);
   }
 }

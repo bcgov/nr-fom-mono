@@ -18,14 +18,15 @@ export class AttachmentController extends BaseController<
     super(service);
   }
 
+/*  
   @Post()
   async create(@Body() createDto: AttachmentDto) {
-    return super.create(createDto);
+    return this.service.create(createDto);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number) {
-    return super.findOne(id);
+    return this.service.findOne(id);
   }
 
   @Put(':id')
@@ -33,11 +34,12 @@ export class AttachmentController extends BaseController<
     @Param('id') id: number,
     @Body() updateDto: UpdateAttachmentDto
   ) {
-    return super.update(id, updateDto);
+    return this.service.update(id, updateDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    return super.remove(id);
+    return this.service.remove(id);
   }
+*/
 }

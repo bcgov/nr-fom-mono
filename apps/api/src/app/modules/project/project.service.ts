@@ -9,6 +9,7 @@ import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import * as dayjs from 'dayjs';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
+import { User } from 'apps/api/src/core/security/user';
 
 
 export class ProjectFindCriteria {
@@ -51,6 +52,29 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     private forestClientService: ForestClientService,
   ) {
     super(repository, new Project(), logger);
+  }
+
+  isCreateAuthorized(user: User, dto: Partial<ProjectDto>): boolean {
+    return (user && user.isForestClient && dto.forestClientNumber && user.clientIds.includes(dto.forestClientNumber));
+  }
+  
+  isUpdateAuthorized(user: User, dto: any, entity: Partial<Project>): boolean {
+    return (user && user.isForestClient && user.clientIds.includes(entity.forest_client_number));
+  }
+
+  isDeleteAuthorized(user: User, id: number): boolean {
+    if (!user) {
+      return false;
+    }
+    // TODO: Logic depends on workflow state and type of user.
+    // forest client user can delete only when workflow = initial.
+    // workflow = ???, ministry can delete
+    return true;
+  }
+
+  isViewingAuthorized(user: User): boolean {
+    // Public can view project details and project public summaries.
+    return true;
   }
 
   async find(findCriteria: ProjectFindCriteria):Promise<ProjectDto[]> {
