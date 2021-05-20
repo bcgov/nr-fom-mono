@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
@@ -57,7 +57,7 @@ export class ProjectController extends BaseController<
         // Deliberately exclude EXPIRED
       }
       if (includeCommentOpen != 'true' && includePostCommentOpen != 'true') {
-        throw new HttpException("Either includeCommentOpen or includePostCommentOpen must be true", HttpStatus.BAD_REQUEST);
+        throw new BadRequestException("Either includeCommentOpen or includePostCommentOpen must be true");
       }
 
       const DATE_FORMAT='YYYY-MM-DD';
@@ -121,7 +121,7 @@ export class ProjectController extends BaseController<
         findCriteria.includeForestClientNumbers = user.clientIds;
       }
       if (!user.isAuthorizedForAdminSite()) {
-        throw this.createNotAuthorizedException();
+        throw new ForbiddenException();
       }
 
       return this.service.find(findCriteria);

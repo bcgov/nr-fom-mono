@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Project } from './entities/project.entity';
@@ -79,24 +79,19 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
 
   async find(findCriteria: ProjectFindCriteria):Promise<ProjectDto[]> {
     this.logger.trace(`Find criteria: ${JSON.stringify(findCriteria)}`);
-    try {
-      const query = this.repository.createQueryBuilder("p")
-        .leftJoinAndSelect("p.forest_client", "forest_client")
-        .leftJoinAndSelect("p.workflow_state", "workflow_state")
-        .leftJoinAndSelect("p.district", "district")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC') // Newest first
-        ;
-      findCriteria.applyFindCriteria(query);
 
-      const result:Project[] = await query.getMany();
+    const query = this.repository.createQueryBuilder("p")
+      .leftJoinAndSelect("p.forest_client", "forest_client")
+      .leftJoinAndSelect("p.workflow_state", "workflow_state")
+      .leftJoinAndSelect("p.district", "district")
+      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
+      .addOrderBy('p.project_id', 'DESC') // Newest first
+      ;
+    findCriteria.applyFindCriteria(query);
 
-      return result.map(project => this.convertEntity(project));
+    const result:Project[] = await query.getMany();
 
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.find ${error}`);
-      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return result.map(project => this.convertEntity(project));
   }
 
   convertEntity(entity: Project): ProjectDto {
@@ -114,31 +109,26 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
 
     this.logger.trace(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
 
-    try {
-      const query = this.repository.createQueryBuilder("p")
-        .leftJoinAndSelect("p.forest_client", "forest_client")
-        .leftJoinAndSelect("p.workflow_state", "workflow_state")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC') // Newest first
-        ;
-      findCriteria.applyFindCriteria(query);
+    const query = this.repository.createQueryBuilder("p")
+      .leftJoinAndSelect("p.forest_client", "forest_client")
+      .leftJoinAndSelect("p.workflow_state", "workflow_state")
+      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
+      .addOrderBy('p.project_id', 'DESC') // Newest first
+      ;
+    findCriteria.applyFindCriteria(query);
 
-      const result:Project[] = await query.getMany();
+    const result:Project[] = await query.getMany();
 
-      return result.map(project => {
-        var summary = new ProjectPublicSummaryDto();
-        summary.id = project.id;
-        summary.name = project.name;
-        summary.workflowStateName = project.workflow_state.description;
-        summary.forestClientName = project.forest_client.name;
-        summary.geojson = project.geojson;
-        summary.fspId = project.fsp_id;
-        summary.commentingOpenDate = dayjs(project.commenting_open_date).format('YYYY-MM-DD');
-        return summary;
-      });
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findPublicSummaries ${error}`);
-      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return result.map(project => {
+      var summary = new ProjectPublicSummaryDto();
+      summary.id = project.id;
+      summary.name = project.name;
+      summary.workflowStateName = project.workflow_state.description;
+      summary.forestClientName = project.forest_client.name;
+      summary.geojson = project.geojson;
+      summary.fspId = project.fsp_id;
+      summary.commentingOpenDate = dayjs(project.commenting_open_date).format('YYYY-MM-DD');
+      return summary;
+    });
   }
 }

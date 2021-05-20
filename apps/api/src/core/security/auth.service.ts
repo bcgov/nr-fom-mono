@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable, ExecutionContext, createParamDecorator } from '@nestjs/common';
+import { Injectable, ExecutionContext, createParamDecorator, ForbiddenException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { ApiProperty } from '@nestjs/swagger';
 import { decode, verify } from 'jsonwebtoken';
@@ -23,7 +23,7 @@ export const UserRequiredHeader = createParamDecorator( (data: unknown, ctx: Exe
   const request = ctx.switchToHttp().getRequest();
   const user = request.headers['user'];
   if (user == null) {
-    throw new HttpException("Not authorized", HttpStatus.FORBIDDEN);
+    throw new ForbiddenException(); 
   }
   return user;
 });
@@ -81,7 +81,7 @@ export class AuthService {
     async verifyToken(authHeader: string):Promise<User> {
         const bearer = 'Bearer ';
         if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
-          return Promise.reject(new HttpException("Not authorized.", HttpStatus.FORBIDDEN));
+          return Promise.reject(new ForbiddenException());
         }
         const tokenStartIndex = bearer.length;
         const token = authHeader.substr(tokenStartIndex);
@@ -106,7 +106,7 @@ export class AuthService {
           return User.convertJwtToUser(decodedToken);
         } catch (err) {
           this.logger.warn("Invalid token %o", err);
-          return Promise.reject(new HttpException("Not authorized.", HttpStatus.FORBIDDEN));
+          return Promise.reject(new ForbiddenException());
         }
     }
 }

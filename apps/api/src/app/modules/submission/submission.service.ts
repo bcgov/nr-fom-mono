@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, getManager, Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
@@ -63,7 +63,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     this.logger.info(`${this.constructor.name}.create props`, dto);
 
     if (!this.isCreateAuthorized(user, dto)) {
-      throw new HttpException("Not authorized", HttpStatus.FORBIDDEN);
+      throw new ForbiddenException();
     }
 
     // Load the existing project to obtain the project's workflow state
@@ -76,7 +76,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     if (!submissionTypeCode || submissionTypeCode !== dto.submissionTypeCode) {
       const errMsg = `Submission (${dto.submissionTypeCode}) is not allowed for workflow_state_code ${workflowStateCode}.`;
       this.logger.error(errMsg);
-      throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new UnprocessableEntityException(errMsg);
     }
 
     // Obtain Submission(or new one) so we have the id.
@@ -191,8 +191,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       flatDeep(coordinates).forEach( (p: Position) => {
         if( !(bb.ix <= p[0] && p[0] <= bb.ax && bb.iy <= p[1] && p[1] <= bb.ay) ) {
           const errMsg = `Coordinate (${p}) is not within BC bounding box ${JSON.stringify(bb)}.`;
-          this.logger.error(errMsg);
-          throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+          throw new UnprocessableEntityException(errMsg);
         }
       });
     };
@@ -203,16 +202,14 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
           spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
         if (!properties.hasOwnProperty(REQUIRED_PROP_DEVELOPMENT_DATE)) {
           const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} missing for ${spatialObjectCode}`;
-          this.logger.error(errMsg);
-          throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+          throw new UnprocessableEntityException(errMsg);
         }
         else {
           // validate date format: YYYY-MM-DD
           const developmentDate = properties[REQUIRED_PROP_DEVELOPMENT_DATE];
           if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
             const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} has wrong date format. Valid format: '${DATE_FORMAT}'`;
-            this.logger.error(errMsg);
-            throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new UnprocessableEntityException(errMsg);
           }
         }
       }

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
@@ -67,7 +67,7 @@ export abstract class DataService<
     this.logger.trace(`${this.constructor.name}.create dto %o`, dto);
 
     if (!this.isCreateAuthorized(user, dto)) {
-      throw this.createNotAuthorizedException();      
+      throw new ForbiddenException();
     }
 
     dto.createUser = user ? user.userName : 'Anonymous';
@@ -100,20 +100,20 @@ export abstract class DataService<
 
     const entity = await this.repository.findOne(id);
     if (! entity) {
-      throw new HttpException("Entity not found", HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new UnprocessableEntityException("Entity not found.");
     }
     if (!this.isUpdateAuthorized(user, dto, entity)) {
-      throw this.createNotAuthorizedException();
+      throw new ForbiddenException();
     }
     if (entity.revision_count != dto.revisionCount) {
       this.logger.info("Entity revision count " + entity.revision_count + " dto revision count = " + dto.revisionCount);
-      throw new HttpException("Entity has been modified since you retrieved it for editing. Please reload and try again.", HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
     }
     dto.revisionCount += 1;
 
     const updateCount = (await this.repository.update(id, mapToEntity(dto, entity))).affected;
     if (updateCount != 1) {
-      throw new HttpException("Error updating object", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new InternalServerErrorException("Error updating object");
     }
 
     const updatedEntity = await this.repository.findOne(id);
@@ -133,12 +133,12 @@ export abstract class DataService<
     this.logger.trace(`${this.constructor.name}.delete id %o`, id);
 
     if (!this.isDeleteAuthorized(user, id )) {
-      throw this.createNotAuthorizedException();
+      throw new ForbiddenException();
     }
 
     const deleteCount = await (await this.repository.delete(id)).affected;
     if (deleteCount != 1) {
-      throw new HttpException("No entity to delete", HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new UnprocessableEntityException("No entity to delete");
     }
   }
 
@@ -157,7 +157,7 @@ export abstract class DataService<
     this.logger.trace(`${this.constructor.name}findOne id %o`, id);
 
     if (!this.isViewingAuthorized(user)) {
-      throw this.createNotAuthorizedException();
+      throw new ForbiddenException();
     }
 
     const record = await this.repository.findOne(id, options);
@@ -174,15 +174,11 @@ export abstract class DataService<
     this.logger.trace(`${this.constructor.name}.findAll options %o ` + options);
 
     if (!this.isViewingAuthorized(user)) {
-      throw this.createNotAuthorizedException();
+      throw new ForbiddenException();
     }
 
     const findAll = await this.repository.find(options);
     return findAll.map((r) => this.convertEntity(r) as C);
-  }
-
-  protected createNotAuthorizedException() {
-    return new HttpException("Not authorized", HttpStatus.FORBIDDEN);
   }
 
 }

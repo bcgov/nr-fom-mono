@@ -1,4 +1,4 @@
-import { Injectable, NestInterceptor, ExecutionContext, CallHandler, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler, ForbiddenException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { Observable, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -17,7 +17,7 @@ export class AuthInterceptor implements NestInterceptor {
         this.logger.trace("Authenticated user = %o", user);
         request.headers['user'] = user;
       }).catch(err => { 
-        throwError(new HttpException("Not Authorized", HttpStatus.FORBIDDEN));
+        throwError(new ForbiddenException() );
       });
     }
     return next.handle();
