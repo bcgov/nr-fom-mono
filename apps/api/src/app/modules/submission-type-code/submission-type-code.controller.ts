@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
@@ -13,7 +13,7 @@ export class SubmissionTypeCodeController extends CodeTableController<Submission
   }
 
   @Get()
-  @ApiResponse({ status: 200, type: [SubmissionTypeCode] })
+  @ApiResponse({ status: HttpStatus.OK, type: [SubmissionTypeCode] })
   async findAll(): Promise<SubmissionTypeCode[]> {
     return super.findAll();
   }

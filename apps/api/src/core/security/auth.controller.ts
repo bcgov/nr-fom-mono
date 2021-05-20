@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 import { AuthService, KeycloakConfig } from './auth.service';
 
@@ -9,7 +9,7 @@ export class AuthController {
   }
 
   @Get('/keycloakConfig')
-  @ApiResponse({ status: 200, type: KeycloakConfig })
+  @ApiResponse({ status: HttpStatus.OK, type: KeycloakConfig })
   async getKeycloakConfig(): Promise<KeycloakConfig> {
       return this.authService.getKeycloakConfig();
   }

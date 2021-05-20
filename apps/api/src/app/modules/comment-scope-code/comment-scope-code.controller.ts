@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
@@ -13,7 +13,7 @@ export class CommentScopeCodeController extends CodeTableController<CommentScope
   }
 
   @Get()
-  @ApiResponse({ status: 200, type: [CommentScopeCode] })
+  @ApiResponse({ status: HttpStatus.OK, type: [CommentScopeCode] })
   async findAll(): Promise<CommentScopeCode[]> {
     return super.findAll();
   }
