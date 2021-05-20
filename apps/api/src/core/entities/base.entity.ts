@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, UpdateDateColumn, VersionColumn } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Array<infer U>
@@ -16,9 +17,8 @@ export abstract class ApiBaseReadOnlyEntity<M> {
     Object.assign(this, model);
   }
 
-  factory(props: Partial<M>): DeepPartial<M> {
+  factory(props: Partial<M> | QueryDeepPartialEntity<M>): DeepPartial<M> {
     const model = Object.create(this);
-
     Object.assign(model, props);
 
     return model;
