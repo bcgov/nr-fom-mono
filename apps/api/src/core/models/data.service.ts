@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { ApiBaseEntity } from '@entities';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 import * as dayjs from 'dayjs';
 
 import { mapToEntity, mapFromEntity } from '@core';
@@ -182,9 +181,8 @@ export abstract class DataService<
     return findAll.map((r) => this.convertEntity(r) as C);
   }
 
-  private createNotAuthorizedException() {
+  protected createNotAuthorizedException() {
     return new HttpException("Not authorized", HttpStatus.FORBIDDEN);
   }
-
 
 }

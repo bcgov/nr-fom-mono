@@ -25,7 +25,7 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
     }
     try {
       const query = this.repository.createQueryBuilder("fc")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
+        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: Use constant
         .addOrderBy('fc.name', 'ASC') // Newest first
         ;
       query.andWhere("fc.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: forestClientNumbers});
@@ -35,6 +35,7 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
       return result.map(forestClient => this.convertEntity(forestClient));
 
     } catch (error) {
+      // TODO: Review this error handling...
       this.logger.error(`${this.constructor.name}.find ${error}`);
       throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
     }

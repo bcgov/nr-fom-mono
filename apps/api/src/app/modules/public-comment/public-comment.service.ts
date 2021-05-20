@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PublicComment } from './entities/public-comment.entity';
-import { DataService } from 'apps/api/src/core/models/data-provider.model';
+import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 import { User } from 'apps/api/src/core/security/user';
 import { PublicCommentDto } from './dto/public-comment.dto';

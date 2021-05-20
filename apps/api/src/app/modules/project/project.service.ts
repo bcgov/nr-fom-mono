@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Project } from './entities/project.entity';
-import { DataService } from 'apps/api/src/core/models/data-provider.model';
+import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectDto } from './dto/project.dto';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';

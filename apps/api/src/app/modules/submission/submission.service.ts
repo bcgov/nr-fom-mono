@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, getManager, Repository } from 'typeorm';
 import { Submission } from './entities/submission.entity';
 import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionDto } from './dto/submission.dto';
-import { DataService } from 'apps/api/src/core/models/data-provider.model';
+import { DataService } from 'apps/api/src/core/models/data.service';
 import { ProjectService } from '../project/project.service';
 import { PinoLogger } from 'nestjs-pino';
 import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
