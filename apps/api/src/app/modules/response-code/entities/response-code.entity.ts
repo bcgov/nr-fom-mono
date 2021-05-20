@@ -7,3 +7,9 @@ export class ResponseCode extends ApiCodeTableEntity<ResponseCode> {
     super(responseCode);
   }
 }
+
+export enum ResponseCodeEnum {
+  IRRELEVANT = 'IRRELEVANT',
+  CONSIDERED = 'CONSIDERED',
+  ADDRESSED = 'ADDRESSED',
+}

@@ -38,12 +38,7 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   @Column({ name: 'response_details'})
   responseDetails: string;
 
-  @ManyToOne(() => Project)
-  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
-  project: Project;
-
   @Column({ name: 'project_id'})
-  @RelationId((comment: PublicComment) => comment.project)
   projectId: number;
 
   @ManyToOne(() => ResponseCode)
