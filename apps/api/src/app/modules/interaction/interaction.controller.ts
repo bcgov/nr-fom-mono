@@ -9,11 +9,8 @@ import { UpdateInteractionDto } from './dto/update-interaction.dto';
 
 @ApiTags('interaction')
 @Controller('interaction')
-export class InteractionController extends BaseController<
-  Interaction,
-  InteractionDto,
-  UpdateInteractionDto
-> {
+export class InteractionController extends BaseController<Interaction> {
+
   constructor(protected readonly service: InteractionService) {
     super(service);
   }

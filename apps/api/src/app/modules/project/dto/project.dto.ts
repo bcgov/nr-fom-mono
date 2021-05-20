@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { BaseDto } from '@dto';
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { Point } from 'geojson';
@@ -32,6 +32,8 @@ export class ProjectDto extends BaseDto {
   @ApiProperty()
   workflowState: WorkflowStateCode;
 }
+
+export class UpdateProjectDto extends OmitType(ProjectDto, ['id']) {}
 
 // Need to do this to get to compile, rather than using Point directly. Not sure why...
 export interface FomPoint extends Point {
