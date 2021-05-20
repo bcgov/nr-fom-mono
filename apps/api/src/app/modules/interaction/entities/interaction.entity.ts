@@ -15,25 +15,25 @@ export class Interaction extends ApiBaseEntity<Interaction> {
   @Column()
   stakeholder: string;
 
-  @Column()
-  communication_date: string; // timestamp
+  @Column({ name: 'communication_date'})
+  communicationDate: string; // timestamp
 
-  @Column()
-  communication_details: string;
+  @Column({ name: 'communication_details'})
+  communicationDetails: string;
 
   @ManyToOne(() => Project, { eager: true })
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
   project: Project;
 
-  @Column()
+  @Column({ name: 'project_id'})
   @RelationId((interaction: Interaction) => interaction.project)
-  project_id: number;
+  projectId: number;
 
   @ManyToOne(() => Attachment, { eager: true })
   @JoinColumn({ name: 'attachment_id', referencedColumnName: 'id' })
   attachment: Attachment;
 
-  @Column()
+  @Column({ name: 'attachment_id'})
   @RelationId((interaction: Interaction) => interaction.attachment)
-  attachment_id: number;
+  attachmentId: number;
 }

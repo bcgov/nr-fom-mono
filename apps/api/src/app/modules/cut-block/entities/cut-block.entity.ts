@@ -21,20 +21,20 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column({ type: 'geometry', spatialFeatureType: 'Polygon', srid: 3005 })
   geometry: any;
 
-  @Column()
-  planned_development_date: string; // timestamp
+  @Column({ name: 'planned_development_date'})
+  plannedDevelopmentDate: string; // timestamp
 
   @Column()
   name: string;
 
-  @Column()
-  planned_area_ha: number;
+  @Column({ name: 'planned_area_ha'})
+  plannedAreaHa: number;
 
-  @ManyToOne(() => Submission, (submission) => submission.cut_blocks, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
+  @ManyToOne(() => Submission, (submission) => submission.cutBlocks, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
   @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
   submission: Submission;
 
-  @Column()
+  @Column({name: 'submission_id'})
   @RelationId((cutBlock: CutBlock) => cutBlock.submission)
-  submission_id: number;
+  submissionId: number;
 }

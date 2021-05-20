@@ -14,14 +14,14 @@ export class RetentionArea extends ApiBaseEntity<RetentionArea> {
   @Column({ type: 'geometry', spatialFeatureType: 'Point', srid: 3005 })
   geometry: any;
 
-  @Column()
-  planned_area_ha: number;
+  @Column({ name: 'planned_area_ha'})
+  plannedAreaHa: number;
 
-  @ManyToOne(() => Submission, (submission) => submission.retention_areas, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
+  @ManyToOne(() => Submission, (submission) => submission.retentionAreas, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
   @JoinColumn({ name: 'submission_id', referencedColumnName: 'id' })
   submission: Submission;
 
-  @Column()
+  @Column({ name: 'submission_id'})
   @RelationId((retentionArea: RetentionArea) => retentionArea.submission)
-  submission_id: number;
+  submissionId: number;
 }
