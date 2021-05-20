@@ -3,7 +3,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
-import { ApiBaseEntity } from '@entities';
+import { ApiBaseEntity, DeepPartial } from '@entities';
 import * as dayjs from 'dayjs';
 
 import { mapToEntity, mapFromEntity } from '@core';
@@ -78,7 +78,7 @@ export abstract class DataService<
     dto.createUser = user ? user.userName : 'Anonymous';
 
     const model = this.entity.factory(this.convertDto(dto));
-    const created = await this.repository.save(model);
+    const created = await this.saveEntity(model);
 
     this.logger.trace(`${this.constructor.name}.create result entity %o`, created);
 
@@ -92,6 +92,21 @@ export abstract class DataService<
 
   protected convertEntity(entity: E): any {
     return mapFromEntity(entity, {});
+  }
+
+  // A hook on saving entity for other service to override if it needs extra operation, like db column encryption.
+  protected async saveEntity(model: DeepPartial<E>) {
+    return this.repository.save(model);
+  }
+  
+  // A hook on updating entity for other service to override if it needs extra operation, like db column encryption.
+  protected async updateEntity(id: string | number, dto: Partial<any>, entity: E) {
+    return this.repository.update(id, this.convertDto(dto, entity));
+  }
+
+  // A hook on find entity for other service to override if it needs extra operation, like db column decryption.
+  protected async findEntity(id: string | number, options?: FindOneOptions<E> | undefined) {
+    return await this.repository.findOne(id, options);
   }
 
   /**
@@ -108,7 +123,7 @@ export abstract class DataService<
 
     this.logger.trace(`${this.constructor.name}.update dto %o`, dto);
 
-    const entity = await this.repository.findOne(id);
+    const entity = await this.findEntity(id);
     if (! entity) {
       throw new UnprocessableEntityException("Entity not found.");
     }
@@ -121,12 +136,12 @@ export abstract class DataService<
     }
     dto.revisionCount += 1;
 
-    const updateCount = (await this.repository.update(id, this.convertDto(dto, entity))).affected;
+    const updateCount = (await this.updateEntity(id, dto, entity)).affected;
     if (updateCount != 1) {
       throw new InternalServerErrorException("Error updating object");
     }
 
-    const updatedEntity = await this.repository.findOne(id);
+    const updatedEntity = await this.findEntity(id);
     this.logger.trace(`${this.constructor.name}.update result entity %o`, updatedEntity);
 
     return this.convertEntity(updatedEntity);
@@ -170,7 +185,7 @@ export abstract class DataService<
       throw new ForbiddenException();
     }
 
-    const record = await this.repository.findOne(id, options);
+    const record = await this.findEntity(id, options);/*await this.repository.findOne(id, options);*/
     return this.convertEntity(record) as C;
   }
 
