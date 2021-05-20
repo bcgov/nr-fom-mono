@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { CodeTableService } from 'apps/api/src/core/models/code-provider.model';
+import { CodeTableService } from 'apps/api/src/core/models/code-table.service';
 
 @Controller()
 export class CodeTableController<E> {

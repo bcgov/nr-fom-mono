@@ -33,12 +33,17 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
   const appConfig = app.get('AppConfigService');
-
+  app.getHttpAdapter().getInstance().disable('x-powered-by'); // Poor security to report the technology used, so disable this response header.
   app.useLogger(app.get(Logger));
   app.useGlobalPipes(new ValidationPipe());
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
- 
+
+  // Redirect root to /api
+  app.getHttpAdapter().getInstance().get('/', (req, res) => {
+    res.redirect('/api');
+  });
+
   const config = new DocumentBuilder()
     .setTitle('FOM API')
     .setDescription('API for FOM backend')

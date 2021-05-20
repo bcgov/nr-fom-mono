@@ -29,19 +29,19 @@ export abstract class ApiBaseEntity<M> extends ApiBaseReadOnlyEntity<M> {
   // Primary key needs to be declared in concrete entity classes in order to specify the column name - different for each table as per client naming standard.
 
   // Metadata columns
-  @VersionColumn()
+  @VersionColumn({ name: 'revision_count' })
   public revision_count: number;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn({ name: 'create_timestamp', type: 'timestamptz' })
   public create_timestamp: Date;
 
-  @Column()
+  @Column({ name: 'create_user'})
   public create_user: string;
 
-  @UpdateDateColumn({ type: 'timestamptz' })
+  @UpdateDateColumn({ name: 'update_timestamp', type: 'timestamptz' })
   public update_timestamp: Date;
 
-  @Column()
+  @Column({ name: 'update_user'})
   public update_user: string;
 
 }

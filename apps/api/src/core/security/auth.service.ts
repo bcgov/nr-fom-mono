@@ -1,18 +1,31 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable, ExecutionContext, createParamDecorator, ForbiddenException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from './user';
-
 import { decode, verify } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 
-import { ExecutionContext } from '@nestjs/common';
-import { createParamDecorator } from '@nestjs/common';
+import { User } from './user';
 
-// This requires the global AuthInterceptor to add the User object to the request. If no bearer token is provided, the user object will be null.
+
+// Both of these decorators requires the global AuthInterceptor to add the User object to the request. If no bearer token is provided, the user object will be null.
+/**
+ * Use this decorator when anonmyous access is permitted.
+ */
 export const UserHeader = createParamDecorator( (data: unknown, ctx: ExecutionContext) => {
   const request = ctx.switchToHttp().getRequest();
   return request.headers['user'];
+});
+
+/**
+ * Use this decorator when authenticated access is required.
+ */
+export const UserRequiredHeader = createParamDecorator( (data: unknown, ctx: ExecutionContext) => {
+  const request = ctx.switchToHttp().getRequest();
+  const user = request.headers['user'];
+  if (user == null) {
+    throw new ForbiddenException(); 
+  }
+  return user;
 });
 
 export class KeycloakConfig {
@@ -68,7 +81,7 @@ export class AuthService {
     async verifyToken(authHeader: string):Promise<User> {
         const bearer = 'Bearer ';
         if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
-            throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
+          return Promise.reject(new ForbiddenException());
         }
         const tokenStartIndex = bearer.length;
         const token = authHeader.substr(tokenStartIndex);
@@ -80,12 +93,11 @@ export class AuthService {
           return Promise.resolve(user);
         }
         
-        const untrustedDecodedToken = decode(token, { complete: true });
-
-        const kid = untrustedDecodedToken.header.kid;
-
-        var key = await this.jwksClient.getSigningKey(kid);
         try {
+          const untrustedDecodedToken = decode(token, { complete: true });
+          const kid = untrustedDecodedToken.header.kid;
+  
+          var key = await this.jwksClient.getSigningKey(kid);
           var decodedToken = verify(token, key.getPublicKey(), 
             { issuer: this.config.getIssuer(), 
               nonce: untrustedDecodedToken.payload.nonce 
@@ -94,7 +106,7 @@ export class AuthService {
           return User.convertJwtToUser(decodedToken);
         } catch (err) {
           this.logger.warn("Invalid token %o", err);
-          throw new HttpException("Not authorized.", HttpStatus.FORBIDDEN);
+          return Promise.reject(new ForbiddenException());
         }
     }
 }

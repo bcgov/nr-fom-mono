@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { WorkflowStateCode } from './entities/workflow-state-code.entity';
-import { CodeTableService } from 'apps/api/src/core/models/code-provider.model';
+import { CodeTableService } from 'apps/api/src/core/models/code-table.service';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

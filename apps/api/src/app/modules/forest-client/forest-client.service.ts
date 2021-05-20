@@ -1,8 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ForestClient } from './entities/forest-client.entity';
-import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly-provider.model';
+import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly.service';
 import { PinoLogger } from 'nestjs-pino';
 import { ForestClientDto } from './dto/forest-client.dto';
 
@@ -23,21 +23,15 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
     if (!forestClientNumbers || forestClientNumbers.length == 0) {
       return Promise.resolve([]);
     }
-    try {
-      const query = this.repository.createQueryBuilder("fc")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('fc.name', 'ASC') // Newest first
-        ;
-      query.andWhere("fc.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: forestClientNumbers});
-    
-      const result:ForestClient[] = await query.getMany();
+    const query = this.repository.createQueryBuilder("fc")
+      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: Use constant
+      .addOrderBy('fc.name', 'ASC') // Newest first
+      ;
+    query.andWhere("fc.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: forestClientNumbers});
+  
+    const result:ForestClient[] = await query.getMany();
 
-      return result.map(forestClient => this.convertEntity(forestClient));
-
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.find ${error}`);
-      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return result.map(forestClient => this.convertEntity(forestClient));
   }
 
   convertEntity(entity: ForestClient):ForestClientDto {

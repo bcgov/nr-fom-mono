@@ -1,14 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import { Project } from './entities/project.entity';
-import { DataService } from 'apps/api/src/core/models/data-provider.model';
+import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectDto } from './dto/project.dto';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import * as dayjs from 'dayjs';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
+import { User } from 'apps/api/src/core/security/user';
 
 
 export class ProjectFindCriteria {
@@ -53,26 +54,44 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     super(repository, new Project(), logger);
   }
 
+  isCreateAuthorized(user: User, dto: Partial<ProjectDto>): boolean {
+    return (user && user.isForestClient && dto.forestClientNumber && user.clientIds.includes(dto.forestClientNumber));
+  }
+  
+  isUpdateAuthorized(user: User, dto: any, entity: Partial<Project>): boolean {
+    return (user && user.isForestClient && user.clientIds.includes(entity.forest_client_number));
+  }
+
+  isDeleteAuthorized(user: User, id: number): boolean {
+    if (!user) {
+      return false;
+    }
+    // TODO: Logic depends on workflow state and type of user.
+    // forest client user can delete only when workflow = initial.
+    // workflow = ???, ministry can delete
+    return true;
+  }
+
+  isViewingAuthorized(user: User): boolean {
+    // Public can view project details and project public summaries.
+    return true;
+  }
+
   async find(findCriteria: ProjectFindCriteria):Promise<ProjectDto[]> {
     this.logger.trace(`Find criteria: ${JSON.stringify(findCriteria)}`);
-    try {
-      const query = this.repository.createQueryBuilder("p")
-        .leftJoinAndSelect("p.forest_client", "forest_client")
-        .leftJoinAndSelect("p.workflow_state", "workflow_state")
-        .leftJoinAndSelect("p.district", "district")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC') // Newest first
-        ;
-      findCriteria.applyFindCriteria(query);
 
-      const result:Project[] = await query.getMany();
+    const query = this.repository.createQueryBuilder("p")
+      .leftJoinAndSelect("p.forest_client", "forest_client")
+      .leftJoinAndSelect("p.workflow_state", "workflow_state")
+      .leftJoinAndSelect("p.district", "district")
+      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
+      .addOrderBy('p.project_id', 'DESC') // Newest first
+      ;
+    findCriteria.applyFindCriteria(query);
 
-      return result.map(project => this.convertEntity(project));
+    const result:Project[] = await query.getMany();
 
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.find ${error}`);
-      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return result.map(project => this.convertEntity(project));
   }
 
   convertEntity(entity: Project): ProjectDto {
@@ -90,31 +109,26 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
 
     this.logger.trace(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
 
-    try {
-      const query = this.repository.createQueryBuilder("p")
-        .leftJoinAndSelect("p.forest_client", "forest_client")
-        .leftJoinAndSelect("p.workflow_state", "workflow_state")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC') // Newest first
-        ;
-      findCriteria.applyFindCriteria(query);
+    const query = this.repository.createQueryBuilder("p")
+      .leftJoinAndSelect("p.forest_client", "forest_client")
+      .leftJoinAndSelect("p.workflow_state", "workflow_state")
+      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
+      .addOrderBy('p.project_id', 'DESC') // Newest first
+      ;
+    findCriteria.applyFindCriteria(query);
 
-      const result:Project[] = await query.getMany();
+    const result:Project[] = await query.getMany();
 
-      return result.map(project => {
-        var summary = new ProjectPublicSummaryDto();
-        summary.id = project.id;
-        summary.name = project.name;
-        summary.workflowStateName = project.workflow_state.description;
-        summary.forestClientName = project.forest_client.name;
-        summary.geojson = project.geojson;
-        summary.fspId = project.fsp_id;
-        summary.commentingOpenDate = dayjs(project.commenting_open_date).format('YYYY-MM-DD');
-        return summary;
-      });
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findPublicSummaries ${error}`);
-      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return result.map(project => {
+      var summary = new ProjectPublicSummaryDto();
+      summary.id = project.id;
+      summary.name = project.name;
+      summary.workflowStateName = project.workflow_state.description;
+      summary.forestClientName = project.forest_client.name;
+      summary.geojson = project.geojson;
+      summary.fspId = project.fsp_id;
+      summary.commentingOpenDate = dayjs(project.commenting_open_date).format('YYYY-MM-DD');
+      return summary;
+    });
   }
 }
