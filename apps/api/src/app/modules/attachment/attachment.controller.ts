@@ -9,11 +9,8 @@ import { UpdateAttachmentDto } from './dto/update-attachment.dto';
 
 @ApiTags('attachment')
 @Controller('attachment')
-export class AttachmentController extends BaseController<
-  Attachment,
-  AttachmentDto,
-  UpdateAttachmentDto
-> {
+export class AttachmentController extends BaseController<Attachment> {
+  
   constructor(protected readonly service: AttachmentService) {
     super(service);
   }

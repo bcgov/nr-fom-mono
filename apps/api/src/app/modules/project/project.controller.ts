@@ -4,7 +4,7 @@ import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './entities/project.entity';
 import { ProjectDto } from './dto/project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
+import { UpdateProjectDto } from './dto/project.dto';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
 import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
@@ -16,15 +16,10 @@ import { User } from 'apps/api/src/core/security/user';
 
 @ApiTags('project')
 @Controller('project')
-export class ProjectController extends BaseController<
-  Project,
-  ProjectDto,
-  UpdateProjectDto
-> {
+export class ProjectController extends BaseController<Project> {
   constructor(
     protected readonly service: ProjectService,
-    private projectSpatialDetailService: ProjectSpatialDetailService,
-    private authService: AuthService) {
+    private projectSpatialDetailService: ProjectSpatialDetailService) {
     super(service);
   }
 

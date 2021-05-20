@@ -137,7 +137,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum, user: User): Promise<Submission>  {
     // Obtain existing submission for the submission type
     const existingSubmissions: Submission[] = await this.repository.find({
-      where: { project_id: projectId, submission_type_code: submissionTypeCode },
+      where: { projectId: projectId, submission_type_code: submissionTypeCode },
       relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
     });
 

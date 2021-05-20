@@ -11,11 +11,8 @@ import { User } from 'apps/api/src/core/security/user';
 
 @ApiTags('public-comment')
 @Controller('public-comment')
-export class PublicCommentController extends BaseController<
-  PublicComment,
-  PublicCommentDto,
-  UpdatePublicCommentDto
-> {
+export class PublicCommentController extends BaseController<PublicComment> {
+
   constructor(protected readonly service: PublicCommentService) {
     super(service);
   }
@@ -23,8 +20,8 @@ export class PublicCommentController extends BaseController<
   // Anonymous users can create comments.
   @Post()
   async create(
-    @Body() createDto: PublicCommentDto): Promise<PublicCommentDto> {
-    return this.service.create(createDto, null); 
+    @Body() createDto: PublicCommentDto): Promise<void> {
+    this.service.create(createDto, null); 
   }
 
   @Get()
@@ -33,16 +30,16 @@ export class PublicCommentController extends BaseController<
   async find(
     @UserRequiredHeader() user: User,
     @Query('projectId') projectId: number): Promise<PublicCommentDto[]> {
-    return this.service.findAll(user, { where: { project_id: projectId } });
+    return this.service.findAll(user, { where: { projectId: projectId } });
   }
 
-  // TODO: REMOVE and merge into basic get.
+  // TODO: REMOVE this once Admin component is changed.
   @Get('/byProjectId/:id')
   @ApiBearerAuth()
   async findByProjectId(
     @UserRequiredHeader() user: User,
     @Param('id') id: number): Promise<PublicCommentDto[]> {
-    return this.service.findAll(user, { where: { project_id: id } });
+    return this.service.findAll(user, { where: { projectId: id } });
   }
 
   @Get(':id')
