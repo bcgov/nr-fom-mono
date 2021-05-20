@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
@@ -6,7 +6,6 @@ import { PublicCommentService } from './public-comment.service';
 import { PublicComment } from './entities/public-comment.entity';
 import { PublicCommentDto } from './dto/public-comment.dto';
 import { UpdatePublicCommentDto } from './dto/update-public-comment.dto';
-import { DeleteResult } from 'typeorm';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 

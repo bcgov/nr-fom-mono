@@ -31,7 +31,7 @@ export class ProjectFindCriteria {
       query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
     }
     if (this.likeForestClientName) {
-      query.andWhere("forest_client.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
+      query.andWhere("forestClient.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
     }
     if (this.commentingOpenedOnOrAfter) {
       query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${this.commentingOpenedOnOrAfter}`});
@@ -59,7 +59,7 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
   }
   
   isUpdateAuthorized(user: User, dto: any, entity: Partial<Project>): boolean {
-    return (user && user.isForestClient && user.clientIds.includes(entity.forest_client_number));
+    return (user && user.isForestClient && user.clientIds.includes(entity.forestClientId));
   }
 
   isDeleteAuthorized(user: User, id: number): boolean {
@@ -81,8 +81,8 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     this.logger.trace(`Find criteria: ${JSON.stringify(findCriteria)}`);
 
     const query = this.repository.createQueryBuilder("p")
-      .leftJoinAndSelect("p.forest_client", "forest_client")
-      .leftJoinAndSelect("p.workflow_state", "workflow_state")
+      .leftJoinAndSelect("p.forestClient", "forestClient")
+      .leftJoinAndSelect("p.workflowState", "workflowState")
       .leftJoinAndSelect("p.district", "district")
       .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
       .addOrderBy('p.project_id', 'DESC') // Newest first
@@ -99,8 +99,8 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     if (entity.district != null) {
       dto.district = this.districtService.convertEntity(entity.district);
     }
-    if (entity.forest_client != null) {
-      dto.forestClient = this.forestClientService.convertEntity(entity.forest_client);
+    if (entity.forestClient != null) {
+      dto.forestClient = this.forestClientService.convertEntity(entity.forestClient);
     }
     return dto;
   }
@@ -110,8 +110,8 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     this.logger.trace(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
 
     const query = this.repository.createQueryBuilder("p")
-      .leftJoinAndSelect("p.forest_client", "forest_client")
-      .leftJoinAndSelect("p.workflow_state", "workflow_state")
+      .leftJoinAndSelect("p.forestClient", "forestClient")
+      .leftJoinAndSelect("p.workflowState", "workflowState")
       .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
       .addOrderBy('p.project_id', 'DESC') // Newest first
       ;
@@ -123,11 +123,11 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
       var summary = new ProjectPublicSummaryDto();
       summary.id = project.id;
       summary.name = project.name;
-      summary.workflowStateName = project.workflow_state.description;
-      summary.forestClientName = project.forest_client.name;
+      summary.workflowStateName = project.workflowState.description;
+      summary.forestClientName = project.forestClient.name;
       summary.geojson = project.geojson;
-      summary.fspId = project.fsp_id;
-      summary.commentingOpenDate = dayjs(project.commenting_open_date).format('YYYY-MM-DD');
+      summary.fspId = project.fspId;
+      summary.commentingOpenDate = dayjs(project.commentingOpenDate).format('YYYY-MM-DD');
       return summary;
     });
   }

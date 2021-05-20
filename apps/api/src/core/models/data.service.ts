@@ -115,8 +115,8 @@ export abstract class DataService<
     if (!this.isUpdateAuthorized(user, dto, entity)) {
       throw new ForbiddenException();
     }
-    if (entity.revision_count != dto.revisionCount) {
-      this.logger.info("Entity revision count " + entity.revision_count + " dto revision count = " + dto.revisionCount);
+    if (entity.revisionCount != dto.revisionCount) {
+      this.logger.info("Entity revision count " + entity.revisionCount + " dto revision count = " + dto.revisionCount);
       throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
     }
     dto.revisionCount += 1;

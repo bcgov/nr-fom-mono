@@ -61,7 +61,7 @@ export class AuthService {
         this.config.enabled = (process.env.KEYCLOAK_ENABLED || 'true') === 'true';
         this.config.realm = process.env.KEYCLOAK_REALM || 'ichqx89w';
         this.config.url = process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth';
-        // Sample User = {"isMinistry":true,"isForestClient":true,"clientIds":[1011, 1012],"userName":"bvandegr@idir","displayName":"Vandegriend, Basil IIT:EX"}
+        // Sample User = {"isMinistry":true,"isForestClient":true,"clientIds":[1011, 1012],"userName":"fakeuser@idir","displayName":"Longlastname, Firstname"}
         // Other values for Keycloak URL: TEST: https://test.oidc.gov.bc.ca/auth, PROD: https://oidc.gov.bc.ca/auth
 
         this.logger.info("Keycloak configuration %o", this.config);

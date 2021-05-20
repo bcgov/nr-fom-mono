@@ -11,7 +11,7 @@ export type DeepPartial<T> = {
 
 export abstract class ApiBaseReadOnlyEntity<M> {
 
-  // Do not include any metadata columns.
+  // Do not include any metadata columns to simplify mapping to DTOs.
 
   constructor(model?: Partial<M>) {
     Object.assign(this, model);
@@ -30,18 +30,18 @@ export abstract class ApiBaseEntity<M> extends ApiBaseReadOnlyEntity<M> {
 
   // Metadata columns
   @VersionColumn({ name: 'revision_count' })
-  public revision_count: number;
+  public revisionCount: number;
 
   @CreateDateColumn({ name: 'create_timestamp', type: 'timestamptz' })
-  public create_timestamp: Date;
+  public createTimestamp: Date;
 
   @Column({ name: 'create_user'})
-  public create_user: string;
+  public createUser: string;
 
   @UpdateDateColumn({ name: 'update_timestamp', type: 'timestamptz' })
-  public update_timestamp: Date;
+  public updateTimestamp: Date;
 
   @Column({ name: 'update_user'})
-  public update_user: string;
+  public updateUser: string;
 
 }
