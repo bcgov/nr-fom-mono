@@ -1,3 +1,3 @@
 export * from './data.service';
-export * from './data-readonly-provider.model';
+export * from './data-readonly.service';
 export * from './code-table.service';
