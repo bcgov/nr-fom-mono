@@ -146,17 +146,17 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       // Save the submission first in order to populate primary key.
       // Populate fields
       submission = new Submission({             
-        project_id: projectId,
-        submission_type_code: submissionTypeCode,
-        create_user: user.userName,
+        projectId: projectId,
+        submissionTypeCode: submissionTypeCode,
+        createUser: user.userName,
       })
       submission = await this.repository.save(submission);
 
     } else {
       submission = existingSubmissions[0];
-      submission.update_user = user.userName;
-      submission.update_timestamp = dayjs().toDate();
-      submission.revision_count += 1;
+      submission.updateUser = user.userName;
+      submission.updateTimestamp = dayjs().toDate();
+      submission.revisionCount += 1;
     }
 
     this.logger.debug('Obtained submission: %o', submission);
@@ -229,18 +229,18 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
         // validate required properties.
         validateDevelopmentDate(properties);
         return new CutBlock({name, geometry,
-          create_user: user.userName,
-          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          createUser: user.userName,
+          planned_development_date: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
       else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
         // validate required properties.
         validateDevelopmentDate(properties);
         return new RoadSection({name, geometry,
-          create_user: user.userName,
-          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          createUser: user.userName,
+          planned_development_date: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
       else {
-        return new RetentionArea({geometry, create_user: user.userName});
+        return new RetentionArea({geometry, createUser: user.userName});
       }
     });
 

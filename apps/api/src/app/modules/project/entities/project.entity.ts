@@ -21,41 +21,41 @@ export class Project extends ApiBaseEntity<Project> {
   @Column()
   description: string;
 
-  @Column()
-  commenting_open_date: string; // timestamp
+  @Column({ name: 'commenting_open_date'})
+  commentingOpenDate: string; // timestamp
 
-  @Column()
-  commenting_closed_date: string; // timestamp
+  @Column({ name: 'commenting_closed_date'})
+  commentingClosedDate: string; // timestamp
 
   @Column({ name: 'geometry_latlong', type: 'geometry', spatialFeatureType: 'Point', srid: 4326 })
   geojson: FomPoint;
 
-  @Column()
-  fsp_id: number;
+  @Column({ name: 'fsp_id'})
+  fspId: number;
 
   @ManyToOne(() => District)
   @JoinColumn({ name: 'district_id', referencedColumnName: 'id' })
   district: District;
 
-  @Column()
+  @Column({ name: 'district_id'})
   @RelationId((project: Project) => project.district)
-  district_id: number;
+  districtId: number;
 
   @ManyToOne(() => ForestClient)
   @JoinColumn({ name: 'forest_client_number', referencedColumnName: 'id' })
-  forest_client: ForestClient;
+  forestClient: ForestClient;
 
-  @Column()
-  @RelationId((project: Project) => project.forest_client)
-  forest_client_number?: string;
+  @Column({ name: 'forest_client_number'})
+  @RelationId((project: Project) => project.forestClient)
+  forestClientId: string;
 
   @ManyToOne(() => WorkflowStateCode)
   @JoinColumn({ name: 'workflow_state_code' })
-  workflow_state: WorkflowStateCode;
+  workflowState: WorkflowStateCode;
 
-  @Column()
-  @RelationId((project: Project) => project.workflow_state)
-  workflow_state_code?: string;
+  @Column({ name: 'workflow_state_code'})
+  @RelationId((project: Project) => project.workflowState)
+  workflowStateCode?: string;
 
   @OneToMany(type => Submission, (submission) => submission.project)
   submissions: Submission[];

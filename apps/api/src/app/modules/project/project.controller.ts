@@ -83,7 +83,7 @@ export class ProjectController extends BaseController<
     @UserHeader() user: User,
     @Param('id') id: number): Promise<ProjectDto> {
     return this.service.findOne(id, user, {
-      relations: ['district', 'forest_client', 'workflow_state'],
+      relations: ['district', 'forestClient', 'workflowState'],
     });
   }
 

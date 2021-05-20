@@ -21,7 +21,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return user == null; // Only anonymous user is allowed to create comments.
   }
   
-  isUpdateAuthorized(user: User, dto: any, entity: Partial<PublicCommentDto>):boolean {
+  isUpdateAuthorized(user: User, dto: Partial<PublicCommentDto>, entity: Partial<PublicComment>):boolean {
     if (!user || !user.isForestClient) {
       return false;
     }

@@ -8,16 +8,21 @@ import * as dayjs from 'dayjs';
 
 import { mapToEntity, mapFromEntity } from '@core';
 import { User } from '../security/user';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 /**
  * Base class to extend for interacting with the database through a repository pattern.
+ * Provides standard CRUD services with conversion between entity and DTO objects. This may not be appropriate in all use cases, in which case
+ * it is perfectly acceptable to use a completely custom service. See e.g. SubmissionService.
+ * 
+ * Conversions between DTOs and entity are done automatically, copying all the fields from the source into the target. If different behavior is desired
+ * convertDto() and convertEntity() can be overridden.
  * 
  * Data modification methods (create, update, delete) include handling of user authorization and metadata columns (create/update user/timestamp + revision count)
  * View methods (findAll, findOne) include handling of user authorization.
- * Default implementations of user authorization checks reject all users.
+ * Default implementations of user authorization methods reject all users (which is the safest from a security standpoint) 
+ * but will therefore most likely need to be overridden.
  *
- * Add new standard database interaction methods here. Abstract away complex & nonstandard ones
- * @export
  * @class DataService
  * @template E - Model extends MsBaseEntity
  * @template R - repository extends Repository<Model>
@@ -72,12 +77,17 @@ export abstract class DataService<
 
     dto.createUser = user ? user.userName : 'Anonymous';
 
-    const model = this.entity.factory(mapToEntity(dto as C, {} as E));
+    const model = this.entity.factory(this.convertDto(dto));
     const created = await this.repository.save(model);
 
     this.logger.trace(`${this.constructor.name}.create result entity %o`, created);
 
     return this.convertEntity(created);
+  }
+
+  protected convertDto(dto: any, existingEntity?: Partial<E>): QueryDeepPartialEntity<E> {
+    const entity = existingEntity ? existingEntity : {} as E;
+    return mapToEntity(dto, entity);
   }
 
   protected convertEntity(entity: E): any {
@@ -105,13 +115,13 @@ export abstract class DataService<
     if (!this.isUpdateAuthorized(user, dto, entity)) {
       throw new ForbiddenException();
     }
-    if (entity.revision_count != dto.revisionCount) {
-      this.logger.info("Entity revision count " + entity.revision_count + " dto revision count = " + dto.revisionCount);
+    if (entity.revisionCount != dto.revisionCount) {
+      this.logger.info("Entity revision count " + entity.revisionCount + " dto revision count = " + dto.revisionCount);
       throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
     }
     dto.revisionCount += 1;
 
-    const updateCount = (await this.repository.update(id, mapToEntity(dto, entity))).affected;
+    const updateCount = (await this.repository.update(id, this.convertDto(dto, entity))).affected;
     if (updateCount != 1) {
       throw new InternalServerErrorException("Error updating object");
     }

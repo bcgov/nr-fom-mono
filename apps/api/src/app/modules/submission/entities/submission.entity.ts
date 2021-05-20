@@ -16,20 +16,20 @@ export class Submission extends ApiBaseEntity<Submission> {
   public id: number;
 
   @ManyToOne(() => Project, { eager: false })
-  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'projectId', referencedColumnName: 'id' })
   project: Project;
 
-  @Column()
+  @Column({name: 'project_id'})
   @RelationId((submission: Submission) => submission.project)
-  project_id: number;
+  projectId: number;
 
   @ManyToOne(() => SubmissionTypeCode)
   @JoinColumn({ name: 'submission_type_code', referencedColumnName: 'code' })
-  submission_type: SubmissionTypeCode;
+  submissionType: SubmissionTypeCode;
 
-  @Column()
-  @RelationId((submission: Submission) => submission.submission_type)
-  submission_type_code: string;
+  @Column({ name: 'submission_type_code'})
+  @RelationId((submission: Submission) => submission.submissionType)
+  submissionTypeCode: string;
 
   @OneToMany(type => CutBlock, (cutBlock) => cutBlock.submission, {cascade: true})
   cut_blocks: CutBlock[];

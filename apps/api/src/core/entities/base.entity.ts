@@ -1,4 +1,5 @@
 import { Column, CreateDateColumn, UpdateDateColumn, VersionColumn } from 'typeorm';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Array<infer U>
@@ -10,15 +11,14 @@ export type DeepPartial<T> = {
 
 export abstract class ApiBaseReadOnlyEntity<M> {
 
-  // Do not include any metadata columns.
+  // Do not include any metadata columns to simplify mapping to DTOs.
 
   constructor(model?: Partial<M>) {
     Object.assign(this, model);
   }
 
-  factory(props: Partial<M>): DeepPartial<M> {
+  factory(props: Partial<M> | QueryDeepPartialEntity<M>): DeepPartial<M> {
     const model = Object.create(this);
-
     Object.assign(model, props);
 
     return model;
@@ -30,18 +30,18 @@ export abstract class ApiBaseEntity<M> extends ApiBaseReadOnlyEntity<M> {
 
   // Metadata columns
   @VersionColumn({ name: 'revision_count' })
-  public revision_count: number;
+  public revisionCount: number;
 
   @CreateDateColumn({ name: 'create_timestamp', type: 'timestamptz' })
-  public create_timestamp: Date;
+  public createTimestamp: Date;
 
   @Column({ name: 'create_user'})
-  public create_user: string;
+  public createUser: string;
 
   @UpdateDateColumn({ name: 'update_timestamp', type: 'timestamptz' })
-  public update_timestamp: Date;
+  public updateTimestamp: Date;
 
   @Column({ name: 'update_user'})
-  public update_user: string;
+  public updateUser: string;
 
 }
