@@ -32,39 +32,39 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   @Column()
   email: string;
 
-  @Column()
-  phone_number: string;
+  @Column({ name: 'phone_number'})
+  phoneNumber: string;
 
-  @Column()
-  response_details: string;
+  @Column({ name: 'response_details'})
+  responseDetails: string;
 
   @ManyToOne(() => Project)
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
   project: Project;
 
-  @Column()
+  @Column({ name: 'project_id'})
   @RelationId((comment: PublicComment) => comment.project)
-  project_id: number;
+  projectId: number;
 
   @ManyToOne(() => ResponseCode)
   @JoinColumn({ name: 'response_code', referencedColumnName: 'code' })
   response: ResponseCode;
 
-  @Column()
+  @Column({ name: 'response_code'})
   @RelationId((comment: PublicComment) => comment.response)
-  response_code: string;
+  responseCode: string;
 
   @ManyToOne(() => CommentScopeCode)
   @JoinColumn({ name: 'comment_scope_code', referencedColumnName: 'code' })
   commentScope: CommentScopeCode;
 
-  @Column()
+  @Column({ name: 'comment_scope_code'})
   @RelationId((comment: PublicComment) => comment.commentScope)
-  comment_scope_code: string;
+  commentScopeCode: string;
 
-  @Column()
-  scope_cut_block_id: number;
+  @Column({ name: 'scope_cut_block_id'})
+  scopeCutBlockId: number;
 
-  @Column()
-  scope_road_section_id: number;
+  @Column({ name: 'scope_road_section_id'})
+  scopeRoadSectionId: number;
 }

@@ -86,13 +86,13 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
 
     // And save the geospatial objects (will update/replace previous ones)
     if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
-      submission.cut_blocks = <CutBlock[]>spatialObjects;
+      submission.cutBlocks = <CutBlock[]>spatialObjects;
     }
     else if (SpatialObjectCodeEnum.ROAD_SECTION === dto.spatialObjectCode) {
-      submission.road_sections = <RoadSection[]>spatialObjects;
+      submission.roadSections = <RoadSection[]>spatialObjects;
     }
     else {
-      submission.retention_areas = <RetentionArea[]>spatialObjects;
+      submission.retentionAreas = <RetentionArea[]>spatialObjects;
     }
 
     const updatedSubmission = await this.repository.save(submission);
@@ -138,7 +138,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     // Obtain existing submission for the submission type
     const existingSubmissions: Submission[] = await this.repository.find({
       where: { project_id: projectId, submission_type_code: submissionTypeCode },
-      relations: ['cut_blocks', 'retention_areas', 'road_sections'],
+      relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
     });
 
     var submission: Submission;
@@ -230,14 +230,14 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
         validateDevelopmentDate(properties);
         return new CutBlock({name, geometry,
           createUser: user.userName,
-          planned_development_date: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
       else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
         // validate required properties.
         validateDevelopmentDate(properties);
         return new RoadSection({name, geometry,
           createUser: user.userName,
-          planned_development_date: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
       else {
         return new RetentionArea({geometry, createUser: user.userName});
@@ -258,7 +258,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
         and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
 
     const spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
-    spatialObjs.forEach((s) => {s.submission_id = submissionId}); // assign them to the submission 
+    spatialObjs.forEach((s) => {s.submissionId = submissionId}); // assign them to the submission 
 
     this.logger.info(`FOM spatial objects prepared: ${JSON.stringify(spatialObjs)}`);
     return spatialObjs;
