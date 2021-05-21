@@ -185,7 +185,7 @@ export abstract class DataService<
       throw new ForbiddenException();
     }
 
-    const record = await this.findEntity(id, options);/*await this.repository.findOne(id, options);*/
+    const record = await this.findEntity(id, options);
     return this.convertEntity(record) as C;
   }
 

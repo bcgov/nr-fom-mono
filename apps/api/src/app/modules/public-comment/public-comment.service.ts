@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { PublicComment } from './entities/public-comment.entity';
@@ -60,7 +60,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     .addSelect(`pgp_sym_decrypt(name::bytea, '${this.key}')`, 'name')
     .addSelect(`pgp_sym_decrypt(location::bytea, '${this.key}')`, 'location')
     .addSelect(`pgp_sym_decrypt(email::bytea, '${this.key}')`, 'email')
-    .addSelect(`pgp_sym_decrypt(phone_number::bytea, '${this.key}')`, 'phone_number')
+    .addSelect(`pgp_sym_decrypt(phone_number::bytea, '${this.key}')`, 'phoneNumber')
     .where('pc.id = :pId', {pId: entity.id})
     .getRawOne();
     Object.assign(entity, decryptedSelectObj);
@@ -91,5 +91,19 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return (user && user.isAuthorizedForAdminSite());
   }
 
+  async findByProjectId(user: User, projectId: number): Promise<PublicCommentDto[]> {
+    if (!this.isViewingAuthorized(user)) {
+      throw new ForbiddenException();
+    }
+    const options = { where: { projectId }, 
+                      relations: ['response', 'commentScope'] 
+                    };
+    this.logger.trace(`${this.constructor.name}.findByProjectId options %o `, options);
+    const records = await this.repository.find(options);
 
+    return Promise.all(records.map(async (r) => {
+      r = await this.decryptSensitiveColumns(r);
+      return this.convertEntity(r) as PublicCommentDto;
+    }));
+  }
 }
