@@ -23,10 +23,11 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   }
 
   protected async saveEntity(model: DeepPartial<PublicComment>) {
-    const encrypColumntPicked = _.pick(model, ['name','location','email','phoneNumber']);
-    const encryptColumnsOmitted = _.omit(model, ['name','location','email','phoneNumber']);
+    const encryptColumns = ['name','location','email','phoneNumber'];// entity property names that need to be encrypted.
+    const encrypColumntPicked = _.pick(model, encryptColumns);
+    const encryptColumnsOmitted = _.omit(model, encryptColumns);
     let created = await super.saveEntity(encryptColumnsOmitted);
-    created = {...created, ...encrypColumntPicked};
+    created = {...created, ...encrypColumntPicked} as PublicComment;
     await this.encryptSensitiveColumns(created);
     return created;
   }
