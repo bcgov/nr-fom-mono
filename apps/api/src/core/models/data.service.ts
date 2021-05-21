@@ -1,40 +1,48 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 import { ApiBaseEntity, DeepPartial } from '@entities';
 import * as dayjs from 'dayjs';
 
-import { mapToEntity, mapFromEntity } from '@core';
+import { mapToEntity } from '@core';
 import { User } from '../security/user';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 /**
  * Base class to extend for interacting with the database through a repository pattern.
- * Provides standard CRUD services with conversion between entity and DTO objects. This may not be appropriate in all use cases, in which case
- * it is perfectly acceptable to use a completely custom service. See e.g. SubmissionService.
+ * Provides standard CRUD services. 
+ * Inputs are requestDTOs or find parameters/options. 
+ * Conversions from request DTOs to entity are done automatically, copying all the fields from the source into the target. 
+ * This assumes each request DTO attribute maps to the same entity attribute. If different behavior is desired convertDto() can be overridden.
  * 
- * Conversions between DTOs and entity are done automatically, copying all the fields from the source into the target. If different behavior is desired
- * convertDto() and convertEntity() can be overridden.
+ * Outputs are entities, although a convertEntity() hook can be overriden to change this.
+ * A standard set of relations to be loaded (as find options) can be provided 
+ * which will be used to ensure retrieved entities in different scenarios (e.g. from update, findOne, findMany) have a common set of children.
  * 
  * Data modification methods (create, update, delete) include handling of user authorization and metadata columns (create/update user/timestamp + revision count)
  * View methods (findAll, findOne) include handling of user authorization.
  * Default implementations of user authorization methods reject all users (which is the safest from a security standpoint) 
- * but will therefore most likely need to be overridden.
+ * but will therefore need to be overridden.
+ * 
+ * If this class doesn't fit your use case it is perfectly acceptable to use a completely custom service. See e.g. SubmissionService. 
+ * Although handling of security and metadata columns will then need to be done.
  *
  * @class DataService
- * @template E - Model extends MsBaseEntity
- * @template R - repository extends Repository<Model>
+ * @template E - entity extends ApiBaseEntity<E>
+ * @template R - repository extends Repository<E>
+ * @template O - output (response) object type, defaults to entity.
  */
 @Injectable()
 export abstract class DataService<
   E extends ApiBaseEntity<E>,
-  R extends Repository<E>
+  R extends Repository<E>,
+  O
 > {
   protected constructor(
     protected repository: R,
-    private entity: E,
+    private entity: E, // prototype for creating a new entity instance
     protected readonly logger: PinoLogger
   ) {
     logger.setContext(this.constructor.name);
@@ -49,7 +57,7 @@ export abstract class DataService<
     return false;
   }
   
-  isUpdateAuthorized(user: User, dto: any, entity: Partial<E>): boolean {
+  isUpdateAuthorized(user: User, dto: any, entity: E): boolean {
     return false;
   }
 
@@ -68,21 +76,19 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async create<C>(dto: Partial<any>, user: User): Promise<C> {
-    this.logger.trace(`${this.constructor.name}.create dto %o`, dto);
+  async create(requestDto: any, user: User): Promise<O> {
+    this.logger.trace(`${this.constructor.name}.create dto %o`, requestDto);
 
-    if (!this.isCreateAuthorized(user, dto)) {
+    if (!this.isCreateAuthorized(user, requestDto)) {
       throw new ForbiddenException();
     }
 
-    dto.createUser = user ? user.userName : 'Anonymous';
+    requestDto.createUser = user ? user.userName : 'Anonymous';
 
-    const model = this.entity.factory(this.convertDto(dto));
-    const created = await this.saveEntity(model);
+    const entityToCreate = this.entity.factory(this.convertDto(requestDto));
+    const savedEntity = await this.saveEntity(entityToCreate);
 
-    this.logger.trace(`${this.constructor.name}.create result entity %o`, created);
-
-    return this.convertEntity(created);
+    return this.convertEntity(savedEntity);
   }
 
   protected convertDto(dto: any, existingEntity?: Partial<E>): QueryDeepPartialEntity<E> {
@@ -90,53 +96,69 @@ export abstract class DataService<
     return mapToEntity(dto, entity);
   }
 
-  protected convertEntity(entity: E): any {
-    return mapFromEntity(entity, {});
+  protected convertEntity(entity: E): O {
+    return (entity as unknown) as O; // Conversion to unknown first to satisfy Typescript. This logic only works if O = E.
   }
 
   // A hook on saving entity for other service to override if it needs extra operation, like db column encryption.
-  protected async saveEntity(model: DeepPartial<E>) {
+  protected async saveEntity(model: DeepPartial<E>): Promise<E> {
     return this.repository.save(model);
   }
   
   // A hook on updating entity for other service to override if it needs extra operation, like db column encryption.
-  protected async updateEntity(id: string | number, dto: Partial<any>, entity: E) {
+  protected async updateEntity(id: string | number, dto: Partial<any>, entity: E): Promise<UpdateResult> {
     return this.repository.update(id, this.convertDto(dto, entity));
   }
 
   // A hook on find entity for other service to override if it needs extra operation, like db column decryption.
-  protected async findEntity(id: string | number, options?: FindOneOptions<E> | undefined) {
-    return await this.repository.findOne(id, options);
+  protected async findEntity(id: string | number, options?: FindOneOptions<E> | undefined): Promise<E|undefined> {
+    return await this.repository.findOne(id, this.addCommonRelationsToFindOptions(options));
   }
+
+  protected addCommonRelationsToFindOptions(options?: FindOneOptions<E> | FindManyOptions<E>): FindOneOptions<E> | FindManyOptions<E> {
+    const revisedOptions = options ? options : {};
+    revisedOptions.relations = options && options.relations ? options.relations : [];
+    this.getCommonRelations().forEach(relation => {
+      if (!revisedOptions.relations.includes(relation)) { 
+        revisedOptions.relations.push(relation);
+      }
+    });
+    return revisedOptions;
+  }
+
+  protected getCommonRelations(): string[] {
+    return [];
+  }
+
 
   /**
    * Update a record by Id with deep partial
    *
    * @param {string} id
-   * @param {Partial<E>} dto
+   * @param dto
    * @return {*}
    * @memberof DataService
    */
-  async update<U>(id: number | string, dto: Partial<any>, user: User): Promise<U> {
-    dto.updateUser = user ? user.userName : 'Anonymous';
-    dto.updateTimestamp = dayjs().format();
+  async update(id: number | string, requestDto: any, user: User): Promise<O> {
+    requestDto.updateUser = user ? user.userName : 'Anonymous';
+    requestDto.updateTimestamp = dayjs().format();
 
-    this.logger.trace(`${this.constructor.name}.update dto %o`, dto);
+    this.logger.trace(`${this.constructor.name}.update dto %o`, requestDto);
 
     const entity = await this.findEntity(id);
     if (! entity) {
       throw new UnprocessableEntityException("Entity not found.");
     }
-    if (!this.isUpdateAuthorized(user, dto, entity)) {
+    if (!this.isUpdateAuthorized(user, requestDto, entity)) {
       throw new ForbiddenException();
     }
-    if (entity.revisionCount != dto.revisionCount) {
-      this.logger.info("Entity revision count " + entity.revisionCount + " dto revision count = " + dto.revisionCount);
+    if (entity.revisionCount != requestDto.revisionCount) {
+      this.logger.trace("Entity revision count " + entity.revisionCount + " dto revision count = " + requestDto.revisionCount);
       throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
     }
-    dto.revisionCount += 1;
+    requestDto.revisionCount += 1;
 
-    const updateCount = (await this.updateEntity(id, dto, entity)).affected;
+    const updateCount = (await this.updateEntity(id, requestDto, entity)).affected;
     if (updateCount != 1) {
       throw new InternalServerErrorException("Error updating object");
     }
@@ -146,6 +168,8 @@ export abstract class DataService<
 
     return this.convertEntity(updatedEntity);
   }
+
+
 
   /**
    * Remove record by Id
@@ -175,18 +199,21 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-   async findOne<C>(
+   async findOne(
     id: number | string, user: User, 
     options?: FindOneOptions<E> | undefined
-  ): Promise<C> {
+  ): Promise<O> {
     this.logger.trace(`${this.constructor.name}findOne id %o`, id);
 
     if (!this.isViewingAuthorized(user)) {
       throw new ForbiddenException();
     }
 
-    const record = await this.findEntity(id, options);
-    return this.convertEntity(record) as C;
+    const record = await this.findEntity(id, this.addCommonRelationsToFindOptions(options));
+    if (record == undefined) {
+      throw new BadRequestException("No entity for the specified id.");
+    }
+    return this.convertEntity(record);
   }
 
   /**
@@ -195,15 +222,15 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async findAll<C>(user: User, options?: FindManyOptions<E> | undefined): Promise<C[]> {
+  async findAll(user: User, options?: FindManyOptions<E> | undefined): Promise<O[]> {
     this.logger.trace(`${this.constructor.name}.findAll options %o ` + options);
 
     if (!this.isViewingAuthorized(user)) {
       throw new ForbiddenException();
     }
 
-    const findAll = await this.repository.find(options);
-    return findAll.map((r) => this.convertEntity(r) as C);
+    const findAll = await this.repository.find(this.addCommonRelationsToFindOptions(options));
+    return findAll.map((r) => this.convertEntity(r));
   }
 
 }

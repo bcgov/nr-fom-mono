@@ -6,7 +6,7 @@ import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class RetentionAreaService extends DataService<RetentionArea, Repository<RetentionArea>> {
+export class RetentionAreaService extends DataService<RetentionArea, Repository<RetentionArea>, RetentionArea> {
   constructor(
     @InjectRepository(RetentionArea)
     repository: Repository<RetentionArea>,

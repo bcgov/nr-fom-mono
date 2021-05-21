@@ -6,7 +6,7 @@ import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class CutBlockService extends DataService<CutBlock, Repository<CutBlock>> {
+export class CutBlockService extends DataService<CutBlock, Repository<CutBlock>, CutBlock> {
   constructor(
     @InjectRepository(CutBlock)
     repository: Repository<CutBlock>,

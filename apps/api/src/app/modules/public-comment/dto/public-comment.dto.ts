@@ -1,61 +1,84 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { BaseDto } from '@dto';
-import { Project } from '../../project/entities/project.entity';
-import { ResponseCode } from '../../response-code/entities/response-code.entity';
-import { CommentScopeCode } from '../../comment-scope-code/entities/comment-scope-code.entity';
-import { IsEmail, IsNotEmpty, IsOptional, MaxLength } from 'class-validator';
+import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ResponseCode, ResponseCodeEnum } from '../../response-code/entities/response-code.entity';
+import { CommentScopeCode, CommentScopeCodeEnum } from '../../comment-scope-code/entities/comment-scope-code.entity';
+import { IsEmail, IsEnum, IsNumber, IsOptional, MaxLength, MinLength } from 'class-validator';
 
-export class PublicCommentDto extends BaseDto {
-
-  @MaxLength(4000)
+export class PublicCommentCreateRequest {
   @ApiProperty()
-  feedback: string;
-
-  @IsOptional()
-  @MaxLength(50)
-  @ApiProperty()
-  name: string;
-
-  @IsOptional()
-  @MaxLength(50)
-  @ApiProperty()
-  location: string;
-
-  @IsOptional()
-  @IsEmail()
-  @ApiProperty()
-  email: string;
-
-  @IsOptional()
-  @ApiProperty()
-  phoneNumber: string;
-
-  @ApiProperty()
-  responseDetails: string;
-
-  @IsNotEmpty()
-  @ApiProperty()
+  @IsNumber()
   projectId: number;
 
   @ApiProperty()
-  project: Project;
+  @IsEnum(CommentScopeCodeEnum)
+  commentScopeCode: string;
 
   @ApiProperty()
+  @IsOptional()
+  scopeCutBlockId?: number;
+
+  @ApiProperty()
+  @IsOptional()
+  scopeRoadSectionId?: number;
+
+  @ApiProperty()
+  @MaxLength(4000)
+  @MinLength(1) // TODO: Confirm min & max lengths. Min should be longer than 1.
+  feedback: string;
+
+  @ApiProperty()
+  @MaxLength(50)
+  @IsOptional()
+  name?: string;
+
+  @ApiProperty()
+  @MaxLength(50)
+  @IsOptional()
+  location?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @MaxLength(256) // Maximum allowed by Internet RFC.
+  @IsEmail()
+  email?: string;
+
+  @ApiProperty()
+  @MaxLength(50)
+  @IsOptional()
+  phoneNumber?: string;
+}
+
+export class PublicCommentAdminUpdateRequest {
+
+  @ApiProperty()
+  @IsNumber()
+  revisionCount: number;
+
+  @ApiProperty()
+  @IsEnum(ResponseCodeEnum)
   responseCode: string;
 
   @ApiProperty()
-  response: ResponseCode;
+  @IsOptional()
+  @MaxLength(4000)
+  responseDetails?: string;
+}
 
-  @IsNotEmpty()
+export class PublicCommentAdminResponse extends OmitType(PublicCommentCreateRequest, ['commentScopeCode']) {
   @ApiProperty()
-  commentScopeCode: string;
+  id: number;
+
+  @ApiProperty()
+  revisionCount: number;
+
+  @ApiProperty({ description: 'ISO-formatted timestamp'})
+  createTimestamp: string;
 
   @ApiProperty()
   commentScope: CommentScopeCode;
 
   @ApiProperty()
-  scopeCutBlockId: number;
-
+  response?: ResponseCode;
+  
   @ApiProperty()
-  scopeRoadSectionId: number;
+  responseDetails?: string;
 }

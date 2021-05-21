@@ -42,8 +42,9 @@ export class ProjectFindCriteria {
   }
 }
 
+// TODO: Implement standard relations and mapping to DTO.
 @Injectable()
-export class ProjectService extends DataService<Project, Repository<Project>> {
+export class ProjectService extends DataService<Project, Repository<Project>, ProjectDto> { 
   constructor(
     @InjectRepository(Project)
     repository: Repository<Project>,

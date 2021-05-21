@@ -2,16 +2,18 @@ import { Controller, Get, Post, Put, Body, Param, Query, HttpStatus, UsePipes, V
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PublicCommentService } from './public-comment.service';
-import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest, PublicCommentCreateRequest } from './dto/public-comment-new.dto';
+import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest, PublicCommentCreateRequest } from './dto/public-comment.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
-import { PublicCommentDto } from './dto/public-comment.dto';
+import { PinoLogger } from 'nestjs-pino';
 
 @ApiTags('public-comment')
 @Controller('public-comment')
 export class PublicCommentController {
 
-  constructor(private service: PublicCommentService) {
+  constructor(
+    private service: PublicCommentService, 
+    private logger: PinoLogger) {
   }
 
   // Anonymous users can create comments.
@@ -41,22 +43,9 @@ export class PublicCommentController {
   async find(
     @UserRequiredHeader() user: User,
     @Query('projectId') projectId: number): Promise<PublicCommentAdminResponse[]> {
-    return this.service.findAll(user, { 
-      where: { projectId: projectId }, 
-      relations: ['commentScope', 'response'],
-    });
+      return this.service.findByProjectId(projectId, user);
   }
 
-  // TODO: REMOVE this once Admin component is changed.
-  @Get('/byProjectId/:id')
-  @ApiBearerAuth()
-  async findByProjectId(
-    @UserRequiredHeader() user: User,
-    @Param('id') id: number): Promise<PublicCommentDto[]> {
-      return this.service.findByProjectId(user, id);
-  }
-
-  // TODO: Unsure if this is needed...
   @Get(':id')
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: PublicCommentAdminResponse })

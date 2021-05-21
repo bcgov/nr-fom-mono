@@ -21,15 +21,14 @@ import { User } from 'apps/api/src/core/security/user';
 type SpatialObject = CutBlock | RoadSection | RetentionArea;
 
 @Injectable()
-export class SubmissionService extends DataService<Submission, Repository<Submission>> {
+export class SubmissionService {
   constructor(
     @InjectRepository(Submission)
-    repository: Repository<Submission>,
-    logger: PinoLogger,
+    private repository: Repository<Submission>,
+    private logger: PinoLogger,
     private projectService: ProjectService,
   ) {
-    super(repository, new Submission(), logger);
-    dayjs.extend(customParseFormat)
+    dayjs.extend(customParseFormat);
   }
 
   isCreateAuthorized(user: User, dto: Partial<SubmissionDto>): boolean {
@@ -59,7 +58,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   /**
    * Create or replace a spatial submission.
    */
-  async processSpatialSubmission(dto: Partial<SubmissionDto>, user: User): Promise<any> {       
+  async processSpatialSubmission(dto: Partial<SubmissionDto>, user: User): Promise<void> {       
     this.logger.info(`${this.constructor.name}.create props`, dto);
 
     if (!this.isCreateAuthorized(user, dto)) {

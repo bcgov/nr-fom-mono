@@ -6,7 +6,7 @@ import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class InteractionService extends DataService<Interaction, Repository<Interaction>> {
+export class InteractionService extends DataService<Interaction, Repository<Interaction>, Interaction> {
   constructor(
     @InjectRepository(Interaction)
     repository: Repository<Interaction>,
