@@ -53,7 +53,7 @@ export class PublicCommentController {
   async findByProjectId(
     @UserRequiredHeader() user: User,
     @Param('id') id: number): Promise<PublicCommentDto[]> {
-    return this.service.findAll(user, { where: { projectId: id } });
+      return this.service.findByProjectId(user, id);
   }
 
   // TODO: Unsure if this is needed...

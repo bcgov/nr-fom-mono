@@ -94,35 +94,35 @@ module.exports = class testdata1616434875304 {
         -- app_fom.public_comment - mix of anonymous and public comments.
         INSERT INTO app_fom.public_comment(
             public_comment_id, project_id, comment_scope_code, scope_cut_block_id, name, location, email, phone_number, response_code, response_details, create_user, feedback) VALUES
-        (30, 3, 'OVERALL', null, 'John Smith', 'Prince George', 'john.smith@fakedomain.com', '+12345551234', 'CONSIDERED', 'I dont really like this comment', 'testdata', 
+        (30, 3, 'OVERALL', null, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Prince George', '${key}'), pgp_sym_encrypt('john.smith@fakedomain.com', '${key}'), pgp_sym_encrypt('+12345551234', '${key}'), 'CONSIDERED', 'I dont really like this comment', 'testdata', 
             'Hi there. The trees you are trying to cut are absolutely amazing and the entiry community just love them. Actually, we rely on them for our birds and would like to know if you could go on the other side of the creek and work there.')
         , (31, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Hi there? When are you actually planning on executing this work? Will there be any further notification? I''m planing on building a house very close to where the cut will be, that''s why the concern. In addition, how long will your work take?')
-        , (32, 3, 'CUT_BLOCK', 300, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        , (32, 3, 'CUT_BLOCK', 300, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
             'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (33, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
-        , (34, 3, 'CUT_BLOCK', 300, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        , (34, 3, 'CUT_BLOCK', 300, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
             'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (35, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
-        , (36, 3, 'CUT_BLOCK', 300, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        , (36, 3, 'CUT_BLOCK', 300, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
             'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (37, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
-        , (38, 3, 'CUT_BLOCK', 300, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        , (38, 3, 'CUT_BLOCK', 300, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
             'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (39, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
-        , (40, 3, 'CUT_BLOCK', 300, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        , (40, 3, 'CUT_BLOCK', 300, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
             'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (41, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
-        , (42, 3, 'CUT_BLOCK', 300, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        , (42, 3, 'CUT_BLOCK', 300, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
             'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (43, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
-        , (44, 3, 'CUT_BLOCK', 300, 'Some Person', 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        , (44, 3, 'CUT_BLOCK', 300, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
             'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (45, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata',
             'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
@@ -130,7 +130,7 @@ module.exports = class testdata1616434875304 {
 
         -- INSERT INTO app_fom.public_comment(
         --    public_comment_id, project_id, comment_scope_code, scope_cut_block_id, name, location, email, phone_number, response_code, response_details, create_user, feedback) VALUES
-        -- (50, 3, 'OVERALL', null, pgp_sym_encrypt('Some Person', '${key}'), 'Some Location', 'some.person@some.domain.ca', '1234567890', null, null, 'testdata',
+        -- (50, 3, 'OVERALL', null, pgp_sym_encrypt('Some Person', '${key}'), pgp_sym_encrypt('Some Location', '${key}'), pgp_sym_encrypt('some.person@some.domain.ca', '${key}'), pgp_sym_encrypt('1234567890', '${key}'), null, null, 'testdata',
         --    'This is some feedback from a public citizen. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         -- ;
 
