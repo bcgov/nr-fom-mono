@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
@@ -13,7 +13,7 @@ export class WorkflowStateCodeController extends CodeTableController<WorkflowSta
   }
 
   @Get()
-  @ApiResponse({ status: 200, type: [WorkflowStateCode] })
+  @ApiResponse({ status: HttpStatus.OK, type: [WorkflowStateCode] })
   async findAll(): Promise<WorkflowStateCode[]> {
     return super.findAll();
   }

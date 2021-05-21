@@ -7,3 +7,9 @@ export class CommentScopeCode extends ApiCodeTableEntity<CommentScopeCode> {
     super(commentScopeCode);
   }
 }
+
+export enum CommentScopeCodeEnum {
+  OVERALL = 'OVERALL',
+  CUT_BLOCK = 'CUT_BLOCK',
+  ROAD_SECTION = 'ROAD_SECTION',
+}

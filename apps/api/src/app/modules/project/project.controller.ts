@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
@@ -29,7 +29,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiQuery({ name: 'includePostCommentOpen', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiQuery({ name: 'openedOnOrAfter', required: false})
-  @ApiResponse({ status: 200, type: [ProjectPublicSummaryDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectPublicSummaryDto] })
   async findPublicSummary(
     @Query('includeCommentOpen') includeCommentOpen: string = 'true',
     @Query('includePostCommentOpen') includePostCommentOpen: string = 'true',
@@ -65,7 +65,7 @@ export class ProjectController extends BaseController<Project> {
 
   // Anonymous access allowed
   @Get('/spatialDetails/:id') 
-  @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectSpatialDetail] })
   async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
     return this.projectSpatialDetailService.findByProjectId(id);
   }
@@ -73,7 +73,7 @@ export class ProjectController extends BaseController<Project> {
   // Anonymous access allowed
   @Get(':id')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: ProjectDto })
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectDto })
   async findOne(
     @UserHeader() user: User,
     @Param('id') id: number): Promise<ProjectDto> {
@@ -88,7 +88,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiQuery({ name: 'districtId', required: false})
   @ApiQuery({ name: 'workflowStateCode', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
-  @ApiResponse({ status: 200, type: [ProjectDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectDto] })
   async find(
     @UserRequiredHeader() user: User,
     @Query('fspId') fspId?: number,
@@ -124,7 +124,7 @@ export class ProjectController extends BaseController<Project> {
 
   @Post()
   @ApiBearerAuth()
-  @ApiResponse({ status: 201, type: ProjectDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: ProjectDto })
   async create(
     @UserRequiredHeader() user: User,
     @Body() createDto: ProjectDto
@@ -135,7 +135,7 @@ export class ProjectController extends BaseController<Project> {
 
   @Put(':id')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: UpdateProjectDto })
+  @ApiResponse({ status: HttpStatus.OK, type: UpdateProjectDto })
   @ApiBody({ type: UpdateProjectDto })
   async update(
     @UserRequiredHeader() user: User,
@@ -147,7 +147,7 @@ export class ProjectController extends BaseController<Project> {
 
   @Delete(':id')
   @ApiBearerAuth()
-  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: HttpStatus.OK })
   async remove(
     @UserRequiredHeader() user: User,
     @Param('id') id: number) {

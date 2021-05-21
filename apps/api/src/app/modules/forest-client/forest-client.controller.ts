@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BaseReadOnlyController } from '@controllers';
@@ -20,7 +20,7 @@ export class ForestClientController extends BaseReadOnlyController<
 
   @Get()
   @ApiBearerAuth()
-  @ApiResponse({ status: 200, type: [ForestClientDto], description: 'Returns only forest clients that the user is authorized for.' })
+  @ApiResponse({ status: HttpStatus.OK, type: [ForestClientDto], description: 'Returns only forest clients that the user is authorized for.' })
   async find(
     @UserHeader() user: User,
   ): Promise<ForestClientDto[]> {
@@ -28,7 +28,7 @@ export class ForestClientController extends BaseReadOnlyController<
   }
 
   @Get(':id')
-  @ApiResponse({ status: 200, type: ForestClientDto })
+  @ApiResponse({ status: HttpStatus.OK, type: ForestClientDto })
   async findOne(@Param('id') id: number): Promise<ForestClientDto> {
     return super.findOne(id);
   }

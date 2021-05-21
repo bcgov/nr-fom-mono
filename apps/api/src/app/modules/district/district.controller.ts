@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BaseReadOnlyController } from '@controllers';
@@ -17,13 +17,13 @@ export class DistrictController extends BaseReadOnlyController<
   }
 
   @Get()
-  @ApiResponse({ status: 200, type: [DistrictDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [DistrictDto] })
   async findAll(): Promise<DistrictDto[]> {
     return super.findAll();
   }
 
   @Get(':id')
-  @ApiResponse({ status: 200, type: DistrictDto })
+  @ApiResponse({ status: HttpStatus.OK, type: DistrictDto })
   async findOne(@Param('id') id: number): Promise<DistrictDto> {
     return super.findOne(id);
   }
