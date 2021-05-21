@@ -7,6 +7,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { User } from 'apps/api/src/core/security/user';
 import { PublicCommentDto } from './dto/public-comment.dto';
 import { DeepPartial } from '@entities';
+import * as _ from "lodash";
 
 @Injectable()
 export class PublicCommentService extends DataService<PublicComment, Repository<PublicComment>> {
@@ -22,11 +23,15 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   }
 
   protected async saveEntity(model: DeepPartial<PublicComment>) {
-    let created = await super.saveEntity(model);
+    const encrypColumntPicked = _.pick(model, ['name','location','email','phoneNumber']);
+    const encryptColumnsOmitted = _.omit(model, ['name','location','email','phoneNumber']);
+    let created = await super.saveEntity(encryptColumnsOmitted);
+    created = {...created, ...encrypColumntPicked};
     await this.encryptSensitiveColumns(created);
     return created;
   }
   
+  // TODO: confirm before removing. as current understanding, user can't update sensitive columns so we don't need to have this logic.
   protected async updateEntity(id: string | number, dto: Partial<any>, entity: PublicComment) {
     let updated = await super.updateEntity(id, dto, entity);
     await this.encryptSensitiveColumns(entity);
