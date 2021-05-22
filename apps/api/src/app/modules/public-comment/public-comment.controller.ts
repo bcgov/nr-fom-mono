@@ -46,6 +46,17 @@ export class PublicCommentController {
       return this.service.findByProjectId(projectId, user);
   }
 
+  // TODO: REMOVE once admin changed.
+  @Get('/byProjectId/:projectId')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: [PublicCommentAdminResponse] })
+  async findByProjectId(
+    @UserRequiredHeader() user: User,
+    @Param('projectId') projectId: number): Promise<PublicCommentAdminResponse[]> {
+      console.log('project ID = ' + projectId);
+      return this.service.findByProjectId(projectId, user);
+  }
+
   @Get(':id')
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: PublicCommentAdminResponse })
