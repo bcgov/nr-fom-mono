@@ -6,7 +6,7 @@ import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class AttachmentService extends DataService<Attachment, Repository<Attachment>> {
+export class AttachmentService extends DataService<Attachment, Repository<Attachment>, Attachment> {
   constructor(
     @InjectRepository(Attachment)
     repository: Repository<Attachment>,

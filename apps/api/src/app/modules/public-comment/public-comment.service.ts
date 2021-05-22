@@ -1,18 +1,18 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, Repository, UpdateResult } from 'typeorm';
 import { PublicComment } from './entities/public-comment.entity';
 import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 import { User } from 'apps/api/src/core/security/user';
-import { PublicCommentDto } from './dto/public-comment.dto';
 import { DeepPartial } from '@entities';
 import * as _ from "lodash";
+import { PublicCommentAdminResponse } from './dto/public-comment.dto';
 
 @Injectable()
-export class PublicCommentService extends DataService<PublicComment, Repository<PublicComment>> {
+export class PublicCommentService extends DataService<PublicComment, Repository<PublicComment>, PublicCommentAdminResponse> {
   
-  readonly key = process.env.DATA_ENCRYPTION_KEY || 'defaultkey'; // TODO, where to get this key from the NEST framework (than process.env)?
+  private readonly key = process.env.DATA_ENCRYPTION_KEY || 'defaultkey'; 
 
   constructor(
     @InjectRepository(PublicComment)
@@ -22,26 +22,55 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     super(repository, new PublicComment(), logger);
   }
 
-  protected async saveEntity(model: DeepPartial<PublicComment>) {
+  protected async saveEntity(model: DeepPartial<PublicComment>): Promise<PublicComment> {
     const encryptColumns = ['name','location','email','phoneNumber'];// entity property names that need to be encrypted.
     const encrypColumntPicked = _.pick(model, encryptColumns);
     const encryptColumnsOmitted = _.omit(model, encryptColumns);
     let created = await super.saveEntity(encryptColumnsOmitted);
     created = {...created, ...encrypColumntPicked} as PublicComment;
+    // TODO: Need to handle/check update result from encryptSensitiveColumns.
     await this.encryptSensitiveColumns(created);
     return created;
   }
   
-  // TODO: confirm before removing. as current understanding, user can't update sensitive columns so we don't need to have this logic.
-  protected async updateEntity(id: string | number, dto: Partial<any>, entity: PublicComment) {
-    let updated = await super.updateEntity(id, dto, entity);
+  // We provide support for updating encrypted columns, although currently there's no use case where this will happen.
+  protected async updateEntity(id: string | number, dto: any, entity: PublicComment): Promise<UpdateResult> {
+    const updateResult = await super.updateEntity(id, dto, entity);
+    // TODO: Need to handle/check update result from encryptSensitiveColumns.
     await this.encryptSensitiveColumns(entity);
-    return updated;
+    return updateResult;
   }
 
   protected async findEntity(id: string | number, options?: FindOneOptions<PublicComment> | undefined) {
-    let found = await super.findEntity(id, options);
+    const found = await super.findEntity(id, this.addCommonRelationsToFindOptions(options));
+    if (found == undefined) {
+      return found;
+    }
     return this.decryptSensitiveColumns(found);
+  }
+
+  protected convertEntity(entity: PublicComment): PublicCommentAdminResponse {
+    const response = new PublicCommentAdminResponse();
+    response.commentScope = entity.commentScope;
+    response.createTimestamp = entity.createTimestamp.toISOString();
+    response.email = entity.email;
+    response.feedback = entity.feedback;
+    response.id = entity.id;
+    response.location = entity.location;
+    response.name = entity.name;
+    response.phoneNumber = entity.phoneNumber;
+    response.projectId = entity.projectId;
+    response.response = entity.response; 
+    response.responseDetails = entity.responseDetails
+    response.revisionCount = entity.revisionCount;
+    response.scopeCutBlockId = entity.scopeCutBlockId;
+    response.scopeRoadSectionId = entity.scopeRoadSectionId;
+
+    return response;
+  }
+
+  protected getCommonRelations(): string[] {
+    return ['commentScope', 'response'];
   }
 
   private async encryptSensitiveColumns(entity: PublicComment) {
@@ -73,11 +102,11 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return entity;
   }
 
-  isCreateAuthorized(user: User, dto: Partial<PublicCommentDto>): boolean {
+  isCreateAuthorized(user: User, dto: any): boolean {
     return user == null; // Only anonymous user is allowed to create comments.
   }
   
-  isUpdateAuthorized(user: User, dto: Partial<PublicCommentDto>, entity: Partial<PublicComment>):boolean {
+  isUpdateAuthorized(user: User, dto: any, entity: Partial<PublicComment>):boolean {
     if (!user || !user.isForestClient) {
       return false;
     }
@@ -97,19 +126,16 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return (user && user.isAuthorizedForAdminSite());
   }
 
-  async findByProjectId(user: User, projectId: number): Promise<PublicCommentDto[]> {
+  async findByProjectId(projectId: number, user: User): Promise<PublicCommentAdminResponse[]> {
     if (!this.isViewingAuthorized(user)) {
       throw new ForbiddenException();
     }
-    const options = { where: { projectId }, 
-                      relations: ['response', 'commentScope'] 
-                    };
+    const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
     this.logger.trace(`${this.constructor.name}.findByProjectId options %o `, options);
     const records = await this.repository.find(options);
-
     return Promise.all(records.map(async (r) => {
-      r = await this.decryptSensitiveColumns(r);
-      return this.convertEntity(r) as PublicCommentDto;
+      r = await this.decryptSensitiveColumns(r); 
+      return this.convertEntity(r);
     }));
   }
 }

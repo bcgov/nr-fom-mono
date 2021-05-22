@@ -6,7 +6,7 @@ import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()
-export class RoadSectionService extends DataService<RoadSection, Repository<RoadSection>> {
+export class RoadSectionService extends DataService<RoadSection, Repository<RoadSection>, RoadSection> {
   constructor(
     @InjectRepository(RoadSection)
     repository: Repository<RoadSection>,

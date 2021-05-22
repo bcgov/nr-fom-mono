@@ -35,7 +35,10 @@ async function bootstrap() {
   const appConfig = app.get('AppConfigService');
   app.getHttpAdapter().getInstance().disable('x-powered-by'); // Poor security to report the technology used, so disable this response header.
   app.useLogger(app.get(Logger));
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe({
+    // TODO: Evaluate this.
+    // whitelist: true, // Strips unknown properties not listed in input DTOs.
+  }));
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
