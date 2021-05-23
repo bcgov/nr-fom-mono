@@ -46,7 +46,11 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     if (found == undefined) {
       return found;
     }
-    return this.decryptSensitiveColumns(found);
+    const decryptedPartials = await this.obtainDecryptedColumns([found.id]);
+    if (decryptedPartials) {
+      Object.assign(found, decryptedPartials[0]);
+    }
+    return found;
   }
 
   protected convertEntity(entity: PublicComment): PublicCommentAdminResponse {
@@ -87,19 +91,18 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
       );
   }
 
-  private async decryptSensitiveColumns(entity: PublicComment) {
+  private async obtainDecryptedColumns(id: number[]): Promise<Partial<PublicComment>[]> {
     this.logger.trace('Decrypting sensitive columns for PublicComment...');
     // using query builder for select back
-    let decryptedSelectObj = await this.repository.createQueryBuilder('pc')
+    let decryptedSelecteColumns = await this.repository.createQueryBuilder('pc')
     .select('public_comment_id', 'id')
     .addSelect(`pgp_sym_decrypt(name::bytea, '${this.key}')`, 'name')
     .addSelect(`pgp_sym_decrypt(location::bytea, '${this.key}')`, 'location')
     .addSelect(`pgp_sym_decrypt(email::bytea, '${this.key}')`, 'email')
     .addSelect(`pgp_sym_decrypt(phone_number::bytea, '${this.key}')`, 'phoneNumber')
-    .where('pc.id = :pId', {pId: entity.id})
-    .getRawOne();
-    Object.assign(entity, decryptedSelectObj);
-    return entity;
+    .where('pc.id IN (:...pId)', {pId: id})
+    .getRawMany() as Partial<PublicComment>[];
+    return decryptedSelecteColumns;
   }
 
   isCreateAuthorized(user: User, dto: any): boolean {
@@ -133,9 +136,16 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
     this.logger.trace(`${this.constructor.name}.findByProjectId options %o `, options);
     const records = await this.repository.find(options);
-    return Promise.all(records.map(async (r) => {
-      r = await this.decryptSensitiveColumns(r); 
+    if (!records || records.length == 0) {
+      return [];
+    }
+
+    const recordIds = _.map(records, 'id');
+    const decryptedColumnCollection = await this.obtainDecryptedColumns(recordIds);
+    return records.map((r) => {
+      const decryptedPartial = _.find(decryptedColumnCollection, {'id': r.id});
+      Object.assign(r, decryptedPartial);
       return this.convertEntity(r);
-    }));
+    });
   }
 }
