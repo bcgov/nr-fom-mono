@@ -94,7 +94,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   private async obtainDecryptedColumns(id: number[]): Promise<Partial<PublicComment>[]> {
     this.logger.trace('Decrypting sensitive columns for PublicComment...');
     // using query builder for select back
-    let decryptedSelecteColumns = await this.repository.createQueryBuilder('pc')
+    const decryptedSelecteColumns = await this.repository.createQueryBuilder('pc')
     .select('public_comment_id', 'id')
     .addSelect(`pgp_sym_decrypt(name::bytea, '${this.key}')`, 'name')
     .addSelect(`pgp_sym_decrypt(location::bytea, '${this.key}')`, 'location')
