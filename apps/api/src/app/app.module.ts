@@ -14,8 +14,6 @@ import { RoadSectionModule } from './modules/road-section/road-section.module';
 import { SubmissionModule } from './modules/submission/submission.module';
 // Code Table Modules
 import { AttachmentTypeCodeModule } from './modules/attachment-type-code/attachment-type-code.module';
-import { CommentScopeCodeModule } from './modules/comment-scope-code/comment-scope-code.module';
-import { ResponseCodeModule } from './modules/response-code/response-code.module';
 import { SubmissionTypeCodeModule } from './modules/submission-type-code/submission-type-code.module';
 import { WorkflowStateCodeModule } from './modules/workflow-state-code/workflow-state-code.module';
 // Other Modules
@@ -60,8 +58,6 @@ import { SecurityModule } from '../core/security/security.module'
     SubmissionModule,
     // Code Table Modules
     AttachmentTypeCodeModule,
-    CommentScopeCodeModule,
-    ResponseCodeModule,
     SubmissionTypeCodeModule,
     WorkflowStateCodeModule,
   ],

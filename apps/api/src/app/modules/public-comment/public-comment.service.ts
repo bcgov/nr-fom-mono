@@ -1,13 +1,13 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository, UpdateResult } from 'typeorm';
-import { PublicComment } from './entities/public-comment.entity';
+import { PublicComment } from './public-comment.entity';
 import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 import { User } from 'apps/api/src/core/security/user';
 import { DeepPartial } from '@entities';
 import * as _ from "lodash";
-import { PublicCommentAdminResponse } from './dto/public-comment.dto';
+import { PublicCommentAdminResponse } from './public-comment.dto';
 
 @Injectable()
 export class PublicCommentService extends DataService<PublicComment, Repository<PublicComment>, PublicCommentAdminResponse> {

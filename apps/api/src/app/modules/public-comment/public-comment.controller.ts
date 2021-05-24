@@ -2,7 +2,7 @@ import { Controller, Get, Post, Put, Body, Param, Query, HttpStatus, UsePipes, V
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PublicCommentService } from './public-comment.service';
-import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest, PublicCommentCreateRequest } from './dto/public-comment.dto';
+import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest, PublicCommentCreateRequest } from './public-comment.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 import { PinoLogger } from 'nestjs-pino';

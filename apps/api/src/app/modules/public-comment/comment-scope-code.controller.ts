@@ -3,7 +3,7 @@ import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { CommentScopeCodeService } from './comment-scope-code.service';
-import { CommentScopeCode } from './entities/comment-scope-code.entity';
+import { CommentScopeCode } from './comment-scope-code.entity';
 
 @ApiTags('comment-scope-code')
 @Controller('comment-scope-code')

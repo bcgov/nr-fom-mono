@@ -2,7 +2,7 @@ import { registerAs } from '@nestjs/config';
 
 // Duplicated with ormgconfig.ts, which is used for database migrations.
 export default registerAs('db', () => ({
-  entities: [__dirname + '/**/*.entity{.ts,.js}'],
+  entities: [__dirname + '/**/*.entity{.ts,.js}'], // Entity classes must be named with suffix .entity.ts (or .entity.js)
   synchronize: false, // This changes the DB schema to match changes to entities, which we do not want even in development.
   database: process.env.DB_NAME || 'api-db',
   username: process.env.DB_USERNAME || 'postgres',

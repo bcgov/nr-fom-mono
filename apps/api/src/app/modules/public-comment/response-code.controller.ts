@@ -3,7 +3,7 @@ import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { ResponseCodeService } from './response-code.service';
-import { ResponseCode } from './entities/response-code.entity';
+import { ResponseCode } from './response-code.entity';
 
 @ApiTags('response-code')
 @Controller('response-code')

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CommentScopeCode } from './entities/comment-scope-code.entity';
+import { CommentScopeCode } from './comment-scope-code.entity';
 import { CodeTableService } from 'apps/api/src/core/models/code-table.service';
 import { PinoLogger } from 'nestjs-pino';
 

@@ -7,9 +7,8 @@ import {
   ManyToOne,
   RelationId,
 } from 'typeorm';
-import { ResponseCode } from '../../response-code/entities/response-code.entity';
-import { CommentScopeCode } from '../../comment-scope-code/entities/comment-scope-code.entity';
-import { Project } from '../../project/entities/project.entity';
+import { ResponseCode } from './response-code.entity';
+import { CommentScopeCode } from './comment-scope-code.entity';
 
 @Entity('public_comment', { schema: 'app_fom' })
 export class PublicComment extends ApiBaseEntity<PublicComment> {

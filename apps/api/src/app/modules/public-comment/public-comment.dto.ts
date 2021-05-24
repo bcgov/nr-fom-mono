@@ -1,6 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { ResponseCode, ResponseCodeEnum } from '../../response-code/entities/response-code.entity';
-import { CommentScopeCode, CommentScopeCodeEnum } from '../../comment-scope-code/entities/comment-scope-code.entity';
+import { ResponseCode, ResponseCodeEnum } from './response-code.entity';
+import { CommentScopeCode, CommentScopeCodeEnum } from './comment-scope-code.entity';
 import { IsEmail, IsEnum, IsNumber, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class PublicCommentCreateRequest {

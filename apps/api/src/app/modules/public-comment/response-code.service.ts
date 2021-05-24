@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ResponseCode } from './entities/response-code.entity';
+import { ResponseCode } from './response-code.entity';
 import { CodeTableService } from 'apps/api/src/core/models/code-table.service';
 import { PinoLogger } from 'nestjs-pino';
 
