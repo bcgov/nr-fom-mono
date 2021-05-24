@@ -2,7 +2,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../app/app.module';
-import { PublicCommentDto } from '../app/modules/public-comment/dto/public-comment.dto';
+import { PublicCommentCreateRequest } from '../app/modules/public-comment/public-comment.dto';
 import { ProjectDto } from '../app/modules/project/dto/project.dto';
 import { SubmissionDto } from '../app/modules/submission/dto/submission.dto';
 import { CutBlockDto } from '../app/modules/cut-block/dto/cut-block.dto';
@@ -298,7 +298,8 @@ describe('API endpoints testing (e2e)', () => {
         responseDetails: 'Ipsum lorem dolor',
         projectId: projectId,
         responseCode: 'CONSIDERED',
-      } as PublicCommentDto;
+        commentScopeCode: 'OVERALL',
+      } as PublicCommentCreateRequest;
 
       // Attach a comment
       // First create the comment
@@ -331,7 +332,8 @@ describe('API endpoints testing (e2e)', () => {
         responseDetails: 'Ipsum lorem dolor',
         projectId: projectId,
         responseCode: 'CONSIDERED',
-      } as PublicCommentDto;
+        commentScopeCode: 'OVERALL',
+      } as PublicCommentCreateRequest;
 
       // Attach a comment
       // First create the comment
@@ -346,7 +348,8 @@ describe('API endpoints testing (e2e)', () => {
         responseDetails: 'Ipsum lorem dolor',
         projectId: projectId,
         responseCode: 'CONSIDERED',
-      } as PublicCommentDto;
+        commentScopeCode: 'OVERALL',
+      } as PublicCommentCreateRequest;
 
       // Attach a comment
       // First create the comment

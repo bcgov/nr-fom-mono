@@ -18,6 +18,8 @@
     "db:stop": "docker-compose stop db",
     "build": "nx build",
     "test": "nx test",
+    "test-unit": "nx run api:test --testFile='/((?!e2e).)*$'", 
+    "test-e2e": "nx run api:test --testFile='e2e.spec.ts$'",
     "lint": "nx workspace-lint && nx lint",
     "affected:apps": "nx affected:apps",
     "affected:libs": "nx affected:libs",
