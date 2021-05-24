@@ -23,10 +23,11 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   }
 
   protected async saveEntity(model: DeepPartial<PublicComment>): Promise<PublicComment> {
-    const encrypColumntPicked = _.pick(model, ['name','location','email','phoneNumber']);
-    const encryptColumnsOmitted = _.omit(model, ['name','location','email','phoneNumber']);
+    const encryptColumns = ['name','location','email','phoneNumber'];// entity property names that need to be encrypted.
+    const encrypColumntPicked = _.pick(model, encryptColumns);
+    const encryptColumnsOmitted = _.omit(model, encryptColumns);
     let created = await super.saveEntity(encryptColumnsOmitted);
-    created = {...created, ...encrypColumntPicked};
+    created = {...created, ...encrypColumntPicked} as PublicComment;
     // TODO: Need to handle/check update result from encryptSensitiveColumns.
     await this.encryptSensitiveColumns(created);
     return created;
@@ -45,7 +46,11 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     if (found == undefined) {
       return found;
     }
-    return this.decryptSensitiveColumns(found);
+    const decryptedPartials = await this.obtainDecryptedColumns([found.id]);
+    if (decryptedPartials) {
+      Object.assign(found, decryptedPartials[0]);
+    }
+    return found;
   }
 
   protected convertEntity(entity: PublicComment): PublicCommentAdminResponse {
@@ -86,19 +91,18 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
       );
   }
 
-  private async decryptSensitiveColumns(entity: PublicComment) {
+  private async obtainDecryptedColumns(id: number[]): Promise<Partial<PublicComment>[]> {
     this.logger.trace('Decrypting sensitive columns for PublicComment...');
     // using query builder for select back
-    let decryptedSelectObj = await this.repository.createQueryBuilder('pc')
+    const decryptedSelecteColumns = await this.repository.createQueryBuilder('pc')
     .select('public_comment_id', 'id')
     .addSelect(`pgp_sym_decrypt(name::bytea, '${this.key}')`, 'name')
     .addSelect(`pgp_sym_decrypt(location::bytea, '${this.key}')`, 'location')
     .addSelect(`pgp_sym_decrypt(email::bytea, '${this.key}')`, 'email')
     .addSelect(`pgp_sym_decrypt(phone_number::bytea, '${this.key}')`, 'phoneNumber')
-    .where('pc.id = :pId', {pId: entity.id})
-    .getRawOne();
-    Object.assign(entity, decryptedSelectObj);
-    return entity;
+    .where('pc.id IN (:...pId)', {pId: id})
+    .getRawMany() as Partial<PublicComment>[];
+    return decryptedSelecteColumns;
   }
 
   isCreateAuthorized(user: User, dto: any): boolean {
@@ -132,9 +136,16 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
     this.logger.trace(`${this.constructor.name}.findByProjectId options %o `, options);
     const records = await this.repository.find(options);
-    return Promise.all(records.map(async (r) => {
-      r = await this.decryptSensitiveColumns(r); 
+    if (!records || records.length == 0) {
+      return [];
+    }
+
+    const recordIds = _.map(records, 'id');
+    const decryptedColumnCollection = await this.obtainDecryptedColumns(recordIds);
+    return records.map((r) => {
+      const decryptedPartial = _.find(decryptedColumnCollection, {'id': r.id});
+      Object.assign(r, decryptedPartial);
       return this.convertEntity(r);
-    }));
+    });
   }
 }
