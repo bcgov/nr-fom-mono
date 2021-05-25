@@ -3,18 +3,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Core Modules
 import { AttachmentModule } from './modules/attachment/attachment.module';
-import { CutBlockModule } from './modules/cut-block/cut-block.module';
 import { InteractionModule } from './modules/interaction/interaction.module';
 import { DistrictModule } from './modules/district/district.module';
 import { ForestClientModule } from './modules/forest-client/forest-client.module';
 import { ProjectModule } from './modules/project/project.module';
 import { PublicCommentModule } from './modules/public-comment/public-comment.module';
-import { RetentionAreaModule } from './modules/retention-area/retention-area.module';
-import { RoadSectionModule } from './modules/road-section/road-section.module';
 import { SubmissionModule } from './modules/submission/submission.module';
 // Code Table Modules
 import { AttachmentTypeCodeModule } from './modules/attachment-type-code/attachment-type-code.module';
-import { SubmissionTypeCodeModule } from './modules/submission-type-code/submission-type-code.module';
 import { WorkflowStateCodeModule } from './modules/workflow-state-code/workflow-state-code.module';
 // Other Modules
 import { LoggerModule } from 'nestjs-pino';
@@ -47,18 +43,14 @@ import { SecurityModule } from '../core/security/security.module'
     }),
     // Core Modules
     AttachmentModule,
-    CutBlockModule,
     InteractionModule,
     DistrictModule,
     ForestClientModule,
     ProjectModule,
     PublicCommentModule,
-    RetentionAreaModule,
-    RoadSectionModule,
     SubmissionModule,
     // Code Table Modules
     AttachmentTypeCodeModule,
-    SubmissionTypeCodeModule,
     WorkflowStateCodeModule,
   ],
 })

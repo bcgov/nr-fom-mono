@@ -1,19 +1,19 @@
 import { ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, getManager, Repository } from 'typeorm';
-import { Submission } from './entities/submission.entity';
-import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionDto } from './dto/submission.dto';
-import { DataService } from 'apps/api/src/core/models/data.service';
-import { ProjectService } from '../project/project.service';
-import { PinoLogger } from 'nestjs-pino';
-import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
-import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
-import { CutBlock } from '../cut-block/entities/cut-block.entity';
-import { RoadSection } from '../road-section/entities/road-section.entity';
-import { RetentionArea } from '../retention-area/entities/retention-area.entity';
 import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import * as dayjs from 'dayjs';
 import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
+import { PinoLogger } from 'nestjs-pino';
+
+import { Submission } from './submission.entity';
+import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
+import { ProjectService } from '../project/project.service';
+import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
+import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
+import { CutBlock } from './cut-block.entity';
+import { RoadSection } from './road-section.entity';
+import { RetentionArea } from './retention-area.entity';
 import { ProjectDto } from '../project/dto/project.dto';
 import { flatDeep } from '../../../core/utils';
 import { User } from 'apps/api/src/core/security/user';
@@ -31,7 +31,7 @@ export class SubmissionService {
     dayjs.extend(customParseFormat);
   }
 
-  isCreateAuthorized(user: User, dto: Partial<SubmissionDto>): boolean {
+  isCreateAuthorized(user: User, dto: Partial<SubmissionRequest>): boolean {
     if (!user || !user.isForestClient) {
       return false;
     }
@@ -58,7 +58,7 @@ export class SubmissionService {
   /**
    * Create or replace a spatial submission.
    */
-  async processSpatialSubmission(dto: Partial<SubmissionDto>, user: User): Promise<void> {       
+  async processSpatialSubmission(dto: Partial<SubmissionRequest>, user: User): Promise<void> {       
     this.logger.debug(`${this.constructor.name}.create props %o`, dto);
 
     if (!this.isCreateAuthorized(user, dto)) {

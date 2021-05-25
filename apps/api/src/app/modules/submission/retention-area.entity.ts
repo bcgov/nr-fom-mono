@@ -1,6 +1,6 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
-import { Submission } from '../../submission/entities/submission.entity';
+import { Submission } from './submission.entity';
 
 @Entity('retention_area', {schema: 'app_fom'})
 export class RetentionArea extends ApiBaseEntity<RetentionArea> {

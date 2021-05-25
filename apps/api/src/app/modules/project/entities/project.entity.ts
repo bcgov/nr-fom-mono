@@ -3,7 +3,7 @@ import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, Relation
 import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
 import { District } from '../../district/entities/district.entity';
 import { ForestClient } from '../../forest-client/entities/forest-client.entity';
-import { Submission } from '../../submission/entities/submission.entity';
+import { Submission } from '../../submission/submission.entity';
 import { FomPoint } from '../dto/project.dto';
 
 @Entity('project', {schema: 'app_fom'})

@@ -3,7 +3,7 @@ import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { SubmissionTypeCodeService } from './submission-type-code.service';
-import { SubmissionTypeCode } from './entities/submission-type-code.entity';
+import { SubmissionTypeCode } from './submission-type-code.entity';
 
 @ApiTags('submission-type-code')
 @Controller('submission-type-code')

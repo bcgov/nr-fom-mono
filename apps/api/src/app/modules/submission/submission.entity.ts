@@ -1,10 +1,10 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, OneToMany, RelationId } from 'typeorm';
-import { Project } from '../../project/entities/project.entity';
-import { SubmissionTypeCode } from '../../submission-type-code/entities/submission-type-code.entity';
-import { CutBlock } from '../../cut-block/entities/cut-block.entity';
-import { RetentionArea } from '../../retention-area/entities/retention-area.entity';
-import { RoadSection } from '../../road-section/entities/road-section.entity';
+
+import { SubmissionTypeCode } from './submission-type-code.entity';
+import { CutBlock } from './cut-block.entity';
+import { RetentionArea } from './retention-area.entity';
+import { RoadSection } from './road-section.entity';
 
 @Entity('submission', {schema: 'app_fom'})
 export class Submission extends ApiBaseEntity<Submission> {

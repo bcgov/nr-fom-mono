@@ -7,7 +7,7 @@ import {
   ManyToOne,
   RelationId
 } from 'typeorm';
-import { Submission } from '../../submission/entities/submission.entity';
+import { Submission } from './submission.entity';
 
 @Entity('cut_block', { schema: 'app_fom' })
 export class CutBlock extends ApiBaseEntity<CutBlock> {

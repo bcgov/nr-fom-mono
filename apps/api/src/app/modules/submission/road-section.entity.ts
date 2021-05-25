@@ -7,7 +7,7 @@ import {
   ManyToOne,
   RelationId,
 } from 'typeorm';
-import { Submission } from '../../submission/entities/submission.entity';
+import { Submission } from './submission.entity';
 
 @Entity('road_section', { schema: 'app_fom' })
 export class RoadSection extends ApiBaseEntity<RoadSection> {

@@ -2,7 +2,7 @@ import { Controller, Post, Body, HttpStatus} from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 
 import { SubmissionService } from './submission.service';
-import { SubmissionDto } from './dto/submission.dto';
+import { SubmissionRequest } from './submission.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 
@@ -15,11 +15,11 @@ export class SubmissionController {
 
   @Post()
   @ApiBearerAuth()
-  @ApiBody({ type: SubmissionDto })
+  @ApiBody({ type: SubmissionRequest })
   @ApiResponse({ status: HttpStatus.OK })
   async processSpatialSubmission(
     @UserRequiredHeader() user: User,
-    @Body() dto: SubmissionDto) {
+    @Body() dto: SubmissionRequest) {
     await this.service.processSpatialSubmission(dto, user);
   }
 
