@@ -59,7 +59,7 @@ export class SubmissionService {
    * Create or replace a spatial submission.
    */
   async processSpatialSubmission(dto: Partial<SubmissionDto>, user: User): Promise<void> {       
-    this.logger.info(`${this.constructor.name}.create props`, dto);
+    this.logger.debug(`${this.constructor.name}.create props %o`, dto);
 
     if (!this.isCreateAuthorized(user, dto)) {
       throw new ForbiddenException();
@@ -136,9 +136,10 @@ export class SubmissionService {
   async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum, user: User): Promise<Submission>  {
     // Obtain existing submission for the submission type
     const existingSubmissions: Submission[] = await this.repository.find({
-      where: { projectId: projectId, submission_type_code: submissionTypeCode },
+      where: { projectId: projectId, submissionTypeCode: submissionTypeCode },
       relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
     });
+    this.logger.info('# existing submissions ' + existingSubmissions.length);
 
     var submission: Submission;
     if (existingSubmissions.length == 0) {
