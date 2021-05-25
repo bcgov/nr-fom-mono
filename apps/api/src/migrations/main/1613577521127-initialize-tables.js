@@ -57,7 +57,7 @@ comment on column app_fom.comment_scope_code.revision_count is 'Standard column 
 INSERT INTO app_fom.comment_scope_code(code, description, create_user) VALUES
 ('CUT_BLOCK', 'Cut Block', CURRENT_USER),
 ('ROAD_SECTION', 'Road Section', CURRENT_USER),
-('OVERALL', 'Overall', CURRENT_USER);
+('OVERALL', 'Overall FOM', CURRENT_USER);
 
 
 /* ------- ddl script for app_fom.response_code ---------*/  
