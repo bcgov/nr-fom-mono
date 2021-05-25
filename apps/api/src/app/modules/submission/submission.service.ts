@@ -276,15 +276,15 @@ export class SubmissionService {
     switch (spatialObjectCode) {
       case SpatialObjectCodeEnum.ROAD_SECTION:
         entityName = RoadSection.name;
-        setClause = { planned_length_km: () => 'ST_Length(geometry)/1000' };
+        setClause = { plannedLengthKm: () => 'ST_Length(geometry)/1000' };
         break;
       case SpatialObjectCodeEnum.WTRA:
         entityName = RetentionArea.name;
-        setClause = { planned_area_ha: () => 'ST_AREA(geometry)/10000' };
+        setClause = { plannedAreaHa: () => 'ST_AREA(geometry)/10000' };
         break;
       default:
         entityName = CutBlock.name;
-        setClause = { planned_area_ha: () => 'ST_AREA(geometry)/10000' };
+        setClause = { plannedAreaHa: () => 'ST_AREA(geometry)/10000' };
     }
 
     await Promise.all(spatialObjects.map(async (s) => {
