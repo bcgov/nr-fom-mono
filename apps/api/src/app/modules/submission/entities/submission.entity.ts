@@ -15,12 +15,7 @@ export class Submission extends ApiBaseEntity<Submission> {
   @PrimaryGeneratedColumn('increment', {name: 'submission_id'})
   public id: number;
 
-  // @ManyToOne(() => Project, { eager: false })
-  // @JoinColumn({ name: 'projectId', referencedColumnName: 'id' })
-  // project: Project;
-
   @Column({name: 'project_id'})
-  // @RelationId((submission: Submission) => submission.project)
   projectId: number;
 
   @ManyToOne(() => SubmissionTypeCode)

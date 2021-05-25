@@ -113,7 +113,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     if (!user || !user.isForestClient) {
       return false;
     }
-    // TODO: Confirm that forest client is authorized for this project based on project's client id.
+    // TODO: Confirm that forest client is authorized for this project based on project's client id, and that project is in commenting open state.
     //     const project: ProjectDto = await this.projectService.findOne(dto.projectId, user);
 
     // return user.clientIds.includes(project.forest_client_number));
