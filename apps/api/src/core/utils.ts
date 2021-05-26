@@ -61,7 +61,7 @@ export const mapFromEntity = (entity, dto) => {
   );
 };
 
-// flat multidimensional array down to 1d array
+// flat multidimensional array down. d = # of level you want to reduce it.
 export const flatDeep = (arr, d = 1) => {
   return d > 0 ? arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatDeep(val, d - 1) : val), [])
                 : arr.slice();
