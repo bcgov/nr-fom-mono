@@ -34,7 +34,7 @@ export abstract class DataReadOnlyService<E extends ApiBaseEntity<E>, R extends 
    * @memberof DataService
    */
   async findOne<C>(id: number): Promise<C> {
-    this.logger.trace(`${this.constructor.name}.findOne id %o`, id);
+    this.logger.debug(`${this.constructor.name}.findOne id %o`, id);
 
     const record = await this.repository.findOne(id);
 
@@ -52,7 +52,7 @@ export abstract class DataReadOnlyService<E extends ApiBaseEntity<E>, R extends 
    * @memberof DataService
    */
   async findAll<C>(): Promise<C[]> {
-    this.logger.trace(`${this.constructor.name}.findAll`);
+    this.logger.debug(`${this.constructor.name}.findAll`);
 
     const findAll = await this.repository.find();
     return findAll.map((r) => this.convertEntity(r));

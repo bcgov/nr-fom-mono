@@ -1,7 +1,6 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { BaseDto } from '@dto';
 
-export class AttachmentDto extends BaseDto {
+export class AttachmentDto {
   @ApiProperty()
   fileName: string;
   @ApiProperty()
@@ -12,4 +11,4 @@ export class AttachmentDto extends BaseDto {
   attachmentTypeCode: string;
 }
 
-export class UpdateAttachmentDto extends OmitType(AttachmentDto, ['id']) {}
+export class UpdateAttachmentDto extends AttachmentDto {}

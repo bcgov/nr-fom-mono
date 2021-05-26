@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder, UpdateResult } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
 import { DataService } from 'apps/api/src/core/models/data.service';
-import { ProjectDto, ProjectPublicSummaryDto } from './project.dto';
+import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';
+import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
+import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 
 export class ProjectFindCriteria {
@@ -41,9 +43,8 @@ export class ProjectFindCriteria {
   }
 }
 
-// TODO: Implement standard relations and mapping to DTO.
 @Injectable()
-export class ProjectService extends DataService<Project, Repository<Project>, ProjectDto> { 
+export class ProjectService extends DataService<Project, Repository<Project>, ProjectResponse> { 
   constructor(
     @InjectRepository(Project)
     repository: Repository<Project>,
@@ -54,12 +55,13 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     super(repository, new Project(), logger);
   }
 
-  isCreateAuthorized(user: User, dto: Partial<ProjectDto>): boolean {
-    return (user && user.isForestClient && dto.forestClientNumber && user.clientIds.includes(dto.forestClientNumber));
+  isCreateAuthorized(user: User, dto: Partial<ProjectCreateRequest>): boolean {
+    
+    return (user && user.isForestClient && dto.forestClientNumber && user.isAuthorizedForClientId(dto.forestClientNumber) );
   }
   
-  isUpdateAuthorized(user: User, dto: any, entity: Partial<Project>): boolean {
-    return (user && user.isForestClient && user.clientIds.includes(entity.forestClientId));
+  isUpdateAuthorized(user: User, dto: ProjectUpdateRequest, entity: Partial<Project>): boolean {
+    return (user && user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId));
   }
 
   isDeleteAuthorized(user: User, id: number): boolean {
@@ -77,8 +79,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return true;
   }
 
-  async find(findCriteria: ProjectFindCriteria):Promise<ProjectDto[]> {
-    this.logger.trace(`Find criteria: ${JSON.stringify(findCriteria)}`);
+  async create(request: any, user: User): Promise<ProjectResponse> {
+    request.workflowStateCode = WorkflowStateEnum.INITIAL;
+    request.forestClientId = request.forestClientNumber;
+    return await super.create(request, user);
+  }
+
+  async find(findCriteria: ProjectFindCriteria):Promise<ProjectResponse[]> {
+    this.logger.debug(`Find criteria: ${JSON.stringify(findCriteria)}`);
 
     const query = this.repository.createQueryBuilder("p")
       .leftJoinAndSelect("p.forestClient", "forestClient")
@@ -94,20 +102,38 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return result.map(project => this.convertEntity(project));
   }
 
-  convertEntity(entity: Project): ProjectDto {
-    var dto = super.convertEntity(entity);
+  convertEntity(entity: Project): ProjectResponse {
+    const response = new ProjectResponse();
+    if (entity.commentingClosedDate) {
+      response.commentingClosedDate = dayjs(entity.commentingClosedDate).format('YYYY-MM-DD');
+    }
+    if (entity.commentingOpenDate) {
+      response.commentingOpenDate = dayjs(entity.commentingOpenDate).format('YYYY-MM-DD');
+    }
+    response.createTimestamp = entity.createTimestamp.toISOString();
+    response.description = entity.description;
     if (entity.district != null) {
-      dto.district = this.districtService.convertEntity(entity.district);
+      response.district = this.districtService.convertEntity(entity.district);
     }
     if (entity.forestClient != null) {
-      dto.forestClient = this.forestClientService.convertEntity(entity.forestClient);
+      response.forestClient = this.forestClientService.convertEntity(entity.forestClient);
     }
-    return dto;
-  }
-  
-  async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryDto[]> {
+    response.fspId = entity.fspId;
+    response.id = entity.id;
+    response.name = entity.name;
+    response.revisionCount = entity.revisionCount;
+    response.workflowState = entity.workflowState;
 
-    this.logger.trace(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
+    return response;
+  }
+
+  protected getCommonRelations(): string[] {
+    return ['district', 'forestClient', 'workflowState'];
+  }
+
+  async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
+
+    this.logger.debug(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
 
     const query = this.repository.createQueryBuilder("p")
       .leftJoinAndSelect("p.forestClient", "forestClient")
@@ -120,14 +146,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const result:Project[] = await query.getMany();
 
     return result.map(project => {
-      var summary = new ProjectPublicSummaryDto();
+      var summary = new ProjectPublicSummaryResponse();
+
+      summary.forestClientName = project.forestClient.name;
+      summary.fspId = project.fspId;
+      summary.geojson = project.geojson;
       summary.id = project.id;
       summary.name = project.name;
       summary.workflowStateName = project.workflowState.description;
-      summary.forestClientName = project.forestClient.name;
-      summary.geojson = project.geojson;
-      summary.fspId = project.fspId;
-      summary.commentingOpenDate = dayjs(project.commentingOpenDate).format('YYYY-MM-DD');
       return summary;
     });
   }

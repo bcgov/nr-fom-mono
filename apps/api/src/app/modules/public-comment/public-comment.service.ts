@@ -33,11 +33,9 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return created;
   }
   
-  // We provide support for updating encrypted columns, although currently there's no use case where this will happen.
   protected async updateEntity(id: string | number, dto: any, entity: PublicComment): Promise<UpdateResult> {
     const updateResult = await super.updateEntity(id, dto, entity);
-    // TODO: Need to handle/check update result from encryptSensitiveColumns.
-    await this.encryptSensitiveColumns(entity);
+    // There's no use case to update encrypted columns, so we don't touch them - they'll be loaded as encrypted, and resaved as encrypted.
     return updateResult;
   }
 
@@ -78,7 +76,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   }
 
   private async encryptSensitiveColumns(entity: PublicComment) {
-    this.logger.trace('Encrypting sensitive columns for PublicComment...');
+    this.logger.debug('Encrypting sensitive columns for PublicComment...');
     // Do update: pgp encrypt sensitive column values
     await this.repository
       .update(entity.id,
@@ -92,7 +90,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   }
 
   private async obtainDecryptedColumns(id: number[]): Promise<Partial<PublicComment>[]> {
-    this.logger.trace('Decrypting sensitive columns for PublicComment...');
+    this.logger.debug('Decrypting sensitive columns for PublicComment...');
     // using query builder for select back
     const decryptedSelecteColumns = await this.repository.createQueryBuilder('pc')
     .select('public_comment_id', 'id')
@@ -115,8 +113,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     }
     // TODO: Confirm that forest client is authorized for this project based on project's client id, and that project is in commenting open state.
     //     const project: ProjectDto = await this.projectService.findOne(dto.projectId, user);
-
-    // return user.clientIds.includes(project.forest_client_number));
+    // return user.isAuthorizedForClientId();
     return true;
   }
 
@@ -134,7 +131,6 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
       throw new ForbiddenException();
     }
     const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
-    this.logger.trace(`${this.constructor.name}.findByProjectId options %o `, options);
     const records = await this.repository.find(options);
     if (!records || records.length == 0) {
       return [];

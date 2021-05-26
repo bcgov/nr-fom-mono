@@ -16,6 +16,12 @@ export class User {
       return (this.clientIds.findIndex(x => x == clientId) != -1);
     }
   
+    static convertJsonToUser(json: string): User {
+      const user = new User();
+      Object.assign(user, JSON.parse(json)); // Use this syntax to start with a User object so its methods are available.
+      return user;
+    }
+
     static convertJwtToUser(jwt: any): User {
       const user = new User();
       user.userName = jwt['username'];

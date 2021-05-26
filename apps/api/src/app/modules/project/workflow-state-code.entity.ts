@@ -7,11 +7,13 @@ export class WorkflowStateCode extends ApiCodeTableEntity<WorkflowStateCode> {
     super(workflowStateCode);
   }
 
-  static CODES = {
-    INITIAL: 'INITIAL',
-    COMMENT_OPEN: 'COMMENT_OPEN',
-    COMMENT_CLOSED: 'COMMENT_CLOSED',
-    FINALIZED: 'FINALIZED',
-    EXPIRED: 'EXPIRED'
-  };
+}
+
+export enum WorkflowStateEnum {
+  INITIAL = 'INITIAL',
+  PUBLISHED = 'PUBLISHED',
+  COMMENT_OPEN = 'COMMENT_OPEN',
+  COMMENT_CLOSED = 'COMMENT_CLOSED',
+  FINALIZED = 'FINALIZED',
+  EXPIRED = 'EXPIRED'
 }

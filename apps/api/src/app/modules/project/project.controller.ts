@@ -4,10 +4,10 @@ import * as dayjs from 'dayjs';
 import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './project.entity';
-import { ProjectDto, UpdateProjectDto, ProjectPublicSummaryDto } from './project.dto';
+import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest } from './project.dto';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './project-spatial-detail.entity';
-import { WorkflowStateCode } from './workflow-state-code.entity';
+import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 
@@ -27,13 +27,13 @@ export class ProjectController extends BaseController<Project> {
   @ApiQuery({ name: 'includePostCommentOpen', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiQuery({ name: 'openedOnOrAfter', required: false})
-  @ApiResponse({ status: HttpStatus.OK, type: [ProjectPublicSummaryDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectPublicSummaryResponse] })
   async findPublicSummary(
     @Query('includeCommentOpen') includeCommentOpen: string = 'true',
     @Query('includePostCommentOpen') includePostCommentOpen: string = 'true',
     @Query('forestClientName') forestClientName?: string,
     @Query('openedOnOrAfter') openedOnOrAfter?: string,
-    ): Promise<ProjectPublicSummaryDto[]> {
+    ): Promise<ProjectPublicSummaryResponse[]> {
 
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
@@ -42,11 +42,11 @@ export class ProjectController extends BaseController<Project> {
       }
 
       if (includeCommentOpen == 'true') {
-        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.COMMENT_OPEN);
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_OPEN);
       } 
       if (includePostCommentOpen == 'true') {
-        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.COMMENT_CLOSED);
-        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.FINALIZED);
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_CLOSED);
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.FINALIZED);
         // Deliberately exclude EXPIRED
       }
       if (includeCommentOpen != 'true' && includePostCommentOpen != 'true') {
@@ -71,10 +71,10 @@ export class ProjectController extends BaseController<Project> {
   // Anonymous access allowed
   @Get(':id')
   @ApiBearerAuth()
-  @ApiResponse({ status: HttpStatus.OK, type: ProjectDto })
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
   async findOne(
     @UserHeader() user: User,
-    @Param('id') id: number): Promise<ProjectDto> {
+    @Param('id') id: number): Promise<ProjectResponse> {
     return this.service.findOne(id, user, {
       relations: ['district', 'forestClient', 'workflowState'],
     });
@@ -86,14 +86,14 @@ export class ProjectController extends BaseController<Project> {
   @ApiQuery({ name: 'districtId', required: false})
   @ApiQuery({ name: 'workflowStateCode', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
-  @ApiResponse({ status: HttpStatus.OK, type: [ProjectDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectResponse] })
   async find(
     @UserRequiredHeader() user: User,
     @Query('fspId') fspId?: number,
     @Query('districtId') districtId?: number,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
-    ): Promise<ProjectDto[]> {
+    ): Promise<ProjectResponse[]> {
 
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
@@ -122,25 +122,25 @@ export class ProjectController extends BaseController<Project> {
 
   @Post()
   @ApiBearerAuth()
-  @ApiResponse({ status: HttpStatus.CREATED, type: ProjectDto })
+  @ApiResponse({ status: HttpStatus.CREATED, type: ProjectResponse })
   async create(
     @UserRequiredHeader() user: User,
-    @Body() createDto: ProjectDto
-    ): Promise<ProjectDto> {
+    @Body() request: ProjectCreateRequest
+    ): Promise<ProjectResponse> {
     // TODO: add buisiness logic (to service)
-    return this.service.create(createDto, user);
+    return this.service.create(request, user);
   }
 
   @Put(':id')
   @ApiBearerAuth()
-  @ApiResponse({ status: HttpStatus.OK, type: UpdateProjectDto })
-  @ApiBody({ type: UpdateProjectDto })
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
+  @ApiBody({ type: ProjectUpdateRequest })
   async update(
     @UserRequiredHeader() user: User,
     @Param('id') id: number,
-    @Body() updateDto: UpdateProjectDto
-  ): Promise<UpdateProjectDto> {
-    return this.service.update(id, updateDto, user);
+    @Body() request: ProjectUpdateRequest
+  ): Promise<ProjectResponse> {
+    return this.service.update(id, request, user);
   }
 
   @Delete(':id')

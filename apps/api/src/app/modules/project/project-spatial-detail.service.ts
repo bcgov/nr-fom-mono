@@ -15,8 +15,9 @@ export class ProjectSpatialDetailService {
     logger.setContext(this.constructor.name);
   }
 
-  async findByProjectId(projectId: number): Promise<ProjectSpatialDetail[]> {
-    this.logger.trace(`${this.constructor.name}.findByProjectId id = ` + projectId);
+// Because this is based on a view designed to provide an API response, no separate DTO object is used - the entity is returned directly.
+async findByProjectId(projectId: number): Promise<ProjectSpatialDetail[]> {
+    this.logger.debug(`${this.constructor.name}.findByProjectId id = ` + projectId);
 
     const findAll = await this.repository.find({
       where: { projectId: projectId },

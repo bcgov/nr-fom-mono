@@ -1,8 +1,7 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { BaseDto } from '@dto';
 
 // TODO: Need Request/Response objects.
-export class InteractionDto extends BaseDto {
+export class InteractionDto {
   @ApiProperty()
   stakeholder: string;
   @ApiProperty()
@@ -16,4 +15,4 @@ export class InteractionDto extends BaseDto {
   attachmentId: number;
 }
 
-export class UpdateInteractionDto extends OmitType(InteractionDto, ['id']) {}
+export class UpdateInteractionDto extends InteractionDto {}

@@ -21,8 +21,8 @@ export class PublicCommentCreateRequest {
   scopeRoadSectionId?: number;
 
   @ApiProperty()
-  @MaxLength(4000)
-  @MinLength(1) // TODO: Confirm min & max lengths. Min should be longer than 1.
+  @MaxLength(4000) // Confirmed by business
+  @MinLength(5) 
   feedback: string;
 
   @ApiProperty()

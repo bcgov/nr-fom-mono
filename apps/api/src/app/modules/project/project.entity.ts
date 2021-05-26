@@ -21,6 +21,7 @@ export class Project extends ApiBaseEntity<Project> {
   @Column()
   description: string;
 
+  // TODO: Should these be type Date, like createTimestamp?
   @Column({ name: 'commenting_open_date'})
   commentingOpenDate: string; // timestamp
 

@@ -10,11 +10,11 @@ import { Submission } from './submission.entity';
 import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
 import { ProjectService } from '../project/project.service';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
-import { WorkflowStateCode } from '../project/workflow-state-code.entity';
+import { WorkflowStateCode, WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { CutBlock } from './cut-block.entity';
 import { RoadSection } from './road-section.entity';
 import { RetentionArea } from './retention-area.entity';
-import { ProjectDto } from '../project/project.dto';
+import { ProjectResponse } from '../project/project.dto';
 import { flatDeep } from '../../../core/utils';
 import { User } from 'apps/api/src/core/security/user';
 
@@ -37,8 +37,7 @@ export class SubmissionService {
     }
     // TODO: Confirm that forest client is authorized for this project based on project's client id.
     //     const project: ProjectDto = await this.projectService.findOne(dto.projectId, user);
-
-    // return user.clientIds.includes(project.forest_client_number));
+    // return user.isAuthorizedForClientId();
     return true;
   }
   
@@ -66,8 +65,9 @@ export class SubmissionService {
     }
 
     // Load the existing project to obtain the project's workflow state
-    const project: ProjectDto = await this.projectService.findOne(dto.projectId, user);
-    const workflowStateCode = project.workflowStateCode;
+    
+    const project: ProjectResponse = await this.projectService.findOne(dto.projectId, user); // This invokes security authorization check which will always pass.
+    const workflowStateCode = project.workflowState.code;
     const submissionTypeCode = this.getPermittedSubmissionTypeCode(workflowStateCode);
 
     // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
@@ -113,11 +113,11 @@ export class SubmissionService {
   getPermittedSubmissionTypeCode(workFlowStateCode: string): SubmissionTypeCodeEnum {
     let submissionTypeCode: SubmissionTypeCodeEnum;
     switch (workFlowStateCode) {
-      case WorkflowStateCode.CODES.INITIAL:
+      case WorkflowStateEnum.INITIAL:
         submissionTypeCode = SubmissionTypeCodeEnum.PROPOSED;
         break;
 
-      case WorkflowStateCode.CODES.COMMENT_CLOSED:
+      case WorkflowStateEnum.COMMENT_CLOSED:
         submissionTypeCode = SubmissionTypeCodeEnum.FINAL;
         break;
       

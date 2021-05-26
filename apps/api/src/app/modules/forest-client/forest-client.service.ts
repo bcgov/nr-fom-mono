@@ -18,7 +18,7 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
 
   // Return ForestClients matching the specified numbers. If no numbers are specified, nothing is returned.
   async find(forestClientNumbers: string[]): Promise<ForestClientResponse[]> {   
-    this.logger.trace(`Find criteria: ${JSON.stringify(forestClientNumbers)}`);
+    this.logger.debug(`Find criteria: ${JSON.stringify(forestClientNumbers)}`);
 
     if (!forestClientNumbers || forestClientNumbers.length == 0) {
       return Promise.resolve([]);

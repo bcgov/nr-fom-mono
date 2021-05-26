@@ -1,57 +1,116 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { BaseDto } from '@dto';
-import { WorkflowStateCode } from './workflow-state-code.entity';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
+import { IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
 
-export class ProjectDto extends BaseDto {
+export class ProjectCreateRequest {
   @ApiProperty()
+  @MaxLength(50) 
+  @MinLength(5) 
   name: string;
+
   @ApiProperty()
-  description: string;
+  @MaxLength(500) // TODO: Figure out max length
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty({ description: 'ISO-formatted date'})
+  @IsOptional()
+  @IsDateString()
+  commentingOpenDate?: string;
+
+  @ApiProperty({ description: 'ISO-formatted date'})
+  @IsOptional()
+  @IsDateString()
+  commentingClosedDate?: string; 
+
   @ApiProperty()
-  commentingOpenDate: string; // timestamp
-  @ApiProperty()
-  commentingClosedDate: string; // timestamp
-  @ApiProperty({example: ` { "type": "Point", "coordinates": [-119.396071939, 49.813816629]}`})
-  geojson: FomPoint;
-  // Relationships
-  @ApiProperty()
-  fspId: number;
-  @ApiProperty()
-  districtId: number;
-  @ApiProperty()
-  district: DistrictResponse;
-  @ApiProperty()
+  @IsNumberString()
   forestClientNumber: string;
+
   @ApiProperty()
-  forestClient: ForestClientResponse;
+  @IsNumber()
+  fspId: number;
+
   @ApiProperty()
-  workflowStateCode: string;
+  @IsNumber()
+  districtId: number;
+
+}
+
+export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequest), ['forestClientNumber']) {
+  // forestClientNumber is the basis for security controls so cannot be changed on updates.
+
   @ApiProperty()
-  workflowState: WorkflowStateCode;
+  @IsNumber()
+  revisionCount: number;
+
+  @ApiProperty()
+  @IsEnum(WorkflowStateEnum)
+  @IsOptional()
+  workflowStateCode?: string;
 }
 
 // DTO optimized for Public FE map view
-export class ProjectPublicSummaryDto {
+export class ProjectPublicSummaryResponse {
   @ApiProperty()
-  public id: number;
+  id: number;
+
   @ApiProperty()
   name: string;
+
   @ApiProperty({example: ` { "type": "Point", "coordinates": [-119.396071939, 49.813816629]}`})
   geojson: FomPoint;
+
   @ApiProperty()
   fspId: number;
+
   @ApiProperty()
   forestClientName: string;
+
   @ApiProperty()
   workflowStateName: string;
-  @ApiProperty()
-  commentingOpenDate: string;
+
 }
 
-export class UpdateProjectDto extends OmitType(ProjectDto, ['id']) {}
+export class ProjectResponse {
+
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  description: string;
+
+  @ApiProperty({ description: 'ISO-formatted date'})
+  commentingOpenDate: string;
+
+  @ApiProperty({ description: 'ISO-formatted date'})
+  commentingClosedDate: string; 
+
+  @ApiProperty()
+  fspId: number;
+
+  @ApiProperty()
+  district: DistrictResponse;
+
+  @ApiProperty()
+  forestClient: ForestClientResponse;
+
+  @ApiProperty()
+  workflowState: WorkflowStateCode;
+
+  @ApiProperty()
+  revisionCount: number;
+
+  @ApiProperty({ description: 'ISO-formatted timestamp'})
+  createTimestamp: string;
+
+}
 
 // Need to do this to get to compile, rather than using Point directly. Not sure why...
 export interface FomPoint extends Point {

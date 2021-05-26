@@ -77,7 +77,7 @@ export abstract class DataService<
    * @memberof DataService
    */
   async create(requestDto: any, user: User): Promise<O> {
-    this.logger.trace(`${this.constructor.name}.create dto %o`, requestDto);
+    this.logger.debug(`${this.constructor.name}.create dto %o`, requestDto);
 
     if (!this.isCreateAuthorized(user, requestDto)) {
       throw new ForbiddenException();
@@ -110,9 +110,15 @@ export abstract class DataService<
     return this.repository.update(id, this.convertDto(dto, entity));
   }
 
+  // Deliberately exclude loading relations for updates. TypeORM gets confused if an entity has both the id field and the relation field populated on update.
+  protected async findEntityForUpdate(id: string | number): Promise<E|undefined> {
+    return await this.repository.findOne(id);
+  }
+
   // A hook on find entity for other service to override if it needs extra operation, like db column decryption.
   protected async findEntity(id: string | number, options?: FindOneOptions<E> | undefined): Promise<E|undefined> {
-    return await this.repository.findOne(id, this.addCommonRelationsToFindOptions(options));
+    const revisedOptions = this.addCommonRelationsToFindOptions(options);
+    return await this.repository.findOne(id, revisedOptions);
   }
 
   protected addCommonRelationsToFindOptions(options?: FindOneOptions<E> | FindManyOptions<E>): FindOneOptions<E> | FindManyOptions<E> {
@@ -143,9 +149,9 @@ export abstract class DataService<
     requestDto.updateUser = user ? user.userName : 'Anonymous';
     requestDto.updateTimestamp = dayjs().format();
 
-    this.logger.trace(`${this.constructor.name}.update dto %o`, requestDto);
+    this.logger.debug(`${this.constructor.name}.update dto %o`, requestDto);
 
-    const entity = await this.findEntity(id);
+    const entity:E = await this.findEntityForUpdate(id)
     if (! entity) {
       throw new UnprocessableEntityException("Entity not found.");
     }
@@ -153,7 +159,7 @@ export abstract class DataService<
       throw new ForbiddenException();
     }
     if (entity.revisionCount != requestDto.revisionCount) {
-      this.logger.trace("Entity revision count " + entity.revisionCount + " dto revision count = " + requestDto.revisionCount);
+      this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + requestDto.revisionCount);
       throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
     }
     requestDto.revisionCount += 1;
@@ -164,12 +170,10 @@ export abstract class DataService<
     }
 
     const updatedEntity = await this.findEntity(id);
-    this.logger.trace(`${this.constructor.name}.update result entity %o`, updatedEntity);
+    this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
 
     return this.convertEntity(updatedEntity);
   }
-
-
 
   /**
    * Remove record by Id
@@ -179,7 +183,7 @@ export abstract class DataService<
    * @memberof DataService
    */
   async remove(id: number | string, user: User): Promise<void> {
-    this.logger.trace(`${this.constructor.name}.delete id %o`, id);
+    this.logger.debug(`${this.constructor.name}.delete id %o`, id);
 
     if (!this.isDeleteAuthorized(user, id )) {
       throw new ForbiddenException();
@@ -203,7 +207,7 @@ export abstract class DataService<
     id: number | string, user: User, 
     options?: FindOneOptions<E> | undefined
   ): Promise<O> {
-    this.logger.trace(`${this.constructor.name}findOne id %o`, id);
+    this.logger.debug(`${this.constructor.name}findOne id %o`, id);
 
     if (!this.isViewingAuthorized(user)) {
       throw new ForbiddenException();
@@ -223,7 +227,7 @@ export abstract class DataService<
    * @memberof DataService
    */
   async findAll(user: User, options?: FindManyOptions<E> | undefined): Promise<O[]> {
-    this.logger.trace(`${this.constructor.name}.findAll options %o ` + options);
+    this.logger.debug(`${this.constructor.name}.findAll options %o ` + options);
 
     if (!this.isViewingAuthorized(user)) {
       throw new ForbiddenException();

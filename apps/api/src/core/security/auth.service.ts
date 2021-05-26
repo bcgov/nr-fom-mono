@@ -85,11 +85,8 @@ export class AuthService {
         }
         const tokenStartIndex = bearer.length;
         const token = authHeader.substr(tokenStartIndex);
-
         if (!this.config.enabled) {
-          // Expects token to be a User instance converted to JSON.
-          const user = new User();
-          Object.assign(user, JSON.parse(token)); // Use this syntax to start with a User object so its methods are available.
+          const user = User.convertJsonToUser(token);
           return Promise.resolve(user);
         }
         
@@ -102,7 +99,7 @@ export class AuthService {
             { issuer: this.config.getIssuer(), 
               nonce: untrustedDecodedToken.payload.nonce 
             });
-          this.logger.trace("Trusted decoded token = %o" + decodedToken);
+          this.logger.debug("Trusted decoded token = %o" + decodedToken);
           return User.convertJwtToUser(decodedToken);
         } catch (err) {
           this.logger.warn("Invalid token %o", err);

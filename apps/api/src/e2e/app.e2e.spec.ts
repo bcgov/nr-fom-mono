@@ -3,10 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../app/app.module';
 import { PublicCommentCreateRequest } from '../app/modules/public-comment/public-comment.dto';
-import { ProjectDto } from '../app/modules/project/dto/project.dto';
 import { SubmissionRequest } from '../app/modules/submission/submission.dto';
 import { KeycloakConfig } from '../core/security/auth.service';
 import { User } from '../core/security/user';
+import { ProjectCreateRequest, ProjectUpdateRequest } from '../app/modules/project/project.dto';
 
 const verifyCreateMetadata = (data) => {
   expect(data.createTimestamp).not.toBeNull();
@@ -260,7 +260,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       await createProjectAndVerifyResult(createData);
     });
 
@@ -275,7 +275,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createData);
       const resBody = res.body;
 
@@ -284,6 +284,7 @@ describe('API endpoints testing (e2e)', () => {
       // Update the project
       const updateData = {
         id: projectId,
+        revisionCount: 1,
         name: 'Test Updated',
         description: 'Test Updated',
         commentingOpenDate: '2020-10-10',
@@ -292,7 +293,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15, // Chilliwack natural resources
         forestClientNumber: '1011',
         workflowStateCode: 'FINALIZED',
-      } as ProjectDto;
+      } as ProjectUpdateRequest;
 
       // Make the request to update the project
       await updateProjectAndVerifyResult(projectId, updateData);
@@ -309,7 +310,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createData);
       const resBody = res.body;
 
@@ -343,7 +344,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createData);
       const resBody = res.body;
 
@@ -401,7 +402,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       await createProjectAndVerifyResult(createProjectData);
 
       const byFspIdRes = await request(app.getHttpServer()).get(
@@ -429,7 +430,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -455,7 +456,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -496,7 +497,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -537,7 +538,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -577,7 +578,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -617,7 +618,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
@@ -666,7 +667,7 @@ describe('API endpoints testing (e2e)', () => {
         districtId: 15,
         forestClientNumber: '1011',
         workflowStateCode: 'INITIAL',
-      } as ProjectDto;
+      } as ProjectCreateRequest;
       const res = await createProjectAndVerifyResult(createProjectData);
       const resBody = res.body;
 
