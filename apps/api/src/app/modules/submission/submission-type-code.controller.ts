@@ -5,7 +5,7 @@ import { CodeTableController } from '@controllers';
 import { SubmissionTypeCodeService } from './submission-type-code.service';
 import { SubmissionTypeCode } from './submission-type-code.entity';
 
-@ApiTags('submission-type-code')
+@ApiTags('submission')
 @Controller('submission-type-code')
 export class SubmissionTypeCodeController extends CodeTableController<SubmissionTypeCode> {
   constructor(protected readonly service: SubmissionTypeCodeService) {

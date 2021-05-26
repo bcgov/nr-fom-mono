@@ -5,7 +5,7 @@ import { CodeTableController } from '@controllers';
 import { ResponseCodeService } from './response-code.service';
 import { ResponseCode } from './response-code.entity';
 
-@ApiTags('response-code')
+@ApiTags('public-comment')
 @Controller('response-code')
 export class ResponseCodeController extends CodeTableController<ResponseCode> {
   constructor(protected readonly service: ResponseCodeService) {

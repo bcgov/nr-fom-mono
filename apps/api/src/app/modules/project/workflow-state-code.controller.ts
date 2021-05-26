@@ -5,7 +5,7 @@ import { CodeTableController } from '@controllers';
 import { WorkflowStateCodeService } from './workflow-state-code.service';
 import { WorkflowStateCode } from './workflow-state-code.entity';
 
-@ApiTags('workflow-state-code')
+@ApiTags('project')
 @Controller('workflow-state-code')
 export class WorkflowStateCodeController extends CodeTableController<WorkflowStateCode> {
   constructor(protected readonly service: WorkflowStateCodeService) {

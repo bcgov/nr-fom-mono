@@ -5,7 +5,7 @@ import { CodeTableController } from '@controllers';
 import { CommentScopeCodeService } from './comment-scope-code.service';
 import { CommentScopeCode } from './comment-scope-code.entity';
 
-@ApiTags('comment-scope-code')
+@ApiTags('public-comment')
 @Controller('comment-scope-code')
 export class CommentScopeCodeController extends CodeTableController<CommentScopeCode> {
   constructor(protected readonly service: CommentScopeCodeService) {

@@ -5,7 +5,7 @@ import { CodeTableController } from '@controllers';
 import { AttachmentTypeCodeService } from './attachment-type-code.service';
 import { AttachmentTypeCode } from './attachment-type-code.entity';
 
-@ApiTags('attachment-type-code')
+@ApiTags('attachment')
 @Controller('attachment-type-code')
 export class AttachmentTypeCodeController extends CodeTableController<AttachmentTypeCode> {
   constructor(protected readonly service: AttachmentTypeCodeService) {
