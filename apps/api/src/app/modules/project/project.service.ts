@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { Project } from './entities/project.entity';
-import { DataService } from 'apps/api/src/core/models/data.service';
-import { PinoLogger } from 'nestjs-pino';
-import { ProjectDto } from './dto/project.dto';
-import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import * as dayjs from 'dayjs';
+import { Project } from './project.entity';
+import { PinoLogger } from 'nestjs-pino';
+import { DataService } from 'apps/api/src/core/models/data.service';
+import { ProjectDto, ProjectPublicSummaryDto } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';

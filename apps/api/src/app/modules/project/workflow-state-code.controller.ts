@@ -3,7 +3,7 @@ import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { WorkflowStateCodeService } from './workflow-state-code.service';
-import { WorkflowStateCode } from './entities/workflow-state-code.entity';
+import { WorkflowStateCode } from './workflow-state-code.entity';
 
 @ApiTags('workflow-state-code')
 @Controller('workflow-state-code')

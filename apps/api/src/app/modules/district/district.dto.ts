@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class DistrictDto {
+export class DistrictResponse {
   @ApiProperty()
   public id: number;
 

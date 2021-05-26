@@ -1,6 +1,6 @@
 import { ViewEntity, JoinColumn, ManyToOne, ViewColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { SubmissionTypeCode } from '../../submission/submission-type-code.entity';
+import { SubmissionTypeCode } from '../submission/submission-type-code.entity';
 
 // This entity represents all the spatial objects (cut blocks, road sections, retention areas) for a FOM project
 // denormalized and converted for easy rendering in leaflet.

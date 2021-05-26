@@ -10,11 +10,11 @@ import { Submission } from './submission.entity';
 import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
 import { ProjectService } from '../project/project.service';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
-import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
+import { WorkflowStateCode } from '../project/workflow-state-code.entity';
 import { CutBlock } from './cut-block.entity';
 import { RoadSection } from './road-section.entity';
 import { RetentionArea } from './retention-area.entity';
-import { ProjectDto } from '../project/dto/project.dto';
+import { ProjectDto } from '../project/project.dto';
 import { flatDeep } from '../../../core/utils';
 import { User } from 'apps/api/src/core/security/user';
 

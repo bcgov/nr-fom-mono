@@ -1,7 +1,7 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
-import { Project } from '../../project/entities/project.entity';
-import { Attachment } from '../../attachment/entities/attachment.entity';
+import { Project } from '../project/project.entity';
+import { Attachment } from '../attachment/attachment.entity';
 
 @Entity('interaction', {schema: 'app_fom'})
 export class Interaction extends ApiBaseEntity<Interaction> {

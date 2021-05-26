@@ -3,10 +3,10 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
 import { AttachmentService } from './attachment.service';
-import { Attachment } from './entities/attachment.entity';
-import { AttachmentDto } from './dto/attachment.dto';
-import { UpdateAttachmentDto } from './dto/update-attachment.dto';
+import { Attachment } from './attachment.entity';
+import { AttachmentDto } from './attachment.dto';
 
+// TODO: Determine if this is needed.
 @ApiTags('attachment')
 @Controller('attachment')
 export class AttachmentController extends BaseController<Attachment> {

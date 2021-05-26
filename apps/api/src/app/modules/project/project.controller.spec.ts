@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Project } from './entities/project.entity';
+import { Project } from './project.entity';
 import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 import { mockDataServiceFactory } from '../../factories/mock-data-service.factory';

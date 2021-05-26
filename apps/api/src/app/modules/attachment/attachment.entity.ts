@@ -1,7 +1,7 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
-import { Project } from '../../project/entities/project.entity';
-import { AttachmentTypeCode } from '../../attachment-type-code/entities/attachment-type-code.entity';
+import { Project } from '../project/project.entity';
+import { AttachmentTypeCode } from './attachment-type-code.entity';
 
 @Entity('attachment', {schema: 'app_fom'})
 export class Attachment extends ApiBaseEntity<Attachment> {

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class ForestClientDto {
+export class ForestClientResponse {
   @ApiProperty()
   id: string;
 

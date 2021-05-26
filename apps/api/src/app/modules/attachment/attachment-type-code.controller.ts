@@ -3,7 +3,7 @@ import { ApiTags, ApiResponse } from '@nestjs/swagger';
 
 import { CodeTableController } from '@controllers';
 import { AttachmentTypeCodeService } from './attachment-type-code.service';
-import { AttachmentTypeCode } from './entities/attachment-type-code.entity';
+import { AttachmentTypeCode } from './attachment-type-code.entity';
 
 @ApiTags('attachment-type-code')
 @Controller('attachment-type-code')

@@ -1,9 +1,9 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 import { BaseDto } from '@dto';
-import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
+import { WorkflowStateCode } from './workflow-state-code.entity';
 import { Point } from 'geojson';
-import { DistrictDto } from '../../district/dto/district.dto';
-import { ForestClientDto } from '../../forest-client/dto/forest-client.dto';
+import { DistrictResponse } from '../district/district.dto';
+import { ForestClientResponse } from '../forest-client/forest-client.dto';
 
 export class ProjectDto extends BaseDto {
   @ApiProperty()
@@ -22,15 +22,33 @@ export class ProjectDto extends BaseDto {
   @ApiProperty()
   districtId: number;
   @ApiProperty()
-  district: DistrictDto;
+  district: DistrictResponse;
   @ApiProperty()
   forestClientNumber: string;
   @ApiProperty()
-  forestClient: ForestClientDto;
+  forestClient: ForestClientResponse;
   @ApiProperty()
   workflowStateCode: string;
   @ApiProperty()
   workflowState: WorkflowStateCode;
+}
+
+// DTO optimized for Public FE map view
+export class ProjectPublicSummaryDto {
+  @ApiProperty()
+  public id: number;
+  @ApiProperty()
+  name: string;
+  @ApiProperty({example: ` { "type": "Point", "coordinates": [-119.396071939, 49.813816629]}`})
+  geojson: FomPoint;
+  @ApiProperty()
+  fspId: number;
+  @ApiProperty()
+  forestClientName: string;
+  @ApiProperty()
+  workflowStateName: string;
+  @ApiProperty()
+  commentingOpenDate: string;
 }
 
 export class UpdateProjectDto extends OmitType(ProjectDto, ['id']) {}

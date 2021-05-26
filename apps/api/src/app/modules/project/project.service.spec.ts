@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProjectService } from './project.service';
 import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { Project } from './entities/project.entity';
+import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
 
 import { getRepository, Repository } from 'typeorm';
-import { projectPropsFactory } from '../../factories/project.factory';
 import { mockLoggerFactory } from '../../factories/mock-logger.factory';
 import { AppConfigModule } from '../../modules/app-config/app-config.module';
 import { AppConfigService } from '../../modules/app-config/app-config.provider';

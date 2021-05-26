@@ -3,10 +3,10 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
 import { InteractionService } from './interaction.service';
-import { Interaction } from './entities/interaction.entity';
-import { InteractionDto } from './dto/interaction.dto';
-import { UpdateInteractionDto } from './dto/update-interaction.dto';
+import { Interaction } from './interaction.entity';
+import { InteractionDto } from './interaction.dto';
 
+// TODO: Evaluate whether this is needed.
 @ApiTags('interaction')
 @Controller('interaction')
 export class InteractionController extends BaseController<Interaction> {

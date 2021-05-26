@@ -1,10 +1,10 @@
 import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId, OneToMany } from 'typeorm';
-import { WorkflowStateCode } from '../../workflow-state-code/entities/workflow-state-code.entity';
-import { District } from '../../district/entities/district.entity';
-import { ForestClient } from '../../forest-client/entities/forest-client.entity';
-import { Submission } from '../../submission/submission.entity';
-import { FomPoint } from '../dto/project.dto';
+import { WorkflowStateCode } from './workflow-state-code.entity';
+import { District } from '../district/district.entity';
+import { ForestClient } from '../forest-client/forest-client.entity';
+import { Submission } from '../submission/submission.entity';
+import { FomPoint } from './project.dto';
 
 @Entity('project', {schema: 'app_fom'})
 export class Project extends ApiBaseEntity<Project> {

@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ForestClient } from './entities/forest-client.entity';
+import { ForestClient } from './forest-client.entity';
 import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly.service';
 import { PinoLogger } from 'nestjs-pino';
-import { ForestClientDto } from './dto/forest-client.dto';
+import { ForestClientResponse } from './forest-client.dto';
 
 @Injectable()
 export class ForestClientService extends DataReadOnlyService<ForestClient, Repository<ForestClient>> {
@@ -17,7 +17,7 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
   }
 
   // Return ForestClients matching the specified numbers. If no numbers are specified, nothing is returned.
-  async find(forestClientNumbers: string[]): Promise<ForestClientDto[]> {   
+  async find(forestClientNumbers: string[]): Promise<ForestClientResponse[]> {   
     this.logger.trace(`Find criteria: ${JSON.stringify(forestClientNumbers)}`);
 
     if (!forestClientNumbers || forestClientNumbers.length == 0) {
@@ -34,8 +34,8 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
     return result.map(forestClient => this.convertEntity(forestClient));
   }
 
-  convertEntity(entity: ForestClient):ForestClientDto {
-    var dto = new ForestClientDto();
+  convertEntity(entity: ForestClient):ForestClientResponse {
+    var dto = new ForestClientResponse();
     // Read-only so don't bother returning audit columns
     dto.id = entity.id;
     dto.name = entity.name;

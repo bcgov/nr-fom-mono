@@ -9,9 +9,6 @@ import { ForestClientModule } from './modules/forest-client/forest-client.module
 import { ProjectModule } from './modules/project/project.module';
 import { PublicCommentModule } from './modules/public-comment/public-comment.module';
 import { SubmissionModule } from './modules/submission/submission.module';
-// Code Table Modules
-import { AttachmentTypeCodeModule } from './modules/attachment-type-code/attachment-type-code.module';
-import { WorkflowStateCodeModule } from './modules/workflow-state-code/workflow-state-code.module';
 // Other Modules
 import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './modules/app-config/app-config.module';
@@ -49,9 +46,6 @@ import { SecurityModule } from '../core/security/security.module'
     ProjectModule,
     PublicCommentModule,
     SubmissionModule,
-    // Code Table Modules
-    AttachmentTypeCodeModule,
-    WorkflowStateCodeModule,
   ],
 })
 export class AppModule {

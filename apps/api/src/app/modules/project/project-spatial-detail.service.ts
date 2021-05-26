@@ -2,7 +2,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
-import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
+import { ProjectSpatialDetail } from './project-spatial-detail.entity';
 
 @Injectable()
 export class ProjectSpatialDetailService {
