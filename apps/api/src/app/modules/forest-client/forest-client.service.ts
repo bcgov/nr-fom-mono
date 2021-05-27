@@ -24,7 +24,6 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
       return Promise.resolve([]);
     }
     const query = this.repository.createQueryBuilder("fc")
-      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: Use constant
       .addOrderBy('fc.name', 'ASC') // Newest first
       ;
     query.andWhere("fc.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: forestClientNumbers});

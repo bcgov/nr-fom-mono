@@ -92,7 +92,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       .leftJoinAndSelect("p.forestClient", "forestClient")
       .leftJoinAndSelect("p.workflowState", "workflowState")
       .leftJoinAndSelect("p.district", "district")
-      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
       .addOrderBy('p.project_id', 'DESC') // Newest first
       ;
     findCriteria.applyFindCriteria(query);

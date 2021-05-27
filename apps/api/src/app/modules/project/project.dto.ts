@@ -12,7 +12,7 @@ export class ProjectCreateRequest {
   name: string;
 
   @ApiProperty()
-  @MaxLength(500) // TODO: Figure out max length
+  @MaxLength(500) 
   @IsOptional()
   description?: string;
 

@@ -127,7 +127,6 @@ export class ProjectController extends BaseController<Project> {
     @UserRequiredHeader() user: User,
     @Body() request: ProjectCreateRequest
     ): Promise<ProjectResponse> {
-    // TODO: add buisiness logic (to service)
     return this.service.create(request, user);
   }
 

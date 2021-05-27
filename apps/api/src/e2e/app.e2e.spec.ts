@@ -415,7 +415,6 @@ describe('API endpoints testing (e2e)', () => {
 
     it('should return a list of submissions', async () => {
       const res = await request(app.getHttpServer()).post('/submissions');
-      // TODO: Find a way to get POST to return 200
       expect(res.status).toBe(201);
     });
 

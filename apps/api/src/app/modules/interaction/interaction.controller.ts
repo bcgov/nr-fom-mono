@@ -6,7 +6,6 @@ import { InteractionService } from './interaction.service';
 import { Interaction } from './interaction.entity';
 import { InteractionDto } from './interaction.dto';
 
-// TODO: Evaluate whether this is needed.
 @ApiTags('interaction')
 @Controller('interaction')
 export class InteractionController extends BaseController<Interaction> {

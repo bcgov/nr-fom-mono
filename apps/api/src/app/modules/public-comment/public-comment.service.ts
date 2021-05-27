@@ -28,7 +28,6 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     const encryptColumnsOmitted = _.omit(model, encryptColumns);
     let created = await super.saveEntity(encryptColumnsOmitted);
     created = {...created, ...encrypColumntPicked} as PublicComment;
-    // TODO: Need to handle/check update result from encryptSensitiveColumns.
     await this.encryptSensitiveColumns(created);
     return created;
   }

@@ -19,7 +19,7 @@ export class PublicCommentController {
   // Anonymous users can create comments.
   @Post()
   @ApiResponse({ status: HttpStatus.CREATED })
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // TODO: Look at making these global properties.
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // Explicitly reject requests with extra attributes.
   async create(
     @Body() request: PublicCommentCreateRequest): Promise<void> {
      await this.service.create(request, null); 
@@ -28,7 +28,6 @@ export class PublicCommentController {
   @Put(':id')
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: PublicCommentAdminResponse })
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // TODO: Look at making these global properties.
   async update(
     @UserRequiredHeader() user: User,
     @Param('id') id: number,

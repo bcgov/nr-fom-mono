@@ -1,12 +1,13 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
 import { AttachmentService } from './attachment.service';
 import { Attachment } from './attachment.entity';
 import { AttachmentDto } from './attachment.dto';
+import { UserHeader } from 'apps/api/src/core/security/auth.service';
+import { User } from 'apps/api/src/core/security/user';
 
-// TODO: Determine if this is needed.
 @ApiTags('attachment')
 @Controller('attachment')
 export class AttachmentController extends BaseController<Attachment> {
@@ -15,15 +16,19 @@ export class AttachmentController extends BaseController<Attachment> {
     super(service);
   }
 
+  // Accessible by public and by authenticated users.
+  @Get(':id')
+  @ApiBearerAuth()
+  async findOne(
+    @UserHeader() user: User,
+    @Param('id') id: number) {
+    return this.service.findOne(id, user);
+  }
+
 /*  
   @Post()
   async create(@Body() createDto: AttachmentDto) {
     return this.service.create(createDto);
-  }
-
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return this.service.findOne(id);
   }
 
   @Put(':id')

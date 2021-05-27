@@ -16,7 +16,7 @@ export class Attachment extends ApiBaseEntity<Attachment> {
   fileName: string;
 
   @Column({ name: 'file_contents'})
-  fileContents: string; // TODO: bytearray instead?
+  fileContents: string; 
 
   @ManyToOne(() => Project, { eager: true })
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })

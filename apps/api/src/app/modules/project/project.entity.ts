@@ -21,12 +21,11 @@ export class Project extends ApiBaseEntity<Project> {
   @Column()
   description: string;
 
-  // TODO: Should these be type Date, like createTimestamp?
   @Column({ name: 'commenting_open_date'})
-  commentingOpenDate: string; // timestamp
+  commentingOpenDate: Date; 
 
   @Column({ name: 'commenting_closed_date'})
-  commentingClosedDate: string; // timestamp
+  commentingClosedDate: Date; 
 
   @Column({ name: 'geometry_latlong', type: 'geometry', spatialFeatureType: 'Point', srid: 4326 })
   geojson: FomPoint;

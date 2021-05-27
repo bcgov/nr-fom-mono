@@ -164,10 +164,7 @@ export class SubmissionService {
   }
 
   /**
-   * // Validate that the dto.jsonSpatialSubmission is valid.
-   * // Validate required field exists in 'properties'.
-   * // Validate shape is correct? (TODO: do we need to validate this or assume user know what he is submitting?)
-   * // Parse into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode
+   * Parse into cut_block, road_section, or WTRA objects based on spatialObjectCode. 
    * 
    * @param spatialObjectCode 
    * @param jsonSpatialSubmission 
