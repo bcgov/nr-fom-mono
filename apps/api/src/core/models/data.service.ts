@@ -54,19 +54,19 @@ export abstract class DataService<
    * @param user May be null if anonymous. 
    * @param dto 
    */
-  isCreateAuthorized(dto: unknown, user?: User): boolean {
+  async isCreateAuthorized(dto: unknown, user?: User): Promise<boolean> {
     return false;
   }
   
-  isUpdateAuthorized(dto: unknown, entity: E, user?: User): boolean {
+  async isUpdateAuthorized(dto: unknown, entity: E, user?: User): Promise<boolean> {
     return false;
   }
 
-  isDeleteAuthorized(entity: E, user?: User): boolean {
+  async isDeleteAuthorized(entity: E, user?: User): Promise<boolean> {
     return false;
   }
 
-  isViewAuthorized(entity: E, user?: User): boolean {
+  async isViewAuthorized(entity: E, user?: User): Promise<boolean> {
     return false;
   }
 
@@ -80,7 +80,7 @@ export abstract class DataService<
   async create(requestDto: any, user: User): Promise<O> {
     this.logger.debug(`${this.constructor.name}.create dto %o`, requestDto);
 
-    if (!this.isCreateAuthorized(user, requestDto)) {
+    if (! await this.isCreateAuthorized(user, requestDto)) {
       throw new ForbiddenException();
     }
 
@@ -156,7 +156,7 @@ export abstract class DataService<
     if (! entity) {
       throw new UnprocessableEntityException("Entity not found.");
     }
-    if (!this.isUpdateAuthorized(requestDto, entity, user)) {
+    if (! await this.isUpdateAuthorized(requestDto, entity, user)) {
       throw new ForbiddenException();
     }
     if (entity.revisionCount != requestDto.revisionCount) {
@@ -190,7 +190,7 @@ export abstract class DataService<
     if (entity == undefined) {
       throw new BadRequestException("Entity does not exist.");
     }
-    if (!this.isDeleteAuthorized(entity, user)) {
+    if (! await this.isDeleteAuthorized(entity, user)) {
       throw new ForbiddenException();
     }
 
@@ -219,7 +219,7 @@ export abstract class DataService<
       throw new BadRequestException("No entity for the specified id.");
     }
 
-    if (!this.isViewAuthorized(entity, user)) {
+    if (! await this.isViewAuthorized(entity, user)) {
       throw new ForbiddenException();
     }
   

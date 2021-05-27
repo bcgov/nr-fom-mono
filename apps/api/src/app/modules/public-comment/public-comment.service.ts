@@ -7,7 +7,9 @@ import { PinoLogger } from 'nestjs-pino';
 import { User } from 'apps/api/src/core/security/user';
 import { DeepPartial } from '@entities';
 import * as _ from "lodash";
-import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest } from './public-comment.dto';
+import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest, PublicCommentCreateRequest } from './public-comment.dto';
+import { ProjectAuthService } from '../project/project-auth.service';
+import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 
 @Injectable()
 export class PublicCommentService extends DataService<PublicComment, Repository<PublicComment>, PublicCommentAdminResponse> {
@@ -17,7 +19,8 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   constructor(
     @InjectRepository(PublicComment)
     repository: Repository<PublicComment>,
-    logger: PinoLogger
+    logger: PinoLogger,
+    private projectAuthService: ProjectAuthService
   ) {
     super(repository, new PublicComment(), logger);
   }
@@ -102,27 +105,30 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return decryptedSelecteColumns;
   }
 
-  isCreateAuthorized(dto: unknown, user?: User): boolean {
-    return user == null; // Only anonymous user is allowed to create comments.
+  async isCreateAuthorized(dto: PublicCommentCreateRequest, user?: User): Promise<boolean> {
+    return await this.projectAuthService.isAnonymousUserAllowedStateAccess(dto.projectId, [WorkflowStateEnum.COMMENT_OPEN], user);
   }
   
-  isUpdateAuthorized(dto: PublicCommentAdminUpdateRequest, entity: PublicComment, user?: User):boolean {
-    if (!user || !user.isForestClient) {
-      return false;
-    }
-    // TODO: Confirm that forest client is authorized for this project based on project's client id, and that project is in commenting open state.
-    //     const project: ProjectDto = await this.projectService.findOne(dto.projectId, user);
-    // return user.isAuthorizedForClientId();
-    return true;
+  async isUpdateAuthorized(dto: PublicCommentAdminUpdateRequest, entity: PublicComment, user?: User):Promise<boolean> {
+    return await this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+      [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
 
-  isDeleteAuthorized(entity: PublicComment, user?: User):boolean {
+  async isDeleteAuthorized(entity: PublicComment, user?: User):Promise<boolean> {
     return false; // Comments cannot be deleted.
   }
 
-  isViewAuthorized(entity: PublicComment, user?: User): boolean {
-    // Public not allowed to view comments.
-    return (user && user.isAuthorizedForAdminSite());
+  async isViewAuthorized(entity: PublicComment, user?: User): Promise<boolean> {
+
+    if (!user) { 
+      return false; // Public not allowed to view comments.
+    }
+    if (user.isMinistry) {
+      return true;
+    }
+
+    // Forest client users can access irregardless of the workflow state.
+    return await this.projectAuthService.isForestClientUserAccess(entity.projectId, user);
   }
 
   async findByProjectId(projectId: number, user: User): Promise<PublicCommentAdminResponse[]> {

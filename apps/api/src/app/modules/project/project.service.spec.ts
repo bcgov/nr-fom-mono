@@ -24,38 +24,38 @@ describe('ProjectService', () => {
       request = new ProjectUpdateRequest();
     })
 
-    it ('public user cannot update', () => {
-      expect(service.isUpdateAuthorized(request, entity, null)).toBe(false);
+    it ('public user cannot update', async () => {
+      expect(await service.isUpdateAuthorized(request, entity, null)).toBe(false);
     });
-    it ('ministry user can update when commenting open', () => {
+    it ('ministry user can update when commenting open', async () => {
       user.isMinistry = true;
       entity.workflowStateCode = WorkflowStateEnum.COMMENT_OPEN;
-      expect(service.isUpdateAuthorized(request, entity, user)).toBe(true);
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(true);
     });
-    it ('ministry user cannot update when commenting closed', () => {
+    it ('ministry user cannot update when commenting closed', async () => {
       user.isMinistry = true;
       entity.workflowStateCode = WorkflowStateEnum.COMMENT_CLOSED;
-      expect(service.isUpdateAuthorized(request, entity, user)).toBe(false);
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(false);
     });
-    it ('forestry user for same client can update', () => {
+    it ('forestry user for same client can update', async () => {
       entity.workflowStateCode = WorkflowStateEnum.INITIAL;
       user.isForestClient = true;
       user.clientIds.push(TEST_CLIENT_ID);
       entity.forestClientId = TEST_CLIENT_ID;
-      expect(service.isUpdateAuthorized(request, entity, user)).toBe(true);
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(true);
     });
-    it ('forestry user for different client cannot update', () => {
+    it ('forestry user for different client cannot update', async () => {
       entity.workflowStateCode = WorkflowStateEnum.INITIAL;
       user.isForestClient = true;
       entity.forestClientId = TEST_CLIENT_ID;
-      expect(service.isUpdateAuthorized(request, entity, user)).toBe(false);
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(false);
     });
-    it ('forestry user cannot update when finalized', () => {
+    it ('forestry user cannot update when finalized', async () => {
       user.isForestClient = true;
       user.clientIds.push(TEST_CLIENT_ID);
       entity.forestClientId = TEST_CLIENT_ID;
       entity.workflowStateCode = WorkflowStateEnum.FINALIZED;
-      expect(service.isUpdateAuthorized(request, entity, user)).toBe(false);
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(false);
     });
   });
 
@@ -70,17 +70,17 @@ describe('ProjectService', () => {
       user = new User();
     })
 
-    it ('public user can view', () => {
-      expect(service.isViewAuthorized(entity, null)).toBe(true);
+    it ('public user can view', async () => {
+      expect(await service.isViewAuthorized(entity, null)).toBe(true);
     });
-    it ('ministry user can view', () => {
+    it ('ministry user can view', async () => {
       user.isMinistry = true;
-      expect(service.isViewAuthorized(entity, user)).toBe(true);
+      expect(await service.isViewAuthorized(entity, user)).toBe(true);
     });
-    it ('forestry user for different client cannot view', () => {
+    it ('forestry user for different client cannot view', async () => {
       user.isForestClient = true;
       entity.forestClientId = TEST_CLIENT_ID;
-      expect(service.isViewAuthorized(entity, user)).toBe(false);
+      expect(await service.isViewAuthorized(entity, user)).toBe(false);
     });
   });
 
@@ -94,41 +94,41 @@ describe('ProjectService', () => {
       user = new User();
     })
 
-    it ('public user can not delete', () => {
-      expect(service.isDeleteAuthorized(entity, null)).toBe(false);
+    it ('public user can not delete', async () => {
+      expect(await service.isDeleteAuthorized(entity, null)).toBe(false);
     });
 
-    it ('forest client user can delete when client matches and state initial', () => {
+    it ('forest client user can delete when client matches and state initial', async () => {
       user.isForestClient = true;
       user.clientIds.push(TEST_CLIENT_ID);
       entity.forestClientId = TEST_CLIENT_ID;
       entity.workflowStateCode = "INITIAL";
-      expect(service.isDeleteAuthorized(entity, user)).toBe(true);
+      expect(await service.isDeleteAuthorized(entity, user)).toBe(true);
     });
 
-    it ('forest client user can not delete when state published', () => {
+    it ('forest client user can not delete when state published', async () => {
       user.isForestClient = true;
       user.clientIds.push(TEST_CLIENT_ID);
       entity.forestClientId = TEST_CLIENT_ID;
       entity.workflowStateCode = WorkflowStateEnum.PUBLISHED;
-      expect(service.isDeleteAuthorized(entity, user)).toBe(false);
+      expect(await service.isDeleteAuthorized(entity, user)).toBe(false);
     });
 
-    it ('ministry user can not delete when state commenting open', () => {
+    it ('ministry user can not delete when state commenting open', async () => {
       user.isMinistry = true;
       entity.workflowStateCode = WorkflowStateEnum.COMMENT_OPEN;
-      expect(service.isDeleteAuthorized(entity, user)).toBe(false);
+      expect(await service.isDeleteAuthorized(entity, user)).toBe(false);
     });
 
-    it ('ministry user can delete when state commenting closed', () => {
+    it ('ministry user can delete when state commenting closed', async () => {
       user.isMinistry = true;
       entity.workflowStateCode = WorkflowStateEnum.COMMENT_CLOSED;
-      expect(service.isDeleteAuthorized(entity, user)).toBe(true);
+      expect(await service.isDeleteAuthorized(entity, user)).toBe(true);
     });
 
   });
 
-/*  
+/*  Example of creating a mock module.
   let repository: Repository<Project>;
 
   beforeAll(async () => {
@@ -173,38 +173,5 @@ describe('ProjectService', () => {
     service = new ProjectService(repository, logger, new DistrictService(null, logger), new ForestClientService(null, logger));
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-  });
-*/
-/*
-  describe('create', () => {
-    it('should create a new project ', async () => {
-      const objectToTest = projectPropsFactory();
-      const expected = new Project(objectToTest);
-      const received = await service.create<Project>(objectToTest);
-
-      expect(received.name).toEqual(expected.name);
-      expect(received).toHaveProperty('_id');
-    });
-  });
-
-  describe('findAll', () => {
-    it('should return many projects', async () => {
-      await service.create<Project>(projectPropsFactory());
-      await service.create<Project>(projectPropsFactory());
-
-      const result = await service.findAll();
-      expect(result).toHaveLength(2);
-    });
-  });
-  describe('findOne', () => {
-    it('should return an existing project', async () => {
-      const project = await service.create<Project>(projectPropsFactory());
-
-      const result = await service.findOne<Project>(project.id);
-      expect(result).toHaveProperty('name');
-    });
-  });
 */
 });

@@ -16,22 +16,22 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     super(repository, new Interaction(), logger);
   }
 
-  isCreateAuthorized(dto: unknown, user?: User): boolean {
+  async isCreateAuthorized(dto: unknown, user?: User): Promise<boolean> {
     // TODO: Verify client ID
     return user.isForestClient;
   }
   
-  isUpdateAuthorized(dto: unknown, entity: Interaction, user?: User): boolean {
+  async isUpdateAuthorized(dto: unknown, entity: Interaction, user?: User): Promise<boolean> {
     // TODO: Verify client ID
     return user.isForestClient;
   }
 
-  isDeleteAuthorized(entity: Interaction, user?: User): boolean {
+  async isDeleteAuthorized(entity: Interaction, user?: User): Promise<boolean> {
     // TODO: Verify client ID
     return user.isForestClient;
   }
 
-  isViewAuthorized(entity: Interaction, user?: User): boolean {
+  async isViewAuthorized(entity: Interaction, user?: User): Promise<boolean> {
     // TODO: Verify client ID
     return false;
   }

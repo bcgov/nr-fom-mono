@@ -55,12 +55,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     super(repository, new Project(), logger);
   }
 
-  isCreateAuthorized(dto: ProjectCreateRequest, user?: User): boolean {
+  async isCreateAuthorized(dto: ProjectCreateRequest, user?: User): Promise<boolean> {
     // Only forest client user can create.
     return (user && user.isForestClient && dto.forestClientNumber && user.isAuthorizedForClientId(dto.forestClientNumber) );
   }
   
-  isUpdateAuthorized(dto: ProjectUpdateRequest, entity: Project, user?: User): boolean {
+  async isUpdateAuthorized(dto: ProjectUpdateRequest, entity: Project, user?: User): Promise<boolean> {
     if (!user) {
       return false;
     }
@@ -82,7 +82,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.PUBLISHED, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
   }
 
-  isDeleteAuthorized(entity: Project, user?: User): boolean {
+  async isDeleteAuthorized(entity: Project, user?: User): Promise<boolean> {
     if (!user) {
       return false;
     }
@@ -101,7 +101,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return [WorkflowStateEnum.COMMENT_CLOSED, WorkflowStateEnum.FINALIZED, WorkflowStateEnum.EXPIRED].includes(entity.workflowStateCode as WorkflowStateEnum);
   }
 
-  isViewAuthorized(entity: Project, user?: User): boolean {
+  async isViewAuthorized(entity: Project, user?: User): Promise<boolean> {
     if (!user) {
       return true;
     }
@@ -111,7 +111,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     return user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId);
   }
-
 
   async create(request: any, user: User): Promise<ProjectResponse> {
     request.workflowStateCode = WorkflowStateEnum.INITIAL;
