@@ -11,13 +11,15 @@
  */
 
 
-export interface ProjectPublicSummaryDto { 
-    id: number;
+export interface PublicCommentCreateRequest { 
+    projectId: number;
+    commentScopeCode: string;
+    scopeCutBlockId: number;
+    scopeRoadSectionId: number;
+    feedback: string;
     name: string;
-    geojson: object;
-    fspId: number;
-    forestClientName: string;
-    workflowStateName: string;
-    commentingOpenDate: string;
+    location: string;
+    email: string;
+    phoneNumber: string;
 }
 

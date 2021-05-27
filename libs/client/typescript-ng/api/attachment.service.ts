@@ -17,8 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { AttachmentDto } from '../model/models';
-import { UpdateAttachmentDto } from '../model/models';
+import { AttachmentTypeCode } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -86,59 +85,6 @@ export class AttachmentService {
     }
 
     /**
-     * @param attachmentDto 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public attachmentControllerCreate(attachmentDto: AttachmentDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public attachmentControllerCreate(attachmentDto: AttachmentDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public attachmentControllerCreate(attachmentDto: AttachmentDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public attachmentControllerCreate(attachmentDto: AttachmentDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
-        if (attachmentDto === null || attachmentDto === undefined) {
-            throw new Error('Required parameter attachmentDto was null or undefined when calling attachmentControllerCreate.');
-        }
-
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType: 'text' | 'json' = 'json';
-        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.post<any>(`${this.configuration.basePath}/api/attachment`,
-            attachmentDto,
-            {
-                responseType: <any>responseType,
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
      * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -152,6 +98,13 @@ export class AttachmentService {
         }
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -182,17 +135,13 @@ export class AttachmentService {
     }
 
     /**
-     * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public attachmentControllerRemove(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public attachmentControllerRemove(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public attachmentControllerRemove(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public attachmentControllerRemove(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling attachmentControllerRemove.');
-        }
+    public attachmentTypeCodeControllerFindAll(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<AttachmentTypeCode>>;
+    public attachmentTypeCodeControllerFindAll(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<AttachmentTypeCode>>>;
+    public attachmentTypeCodeControllerFindAll(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<AttachmentTypeCode>>>;
+    public attachmentTypeCodeControllerFindAll(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -200,6 +149,7 @@ export class AttachmentService {
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/json'
             ];
             httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -213,64 +163,7 @@ export class AttachmentService {
             responseType = 'text';
         }
 
-        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/attachment/${encodeURIComponent(String(id))}`,
-            {
-                responseType: <any>responseType,
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @param id 
-     * @param updateAttachmentDto 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public attachmentControllerUpdate(id: number, updateAttachmentDto: UpdateAttachmentDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public attachmentControllerUpdate(id: number, updateAttachmentDto: UpdateAttachmentDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public attachmentControllerUpdate(id: number, updateAttachmentDto: UpdateAttachmentDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public attachmentControllerUpdate(id: number, updateAttachmentDto: UpdateAttachmentDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling attachmentControllerUpdate.');
-        }
-        if (updateAttachmentDto === null || updateAttachmentDto === undefined) {
-            throw new Error('Required parameter updateAttachmentDto was null or undefined when calling attachmentControllerUpdate.');
-        }
-
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType: 'text' | 'json' = 'json';
-        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.put<any>(`${this.configuration.basePath}/api/attachment/${encodeURIComponent(String(id))}`,
-            updateAttachmentDto,
+        return this.httpClient.get<Array<AttachmentTypeCode>>(`${this.configuration.basePath}/api/attachment-type-code`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

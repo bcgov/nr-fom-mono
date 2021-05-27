@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { ForestClientDto } from '../model/models';
+import { ForestClientResponse } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -88,12 +88,19 @@ export class ForestClientService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public forestClientControllerFindAll(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ForestClientDto>>;
-    public forestClientControllerFindAll(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ForestClientDto>>>;
-    public forestClientControllerFindAll(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ForestClientDto>>>;
-    public forestClientControllerFindAll(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public forestClientControllerFind(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ForestClientResponse>>;
+    public forestClientControllerFind(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ForestClientResponse>>>;
+    public forestClientControllerFind(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ForestClientResponse>>>;
+    public forestClientControllerFind(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -113,7 +120,7 @@ export class ForestClientService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<Array<ForestClientDto>>(`${this.configuration.basePath}/api/forest-client`,
+        return this.httpClient.get<Array<ForestClientResponse>>(`${this.configuration.basePath}/api/forest-client`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -129,9 +136,9 @@ export class ForestClientService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public forestClientControllerFindOne(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ForestClientDto>;
-    public forestClientControllerFindOne(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ForestClientDto>>;
-    public forestClientControllerFindOne(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ForestClientDto>>;
+    public forestClientControllerFindOne(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ForestClientResponse>;
+    public forestClientControllerFindOne(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ForestClientResponse>>;
+    public forestClientControllerFindOne(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ForestClientResponse>>;
     public forestClientControllerFindOne(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling forestClientControllerFindOne.');
@@ -157,7 +164,7 @@ export class ForestClientService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<ForestClientDto>(`${this.configuration.basePath}/api/forest-client/${encodeURIComponent(String(id))}`,
+        return this.httpClient.get<ForestClientResponse>(`${this.configuration.basePath}/api/forest-client/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

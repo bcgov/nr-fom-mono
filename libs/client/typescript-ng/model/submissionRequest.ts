@@ -13,7 +13,7 @@ import { SpatialObjectCodeEnum } from './spatialObjectCodeEnum';
 import { SubmissionTypeCodeEnum } from './submissionTypeCodeEnum';
 
 
-export interface SubmissionDto { 
+export interface SubmissionRequest { 
     projectId: number;
     submissionTypeCode: SubmissionTypeCodeEnum;
     spatialObjectCode: SpatialObjectCodeEnum;

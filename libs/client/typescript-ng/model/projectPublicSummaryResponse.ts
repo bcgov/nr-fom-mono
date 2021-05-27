@@ -11,16 +11,12 @@
  */
 
 
-export interface AttachmentDto { 
+export interface ProjectPublicSummaryResponse { 
     id: number;
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
-    fileName: string;
-    fileContents: string;
-    projectId: number;
-    attachmentTypeCode: string;
+    name: string;
+    geojson: object;
+    fspId: number;
+    forestClientName: string;
+    workflowStateName: string;
 }
 

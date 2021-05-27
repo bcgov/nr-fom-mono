@@ -11,16 +11,9 @@
  */
 
 
-export interface UpdateInteractionDto { 
+export interface PublicCommentAdminUpdateRequest { 
     revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
-    stakeholder: string;
-    communicationDate: string;
-    communicationDetails: string;
-    projectId: number;
-    attachmentId: number;
+    responseCode: string;
+    responseDetails: string;
 }
 

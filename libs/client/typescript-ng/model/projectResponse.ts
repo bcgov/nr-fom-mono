@@ -9,29 +9,31 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { DistrictDto } from './districtDto';
+import { ForestClientResponse } from './forestClientResponse';
 import { WorkflowStateCode } from './workflowStateCode';
-import { ForestClientDto } from './forestClientDto';
+import { DistrictResponse } from './districtResponse';
 
 
-export interface ProjectDto { 
+export interface ProjectResponse { 
     id: number;
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
     name: string;
     description: string;
+    /**
+     * ISO-formatted date
+     */
     commentingOpenDate: string;
+    /**
+     * ISO-formatted date
+     */
     commentingClosedDate: string;
-    geojson: object;
     fspId: number;
-    districtId: number;
-    district: DistrictDto;
-    forestClientNumber: string;
-    forestClient: ForestClientDto;
-    workflowStateCode: string;
+    district: DistrictResponse;
+    forestClient: ForestClientResponse;
     workflowState: WorkflowStateCode;
+    revisionCount: number;
+    /**
+     * ISO-formatted timestamp
+     */
+    createTimestamp: string;
 }
 

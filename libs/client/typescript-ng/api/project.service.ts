@@ -17,10 +17,12 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { ProjectDto } from '../model/models';
-import { ProjectPublicSummaryDto } from '../model/models';
+import { ProjectCreateRequest } from '../model/models';
+import { ProjectPublicSummaryResponse } from '../model/models';
+import { ProjectResponse } from '../model/models';
 import { ProjectSpatialDetail } from '../model/models';
-import { UpdateProjectDto } from '../model/models';
+import { ProjectUpdateRequest } from '../model/models';
+import { WorkflowStateCode } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -88,19 +90,26 @@ export class ProjectService {
     }
 
     /**
-     * @param projectDto 
+     * @param projectCreateRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerCreate(projectDto: ProjectDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectDto>;
-    public projectControllerCreate(projectDto: ProjectDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectDto>>;
-    public projectControllerCreate(projectDto: ProjectDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectDto>>;
-    public projectControllerCreate(projectDto: ProjectDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
-        if (projectDto === null || projectDto === undefined) {
-            throw new Error('Required parameter projectDto was null or undefined when calling projectControllerCreate.');
+    public projectControllerCreate(projectCreateRequest: ProjectCreateRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectResponse>;
+    public projectControllerCreate(projectCreateRequest: ProjectCreateRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectResponse>>;
+    public projectControllerCreate(projectCreateRequest: ProjectCreateRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectResponse>>;
+    public projectControllerCreate(projectCreateRequest: ProjectCreateRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (projectCreateRequest === null || projectCreateRequest === undefined) {
+            throw new Error('Required parameter projectCreateRequest was null or undefined when calling projectControllerCreate.');
         }
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -129,8 +138,8 @@ export class ProjectService {
             responseType = 'text';
         }
 
-        return this.httpClient.post<ProjectDto>(`${this.configuration.basePath}/api/project`,
-            projectDto,
+        return this.httpClient.post<ProjectResponse>(`${this.configuration.basePath}/api/project`,
+            projectCreateRequest,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -149,9 +158,9 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectDto>>;
-    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectDto>>>;
-    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectDto>>>;
+    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectResponse>>;
+    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectResponse>>>;
+    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectResponse>>>;
     public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
@@ -199,7 +208,7 @@ export class ProjectService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<Array<ProjectDto>>(`${this.configuration.basePath}/api/project`,
+        return this.httpClient.get<Array<ProjectResponse>>(`${this.configuration.basePath}/api/project`,
             {
                 params: queryParameters,
                 responseType: <any>responseType,
@@ -216,15 +225,22 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerFindOne(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectDto>;
-    public projectControllerFindOne(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectDto>>;
-    public projectControllerFindOne(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectDto>>;
+    public projectControllerFindOne(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectResponse>;
+    public projectControllerFindOne(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectResponse>>;
+    public projectControllerFindOne(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectResponse>>;
     public projectControllerFindOne(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling projectControllerFindOne.');
         }
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -244,7 +260,7 @@ export class ProjectService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<ProjectDto>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
+        return this.httpClient.get<ProjectResponse>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -263,9 +279,9 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectPublicSummaryDto>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectPublicSummaryDto>>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectPublicSummaryDto>>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectPublicSummaryResponse>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectPublicSummaryResponse>>>;
+    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectPublicSummaryResponse>>>;
     public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
@@ -306,7 +322,7 @@ export class ProjectService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<Array<ProjectPublicSummaryDto>>(`${this.configuration.basePath}/api/project/publicSummary`,
+        return this.httpClient.get<Array<ProjectPublicSummaryResponse>>(`${this.configuration.basePath}/api/project/publicSummary`,
             {
                 params: queryParameters,
                 responseType: <any>responseType,
@@ -367,21 +383,27 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerRemove(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<object>;
-    public projectControllerRemove(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<object>>;
-    public projectControllerRemove(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<object>>;
-    public projectControllerRemove(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public projectControllerRemove(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public projectControllerRemove(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public projectControllerRemove(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public projectControllerRemove(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling projectControllerRemove.');
         }
 
         let headers = this.defaultHeaders;
 
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'application/json'
             ];
             httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -395,7 +417,7 @@ export class ProjectService {
             responseType = 'text';
         }
 
-        return this.httpClient.delete<object>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
+        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -408,22 +430,29 @@ export class ProjectService {
 
     /**
      * @param id 
-     * @param updateProjectDto 
+     * @param projectUpdateRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerUpdate(id: number, updateProjectDto: UpdateProjectDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<UpdateProjectDto>;
-    public projectControllerUpdate(id: number, updateProjectDto: UpdateProjectDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<UpdateProjectDto>>;
-    public projectControllerUpdate(id: number, updateProjectDto: UpdateProjectDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<UpdateProjectDto>>;
-    public projectControllerUpdate(id: number, updateProjectDto: UpdateProjectDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public projectControllerUpdate(id: number, projectUpdateRequest: ProjectUpdateRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectResponse>;
+    public projectControllerUpdate(id: number, projectUpdateRequest: ProjectUpdateRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectResponse>>;
+    public projectControllerUpdate(id: number, projectUpdateRequest: ProjectUpdateRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectResponse>>;
+    public projectControllerUpdate(id: number, projectUpdateRequest: ProjectUpdateRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling projectControllerUpdate.');
         }
-        if (updateProjectDto === null || updateProjectDto === undefined) {
-            throw new Error('Required parameter updateProjectDto was null or undefined when calling projectControllerUpdate.');
+        if (projectUpdateRequest === null || projectUpdateRequest === undefined) {
+            throw new Error('Required parameter projectUpdateRequest was null or undefined when calling projectControllerUpdate.');
         }
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -452,8 +481,48 @@ export class ProjectService {
             responseType = 'text';
         }
 
-        return this.httpClient.put<UpdateProjectDto>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
-            updateProjectDto,
+        return this.httpClient.put<ProjectResponse>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
+            projectUpdateRequest,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public workflowStateCodeControllerFindAll(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<WorkflowStateCode>>;
+    public workflowStateCodeControllerFindAll(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<WorkflowStateCode>>>;
+    public workflowStateCodeControllerFindAll(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<WorkflowStateCode>>>;
+    public workflowStateCodeControllerFindAll(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+
+        let headers = this.defaultHeaders;
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<Array<WorkflowStateCode>>(`${this.configuration.basePath}/api/workflow-state-code`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
