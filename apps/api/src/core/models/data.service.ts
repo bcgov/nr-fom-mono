@@ -54,11 +54,11 @@ export abstract class DataService<
    * @param user May be null if anonymous. 
    * @param dto 
    */
-  isCreateAuthorized(user: User, dto: unknown): boolean {
+  isCreateAuthorized(dto: unknown, user?: User): boolean {
     return false;
   }
   
-  isUpdateAuthorized(user: User, dto: any, entity: E): boolean {
+  isUpdateAuthorized(dto: unknown, entity: E, user?: User): boolean {
     return false;
   }
 
@@ -146,7 +146,7 @@ export abstract class DataService<
    * @return {*}
    * @memberof DataService
    */
-  async update(id: number | string, requestDto: any, user: User): Promise<O> {
+  async update(id: number | string, requestDto: any, user?: User): Promise<O> {
     requestDto.updateUser = user ? user.userName : 'Anonymous';
     requestDto.updateTimestamp = dayjs().format();
 
@@ -156,7 +156,7 @@ export abstract class DataService<
     if (! entity) {
       throw new UnprocessableEntityException("Entity not found.");
     }
-    if (!this.isUpdateAuthorized(user, requestDto, entity)) {
+    if (!this.isUpdateAuthorized(requestDto, entity, user)) {
       throw new ForbiddenException();
     }
     if (entity.revisionCount != requestDto.revisionCount) {

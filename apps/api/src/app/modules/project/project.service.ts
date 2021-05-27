@@ -55,13 +55,31 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     super(repository, new Project(), logger);
   }
 
-  isCreateAuthorized(user: User, dto: Partial<ProjectCreateRequest>): boolean {
-    
+  isCreateAuthorized(dto: ProjectCreateRequest, user?: User): boolean {
+    // Only forest client user can create.
     return (user && user.isForestClient && dto.forestClientNumber && user.isAuthorizedForClientId(dto.forestClientNumber) );
   }
   
-  isUpdateAuthorized(user: User, dto: ProjectUpdateRequest, entity: Partial<Project>): boolean {
-    return (user && user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId));
+  isUpdateAuthorized(dto: ProjectUpdateRequest, entity: Project, user?: User): boolean {
+    if (!user) {
+      return false;
+    }
+
+    // TODO: Enforce rules around changing commenting open/closed dates?
+    // WHen commenting open or later, can't change commenting open date
+    // When commenting open, can change closed date. Forest client can't make it shorter
+    // When after commenting open, cannot change closed date.
+
+    if (user.isMinistry) {
+      // Can only update when commenting open, to change commenting period.
+      return WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode;
+    }
+
+    if (!user.isForestClient || !user.isAuthorizedForClientId(entity.forestClientId)) {
+      return false;
+    }
+    // Workflow states that forest client user is allowed to edit in. 
+    return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.PUBLISHED, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
   }
 
   isDeleteAuthorized(entity: Project, user?: User): boolean {
@@ -84,9 +102,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   }
 
   isViewAuthorized(entity: Project, user?: User): boolean {
-    // Public can view project details
-    // TODO: Do we want to restrict forest client users based on client id?
-    return true;
+    if (!user) {
+      return true;
+    }
+    if (user.isMinistry) {
+      return true;
+    }
+
+    return user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId);
   }
 
 

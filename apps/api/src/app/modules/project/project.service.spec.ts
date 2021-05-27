@@ -2,13 +2,86 @@ import { mockLoggerFactory } from '../../factories/mock-logger.factory';
 import { ProjectService } from './project.service';
 import { Project } from './project.entity';
 import { User } from 'apps/api/src/core/security/user';
-import { WorkflowStateEnum } from './workflow-state-code.entity';
+import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
+import { ProjectUpdateRequest } from './project.dto';
 
 describe('ProjectService', () => {
   let service: ProjectService;
 
   beforeEach(async () => {
     service = new ProjectService(null, mockLoggerFactory(), null, null);
+  });
+
+  describe('isUpdateAuthorized', () => {
+    let entity: Project;
+    let request: ProjectUpdateRequest;
+    let user: User;
+    const TEST_CLIENT_ID = '1011';
+
+    beforeEach(async () => {
+      entity = new Project();
+      user = new User();
+      request = new ProjectUpdateRequest();
+    })
+
+    it ('public user cannot update', () => {
+      expect(service.isUpdateAuthorized(request, entity, null)).toBe(false);
+    });
+    it ('ministry user can update when commenting open', () => {
+      user.isMinistry = true;
+      entity.workflowStateCode = WorkflowStateEnum.COMMENT_OPEN;
+      expect(service.isUpdateAuthorized(request, entity, user)).toBe(true);
+    });
+    it ('ministry user cannot update when commenting closed', () => {
+      user.isMinistry = true;
+      entity.workflowStateCode = WorkflowStateEnum.COMMENT_CLOSED;
+      expect(service.isUpdateAuthorized(request, entity, user)).toBe(false);
+    });
+    it ('forestry user for same client can update', () => {
+      entity.workflowStateCode = WorkflowStateEnum.INITIAL;
+      user.isForestClient = true;
+      user.clientIds.push(TEST_CLIENT_ID);
+      entity.forestClientId = TEST_CLIENT_ID;
+      expect(service.isUpdateAuthorized(request, entity, user)).toBe(true);
+    });
+    it ('forestry user for different client cannot update', () => {
+      entity.workflowStateCode = WorkflowStateEnum.INITIAL;
+      user.isForestClient = true;
+      entity.forestClientId = TEST_CLIENT_ID;
+      expect(service.isUpdateAuthorized(request, entity, user)).toBe(false);
+    });
+    it ('forestry user cannot update when finalized', () => {
+      user.isForestClient = true;
+      user.clientIds.push(TEST_CLIENT_ID);
+      entity.forestClientId = TEST_CLIENT_ID;
+      entity.workflowStateCode = WorkflowStateEnum.FINALIZED;
+      expect(service.isUpdateAuthorized(request, entity, user)).toBe(false);
+    });
+  });
+
+
+  describe('isViewAuthorized', () => {
+    let entity:Project;
+    let user:User;
+    const TEST_CLIENT_ID = '1011';
+
+    beforeEach(async () => {
+      entity = new Project();
+      user = new User();
+    })
+
+    it ('public user can view', () => {
+      expect(service.isViewAuthorized(entity, null)).toBe(true);
+    });
+    it ('ministry user can view', () => {
+      user.isMinistry = true;
+      expect(service.isViewAuthorized(entity, user)).toBe(true);
+    });
+    it ('forestry user for different client cannot view', () => {
+      user.isForestClient = true;
+      entity.forestClientId = TEST_CLIENT_ID;
+      expect(service.isViewAuthorized(entity, user)).toBe(false);
+    });
   });
 
   describe('isDeleteAuthorized', () => {

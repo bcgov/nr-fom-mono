@@ -7,7 +7,7 @@ import { PinoLogger } from 'nestjs-pino';
 import { User } from 'apps/api/src/core/security/user';
 import { DeepPartial } from '@entities';
 import * as _ from "lodash";
-import { PublicCommentAdminResponse } from './public-comment.dto';
+import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest } from './public-comment.dto';
 
 @Injectable()
 export class PublicCommentService extends DataService<PublicComment, Repository<PublicComment>, PublicCommentAdminResponse> {
@@ -102,11 +102,11 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return decryptedSelecteColumns;
   }
 
-  isCreateAuthorized(user: User, dto: any): boolean {
+  isCreateAuthorized(dto: unknown, user?: User): boolean {
     return user == null; // Only anonymous user is allowed to create comments.
   }
   
-  isUpdateAuthorized(user: User, dto: any, entity: Partial<PublicComment>):boolean {
+  isUpdateAuthorized(dto: PublicCommentAdminUpdateRequest, entity: PublicComment, user?: User):boolean {
     if (!user || !user.isForestClient) {
       return false;
     }

@@ -16,12 +16,12 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     super(repository, new Interaction(), logger);
   }
 
-  isCreateAuthorized(user: User, dto: unknown): boolean {
+  isCreateAuthorized(dto: unknown, user?: User): boolean {
     // TODO: Verify client ID
     return user.isForestClient;
   }
   
-  isUpdateAuthorized(user: User, dto: any, entity: Interaction): boolean {
+  isUpdateAuthorized(dto: unknown, entity: Interaction, user?: User): boolean {
     // TODO: Verify client ID
     return user.isForestClient;
   }
