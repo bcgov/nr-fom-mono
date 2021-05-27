@@ -11,8 +11,8 @@
  */
 
 
-export interface DistrictDto { 
-    id: number;
+export interface ForestClientResponse { 
+    id: string;
     name: string;
 }
 

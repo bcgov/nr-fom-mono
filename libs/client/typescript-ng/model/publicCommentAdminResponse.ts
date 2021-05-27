@@ -13,25 +13,23 @@ import { ResponseCode } from './responseCode';
 import { CommentScopeCode } from './commentScopeCode';
 
 
-export interface UpdatePublicCommentDto { 
-    revisionCount: number;
-    createTimestamp: string;
-    createUser: string;
-    updateTimestamp: string;
-    updateUser: string;
+export interface PublicCommentAdminResponse { 
+    projectId: number;
+    scopeCutBlockId: number;
+    scopeRoadSectionId: number;
     feedback: string;
     name: string;
     location: string;
     email: string;
     phoneNumber: string;
-    responseDetails: string;
-    projectId: number;
-    project: object;
-    responseCode: string;
-    response: ResponseCode;
-    commentScopeCode: string;
+    id: number;
+    revisionCount: number;
+    /**
+     * ISO-formatted timestamp
+     */
+    createTimestamp: string;
     commentScope: CommentScopeCode;
-    scopeCutBlockId: number;
-    scopeRoadSectionId: number;
+    response: ResponseCode;
+    responseDetails: string;
 }
 
