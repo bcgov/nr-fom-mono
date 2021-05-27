@@ -7,23 +7,30 @@ import { SubmissionRequest } from '../app/modules/submission/submission.dto';
 import { KeycloakConfig } from '../core/security/auth.service';
 import { User } from '../core/security/user';
 import { ProjectCreateRequest, ProjectUpdateRequest } from '../app/modules/project/project.dto';
+import { LoggerModule } from 'nestjs-pino';
+
+process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
 
 describe('API endpoints testing (e2e)', () => {
   let app: INestApplication;
+
   // Declare vars to hold helper functions
   // We'll need to curry in app each one
-  let createProjectAndVerifyResult;
-  let updateProjectAndVerifyResult;
-  let createCommentAndVerifyResult;
-  let createSubmissionAndVerifyResult;
-  let createCutBlockAndVerifyResult;
-  let createRetentionAreaAndVerifyResult;
-  let createRoadSectionAndVerifyResult;
+  // let createProjectAndVerifyResult;
+  // let updateProjectAndVerifyResult;
+  // let createCommentAndVerifyResult;
+  // let createSubmissionAndVerifyResult;
+  // let createCutBlockAndVerifyResult;
+  // let createRetentionAreaAndVerifyResult;
+  // let createRoadSectionAndVerifyResult;
 
   beforeAll(async () => {
-    process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
+
+    // Disable info logging to reduce noise during testing. Ideally set LOG_LEVEL environment variable to warn. (setting this above didn't work for unknown reason)
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [AppModule, LoggerModule.forRoot({
+        pinoHttp: { level: 'warn' },
+      })],
     }).compile();
 
     app = moduleFixture.createNestApplication();
@@ -32,45 +39,24 @@ describe('API endpoints testing (e2e)', () => {
     await app.init();
 
     // Register test handlers
-    createProjectAndVerifyResult = createProjectAndVerifyResultFunction(app);
-    updateProjectAndVerifyResult = updateProjectAndVerifyResultFunction(app);
-    createCommentAndVerifyResult = createCommentAndVerifyResultFunction(app);
-    createSubmissionAndVerifyResult = createSubmissionAndVerifyResultFunction(
-      app
-    );
-    createCutBlockAndVerifyResult = createCutBlockAndVerifyResultFunction(app);
-    createRetentionAreaAndVerifyResult = createRetentionAreaAndVerifyResultFunction(
-      app
-    );
-    createRoadSectionAndVerifyResult = createRoadSectionAndVerifyResultFunction(
-      app
-    );
+    // createProjectAndVerifyResult = createProjectAndVerifyResultFunction(app);
+    // updateProjectAndVerifyResult = updateProjectAndVerifyResultFunction(app);
+    // createCommentAndVerifyResult = createCommentAndVerifyResultFunction(app);
+    // createSubmissionAndVerifyResult = createSubmissionAndVerifyResultFunction(
+    //   app
+    // );
+    // createCutBlockAndVerifyResult = createCutBlockAndVerifyResultFunction(app);
+    // createRetentionAreaAndVerifyResult = createRetentionAreaAndVerifyResultFunction(
+    //   app
+    // );
+    // createRoadSectionAndVerifyResult = createRoadSectionAndVerifyResultFunction(
+    //   app
+    // );
   });
 
   afterAll(async () => {
     await app.close();
   });
-
-  function getFakeMinistryUser(): User {
-    const user = new User();
-    user.userName = 'fakeMinstryUser';
-    user.displayName = 'Ministry User';
-    user.isMinistry = true;
-    user.isForestClient = false;
-    return user;
-  }
-  
-  function getFakeForestryUser(): User {
-    const user = new User();
-    user.userName = 'fakeForestryUser';
-    user.displayName = 'Forestry User';
-    user.isMinistry = false;
-    user.isForestClient = true;
-    user.clientIds.push(TEST_CLIENT_ID);
-    return user;
-  }
-
-  const TEST_CLIENT_ID: string = '1011';
 
   describe('Auth Endpoint', () => {
     // Testing of other endpoints is based on keycloak being disabled.

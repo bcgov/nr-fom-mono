@@ -15,12 +15,22 @@ import { AppConfigModule } from './modules/app-config/app-config.module';
 import { AppConfigService } from './modules/app-config/app-config.provider';
 import { SecurityModule } from '../core/security/security.module'
 
+function getLogLevel():string {
+  const logLevel = process.env.LOG_LEVEL || 'info';
+  return logLevel;
+}
+
 @Module({
   imports: [
     // Config
     AppConfigModule,
     SecurityModule,
-    LoggerModule.forRoot(),
+    LoggerModule.forRoot({ pinoHttp: {
+        level: getLogLevel(),
+        formatters: {
+          level: (label) => { return { level: label }; }
+        }
+      }}),
     TypeOrmModule.forRootAsync({
       imports: [AppConfigModule],
       useFactory: (configService: AppConfigService) => ({

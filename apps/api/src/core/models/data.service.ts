@@ -186,7 +186,7 @@ export abstract class DataService<
   async delete(id: number | string, user?: User): Promise<void> {
     this.logger.debug(`${this.constructor.name}.delete id %o`, id);
 
-    const entity:(E|undefined) = await this.findEntityForUpdate(id);
+    const entity:(E|undefined) = await this.repository.findOne(id);
     if (entity == undefined) {
       throw new BadRequestException("Entity does not exist.");
     }
@@ -194,7 +194,7 @@ export abstract class DataService<
       throw new ForbiddenException();
     }
 
-    const deleteCount = await (await this.repository.delete(id)).affected;
+    const deleteCount = (await this.repository.delete(id)).affected;
     if (deleteCount != 1) {
       throw new UnprocessableEntityException("No entity to delete");
     }

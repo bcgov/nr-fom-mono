@@ -1,5 +1,6 @@
 import { ApiBaseEntity, DeepPartial } from '@entities';
 
+// TODO: Not accurate anymore, likely can just delete.
 class MockDataService<T extends ApiBaseEntity<T>> {
   mockDocuments = new Map<string, T>();
 

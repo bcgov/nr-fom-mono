@@ -64,14 +64,23 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return (user && user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId));
   }
 
-  isDeleteAuthorized(entity: Project, user: User): boolean {
+  isDeleteAuthorized(entity: Project, user?: User): boolean {
     if (!user) {
       return false;
     }
-    // TODO: Logic depends on workflow state and type of user.
-    // forest client user can delete only when workflow = initial.
-    // workflow = ???, ministry can delete
-    return true;
+
+    // Only scenario when forest client user can delete.
+    if (entity.workflowStateCode == WorkflowStateEnum.INITIAL) {
+      return user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId);
+    }
+
+    // All other scenarios only ministry user can delete.
+    if (!user.isMinistry) {
+      return false; 
+    }
+
+    // Workflows states that the ministry user can delete in.
+    return [WorkflowStateEnum.COMMENT_CLOSED, WorkflowStateEnum.FINALIZED, WorkflowStateEnum.EXPIRED].includes(entity.workflowStateCode as WorkflowStateEnum);
   }
 
   isViewAuthorized(entity: Project, user?: User): boolean {

@@ -116,7 +116,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return true;
   }
 
-  isDeleteAuthorized(entity: PublicComment, user: User):boolean {
+  isDeleteAuthorized(entity: PublicComment, user?: User):boolean {
     return false; // Comments cannot be deleted.
   }
 

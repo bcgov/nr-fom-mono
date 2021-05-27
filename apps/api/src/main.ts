@@ -31,10 +31,9 @@ async function bootstrap() {
     return error;
   }
 
-  const app = await NestFactory.create(AppModule);
-  const appConfig = app.get('AppConfigService');
-  app.getHttpAdapter().getInstance().disable('x-powered-by'); // Poor security to report the technology used, so disable this response header.
+  const app = await NestFactory.create(AppModule, { logger: false });
   app.useLogger(app.get(Logger));
+  app.getHttpAdapter().getInstance().disable('x-powered-by'); // Poor security to report the technology used, so disable this response header.
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
   }));
@@ -52,6 +51,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
+  const appConfig = app.get('AppConfigService');
   const port = appConfig.get('port') || 3333;
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

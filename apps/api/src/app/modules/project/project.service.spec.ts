@@ -1,22 +1,60 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProjectService } from './project.service';
-import { getRepositoryToken, TypeOrmModule } from '@nestjs/typeorm';
-import { Project } from './project.entity';
-import { PinoLogger } from 'nestjs-pino';
-
-import { getRepository, Repository } from 'typeorm';
 import { mockLoggerFactory } from '../../factories/mock-logger.factory';
-import { AppConfigModule } from '../../modules/app-config/app-config.module';
-import { AppConfigService } from '../../modules/app-config/app-config.provider';
-import { DistrictService } from '../district/district.service';
-import { ForestClientService } from '../forest-client/forest-client.service';
+import { ProjectService } from './project.service';
+import { Project } from './project.entity';
+import { User } from 'apps/api/src/core/security/user';
+import { WorkflowStateEnum } from './workflow-state-code.entity';
 
-// TODO: Enable better testing.
 describe('ProjectService', () => {
   let service: ProjectService;
-  it ('should test something', () => {
-    expect(true).toBe(true);
+
+  beforeEach(async () => {
+    service = new ProjectService(null, mockLoggerFactory(), null, null);
   });
+
+  describe('isDeleteAuthorized', () => {
+    let entity:Project;
+    let user:User;
+    const TEST_CLIENT_ID = '1011';
+
+    beforeEach(async () => {
+      entity = new Project();
+      user = new User();
+    })
+
+    it ('public user can not delete', () => {
+      expect(service.isDeleteAuthorized(entity, null)).toBe(false);
+    });
+
+    it ('forest client user can delete when client matches and state initial', () => {
+      user.isForestClient = true;
+      user.clientIds.push(TEST_CLIENT_ID);
+      entity.forestClientId = TEST_CLIENT_ID;
+      entity.workflowStateCode = "INITIAL";
+      expect(service.isDeleteAuthorized(entity, user)).toBe(true);
+    });
+
+    it ('forest client user can not delete when state published', () => {
+      user.isForestClient = true;
+      user.clientIds.push(TEST_CLIENT_ID);
+      entity.forestClientId = TEST_CLIENT_ID;
+      entity.workflowStateCode = WorkflowStateEnum.PUBLISHED;
+      expect(service.isDeleteAuthorized(entity, user)).toBe(false);
+    });
+
+    it ('ministry user can not delete when state commenting open', () => {
+      user.isMinistry = true;
+      entity.workflowStateCode = WorkflowStateEnum.COMMENT_OPEN;
+      expect(service.isDeleteAuthorized(entity, user)).toBe(false);
+    });
+
+    it ('ministry user can delete when state commenting closed', () => {
+      user.isMinistry = true;
+      entity.workflowStateCode = WorkflowStateEnum.COMMENT_CLOSED;
+      expect(service.isDeleteAuthorized(entity, user)).toBe(true);
+    });
+
+  });
+
 /*  
   let repository: Repository<Project>;
 
