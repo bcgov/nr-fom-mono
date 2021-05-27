@@ -31,9 +31,10 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     return user.isForestClient;
   }
 
-  isViewingAuthorized(user: User): boolean {
+  isViewAuthorized(entity: Interaction, user?: User): boolean {
     // TODO: Verify client ID
-    return user.isAuthorizedForAdminSite();
+    return false;
   }
+
 
 }

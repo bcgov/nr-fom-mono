@@ -22,9 +22,10 @@ import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity
  * which will be used to ensure retrieved entities in different scenarios (e.g. from update, findOne, findMany) have a common set of children.
  * 
  * Data modification methods (create, update, delete) include handling of user authorization and metadata columns (create/update user/timestamp + revision count)
- * View methods (findAll, findOne) include handling of user authorization.
- * Default implementations of user authorization methods reject all users (which is the safest from a security standpoint) 
- * but will therefore need to be overridden.
+ * FindOne view method includes handling of user authorization. 
+ * FindAll methods do not (because typically access depends on the where criteria, so security should be applied at the controller level.)
+ * 
+ * Default implementations of user authorization methods reject all users (which is the safest from a security standpoint) but will therefore need to be overridden.
  * 
  * If this class doesn't fit your use case it is perfectly acceptable to use a completely custom service. See e.g. SubmissionService. 
  * Although handling of security and metadata columns will then need to be done.
@@ -65,7 +66,7 @@ export abstract class DataService<
     return false;
   }
 
-  isViewingAuthorized(user: User): boolean {
+  isViewAuthorized(entity: E, user?: User): boolean {
     return false;
   }
 
@@ -97,7 +98,7 @@ export abstract class DataService<
   }
 
   protected convertEntity(entity: E): O {
-    return (entity as unknown) as O; // Conversion to unknown first to satisfy Typescript. This logic only works if O = E.
+    return (entity as unknown) as O; // Conversion to unknown first to satisfy Typescript. This logic only works if O = E (or a subset).
   }
 
   // A hook on saving entity for other service to override if it needs extra operation, like db column encryption.
@@ -116,7 +117,7 @@ export abstract class DataService<
   }
 
   // A hook on find entity for other service to override if it needs extra operation, like db column decryption.
-  protected async findEntity(id: string | number, options?: FindOneOptions<E> | undefined): Promise<E|undefined> {
+  protected async findEntityWithCommonRelations(id: string | number, options?: FindOneOptions<E> | undefined): Promise<E|undefined> {
     const revisedOptions = this.addCommonRelationsToFindOptions(options);
     return await this.repository.findOne(id, revisedOptions);
   }
@@ -169,7 +170,7 @@ export abstract class DataService<
       throw new InternalServerErrorException("Error updating object");
     }
 
-    const updatedEntity = await this.findEntity(id);
+    const updatedEntity = await this.findEntityWithCommonRelations(id);
     this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
 
     return this.convertEntity(updatedEntity);
@@ -204,34 +205,31 @@ export abstract class DataService<
    * @memberof DataService
    */
    async findOne(
-    id: number | string, user: User, 
+    id: number | string, user?: User, 
     options?: FindOneOptions<E> | undefined
   ): Promise<O> {
     this.logger.debug(`${this.constructor.name}findOne id %o`, id);
 
-    if (!this.isViewingAuthorized(user)) {
-      throw new ForbiddenException();
-    }
-
-    const record = await this.findEntity(id, this.addCommonRelationsToFindOptions(options));
-    if (record == undefined) {
+    const entity:(E|undefined) = await this.findEntityWithCommonRelations(id, options);
+    if (entity == undefined) {
       throw new BadRequestException("No entity for the specified id.");
     }
-    return this.convertEntity(record);
+
+    if (!this.isViewAuthorized(entity, user)) {
+      throw new ForbiddenException();
+    }
+  
+    return this.convertEntity(entity);
   }
 
   /**
-   * Find all records in collection
+   * Find all records in collection. No authorization check is performed.
    *
    * @return {*}
    * @memberof DataService
    */
-  async findAll(user: User, options?: FindManyOptions<E> | undefined): Promise<O[]> {
+  async findAllUnsecured(options?: FindManyOptions<E> | undefined): Promise<O[]> {
     this.logger.debug(`${this.constructor.name}.findAll options %o ` + options);
-
-    if (!this.isViewingAuthorized(user)) {
-      throw new ForbiddenException();
-    }
 
     const findAll = await this.repository.find(this.addCommonRelationsToFindOptions(options));
     return findAll.map((r) => this.convertEntity(r));

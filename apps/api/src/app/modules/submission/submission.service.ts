@@ -31,44 +31,22 @@ export class SubmissionService {
     dayjs.extend(customParseFormat);
   }
 
-  isCreateAuthorized(user: User, dto: Partial<SubmissionRequest>): boolean {
-    if (!user || !user.isForestClient) {
-      return false;
-    }
-    // TODO: Confirm that forest client is authorized for this project based on project's client id.
-    //     const project: ProjectDto = await this.projectService.findOne(dto.projectId, user);
-    // return user.isAuthorizedForClientId();
-    return true;
-  }
-  
-  isUpdateAuthorized(user: User, dto: any, entity: Partial<Submission>): boolean {
-    return this.isCreateAuthorized(user, dto);
-  }
-
-  isDeleteAuthorized(user: User, id: number): boolean {
-    // Submissions cannot be deleted.
-    return false;
-  }
-
-  isViewingAuthorized(user: User): boolean {
-    return true;
-  }
-
   /**
    * Create or replace a spatial submission.
    */
   async processSpatialSubmission(dto: Partial<SubmissionRequest>, user: User): Promise<void> {       
     this.logger.debug(`${this.constructor.name}.create props %o`, dto);
 
-    if (!this.isCreateAuthorized(user, dto)) {
-      throw new ForbiddenException();
-    }
-
     // Load the existing project to obtain the project's workflow state
     
     const project: ProjectResponse = await this.projectService.findOne(dto.projectId, user); // This invokes security authorization check which will always pass.
     const workflowStateCode = project.workflowState.code;
     const submissionTypeCode = this.getPermittedSubmissionTypeCode(workflowStateCode);
+
+    // TODO: Authorization check based on project & user.
+    // if (!this.isCreateAuthorized(user, dto)) {
+    //   throw new ForbiddenException();
+    // }
 
     // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
     // @see {getPermittedSubmissoinStatus} comment.

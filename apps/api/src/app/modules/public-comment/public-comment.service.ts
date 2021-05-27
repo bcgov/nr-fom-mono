@@ -38,8 +38,8 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return updateResult;
   }
 
-  protected async findEntity(id: string | number, options?: FindOneOptions<PublicComment> | undefined) {
-    const found = await super.findEntity(id, this.addCommonRelationsToFindOptions(options));
+  protected async findEntityWithCommonRelations(id: string | number, options?: FindOneOptions<PublicComment> | undefined) {
+    const found = await super.findEntityWithCommonRelations(id);
     if (found == undefined) {
       return found;
     }
@@ -120,15 +120,18 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     return false; // Comments cannot be deleted.
   }
 
-  isViewingAuthorized(user: User):boolean {
+  isViewAuthorized(entity: PublicComment, user?: User): boolean {
     // Public not allowed to view comments.
     return (user && user.isAuthorizedForAdminSite());
   }
 
   async findByProjectId(projectId: number, user: User): Promise<PublicCommentAdminResponse[]> {
-    if (!this.isViewingAuthorized(user)) {
-      throw new ForbiddenException();
-    }
+
+    // TODO: Need auth check based on projectId
+    // if (!this.isViewingAuthorized(user)) {
+    //   throw new ForbiddenException();
+    // }
+    
     const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
     const records = await this.repository.find(options);
     if (!records || records.length == 0) {

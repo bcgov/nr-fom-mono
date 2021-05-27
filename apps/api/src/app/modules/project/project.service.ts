@@ -74,10 +74,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return true;
   }
 
-  isViewingAuthorized(user: User): boolean {
-    // Public can view project details and project public summaries.
+  isViewAuthorized(entity: Project, user?: User): boolean {
+    // Public can view project details
+    // TODO: Do we want to restrict forest client users based on client id?
     return true;
   }
+
 
   async create(request: any, user: User): Promise<ProjectResponse> {
     request.workflowStateCode = WorkflowStateEnum.INITIAL;
