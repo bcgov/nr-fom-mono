@@ -64,7 +64,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return (user && user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId));
   }
 
-  isDeleteAuthorized(user: User, id: number): boolean {
+  isDeleteAuthorized(entity: Project, user: User): boolean {
     if (!user) {
       return false;
     }

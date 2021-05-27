@@ -41,7 +41,7 @@ export class AttachmentController extends BaseController<Attachment> {
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    return this.service.remove(id);
+    return this.service.delete(id);
   }
 */
 }

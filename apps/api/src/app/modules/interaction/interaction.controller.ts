@@ -35,7 +35,7 @@ export class InteractionController extends BaseController<Interaction> {
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    return this.service.remove(id);
+    return this.service.delete(id);
   }
   */
 }

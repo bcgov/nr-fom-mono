@@ -62,7 +62,7 @@ export abstract class DataService<
     return false;
   }
 
-  isDeleteAuthorized(user: User, id: number | string): boolean {
+  isDeleteAuthorized(entity: E, user?: User): boolean {
     return false;
   }
 
@@ -177,16 +177,20 @@ export abstract class DataService<
   }
 
   /**
-   * Remove record by Id
+   * Delete record by Id
    *
    * @param {string} id
    * @return {*}
    * @memberof DataService
    */
-  async remove(id: number | string, user: User): Promise<void> {
+  async delete(id: number | string, user?: User): Promise<void> {
     this.logger.debug(`${this.constructor.name}.delete id %o`, id);
 
-    if (!this.isDeleteAuthorized(user, id )) {
+    const entity:(E|undefined) = await this.findEntityForUpdate(id);
+    if (entity == undefined) {
+      throw new BadRequestException("Entity does not exist.");
+    }
+    if (!this.isDeleteAuthorized(entity, user)) {
       throw new ForbiddenException();
     }
 

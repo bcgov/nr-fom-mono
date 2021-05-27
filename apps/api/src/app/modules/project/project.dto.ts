@@ -42,15 +42,12 @@ export class ProjectCreateRequest {
 
 export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequest), ['forestClientNumber']) {
   // forestClientNumber is the basis for security controls so cannot be changed on updates.
+  // workflow state can only be changed via special requests, not via a project update request.
 
   @ApiProperty()
   @IsNumber()
   revisionCount: number;
 
-  @ApiProperty()
-  @IsEnum(WorkflowStateEnum)
-  @IsOptional()
-  workflowStateCode?: string;
 }
 
 // DTO optimized for Public FE map view

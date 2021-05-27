@@ -148,6 +148,6 @@ export class ProjectController extends BaseController<Project> {
   async remove(
     @UserRequiredHeader() user: User,
     @Param('id') id: number) {
-    this.service.remove(id, user);
+    this.service.delete(id, user);
   }
 }

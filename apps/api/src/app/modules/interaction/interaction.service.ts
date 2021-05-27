@@ -26,7 +26,7 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     return user.isForestClient;
   }
 
-  isDeleteAuthorized(user: User, id: number | string): boolean {
+  isDeleteAuthorized(entity: Interaction, user?: User): boolean {
     // TODO: Verify client ID
     return user.isForestClient;
   }
