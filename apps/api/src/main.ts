@@ -31,13 +31,19 @@ async function bootstrap() {
     return error;
   }
 
-  const app = await NestFactory.create(AppModule);
-  const appConfig = app.get('AppConfigService');
-
+  const app = await NestFactory.create(AppModule, { logger: false });
   app.useLogger(app.get(Logger));
-  app.useGlobalPipes(new ValidationPipe());
+  app.getHttpAdapter().getInstance().disable('x-powered-by'); // Poor security to report the technology used, so disable this response header.
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true, // Strips unknown properties not listed in input DTOs.
+  }));
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
+
+  // Redirect root to /api
+  app.getHttpAdapter().getInstance().get('/', (req, res) => {
+    res.redirect('/api');
+  });
 
   const config = new DocumentBuilder()
     .setTitle('FOM API')
@@ -45,9 +51,9 @@ async function bootstrap() {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
+  const appConfig = app.get('AppConfigService');
   const port = appConfig.get('port') || 3333;
   const document = SwaggerModule.createDocument(app, config);
-  // TODO: Disable this in test/prod.
   SwaggerModule.setup('api', app, document);
 
   app.enableCors({

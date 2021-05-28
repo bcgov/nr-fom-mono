@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Project } from './entities/project.entity';
+import { Project } from './project.entity';
 import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 import { mockDataServiceFactory } from '../../factories/mock-data-service.factory';
+import { ProjectSpatialDetailService } from './project-spatial-detail.service';
 
 describe('ProjectController', () => {
   let controller: ProjectController;
@@ -12,10 +13,8 @@ describe('ProjectController', () => {
       controllers: [ProjectController],
 
       providers: [
-        {
-          provide: ProjectService,
-          useValue: mockDataServiceFactory(new Project()),
-        },
+        { provide: ProjectService, useValue: mockDataServiceFactory(new Project()) },
+        { provide: ProjectSpatialDetailService, useValue: null },
       ],
     }).compile();
 

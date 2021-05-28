@@ -1,84 +1,85 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, getManager, Repository } from 'typeorm';
-import { Submission } from './entities/submission.entity';
-import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionDto } from './dto/submission.dto';
-import { DataService } from 'apps/api/src/core/models/data-provider.model';
-import { ProjectService } from '../project/project.service';
-import { PinoLogger } from 'nestjs-pino';
-import { SubmissionTypeCodeEnum } from '../submission-type-code/entities/submission-type-code.entity';
-import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
-import { CutBlock } from '../cut-block/entities/cut-block.entity';
-import { RoadSection } from '../road-section/entities/road-section.entity';
-import { RetentionArea } from '../retention-area/entities/retention-area.entity';
 import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import * as dayjs from 'dayjs';
 import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
-import { ProjectDto } from '../project/dto/project.dto';
+import { PinoLogger } from 'nestjs-pino';
+
+import { Submission } from './submission.entity';
+import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
+import { ProjectService } from '../project/project.service';
+import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
+import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
+import { CutBlock } from './cut-block.entity';
+import { RoadSection } from './road-section.entity';
+import { RetentionArea } from './retention-area.entity';
+import { ProjectResponse } from '../project/project.dto';
 import { flatDeep } from '../../../core/utils';
+import { User } from 'apps/api/src/core/security/user';
+import { ProjectAuthService } from '../project/project-auth.service';
 
 type SpatialObject = CutBlock | RoadSection | RetentionArea;
 
 @Injectable()
-export class SubmissionService extends DataService<
-  Submission,
-  Repository<Submission>
-> {
-
-  @Inject('ProjectService')
-  private projectService: ProjectService;
-
-  private user: string = 'testdata'; // TODO: !find out where user is from!
-
+export class SubmissionService {
   constructor(
     @InjectRepository(Submission)
-    repository: Repository<Submission>,
-    logger: PinoLogger
+    private repository: Repository<Submission>,
+    private logger: PinoLogger,
+    private projectService: ProjectService,
+    private projectAuthService: ProjectAuthService
   ) {
-    super(repository, new Submission(), logger);
-    dayjs.extend(customParseFormat)
+    dayjs.extend(customParseFormat);
   }
 
   /**
    * Create or replace a spatial submission.
    */
-  async processSpatialSubmission(dto: Partial<SubmissionDto>): Promise<any> {       
-    this.logger.info(`${this.constructor.name}.create props`, dto);
+  async processSpatialSubmission(dto: Partial<SubmissionRequest>, user: User): Promise<void> {       
+    this.logger.debug(`${this.constructor.name}.create props %o`, dto);
 
     // Load the existing project to obtain the project's workflow state
-    const project: ProjectDto = await this.projectService.findOne(dto.projectId);
-    const workflowStateCode = project.workflowStateCode;
+    
+    const project: ProjectResponse = await this.projectService.findOne(dto.projectId, user); // This invokes security authorization check which will always pass.
+    const workflowStateCode = project.workflowState.code;
     const submissionTypeCode = this.getPermittedSubmissionTypeCode(workflowStateCode);
+
+    // Operation only allowed for forest client users with project in specific states.
+    if (!await this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
+      [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user)) {
+      throw new ForbiddenException();
+    }
 
     // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
     // @see {getPermittedSubmissoinStatus} comment.
     if (!submissionTypeCode || submissionTypeCode !== dto.submissionTypeCode) {
       const errMsg = `Submission (${dto.submissionTypeCode}) is not allowed for workflow_state_code ${workflowStateCode}.`;
       this.logger.error(errMsg);
-      throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+      throw new UnprocessableEntityException(errMsg);
     }
 
     // Obtain Submission(or new one) so we have the id.
-    let submission = await this.obtainExistingOrNewSubmission(dto.projectId, submissionTypeCode);
+    const submission = await this.obtainExistingOrNewSubmission(dto.projectId, submissionTypeCode, user);
 
-    let spatialObjects: SpatialObject[];
-    spatialObjects = await this.prepareFomSpatialObjects(submission.id, dto.spatialObjectCode, dto.jsonSpatialSubmission);
+    const spatialObjects: SpatialObject[] = await this.prepareFomSpatialObjects(submission.id, dto.spatialObjectCode, dto.jsonSpatialSubmission, user);
 
     // And save the geospatial objects (will update/replace previous ones)
     if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
-      submission.cut_blocks = <CutBlock[]>spatialObjects;
+      submission.cutBlocks = <CutBlock[]>spatialObjects;
     }
     else if (SpatialObjectCodeEnum.ROAD_SECTION === dto.spatialObjectCode) {
-      submission.road_sections = <RoadSection[]>spatialObjects;
+      submission.roadSections = <RoadSection[]>spatialObjects;
     }
     else {
-      submission.retention_areas = <RetentionArea[]>spatialObjects;
+      submission.retentionAreas = <RetentionArea[]>spatialObjects;
     }
-    submission = await this.repository.save(submission);
 
-    await this.updateGeospatialAreaOrLength(dto.spatialObjectCode, submission.id, spatialObjects);
+    const updatedSubmission = await this.repository.save(submission);
 
-    await this.updateProjectLocation(project.id);
+    await this.updateGeospatialAreaOrLength(dto.spatialObjectCode, updatedSubmission.id, spatialObjects);
+
+    await this.updateProjectLocation(project.id, user);
   }
 
   /**
@@ -93,11 +94,11 @@ export class SubmissionService extends DataService<
   getPermittedSubmissionTypeCode(workFlowStateCode: string): SubmissionTypeCodeEnum {
     let submissionTypeCode: SubmissionTypeCodeEnum;
     switch (workFlowStateCode) {
-      case WorkflowStateCode.CODES.INITIAL:
+      case WorkflowStateEnum.INITIAL:
         submissionTypeCode = SubmissionTypeCodeEnum.PROPOSED;
         break;
 
-      case WorkflowStateCode.CODES.COMMENT_CLOSED:
+      case WorkflowStateEnum.COMMENT_CLOSED:
         submissionTypeCode = SubmissionTypeCodeEnum.FINAL;
         break;
       
@@ -113,43 +114,44 @@ export class SubmissionService extends DataService<
    * @param submissionTypeCode @see {SubmissionTypeCodeEnum}
    * @returns existing or new Submission for that submissionTypeCode
    */
-  async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum): Promise<Submission>  {
+  async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum, user: User): Promise<Submission>  {
     // Obtain existing submission for the submission type
     const existingSubmissions: Submission[] = await this.repository.find({
-      where: { project_id: projectId, submission_type_code: submissionTypeCode },
-      relations: ['cut_blocks', 'retention_areas', 'road_sections'],
+      where: { projectId: projectId, submissionTypeCode: submissionTypeCode },
+      relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
     });
+    this.logger.info('# existing submissions ' + existingSubmissions.length);
 
-    let submission: Submission;
+    var submission: Submission;
     if (existingSubmissions.length == 0) {
       // Save the submission first in order to populate primary key.
       // Populate fields
       submission = new Submission({             
-        project_id: projectId,
-        submission_type_code: submissionTypeCode,
-        create_user: this.user
+        projectId: projectId,
+        submissionTypeCode: submissionTypeCode,
+        createUser: user.userName,
       })
       submission = await this.repository.save(submission);
 
     } else {
       submission = existingSubmissions[0];
+      submission.updateUser = user.userName;
+      submission.updateTimestamp = dayjs().toDate();
+      submission.revisionCount += 1;
     }
 
-    this.logger.debug(`Obtained submission: ${JSON.stringify(submission)}`);
+    this.logger.debug('Obtained submission: %o', submission);
     return submission;
   }
 
   /**
-   * // Validate that the dto.jsonSpatialSubmission is valid.
-   * // Validate required field exists in 'properties'.
-   * // Validate shape is correct? (TODO: do we need to validate this or assume user know what he is submitting?)
-   * // Parse into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode
+   * Parse into cut_block, road_section, or WTRA objects based on spatialObjectCode. 
    * 
    * @param spatialObjectCode 
    * @param jsonSpatialSubmission 
    * @returns spatial objects into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode.
    */
-  validateFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): 
+  validateFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User): 
     SpatialObject[] {
 
     // spatial objects holder to be parsed into.
@@ -164,11 +166,11 @@ export class SubmissionService extends DataService<
     const validateCoordWithinBounding = (geometry: Geometry) => {
       const bb = {ix: 33240.8114887, iy: 445948.165738, ax: 1665146.77055, ay: 1725046.3621};
       const coordinates = (<Polygon | LineString> geometry).coordinates;
-      flatDeep(coordinates).forEach( (p: Position) => {
+      const d = (geometry.type == 'Polygon') ? 1 : 0 // flatten d level (dimension) down for an array. Assume geometry is either 'Polygon' or 'LineString' type for now.
+      flatDeep(coordinates, d).forEach( (p: Position) => {
         if( !(bb.ix <= p[0] && p[0] <= bb.ax && bb.iy <= p[1] && p[1] <= bb.ay) ) {
           const errMsg = `Coordinate (${p}) is not within BC bounding box ${JSON.stringify(bb)}.`;
-          this.logger.error(errMsg);
-          throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+          throw new UnprocessableEntityException(errMsg);
         }
       });
     };
@@ -179,16 +181,14 @@ export class SubmissionService extends DataService<
           spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
         if (!properties.hasOwnProperty(REQUIRED_PROP_DEVELOPMENT_DATE)) {
           const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} missing for ${spatialObjectCode}`;
-          this.logger.error(errMsg);
-          throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+          throw new UnprocessableEntityException(errMsg);
         }
         else {
           // validate date format: YYYY-MM-DD
           const developmentDate = properties[REQUIRED_PROP_DEVELOPMENT_DATE];
           if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
             const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} has wrong date format. Valid format: '${DATE_FORMAT}'`;
-            this.logger.error(errMsg);
-            throw new HttpException(errMsg, HttpStatus.UNPROCESSABLE_ENTITY);
+            throw new UnprocessableEntityException(errMsg);
           }
         }
       }
@@ -208,18 +208,18 @@ export class SubmissionService extends DataService<
         // validate required properties.
         validateDevelopmentDate(properties);
         return new CutBlock({name, geometry,
-          create_user: this.user,
-          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          createUser: user.userName,
+          plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
       else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
         // validate required properties.
         validateDevelopmentDate(properties);
         return new RoadSection({name, geometry,
-          create_user: this.user,
-          'planned_development_date': properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          createUser: user.userName,
+          plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
       else {
-        return new RetentionArea({geometry, create_user: this.user});
+        return new RetentionArea({geometry, createUser: user.userName});
       }
     });
 
@@ -231,13 +231,13 @@ export class SubmissionService extends DataService<
    * @param jsonSpatialSubmission 
    * @returns Create the new geospatial objects parsed from the dto.jsonSpatialSubmission as children of the submission.
    */
-  async prepareFomSpatialObjects(submissionId: number, spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson) 
+  async prepareFomSpatialObjects(submissionId: number, spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User) 
     :Promise<SpatialObject[]> {
     this.logger.info(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
         and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
 
-    let spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission);
-    spatialObjs.forEach((s) => {s.submission_id = submissionId}); // assign them to the submission 
+    const spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
+    spatialObjs.forEach((s) => {s.submissionId = submissionId}); // assign them to the submission 
 
     this.logger.info(`FOM spatial objects prepared: ${JSON.stringify(spatialObjs)}`);
     return spatialObjs;
@@ -255,15 +255,15 @@ export class SubmissionService extends DataService<
     switch (spatialObjectCode) {
       case SpatialObjectCodeEnum.ROAD_SECTION:
         entityName = RoadSection.name;
-        setClause = { planned_length_km: () => 'ST_Length(geometry)/1000' };
+        setClause = { plannedLengthKm: () => 'ST_Length(geometry)/1000' };
         break;
       case SpatialObjectCodeEnum.WTRA:
         entityName = RetentionArea.name;
-        setClause = { planned_area_ha: () => 'ST_AREA(geometry)/10000' };
+        setClause = { plannedAreaHa: () => 'ST_AREA(geometry)/10000' };
         break;
       default:
         entityName = CutBlock.name;
-        setClause = { planned_area_ha: () => 'ST_AREA(geometry)/10000' };
+        setClause = { plannedAreaHa: () => 'ST_AREA(geometry)/10000' };
     }
 
     await Promise.all(spatialObjects.map(async (s) => {
@@ -277,7 +277,7 @@ export class SubmissionService extends DataService<
   }
 
   // Update project location
-  async updateProjectLocation(projectId: number) {
+  async updateProjectLocation(projectId: number, user: User) {
     this.logger.info(`Updating project location for projectId: ${projectId}`);
     await getManager().query(`
       with project_geometries as (
@@ -293,7 +293,7 @@ export class SubmissionService extends DataService<
         update_user = $2,
         revision_count = (select revision_count+1 from app_fom.project p2 where p.project_id = p2.project_id )
       where p.project_id = $1;
-    `, [projectId, this.user]);
+    `, [projectId, user.userName]);
     this.logger.info(`Project location updated for projectId: ${projectId}`);
   }
 

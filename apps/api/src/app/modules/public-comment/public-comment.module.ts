@@ -1,22 +1,26 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { PublicComment } from './entities/public-comment.entity';
+import { PublicComment } from './public-comment.entity';
 import { PublicCommentService } from './public-comment.service';
 import { PublicCommentController } from './public-comment.controller';
 import { ProjectModule } from '../project/project.module';
-import { ResponseCodeModule } from '../response-code/response-code.module';
 import { SecurityModule } from 'apps/api/src/core/security/security.module';
+import { CommentScopeCodeController } from './comment-scope-code.controller';
+import { CommentScopeCodeService } from './comment-scope-code.service';
+import { CommentScopeCode } from './comment-scope-code.entity';
+import { ResponseCode } from './response-code.entity';
+import { ResponseCodeController } from './response-code.controller';
+import { ResponseCodeService } from './response-code.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PublicComment]),
+    TypeOrmModule.forFeature([PublicComment, CommentScopeCode, ResponseCode]),
     ProjectModule,
-    ResponseCodeModule,
     SecurityModule,
   ],
-  controllers: [PublicCommentController],
-  providers: [PublicCommentService],
+  controllers: [PublicCommentController, CommentScopeCodeController, ResponseCodeController],
+  providers: [PublicCommentService, CommentScopeCodeService, ResponseCodeService],
   exports: [],
 })
 export class PublicCommentModule {}

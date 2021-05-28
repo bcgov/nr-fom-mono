@@ -1,31 +1,34 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
 import { AttachmentService } from './attachment.service';
-import { Attachment } from './entities/attachment.entity';
-import { AttachmentDto } from './dto/attachment.dto';
-import { UpdateAttachmentDto } from './dto/update-attachment.dto';
+import { Attachment } from './attachment.entity';
+import { AttachmentDto } from './attachment.dto';
+import { UserHeader } from 'apps/api/src/core/security/auth.service';
+import { User } from 'apps/api/src/core/security/user';
 
 @ApiTags('attachment')
 @Controller('attachment')
-export class AttachmentController extends BaseController<
-  Attachment,
-  AttachmentDto,
-  UpdateAttachmentDto
-> {
+export class AttachmentController extends BaseController<Attachment> {
+  
   constructor(protected readonly service: AttachmentService) {
     super(service);
   }
 
-  @Post()
-  async create(@Body() createDto: AttachmentDto) {
-    return super.create(createDto);
+  // Accessible by public and by authenticated users.
+  @Get(':id')
+  @ApiBearerAuth()
+  async findOne(
+    @UserHeader() user: User,
+    @Param('id') id: number) {
+    return this.service.findOne(id, user);
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number) {
-    return super.findOne(id);
+/*  
+  @Post()
+  async create(@Body() createDto: AttachmentDto) {
+    return this.service.create(createDto);
   }
 
   @Put(':id')
@@ -33,11 +36,12 @@ export class AttachmentController extends BaseController<
     @Param('id') id: number,
     @Body() updateDto: UpdateAttachmentDto
   ) {
-    return super.update(id, updateDto);
+    return this.service.update(id, updateDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: number) {
-    return super.remove(id);
+    return this.service.delete(id);
   }
+*/
 }

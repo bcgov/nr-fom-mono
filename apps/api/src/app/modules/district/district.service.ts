@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { District } from './entities/district.entity';
-import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly-provider.model';
+import { District } from './district.entity';
+import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly.service';
 import { PinoLogger } from 'nestjs-pino';
-import { DistrictDto } from './dto/district.dto';
+import { DistrictResponse } from './district.dto';
 
 @Injectable()
 export class DistrictService extends DataReadOnlyService<District, Repository<District>> {
@@ -16,8 +16,8 @@ export class DistrictService extends DataReadOnlyService<District, Repository<Di
     super(repository, new District(), logger);
   }
   
-  convertEntity(entity: District):DistrictDto {
-    var dto = new DistrictDto();
+  convertEntity(entity: District):DistrictResponse {
+    var dto = new DistrictResponse();
     dto.id = entity.id;
     dto.name = entity.name;
     // Do not return email - keep it within API back-end.

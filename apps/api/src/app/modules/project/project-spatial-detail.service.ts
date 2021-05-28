@@ -1,8 +1,8 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
-import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
+import { ProjectSpatialDetail } from './project-spatial-detail.entity';
 
 @Injectable()
 export class ProjectSpatialDetailService {
@@ -15,28 +15,20 @@ export class ProjectSpatialDetailService {
     logger.setContext(this.constructor.name);
   }
 
-  async findByProjectId(projectId: number): Promise<ProjectSpatialDetail[]> {
-    this.logger.info(`${this.constructor.name}.findByProjectId id = ` + projectId);
+// Because this is based on a view designed to provide an API response, no separate DTO object is used - the entity is returned directly.
+async findByProjectId(projectId: number): Promise<ProjectSpatialDetail[]> {
+    this.logger.debug(`${this.constructor.name}.findByProjectId id = ` + projectId);
 
-    try {
+    const findAll = await this.repository.find({
+      where: { projectId: projectId },
+      relations: ['submissionType'],
+    });
 
-      const findAll = await this.repository.find({
-        where: { projectId: projectId },
-        relations: ['submissionType'],
-      });
-
-      return findAll.map((item) => {
-        var geojsonObj = JSON.parse(<string>item.geometry );
-        item.geometry = geojsonObj;
-        return item;
-      });
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findAll ${error}`);
-      throw new HttpException(
-        'InternalServerErrorException',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    return findAll.map((item) => {
+      var geojsonObj = JSON.parse(<string>item.geometry );
+      item.geometry = geojsonObj;
+      return item;
+    });
   }
 
 }

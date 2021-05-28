@@ -72,15 +72,35 @@ parameters:
     displayName: Database Test Data
     name: DB_TESTDATA
     value: 'false'
-  
+  - description: URL of Keycloak Server to use for authentication.
+    displayName: Keycloak Server URL
+    name: KEYCLOAK_URL
+    value: 'https://dev.oidc.gov.bc.ca/auth'
+  - description: Secret key for data encryption within database
+    displayName: Data encryption key
+    name: DATA_ENCRYPTION_KEY
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+
 objects:
     # ConfigMap - Hostname - for lookup by Admin/Public
   - kind: ConfigMap
     apiVersion: v1
     data: 
       hostname: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
+      # Store this in config map to allow it to be changed.
+      keycloak-url: ${KEYCLOAK_URL}
     metadata:
       name: ${NAME}${SUFFIX}
+
+    # SECRET - data encryption key
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+      name: ${NAME}${SUFFIX}
+    stringData:
+      data-encryption-key: ${DATA_ENCRYPTION_KEY}
 
   ### DeploymentConfig
   - kind: DeploymentConfig
@@ -95,7 +115,7 @@ objects:
         type: Rolling
         rollingParams:
           # Delay pod updates to account for time to run migrations
-          updatePeriodSeconds: 10
+          updatePeriodSeconds: 30
           intervalSeconds: 1
           timeoutSeconds: 600
           maxUnavailable: 25%
@@ -144,11 +164,21 @@ objects:
                       secretKeyRef:
                         key: database-host
                         name: fom-db${SUFFIX}
+                - name: DATA_ENCRYPTION_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: data-encryption-key
+                      name: ${NAME}${SUFFIX}
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 # This is the application port
                 - name: PORT
                   value: '${PORT}'
+                - name: KEYCLOAK_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: keycloak-url
+                      name: ${NAME}${SUFFIX}
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}
@@ -162,9 +192,9 @@ objects:
                   path: /api
                   port: ${{PORT}}
                   scheme: HTTP
-                initialDelaySeconds: 10
-                timeoutSeconds: 10
-                periodSeconds: 10
+                initialDelaySeconds: 15
+                timeoutSeconds: 15
+                periodSeconds: 15
                 successThreshold: 1
                 failureThreshold: 3
               livenessProbe:

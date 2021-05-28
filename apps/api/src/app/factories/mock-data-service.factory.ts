@@ -1,5 +1,6 @@
 import { ApiBaseEntity, DeepPartial } from '@entities';
 
+// TODO: Not accurate anymore, likely can just delete.
 class MockDataService<T extends ApiBaseEntity<T>> {
   mockDocuments = new Map<string, T>();
 
@@ -12,13 +13,13 @@ class MockDataService<T extends ApiBaseEntity<T>> {
     return this.factory(dto);
   }
 
-  public async remove(id: string): Promise<void> {
+  public async delete(id: string): Promise<void> {
     this.mockDocuments.delete(id);
   }
   public async findOne(id: string): Promise<T> {
     return this.mockDocuments.get(id);
   }
-  public async findAll(): Promise<T[]> {
+  public async findAllUnsecured(): Promise<T[]> {
     return Array.from(this.mockDocuments.values());
   }
 

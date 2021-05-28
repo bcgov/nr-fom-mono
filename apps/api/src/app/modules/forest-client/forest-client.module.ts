@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { ForestClient } from './entities/forest-client.entity';
+import { ForestClient } from './forest-client.entity';
 import { ForestClientService } from './forest-client.service';
 import { ForestClientController } from './forest-client.controller';
 

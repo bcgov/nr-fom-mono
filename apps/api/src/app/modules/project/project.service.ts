@@ -1,14 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { Project } from './entities/project.entity';
-import { DataService } from 'apps/api/src/core/models/data-provider.model';
-import { PinoLogger } from 'nestjs-pino';
-import { ProjectDto } from './dto/project.dto';
-import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
 import * as dayjs from 'dayjs';
+import { Project } from './project.entity';
+import { PinoLogger } from 'nestjs-pino';
+import { DataService } from 'apps/api/src/core/models/data.service';
+import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
+import { User } from 'apps/api/src/core/security/user';
+import { WorkflowStateEnum } from './workflow-state-code.entity';
 
 
 export class ProjectFindCriteria {
@@ -17,6 +18,7 @@ export class ProjectFindCriteria {
   commentingOpenedOnOrAfter?: string; // format YYYY-MM-DD
   fspId?: number;
   districtId?: number;
+  includeForestClientNumbers: string[] = [];
 
   applyFindCriteria(query: SelectQueryBuilder<Project>) {
     if (this.fspId) {
@@ -29,16 +31,19 @@ export class ProjectFindCriteria {
       query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
     }
     if (this.likeForestClientName) {
-      query.andWhere("forest_client.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
+      query.andWhere("forestClient.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
     }
     if (this.commentingOpenedOnOrAfter) {
       query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${this.commentingOpenedOnOrAfter}`});
+    }
+    if (this.includeForestClientNumbers && this.includeForestClientNumbers.length > 0) {
+      query.andWhere("p.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: this.includeForestClientNumbers});
     }
   }
 }
 
 @Injectable()
-export class ProjectService extends DataService<Project, Repository<Project>> {
+export class ProjectService extends DataService<Project, Repository<Project>, ProjectResponse> { 
   constructor(
     @InjectRepository(Project)
     repository: Repository<Project>,
@@ -49,68 +54,220 @@ export class ProjectService extends DataService<Project, Repository<Project>> {
     super(repository, new Project(), logger);
   }
 
-  async find(findCriteria: ProjectFindCriteria):Promise<ProjectDto[]> {
-    this.logger.trace(`Find criteria: ${JSON.stringify(findCriteria)}`);
-    try {
-      const query = this.repository.createQueryBuilder("p")
-        .leftJoinAndSelect("p.forest_client", "forest_client")
-        .leftJoinAndSelect("p.workflow_state", "workflow_state")
-        .leftJoinAndSelect("p.district", "district")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC') // Newest first
-        ;
-      findCriteria.applyFindCriteria(query);
-
-      const result:Project[] = await query.getMany();
-
-      return result.map(project => this.convertEntity(project));
-
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.find ${error}`);
-      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
+  async isCreateAuthorized(dto: ProjectCreateRequest, user?: User): Promise<boolean> {
+    if (!user) {
+      return false;
     }
-  }
-
-  convertEntity(entity: Project): ProjectDto {
-    var dto = super.convertEntity(entity);
-    if (entity.district != null) {
-      dto.district = this.districtService.convertEntity(entity.district);
-    }
-    if (entity.forest_client != null) {
-      dto.forestClient = this.forestClientService.convertEntity(entity.forest_client);
-    }
-    return dto;
+    return user.isForestClient && dto.forestClientNumber != null && user.isAuthorizedForClientId(dto.forestClientNumber);
   }
   
-  async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryDto[]> {
-
-    this.logger.trace(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
-
-    try {
-      const query = this.repository.createQueryBuilder("p")
-        .leftJoinAndSelect("p.forest_client", "forest_client")
-        .leftJoinAndSelect("p.workflow_state", "workflow_state")
-        .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
-        .addOrderBy('p.project_id', 'DESC') // Newest first
-        ;
-      findCriteria.applyFindCriteria(query);
-
-      const result:Project[] = await query.getMany();
-
-      return result.map(project => {
-        var summary = new ProjectPublicSummaryDto();
-        summary.id = project.id;
-        summary.name = project.name;
-        summary.workflowStateName = project.workflow_state.description;
-        summary.forestClientName = project.forest_client.name;
-        summary.geojson = project.geojson;
-        summary.fspId = project.fsp_id;
-        summary.commentingOpenDate = dayjs(project.commenting_open_date).format('YYYY-MM-DD');
-        return summary;
-      });
-    } catch (error) {
-      this.logger.error(`${this.constructor.name}.findPublicSummaries ${error}`);
-      throw new HttpException('InternalServerErrorException', HttpStatus.INTERNAL_SERVER_ERROR);
+  async isUpdateAuthorized(dto: ProjectUpdateRequest, entity: Project, user?: User): Promise<boolean> {
+    if (!user) {
+      return false;
     }
+
+    // TODO: Enforce rules around changing commenting open/closed dates?
+    // WHen commenting open or later, can't change commenting open date
+    // When commenting open, can change closed date. Forest client can't make it shorter
+    // When after commenting open, cannot change closed date.
+
+    if (user.isMinistry && !user.isForestClient) {
+      // As ministry user can only update when commenting open, and only to change the commenting closed date.
+      // TODO: Confirm that only commenting closed date is changing.
+      return WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode;
+    }
+
+    if (!user.isForestClient || !user.isAuthorizedForClientId(entity.forestClientId)) {
+      return false;
+    }
+    // Workflow states that forest client user is allowed to edit in. 
+    return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.PUBLISHED, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
   }
+
+  async isDeleteAuthorized(entity: Project, user?: User): Promise<boolean> {
+    if (!user) {
+      return false;
+    }
+
+    // Only scenario when forest client user can delete.
+    if (entity.workflowStateCode == WorkflowStateEnum.INITIAL) {
+      return user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId);
+    }
+
+    // All other scenarios only ministry user can delete.
+    if (!user.isMinistry) {
+      return false; 
+    }
+
+    // Workflows states that the ministry user can delete in.
+    return [WorkflowStateEnum.COMMENT_CLOSED, WorkflowStateEnum.FINALIZED, WorkflowStateEnum.EXPIRED].includes(entity.workflowStateCode as WorkflowStateEnum);
+  }
+
+  async isViewAuthorized(entity: Project, user?: User): Promise<boolean> {
+    if (!user) {
+      return true;
+    }
+    if (user.isMinistry) {
+      return true;
+    }
+
+    return user.isForestClient && user.isAuthorizedForClientId(entity.forestClientId);
+  }
+
+  async create(request: any, user: User): Promise<ProjectResponse> {
+    request.workflowStateCode = WorkflowStateEnum.INITIAL;
+    request.forestClientId = request.forestClientNumber;
+    return super.create(request, user);
+  }
+
+  async find(findCriteria: ProjectFindCriteria):Promise<ProjectResponse[]> {
+    this.logger.debug(`Find criteria: ${JSON.stringify(findCriteria)}`);
+
+    const query = this.repository.createQueryBuilder("p")
+      .leftJoinAndSelect("p.forestClient", "forestClient")
+      .leftJoinAndSelect("p.workflowState", "workflowState")
+      .leftJoinAndSelect("p.district", "district")
+      .addOrderBy('p.project_id', 'DESC') // Newest first
+      ;
+    findCriteria.applyFindCriteria(query);
+
+    const result:Project[] = await query.getMany();
+
+    return result.map(project => this.convertEntity(project));
+  }
+
+  convertEntity(entity: Project): ProjectResponse {
+    const response = new ProjectResponse();
+    if (entity.commentingClosedDate) {
+      response.commentingClosedDate = dayjs(entity.commentingClosedDate).format('YYYY-MM-DD');
+    }
+    if (entity.commentingOpenDate) {
+      response.commentingOpenDate = dayjs(entity.commentingOpenDate).format('YYYY-MM-DD');
+    }
+    response.createTimestamp = entity.createTimestamp.toISOString();
+    response.description = entity.description;
+    if (entity.district != null) {
+      response.district = this.districtService.convertEntity(entity.district);
+    }
+    if (entity.forestClient != null) {
+      response.forestClient = this.forestClientService.convertEntity(entity.forestClient);
+    }
+    response.fspId = entity.fspId;
+    response.id = entity.id;
+    response.name = entity.name;
+    response.revisionCount = entity.revisionCount;
+    response.workflowState = entity.workflowState;
+
+    return response;
+  }
+
+  protected getCommonRelations(): string[] {
+    return ['district', 'forestClient', 'workflowState'];
+  }
+
+  async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
+
+    this.logger.debug(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
+
+    const query = this.repository.createQueryBuilder("p")
+      .leftJoinAndSelect("p.forestClient", "forestClient")
+      .leftJoinAndSelect("p.workflowState", "workflowState")
+      .addOrderBy('p.project_id', 'DESC') // Newest first
+      ;
+    findCriteria.applyFindCriteria(query);
+
+    const result:Project[] = await query.getMany();
+
+    return result.map(project => {
+      var summary = new ProjectPublicSummaryResponse();
+
+      summary.forestClientName = project.forestClient.name;
+      summary.fspId = project.fspId;
+      summary.geojson = project.geojson;
+      summary.id = project.id;
+      summary.name = project.name;
+      summary.workflowStateName = project.workflowState.description;
+      return summary;
+    });
+  }
+
+  async workflowStateChange(projectId: number, request: ProjectWorkflowStateChangeRequest, user: User): Promise<ProjectResponse> {
+
+    this.logger.debug(`${this.constructor.name}.workflowStateChange projectId %o request %o`, projectId, request);
+
+    const entity:Project = await this.findEntityForUpdate(projectId);
+    if (! entity) {
+      throw new UnprocessableEntityException("Entity not found.");
+    }
+
+    if (!user || !user.isForestClient || !user.isAuthorizedForClientId(entity.forestClientId)) {
+      throw new ForbiddenException();
+    }
+
+    if (entity.revisionCount != request.revisionCount) {
+      this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
+      throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+    }
+
+    if (request.workflowStateCode == entity.workflowStateCode) {
+      throw new BadRequestException("Requested state is equal to the current state.");
+    }
+
+    switch(request.workflowStateCode) {
+      case WorkflowStateEnum.INITIAL:
+        throw new BadRequestException("Changing state back to INITIAL not permitted.");
+
+      case WorkflowStateEnum.PUBLISHED:
+        this.logger.info("Published state change."); // TODO: REMOVE
+
+        if (entity.workflowStateCode != WorkflowStateEnum.INITIAL) {
+          throw new BadRequestException("Can only publish if workflow state is Initial.");
+        }
+
+        // TODO: Check busines rules.
+        
+        break;
+
+      case WorkflowStateEnum.COMMENT_OPEN:
+        throw new BadRequestException("Requesting state change to COMMENT_CLOSED is not permitted.");
+
+      case WorkflowStateEnum.COMMENT_CLOSED:
+        throw new BadRequestException("Requesting state change to COMMENT_CLOSED is not permitted.");
+
+      case WorkflowStateEnum.FINALIZED:
+        this.logger.info("Finalized state change."); // TODO: REMOVE
+        if (entity.workflowStateCode != WorkflowStateEnum.COMMENT_CLOSED) {
+          throw new BadRequestException("Can only finalize if workflow state is Commenting Closed.");
+        }
+
+        // TODO: Check busines rules.
+
+        break;
+
+      case WorkflowStateEnum.EXPIRED:
+        throw new BadRequestException("Requesting state change to EXPIRED is not permitted.");
+
+      default:
+        throw new InternalServerErrorException("Unrecognized requested workflow state " + request.workflowStateCode);
+    }
+    // TODO: Check that the state change is permitted based on
+    // 1. Current workflow state
+    // 2. Business rules.
+
+    entity.revisionCount +=1;
+    entity.updateUser = user.userName;
+    entity.updateTimestamp = new Date();  // dayjs().toDate(); // TODO: confirm this works.
+    entity.workflowStateCode = request.workflowStateCode;
+
+    const updateCount = (await this.repository.update(projectId, entity)).affected;
+    if (updateCount != 1) {
+      throw new InternalServerErrorException("Error updating object");
+    }
+
+    const updatedEntity = await this.findEntityWithCommonRelations(projectId);
+    this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
+
+    return this.convertEntity(updatedEntity);
+
+  }  
 }
