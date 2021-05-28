@@ -6,7 +6,7 @@ import { KeycloakConfig } from '../core/security/auth.service';
 import { User } from '../core/security/user';
 import { ProjectResponse } from '../app/modules/project/project.dto';
 import { LoggerModule } from 'nestjs-pino';
-import { createFakeMinistryUser } from '../core/security/mock-user.factory';
+import { createFakeMinistryUser, createFakeForestryUser } from '../core/security/mock-user.factory';
 
 process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
 
@@ -59,6 +59,14 @@ describe('API endpoints testing (e2e)', () => {
       expect(result.length).toBeGreaterThan(0);
     });
 
+    describe('Forest-client Endpoint', () => {
+      it('get /forest-client with non-existant id should return HTTP 400 bad request', async () => {
+        const user: User = createFakeForestryUser();
+        const res = await httpGet(user, '/forest-client/-1');
+        expect(res.status).toBe(400);
+      });
+    });
+  
   });
   
 /*
