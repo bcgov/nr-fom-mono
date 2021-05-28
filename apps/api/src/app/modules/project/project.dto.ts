@@ -1,9 +1,9 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { WorkflowStateCode } from './workflow-state-code.entity';
+import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
-import { IsDateString, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class ProjectCreateRequest {
   @ApiProperty()
@@ -49,6 +49,17 @@ export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequ
   revisionCount: number;
 
 }
+
+export class ProjectWorkflowStateChangeRequest {
+  @ApiProperty()
+  @IsNumber()
+  revisionCount: number;
+
+  @ApiProperty()
+  @IsEnum(WorkflowStateEnum)
+  workflowStateCode: string;
+}
+
 
 // DTO optimized for Public FE map view
 export class ProjectPublicSummaryResponse {

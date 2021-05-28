@@ -11,8 +11,7 @@ import { createFakeMinistryUser } from '../core/security/mock-user.factory';
 process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
 
 const httpGetFunction = (app) => async ( user: User, args: string ) => {
-  const res = await request(app.getHttpServer()).get(args).set('Authorization', 'Bearer ' + JSON.stringify(user) );
-  return res;
+  return await request(app.getHttpServer()).get(args).set('Authorization', 'Bearer ' + JSON.stringify(user) );
 };
 
 describe('API endpoints testing (e2e)', () => {
@@ -54,7 +53,6 @@ describe('API endpoints testing (e2e)', () => {
     it('get /project should return a list of projects', async () => {
       const user: User = createFakeMinistryUser();
       const res = await httpGet(user, '/project');
-      // const res = await request(app.getHttpServer()).get('/project').set('Authorization', 'Bearer ' + JSON.stringify(user) );
       expect(res.status).toBe(200);
       const result:ProjectResponse[] = res.body as ProjectResponse[];
       // Expect projects to be returned.

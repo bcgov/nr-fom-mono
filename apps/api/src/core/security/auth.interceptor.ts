@@ -12,7 +12,6 @@ export class AuthInterceptor implements NestInterceptor {
 
     const request = context.switchToHttp().getRequest();
     const authHeader:string = request.headers['authorization'];
-    this.logger.debug("Authorization header = %o", authHeader);
     if (authHeader) {
       this.authService.verifyToken(authHeader).then(user => {
         this.logger.debug("Authenticated user = %o", user);

@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
 import { DataService } from 'apps/api/src/core/models/data.service';
-import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest } from './project.dto';
+import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';
@@ -55,8 +55,10 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   }
 
   async isCreateAuthorized(dto: ProjectCreateRequest, user?: User): Promise<boolean> {
-    // Only forest client user can create.
-    return (user && user.isForestClient && dto.forestClientNumber && user.isAuthorizedForClientId(dto.forestClientNumber) );
+    if (!user) {
+      return false;
+    }
+    return user.isForestClient && dto.forestClientNumber != null && user.isAuthorizedForClientId(dto.forestClientNumber);
   }
   
   async isUpdateAuthorized(dto: ProjectUpdateRequest, entity: Project, user?: User): Promise<boolean> {
@@ -69,8 +71,9 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     // When commenting open, can change closed date. Forest client can't make it shorter
     // When after commenting open, cannot change closed date.
 
-    if (user.isMinistry) {
-      // Can only update when commenting open, to change commenting period.
+    if (user.isMinistry && !user.isForestClient) {
+      // As ministry user can only update when commenting open, and only to change the commenting closed date.
+      // TODO: Confirm that only commenting closed date is changing.
       return WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode;
     }
 
@@ -187,4 +190,84 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return summary;
     });
   }
+
+  async workflowStateChange(projectId: number, request: ProjectWorkflowStateChangeRequest, user: User): Promise<ProjectResponse> {
+
+    this.logger.debug(`${this.constructor.name}.workflowStateChange projectId %o request %o`, projectId, request);
+
+    const entity:Project = await this.findEntityForUpdate(projectId);
+    if (! entity) {
+      throw new UnprocessableEntityException("Entity not found.");
+    }
+
+    if (!user || !user.isForestClient || !user.isAuthorizedForClientId(entity.forestClientId)) {
+      throw new ForbiddenException();
+    }
+
+    if (entity.revisionCount != request.revisionCount) {
+      this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
+      throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+    }
+
+    if (request.workflowStateCode == entity.workflowStateCode) {
+      throw new BadRequestException("Requested state is equal to the current state.");
+    }
+
+    switch(request.workflowStateCode) {
+      case WorkflowStateEnum.INITIAL:
+        throw new BadRequestException("Changing state back to INITIAL not permitted.");
+
+      case WorkflowStateEnum.PUBLISHED:
+        this.logger.info("Published state change."); // TODO: REMOVE
+
+        if (entity.workflowStateCode != WorkflowStateEnum.INITIAL) {
+          throw new BadRequestException("Can only publish if workflow state is Initial.");
+        }
+
+        // TODO: Check busines rules.
+        
+        break;
+
+      case WorkflowStateEnum.COMMENT_OPEN:
+        throw new BadRequestException("Requesting state change to COMMENT_CLOSED is not permitted.");
+
+      case WorkflowStateEnum.COMMENT_CLOSED:
+        throw new BadRequestException("Requesting state change to COMMENT_CLOSED is not permitted.");
+
+      case WorkflowStateEnum.FINALIZED:
+        this.logger.info("Finalized state change."); // TODO: REMOVE
+        if (entity.workflowStateCode != WorkflowStateEnum.COMMENT_CLOSED) {
+          throw new BadRequestException("Can only finalize if workflow state is Commenting Closed.");
+        }
+
+        // TODO: Check busines rules.
+
+        break;
+
+      case WorkflowStateEnum.EXPIRED:
+        throw new BadRequestException("Requesting state change to EXPIRED is not permitted.");
+
+      default:
+        throw new InternalServerErrorException("Unrecognized requested workflow state " + request.workflowStateCode);
+    }
+    // TODO: Check that the state change is permitted based on
+    // 1. Current workflow state
+    // 2. Business rules.
+
+    entity.revisionCount +=1;
+    entity.updateUser = user.userName;
+    entity.updateTimestamp = new Date();  // dayjs().toDate(); // TODO: confirm this works.
+    entity.workflowStateCode = request.workflowStateCode;
+
+    const updateCount = (await this.repository.update(projectId, entity)).affected;
+    if (updateCount != 1) {
+      throw new InternalServerErrorException("Error updating object");
+    }
+
+    const updatedEntity = await this.findEntityWithCommonRelations(projectId);
+    this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
+
+    return this.convertEntity(updatedEntity);
+
+  }  
 }

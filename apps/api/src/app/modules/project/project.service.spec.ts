@@ -2,14 +2,44 @@ import { mockLoggerFactory } from '../../factories/mock-logger.factory';
 import { ProjectService } from './project.service';
 import { Project } from './project.entity';
 import { User } from 'apps/api/src/core/security/user';
-import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
-import { ProjectUpdateRequest } from './project.dto';
+import { WorkflowStateEnum } from './workflow-state-code.entity';
+import { ProjectCreateRequest, ProjectUpdateRequest } from './project.dto';
 
 describe('ProjectService', () => {
   let service: ProjectService;
 
   beforeEach(async () => {
     service = new ProjectService(null, mockLoggerFactory(), null, null);
+  });
+
+  describe('isCreateAuthorized', () => {
+    let request: ProjectCreateRequest;
+    let user: User;
+    const TEST_CLIENT_ID: string = '1011';
+
+    beforeEach(async () => {
+      user = new User();
+      request = new ProjectCreateRequest();
+      request.forestClientNumber = TEST_CLIENT_ID;
+    })
+
+    it ('public user cannot create', async () => {
+      expect(await service.isCreateAuthorized(request, null)).toBe(false);
+    });
+
+    it ('forest client user with matching forest client can create', async () => {
+      user.isForestClient = true;
+      user.clientIds.push(TEST_CLIENT_ID);
+      expect(await service.isCreateAuthorized(request, user)).toBe(true);
+    });
+    
+    it ('request forest client undefined cannot create', async () => {
+      user.isForestClient = true;
+      user.clientIds.push(TEST_CLIENT_ID);
+      delete request.forestClientNumber;
+      expect(await service.isCreateAuthorized(request, user)).toBe(false);
+    });
+    
   });
 
   describe('isUpdateAuthorized', () => {

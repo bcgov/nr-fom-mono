@@ -80,7 +80,7 @@ export abstract class DataService<
   async create(requestDto: any, user: User): Promise<O> {
     this.logger.debug(`${this.constructor.name}.create dto %o`, requestDto);
 
-    if (! await this.isCreateAuthorized(user, requestDto)) {
+    if (! await this.isCreateAuthorized(requestDto, user)) {
       throw new ForbiddenException();
     }
 

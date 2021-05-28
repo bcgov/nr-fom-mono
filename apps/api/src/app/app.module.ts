@@ -16,8 +16,7 @@ import { AppConfigService } from './modules/app-config/app-config.provider';
 import { SecurityModule } from '../core/security/security.module'
 
 function getLogLevel():string {
-  const logLevel = process.env.LOG_LEVEL || 'info';
-  return logLevel;
+  return process.env.LOG_LEVEL || 'info';
 }
 
 @Module({

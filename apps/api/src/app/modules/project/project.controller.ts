@@ -4,7 +4,7 @@ import * as dayjs from 'dayjs';
 import { BaseController } from '@controllers';
 import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './project.entity';
-import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest } from './project.dto';
+import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './project-spatial-detail.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
@@ -140,6 +140,18 @@ export class ProjectController extends BaseController<Project> {
     @Body() request: ProjectUpdateRequest
   ): Promise<ProjectResponse> {
     return this.service.update(id, request, user);
+  }
+
+  @Put('/workflowState/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
+  @ApiBody({ type: ProjectWorkflowStateChangeRequest })
+  async stateChange(
+    @UserRequiredHeader() user: User,
+    @Param('id') id: number,
+    @Body() request: ProjectWorkflowStateChangeRequest
+  ): Promise<ProjectResponse> {
+    return this.service.workflowStateChange(id, request, user);
   }
 
   @Delete(':id')
