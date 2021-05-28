@@ -2,27 +2,22 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
 import { AppModule } from '../app/app.module';
-import { PublicCommentCreateRequest } from '../app/modules/public-comment/public-comment.dto';
-import { SubmissionRequest } from '../app/modules/submission/submission.dto';
 import { KeycloakConfig } from '../core/security/auth.service';
 import { User } from '../core/security/user';
-import { ProjectCreateRequest, ProjectUpdateRequest } from '../app/modules/project/project.dto';
+import { ProjectResponse } from '../app/modules/project/project.dto';
 import { LoggerModule } from 'nestjs-pino';
+import { createFakeMinistryUser } from '../core/security/mock-user.factory';
 
 process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
 
+const httpGetFunction = (app) => async ( user: User, args: string ) => {
+  const res = await request(app.getHttpServer()).get(args).set('Authorization', 'Bearer ' + JSON.stringify(user) );
+  return res;
+};
+
 describe('API endpoints testing (e2e)', () => {
   let app: INestApplication;
-
-  // Declare vars to hold helper functions
-  // We'll need to curry in app each one
-  // let createProjectAndVerifyResult;
-  // let updateProjectAndVerifyResult;
-  // let createCommentAndVerifyResult;
-  // let createSubmissionAndVerifyResult;
-  // let createCutBlockAndVerifyResult;
-  // let createRetentionAreaAndVerifyResult;
-  // let createRoadSectionAndVerifyResult;
+  let httpGet;
 
   beforeAll(async () => {
 
@@ -36,22 +31,10 @@ describe('API endpoints testing (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.enableShutdownHooks();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true}));
+
     await app.init();
 
-    // Register test handlers
-    // createProjectAndVerifyResult = createProjectAndVerifyResultFunction(app);
-    // updateProjectAndVerifyResult = updateProjectAndVerifyResultFunction(app);
-    // createCommentAndVerifyResult = createCommentAndVerifyResultFunction(app);
-    // createSubmissionAndVerifyResult = createSubmissionAndVerifyResultFunction(
-    //   app
-    // );
-    // createCutBlockAndVerifyResult = createCutBlockAndVerifyResultFunction(app);
-    // createRetentionAreaAndVerifyResult = createRetentionAreaAndVerifyResultFunction(
-    //   app
-    // );
-    // createRoadSectionAndVerifyResult = createRoadSectionAndVerifyResultFunction(
-    //   app
-    // );
+    httpGet = httpGetFunction(app);
   });
 
   afterAll(async () => {
@@ -66,16 +49,21 @@ describe('API endpoints testing (e2e)', () => {
       expect(config.enabled).toBe(false);
     });
   });
-/*
+
   describe('Project Endpoint', () => {
-    it('should return a list of projects', async () => {
-      const user = getFakeMinistryUser();
-      const res = await request(app.getHttpServer()).get('/project').set('Authorization', 'Bearer : ' + JSON.stringify(user) );
+    it('get /project should return a list of projects', async () => {
+      const user: User = createFakeMinistryUser();
+      const res = await httpGet(user, '/project');
+      // const res = await request(app.getHttpServer()).get('/project').set('Authorization', 'Bearer ' + JSON.stringify(user) );
       expect(res.status).toBe(200);
+      const result:ProjectResponse[] = res.body as ProjectResponse[];
+      // Expect projects to be returned.
+      expect(result.length).toBeGreaterThan(0);
     });
 
   });
-
+  
+/*
   describe('project endpoints', () => {
     it('should return a list of projects', async () => {
       const res = await request(app.getHttpServer()).get('/projects');
@@ -541,7 +529,7 @@ describe('API endpoints testing (e2e)', () => {
   });
   */
 });
-
+/*
 const verifyCreateMetadata = (data) => {
   expect(data.createTimestamp).not.toBeNull();
   expect(data.createUser).not.toBeNull();
@@ -707,3 +695,4 @@ const createRoadSectionAndVerifyResultFunction = (app) => async (
   return res;
 };
 
+*/

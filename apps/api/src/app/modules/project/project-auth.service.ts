@@ -85,7 +85,7 @@ export class ProjectAuthService {
   }
 
   private async getProject(projectId: number): Promise<Project> {
-    return await this.repository.findOne(projectId);
+    return this.repository.findOne(projectId);
   }
 
 }

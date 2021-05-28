@@ -1,9 +1,9 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
+import { WorkflowStateCode } from './workflow-state-code.entity';
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
-import { IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsDateString, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class ProjectCreateRequest {
   @ApiProperty()

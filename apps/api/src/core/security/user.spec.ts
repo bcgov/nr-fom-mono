@@ -20,12 +20,12 @@ describe('User', () => {
     describe('convertJsonToUser', () => {
         it('should have client ids', async() => {
             const json = `{"isMinistry":true,"isForestClient":true,"clientIds":[1011, 1012],"userName":"fakeuser@idir","displayName":"Longlastname, Firstname"}`;
-            const user = User.convertJsonToUser(json);
+            user = User.convertJsonToUser(json);
             expect(user.clientIds.length).toBe(2);            
         });
         it('should have methods', async() => {
             const json = `{"isMinistry":true,"isForestClient":true,"clientIds":[1011, 1012],"userName":"fakeuser@idir","displayName":"Longlastname, Firstname"}`;
-            const user = User.convertJsonToUser(json);
+            user = User.convertJsonToUser(json);
             expect(user.isAuthorizedForClientId('1011')).toBe(true);            
         });
     });

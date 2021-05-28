@@ -113,13 +113,13 @@ export abstract class DataService<
 
   // Deliberately exclude loading relations for updates. TypeORM gets confused if an entity has both the id field and the relation field populated on update.
   protected async findEntityForUpdate(id: string | number): Promise<E|undefined> {
-    return await this.repository.findOne(id);
+    return this.repository.findOne(id);
   }
 
   // A hook on find entity for other service to override if it needs extra operation, like db column decryption.
   protected async findEntityWithCommonRelations(id: string | number, options?: FindOneOptions<E> | undefined): Promise<E|undefined> {
     const revisedOptions = this.addCommonRelationsToFindOptions(options);
-    return await this.repository.findOne(id, revisedOptions);
+    return this.repository.findOne(id, revisedOptions);
   }
 
   protected addCommonRelationsToFindOptions(options?: FindOneOptions<E> | FindManyOptions<E>): FindOneOptions<E> | FindManyOptions<E> {

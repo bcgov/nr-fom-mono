@@ -10,13 +10,14 @@ import { Submission } from './submission.entity';
 import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
 import { ProjectService } from '../project/project.service';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
-import { WorkflowStateCode, WorkflowStateEnum } from '../project/workflow-state-code.entity';
+import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { CutBlock } from './cut-block.entity';
 import { RoadSection } from './road-section.entity';
 import { RetentionArea } from './retention-area.entity';
 import { ProjectResponse } from '../project/project.dto';
 import { flatDeep } from '../../../core/utils';
 import { User } from 'apps/api/src/core/security/user';
+import { ProjectAuthService } from '../project/project-auth.service';
 
 type SpatialObject = CutBlock | RoadSection | RetentionArea;
 
@@ -27,6 +28,7 @@ export class SubmissionService {
     private repository: Repository<Submission>,
     private logger: PinoLogger,
     private projectService: ProjectService,
+    private projectAuthService: ProjectAuthService
   ) {
     dayjs.extend(customParseFormat);
   }
@@ -43,10 +45,11 @@ export class SubmissionService {
     const workflowStateCode = project.workflowState.code;
     const submissionTypeCode = this.getPermittedSubmissionTypeCode(workflowStateCode);
 
-    // TODO: Authorization check based on project & user.
-    // if (!this.isCreateAuthorized(user, dto)) {
-    //   throw new ForbiddenException();
-    // }
+    // Operation only allowed for forest client users with project in specific states.
+    if (!await this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
+      [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user)) {
+      throw new ForbiddenException();
+    }
 
     // Confirm that the dto.submissionTypeCode equals what we expect. If not, return an error. 
     // @see {getPermittedSubmissoinStatus} comment.

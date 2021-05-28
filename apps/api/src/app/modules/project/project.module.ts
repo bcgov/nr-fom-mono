@@ -13,6 +13,7 @@ import { SecurityModule } from 'apps/api/src/core/security/security.module';
 import { WorkflowStateCodeController } from './workflow-state-code.controller';
 import { WorkflowStateCodeService } from './workflow-state-code.service';
 import { WorkflowStateCode } from './workflow-state-code.entity';
+import { ProjectAuthService } from './project-auth.service';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { WorkflowStateCode } from './workflow-state-code.entity';
     SecurityModule,
   ],
   controllers: [ProjectController, WorkflowStateCodeController],
-  providers: [ProjectService, ProjectSpatialDetailService, WorkflowStateCodeService],
-  exports: [ProjectService],
+  providers: [ProjectService, ProjectAuthService, ProjectSpatialDetailService, WorkflowStateCodeService],
+  exports: [ProjectService, ProjectAuthService],
 })
 export class ProjectModule {}

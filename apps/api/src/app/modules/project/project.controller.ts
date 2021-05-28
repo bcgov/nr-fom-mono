@@ -7,7 +7,7 @@ import { Project } from './project.entity';
 import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest } from './project.dto';
 import { ProjectSpatialDetailService } from './project-spatial-detail.service'
 import { ProjectSpatialDetail } from './project-spatial-detail.entity';
-import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
+import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 

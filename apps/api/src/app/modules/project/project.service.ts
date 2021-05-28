@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder, UpdateResult } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
@@ -9,8 +9,7 @@ import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, Pr
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';
-import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { WorkflowStateEnum } from './workflow-state-code.entity';
 
 
 export class ProjectFindCriteria {
@@ -115,7 +114,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async create(request: any, user: User): Promise<ProjectResponse> {
     request.workflowStateCode = WorkflowStateEnum.INITIAL;
     request.forestClientId = request.forestClientNumber;
-    return await super.create(request, user);
+    return super.create(request, user);
   }
 
   async find(findCriteria: ProjectFindCriteria):Promise<ProjectResponse[]> {
@@ -170,7 +169,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const query = this.repository.createQueryBuilder("p")
       .leftJoinAndSelect("p.forestClient", "forestClient")
       .leftJoinAndSelect("p.workflowState", "workflowState")
-      .limit(5000) // Cannot use take() with orderBy, get weird error. TODO: display warning on public front-end if limit reached.
       .addOrderBy('p.project_id', 'DESC') // Newest first
       ;
     findCriteria.applyFindCriteria(query);

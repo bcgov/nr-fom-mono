@@ -36,9 +36,8 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   }
   
   protected async updateEntity(id: string | number, dto: any, entity: PublicComment): Promise<UpdateResult> {
-    const updateResult = await super.updateEntity(id, dto, entity);
     // There's no use case to update encrypted columns, so we don't touch them - they'll be loaded as encrypted, and resaved as encrypted.
-    return updateResult;
+    return super.updateEntity(id, dto, entity);
   }
 
   protected async findEntityWithCommonRelations(id: string | number, options?: FindOneOptions<PublicComment> | undefined) {
@@ -94,7 +93,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   private async obtainDecryptedColumns(id: number[]): Promise<Partial<PublicComment>[]> {
     this.logger.debug('Decrypting sensitive columns for PublicComment...');
     // using query builder for select back
-    const decryptedSelecteColumns = await this.repository.createQueryBuilder('pc')
+    return await this.repository.createQueryBuilder('pc')
     .select('public_comment_id', 'id')
     .addSelect(`pgp_sym_decrypt(name::bytea, '${this.key}')`, 'name')
     .addSelect(`pgp_sym_decrypt(location::bytea, '${this.key}')`, 'location')
@@ -102,15 +101,14 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     .addSelect(`pgp_sym_decrypt(phone_number::bytea, '${this.key}')`, 'phoneNumber')
     .where('pc.id IN (:...pId)', {pId: id})
     .getRawMany() as Partial<PublicComment>[];
-    return decryptedSelecteColumns;
   }
 
   async isCreateAuthorized(dto: PublicCommentCreateRequest, user?: User): Promise<boolean> {
-    return await this.projectAuthService.isAnonymousUserAllowedStateAccess(dto.projectId, [WorkflowStateEnum.COMMENT_OPEN], user);
+    return this.projectAuthService.isAnonymousUserAllowedStateAccess(dto.projectId, [WorkflowStateEnum.COMMENT_OPEN], user);
   }
   
   async isUpdateAuthorized(dto: PublicCommentAdminUpdateRequest, entity: PublicComment, user?: User):Promise<boolean> {
-    return await this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
       [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
 
@@ -128,15 +126,16 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     }
 
     // Forest client users can access irregardless of the workflow state.
-    return await this.projectAuthService.isForestClientUserAccess(entity.projectId, user);
+    return this.projectAuthService.isForestClientUserAccess(entity.projectId, user);
   }
 
   async findByProjectId(projectId: number, user: User): Promise<PublicCommentAdminResponse[]> {
-
-    // TODO: Need auth check based on projectId
-    // if (!this.isViewingAuthorized(user)) {
-    //   throw new ForbiddenException();
-    // }
+    if (!user.isMinistry) {
+      // Don't check workflow states for viewing the comments.
+      if (! await this.projectAuthService.isForestClientUserAccess(projectId, user)) {
+        throw new ForbiddenException();
+      }
+    }
     
     const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
     const records = await this.repository.find(options);
