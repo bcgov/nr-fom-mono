@@ -22,7 +22,7 @@ export class PublicCommentCreateRequest {
 
   @ApiProperty()
   @MaxLength(4000) // Confirmed by business
-  @MinLength(5) 
+  @MinLength(1) 
   feedback: string;
 
   @ApiProperty()
