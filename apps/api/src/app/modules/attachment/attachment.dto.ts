@@ -3,23 +3,15 @@ import { IsDefined, IsEnum } from 'class-validator';
 
 import { AttachmentTypeCode, AttachmentTypeEnum } from './attachment-type-code.entity';
 
+// See AttachmentController.create for why these are not annotated with @ApiProperty.
 export class AttachmentCreateRequest {
-  @ApiProperty()
-  @IsDefined()
   projectId: number;
 
-  @ApiProperty()
-  @IsDefined()
   fileName: string; 
 
-  @ApiProperty()
-  @IsDefined()
-  fileContents: string; // This is actually a bytearray
+  fileContents: Buffer; // This is actually a bytearray
 
-  @ApiProperty()
-  @IsEnum(AttachmentTypeEnum)
   attachmentTypeCode: string;
-
 }
 
 export class AttachmentResponse {
@@ -36,4 +28,11 @@ export class AttachmentResponse {
   attachmentType: AttachmentTypeCode;
 
   // Don't need revisionCount because updates are not allowed.
+}
+
+export class AttachmentFileResponse extends AttachmentResponse {
+
+  @ApiProperty()
+  fileContents: string; 
+
 }

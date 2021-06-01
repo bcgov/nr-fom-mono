@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attachment } from './attachment.entity';
 import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectAuthService } from '../project/project-auth.service';
-import { AttachmentCreateRequest, AttachmentResponse } from './attachment.dto';
+import { AttachmentCreateRequest, AttachmentFileResponse, AttachmentResponse } from './attachment.dto';
 import { User } from 'apps/api/src/core/security/user';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
@@ -62,6 +62,71 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     response.id = entity.id;
 
     return response;
+  }
+
+  async getFileContent(id: number, user?: User): Promise<AttachmentFileResponse> {
+
+    // Works, but fileContents being treated as a Buffer...
+    const entity:Attachment = await this.repository.findOne(id, this.addCommonRelationsToFindOptions(
+      { select: [ 'id', 'projectId', 'fileContents', 'fileName', 'attachmentType' ] }));
+      console.log("entity " + JSON.stringify(entity));
+
+      // this.getManager().query(`
+    // const query = this.repository.createQueryBuilder("a")
+    //   .select("a.attachment_id, a.project_id, a.file_contents, a.file_name")
+    //   .leftJoinAndSelect("a.attachmentType", "attachmentType")
+    //   .andWhere("a.attachment_id = :id", {id: `${id}`})
+    // console.log(query.getSql());
+    // const entities:Attachment[] = await query.getMany();
+    // const entity = entities[0];
+    if (!entity) {
+      throw new BadRequestException("No entity for the specified id.");
+    }
+
+    if (!this.isViewAuthorized(entity, user)) {
+      throw new ForbiddenException();
+    }
+
+    const attachmentResponse = this.convertEntity(entity);
+
+    const attachmentFileResponse = { ...attachmentResponse} as AttachmentFileResponse;
+    // TODO: Could convert fileContents to int array...
+    attachmentFileResponse.fileContents = entity.fileContents;
+
+    return attachmentFileResponse;
+  }
+
+  async findByProjectId(projectId: number, user?: User): Promise<AttachmentResponse[]> {
+    const criteria = { where: { projectId: projectId } };
+
+    if (user && !user.isMinistry) {
+      // Don't check workflow states for viewing the comments.
+      if (! await this.projectAuthService.isForestClientUserAccess(projectId, user)) {
+        throw new ForbiddenException();
+      }
+    }
+    
+    const query = this.repository.createQueryBuilder("a")
+      .leftJoinAndSelect("a.attachmentType", "attachmentType")
+      .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
+      .addOrderBy('a.attachment_id', 'DESC') // Newest first
+      ;
+    if (!user) {
+      // Anonymous users can only see public notices and supporting documents (not interactions).
+      query.andWhere('a.attachment_type_code IN (:...attachmentTypeCodes)', { attachmentTypeCodes: [AttachmentTypeEnum.PUBLIC_NOTICE, AttachmentTypeEnum.SUPPORTING_DOC] });
+    }
+
+    const records:Attachment[] = await query.getMany();
+
+    // findCriteria.applyFindCriteria(query);
+    // query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
+  
+
+    // const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
+    // const records:Attachment[] = await this.repository.find(options);
+
+    return records.map(attachment => this.convertEntity(attachment));
+
   }
 
 
