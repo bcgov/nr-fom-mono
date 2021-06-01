@@ -30,6 +30,7 @@ async function bootstrap() {
     console.log('Error during database migration', error);
     return error;
   }
+  console.log("Done DB Migrations.");
 
   const app = await NestFactory.create(AppModule, { logger: false });
   app.useLogger(app.get(Logger));
@@ -42,7 +43,7 @@ async function bootstrap() {
 
   // Redirect root to /api
   app.getHttpAdapter().getInstance().get('/', (req, res) => {
-    res.redirect('/api');
+    res.redirect('/'+globalPrefix);
   });
 
   const config = new DocumentBuilder()
