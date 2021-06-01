@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Delete, Body, Param, HttpStatus } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BaseController } from '@controllers';
 import { AttachmentService } from './attachment.service';
 import { Attachment } from './attachment.entity';
-import { AttachmentDto } from './attachment.dto';
-import { UserHeader } from 'apps/api/src/core/security/auth.service';
+import { AttachmentCreateRequest, AttachmentResponse } from './attachment.dto';
+import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 
 @ApiTags('attachment')
@@ -16,32 +16,40 @@ export class AttachmentController extends BaseController<Attachment> {
     super(service);
   }
 
-  // Accessible by public and by authenticated users.
+  // Accessible by public (if attachment type not interaction) and by authenticated users.
   @Get(':id')
   @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: AttachmentResponse})
   async findOne(
     @UserHeader() user: User,
     @Param('id') id: number) {
     return this.service.findOne(id, user);
   }
 
-/*  
-  @Post()
-  async create(@Body() createDto: AttachmentDto) {
-    return this.service.create(createDto);
+  @Get('/file/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK }) // TODO: Type
+  async getFileContents(
+    @UserHeader() user: User,
+    @Param('id') id: number): Promise<string> {
+    // return this.service.findOne(id, user);
+    return null;
   }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateDto: UpdateAttachmentDto
-  ) {
-    return this.service.update(id, updateDto);
+  @Post()
+  @ApiBearerAuth()
+  async create(
+    @UserRequiredHeader() user: User,
+    @Body() createRequest: AttachmentCreateRequest ): Promise<AttachmentResponse> {
+    return this.service.create(createRequest, user);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: number) {
+  @ApiBearerAuth()
+  async remove(
+    @UserRequiredHeader() user: User,
+    @Param('id') id: number) {
     return this.service.delete(id);
   }
-*/
+
 }

@@ -15,7 +15,7 @@ export class Attachment extends ApiBaseEntity<Attachment> {
   @Column({ name: 'file_name'})
   fileName: string;
 
-  @Column({ name: 'file_contents'})
+  @Column({ name: 'file_contents', select: false}) // By default don't return file contents.
   fileContents: string; 
 
   @ManyToOne(() => Project, { eager: true })
