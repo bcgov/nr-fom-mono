@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BaseReadOnlyController } from '@controllers';
@@ -29,7 +29,7 @@ export class ForestClientController extends BaseReadOnlyController<
 
   @Get(':id')
   @ApiResponse({ status: HttpStatus.OK, type: ForestClientResponse })
-  async findOne(@Param('id') id: number): Promise<ForestClientResponse> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<ForestClientResponse> {
     return super.findOne(id);
   }
 }
