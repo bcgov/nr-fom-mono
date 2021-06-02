@@ -256,7 +256,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     entity.revisionCount +=1;
     entity.updateUser = user.userName;
-    entity.updateTimestamp = new Date();  // dayjs().toDate(); // TODO: confirm this works.
+    entity.updateTimestamp = new Date();  
     entity.workflowStateCode = request.workflowStateCode;
 
     const updateCount = (await this.repository.update(projectId, entity)).affected;

@@ -12,7 +12,6 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { isNumber } from 'lodash';
 import { AttachmentTypeCode, AttachmentTypeEnum } from './attachment-type-code.entity';
 
-// TODO: Need to decide if using binary or base64
 
 // From https://github.com/nestjs/swagger/issues/417#issuecomment-562869578 and https://swagger.io/docs/specification/describing-request-body/file-upload/
 const AttachmentPostBody = (fileName: string = 'file'): MethodDecorator => (
@@ -39,7 +38,7 @@ const AttachmentPostBody = (fileName: string = 'file'): MethodDecorator => (
   })(target, propertyKey, descriptor);
 };
 
-const maxFileSizeBytes = 10000000; // 10 MB
+const maxFileSizeBytes = 10000000; // 10 MB amx attachment size
 
 @ApiTags('attachment')
 @Controller('attachment')
@@ -86,9 +85,6 @@ export class AttachmentController {
     @Res() response) {
 
     const attachmentFileResponse = await this.service.getFileContent(id, user);
-
-    // TODO: Determine if mimetype needs to be set based on input.
-    // response.set('Content-Type', 'text/plan');
     response.attachment(attachmentFileResponse.fileName);
     response.send(attachmentFileResponse.fileContents);
   }
