@@ -21,11 +21,35 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     super(repository, new Attachment(), logger);
   }
 
+  async create(request: AttachmentCreateRequest, user: User): Promise<AttachmentResponse> {
+
+    const fileExtension:string = request.fileName.split('.').pop();
+    const allowedExtensions: string[] = ['txt', 'pdf', 'docx', 'doc', 'jpg', 'png', 'msg']; // TODO: Need to validate the set of extensions.
+    if (!allowedExtensions.includes(fileExtension)) {
+      throw new BadRequestException("Attachment of that extension not permitted.");
+    }
+
+    // Only one public notice can exist per project
+    if (request.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
+
+      const publicNotices:Attachment[] = await this.repository.find({where: { projectId: request.projectId, attachmentTypeCode: AttachmentTypeEnum.PUBLIC_NOTICE } });
+      if (publicNotices.length > 0) {
+        // Need to do a security check before we actually delete the existing public notice. In this case, create permission implies delete permission.
+        if (!this.isCreateAuthorized(request, user)) {
+          throw new ForbiddenException();
+        }
+        await this.repository.delete(publicNotices[0].id);
+
+        // Now that the public notice is deleted, we can proceed with the regular creation.
+      }
+    }
+
+    return super.create(request, user);
+  }
+
   async isCreateAuthorized(dto: AttachmentCreateRequest, user?: User): Promise<boolean> {
     return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
-  // TODO: Need to override create to replace a public notice.
-  // TODO: Need to check for allowed file extensions.
   
   async isUpdateAuthorized(dto: any, entity: Attachment, user?: User):Promise<boolean> {
     return false; // Updates not allowed.
@@ -106,16 +130,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     }
 
     const records:Attachment[] = await query.getMany();
-
-    // findCriteria.applyFindCriteria(query);
-    // query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
-  
-
-    // const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
-    // const records:Attachment[] = await this.repository.find(options);
-
     return records.map(attachment => this.convertEntity(attachment));
-
   }
 
 

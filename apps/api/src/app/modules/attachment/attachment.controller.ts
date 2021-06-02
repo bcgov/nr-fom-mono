@@ -1,16 +1,14 @@
 import { Controller, Get, Post, Delete, Param, HttpStatus, Query, UseInterceptors, UploadedFile, Req, Request, Res, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Express } from 'express';
-import { Multer } from 'multer';
+import { Multer } from 'multer'; // This is needed, don't know why Visual Studio Code thinks it isn't.
 
 import { AttachmentService } from './attachment.service';
-import { Attachment } from './attachment.entity';
 import { AttachmentCreateRequest, AttachmentResponse } from './attachment.dto';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { isNumber } from 'lodash';
-import { AttachmentTypeCode, AttachmentTypeEnum } from './attachment-type-code.entity';
+import { AttachmentTypeEnum } from './attachment-type-code.entity';
 
 
 // From https://github.com/nestjs/swagger/issues/417#issuecomment-562869578 and https://swagger.io/docs/specification/describing-request-body/file-upload/
