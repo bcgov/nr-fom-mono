@@ -28,8 +28,8 @@ export class ProjectController {
   @ApiQuery({ name: 'openedOnOrAfter', required: false})
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectPublicSummaryResponse] })
   async findPublicSummary(
-    @Query('includeCommentOpen', ParseBoolPipe) includeCommentOpen: boolean = true,
-    @Query('includePostCommentOpen', ParseBoolPipe) includePostCommentOpen: boolean = true,
+    @Query('includeCommentOpen') includeCommentOpen: string = 'true',
+    @Query('includePostCommentOpen') includePostCommentOpen: string = 'true',
     @Query('forestClientName') forestClientName?: string,
     @Query('openedOnOrAfter') openedOnOrAfter?: string,
     ): Promise<ProjectPublicSummaryResponse[]> {
@@ -40,15 +40,15 @@ export class ProjectController {
         findCriteria.likeForestClientName = forestClientName;
       }
 
-      if (includeCommentOpen) {
+      if (includeCommentOpen == 'true') {
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_OPEN);
       } 
-      if (includePostCommentOpen) {
+      if (includePostCommentOpen == 'true') {
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_CLOSED);
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.FINALIZED);
         // Deliberately exclude EXPIRED
       }
-      if (!includeCommentOpen && !includePostCommentOpen) {
+      if (includeCommentOpen != 'true' && includePostCommentOpen != 'true') {
         throw new BadRequestException("Either includeCommentOpen or includePostCommentOpen must be true");
       }
 
@@ -88,8 +88,8 @@ export class ProjectController {
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectResponse] })
   async find(
     @UserRequiredHeader() user: User,
-    @Query('fspId', ParseIntPipe) fspId?: number,
-    @Query('districtId', ParseIntPipe) districtId?: number,
+    @Query('fspId') fspId?: string,
+    @Query('districtId') districtId?: string,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectResponse[]> {
@@ -97,10 +97,10 @@ export class ProjectController {
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
       if (fspId) {
-        findCriteria.fspId = fspId;
+        findCriteria.fspId = await new ParseIntPipe().transform(fspId, null);
       }
       if (districtId) {
-        findCriteria.districtId = districtId;
+        findCriteria.districtId = await new ParseIntPipe().transform(districtId, null);
       }
       if (workflowStateCode) {
         findCriteria.includeWorkflowStateCodes.push(workflowStateCode);
