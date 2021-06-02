@@ -9,7 +9,7 @@ export class AttachmentCreateRequest {
 
   fileName: string; 
 
-  fileContents: Buffer; // This is actually a bytearray
+  fileContents: Buffer; 
 
   attachmentTypeCode: string;
 }
@@ -33,6 +33,6 @@ export class AttachmentResponse {
 export class AttachmentFileResponse extends AttachmentResponse {
 
   @ApiProperty()
-  fileContents: string; 
+  fileContents: Buffer; 
 
 }

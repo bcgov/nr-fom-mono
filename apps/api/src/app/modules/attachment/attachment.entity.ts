@@ -15,10 +15,8 @@ export class Attachment extends ApiBaseEntity<Attachment> {
   @Column({ name: 'file_name'})
   fileName: string;
 
-  // TODO: Add mime-type? See https://stackoverflow.com/questions/59957394/typeorm-uploading-and-serve-downloading-files
-
   @Column({ name: 'file_contents', select: false}) // By default don't return file contents.
-  fileContents: string;  // TODO: Switch to buffer? Causes to hang at startup.
+  fileContents: string;  
 
   @ManyToOne(() => Project, { eager: true })
   @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })

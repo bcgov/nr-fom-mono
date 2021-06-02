@@ -1,17 +1,18 @@
-import { Controller, Get, Post, Delete, Body, Param, HttpStatus, Query, UseInterceptors, UploadedFile, Res, Req } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Delete, Param, HttpStatus, Query, UseInterceptors, UploadedFile, Req, Request, Res } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Express } from 'express';
 import { Multer } from 'multer';
 
 import { BaseController } from '@controllers';
 import { AttachmentService } from './attachment.service';
 import { Attachment } from './attachment.entity';
-import { AttachmentCreateRequest, AttachmentFileResponse, AttachmentResponse } from './attachment.dto';
+import { AttachmentCreateRequest, AttachmentResponse } from './attachment.dto';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 // TODO: Need to decide if using binary or base64
+
 // From https://github.com/nestjs/swagger/issues/417#issuecomment-562869578 and https://swagger.io/docs/specification/describing-request-body/file-upload/
 const AttachmentPostBody = (fileName: string = 'file'): MethodDecorator => (
   target: any,
@@ -37,6 +38,8 @@ const AttachmentPostBody = (fileName: string = 'file'): MethodDecorator => (
   })(target, propertyKey, descriptor);
 };
 
+const maxFileSizeBytes = 10000000; // 10 MB
+
 @ApiTags('attachment')
 @Controller('attachment')
 export class AttachmentController extends BaseController<Attachment> {
@@ -49,7 +52,7 @@ export class AttachmentController extends BaseController<Attachment> {
   // The normal @Body annotation didn't work in combination because the payload is form data, not a JSON document.
   @Post()
   @ApiBearerAuth()
-  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: 100, files: 1} }))  // TODO: Adjust file size. On failure returns HTTP 413 - payload too large.
+  @UseInterceptors(FileInterceptor('file', { limits: { fileSize: maxFileSizeBytes, files: 1} }))  // On failure returns HTTP 413 - payload too large.
   @ApiConsumes('multipart/form-data')
   @AttachmentPostBody() // This provides the OpenAPI documentation.
   async create(
@@ -69,6 +72,22 @@ export class AttachmentController extends BaseController<Attachment> {
     return this.service.create(createRequest, user);
   }
 
+  @Get('/file/:id')
+  @ApiBearerAuth()
+  @ApiOkResponse() 
+  async getFileContents(
+    @UserHeader() user: User,
+    @Param('id') id: number,
+    @Res() response) {
+
+    const attachmentFileResponse = await this.service.getFileContent(id, user);
+
+    // TODO: Determine if mimetype needs to be set based on input.
+    // response.set('Content-Type', 'text/plan');
+    response.attachment(attachmentFileResponse.fileName);
+    response.send(attachmentFileResponse.fileContents);
+  }
+
   // Accessible by public (if attachment type not interaction) and by authenticated users.
   @Get(':id')
   @ApiBearerAuth()
@@ -77,26 +96,6 @@ export class AttachmentController extends BaseController<Attachment> {
     @UserHeader() user: User,
     @Param('id') id: number) {
     return this.service.findOne(id, user);
-  }
-
-  @Get('/file/:id')
-  @ApiBearerAuth()
-  @ApiResponse({ status: HttpStatus.OK, type: AttachmentFileResponse }) 
-  async getFileContents(
-    @UserHeader() user: User,
-    @Param('id') id: number): Promise<AttachmentFileResponse> {
-    const attachmentFileResponse = await this.service.getFileContent(id, user);
-
-    // TODO
-    // var fileData = Buffer.from(result_find.data, 'base64');
-    // res.writeHead(200, {
-    // 'Content-Type': result_find.mimeType,
-    // 'Content-Disposition': 'attachment; filename=' + result_find.name,
-    // 'Content-Length': fileData.length
-    // });
-    // res.write(fileData);
-
-    return attachmentFileResponse;
   }
 
   @Get()

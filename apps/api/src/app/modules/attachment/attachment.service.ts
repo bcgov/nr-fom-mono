@@ -25,7 +25,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
   // TODO: Need to override create to replace a public notice.
-  // TOOD: Need to check for maximum file name length and maximum file contents size.
+  // TODO: Need to check for allowed file extensions.
   
   async isUpdateAuthorized(dto: any, entity: Attachment, user?: User):Promise<boolean> {
     return false; // Updates not allowed.
@@ -42,7 +42,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
       return true;
     }
 
-    if (user.isMinistry) {
+    if (user && user.isMinistry) {
       return true;
     }
 
@@ -69,16 +69,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     // Works, but fileContents being treated as a Buffer...
     const entity:Attachment = await this.repository.findOne(id, this.addCommonRelationsToFindOptions(
       { select: [ 'id', 'projectId', 'fileContents', 'fileName', 'attachmentType' ] }));
-      console.log("entity " + JSON.stringify(entity));
 
-      // this.getManager().query(`
-    // const query = this.repository.createQueryBuilder("a")
-    //   .select("a.attachment_id, a.project_id, a.file_contents, a.file_name")
-    //   .leftJoinAndSelect("a.attachmentType", "attachmentType")
-    //   .andWhere("a.attachment_id = :id", {id: `${id}`})
-    // console.log(query.getSql());
-    // const entities:Attachment[] = await query.getMany();
-    // const entity = entities[0];
     if (!entity) {
       throw new BadRequestException("No entity for the specified id.");
     }
@@ -88,11 +79,9 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     }
 
     const attachmentResponse = this.convertEntity(entity);
-
     const attachmentFileResponse = { ...attachmentResponse} as AttachmentFileResponse;
-    // TODO: Could convert fileContents to int array...
-    attachmentFileResponse.fileContents = entity.fileContents;
-
+    attachmentFileResponse.fileContents = Buffer.from(entity.fileContents);
+    
     return attachmentFileResponse;
   }
 
