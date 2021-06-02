@@ -1,14 +1,38 @@
-import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsDefined, IsEnum } from 'class-validator';
 
-export class AttachmentDto {
-  @ApiProperty()
-  fileName: string;
-  @ApiProperty()
-  fileContents: string; // This is actually a bytearray
-  @ApiProperty()
+import { AttachmentTypeCode, AttachmentTypeEnum } from './attachment-type-code.entity';
+
+// See AttachmentController.create for why these are not annotated with @ApiProperty.
+export class AttachmentCreateRequest {
   projectId: number;
-  @ApiProperty()
+
+  fileName: string; 
+
+  fileContents: Buffer; 
+
   attachmentTypeCode: string;
 }
 
-export class UpdateAttachmentDto extends AttachmentDto {}
+export class AttachmentResponse {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  projectId: number;
+
+  @ApiProperty()
+  fileName: string; 
+
+  @ApiProperty()
+  attachmentType: AttachmentTypeCode;
+
+  // Don't need revisionCount because updates are not allowed.
+}
+
+export class AttachmentFileResponse extends AttachmentResponse {
+
+  @ApiProperty()
+  fileContents: Buffer; 
+
+}

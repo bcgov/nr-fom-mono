@@ -81,7 +81,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return false;
     }
     // Workflow states that forest client user is allowed to edit in. 
-    return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.PUBLISHED, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
+    return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
   }
 
   async isDeleteAuthorized(entity: Project, user?: User): Promise<boolean> {
@@ -256,7 +256,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     entity.revisionCount +=1;
     entity.updateUser = user.userName;
-    entity.updateTimestamp = new Date();  // dayjs().toDate(); // TODO: confirm this works.
+    entity.updateTimestamp = new Date();  
     entity.workflowStateCode = request.workflowStateCode;
 
     const updateCount = (await this.repository.update(projectId, entity)).affected;

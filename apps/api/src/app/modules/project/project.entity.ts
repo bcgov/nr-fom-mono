@@ -21,11 +21,11 @@ export class Project extends ApiBaseEntity<Project> {
   @Column()
   description: string;
 
-  @Column({ name: 'commenting_open_date'})
-  commentingOpenDate: Date; 
+  @Column({ name: 'commenting_open_date', type: 'date'})
+  commentingOpenDate: string; 
 
-  @Column({ name: 'commenting_closed_date'})
-  commentingClosedDate: Date; 
+  @Column({ name: 'commenting_closed_date', type: 'date'})
+  commentingClosedDate: string; 
 
   @Column({ name: 'geometry_latlong', type: 'geometry', spatialFeatureType: 'Point', srid: 4326 })
   geojson: FomPoint;

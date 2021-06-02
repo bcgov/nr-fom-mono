@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe, ParseBoolPipe } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import * as dayjs from 'dayjs';
-import { BaseController } from '@controllers';
+
 import { ProjectService, ProjectFindCriteria } from './project.service';
 import { Project } from './project.entity';
 import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
@@ -14,11 +14,10 @@ import { User } from 'apps/api/src/core/security/user';
 
 @ApiTags('project')
 @Controller('project')
-export class ProjectController extends BaseController<Project> {
+export class ProjectController {
   constructor(
-    protected readonly service: ProjectService,
-    private projectSpatialDetailService: ProjectSpatialDetailService) {
-    super(service);
+    private readonly service: ProjectService,
+    private readonly projectSpatialDetailService: ProjectSpatialDetailService) {
   }
 
   // Anonymous access allowed
@@ -29,8 +28,8 @@ export class ProjectController extends BaseController<Project> {
   @ApiQuery({ name: 'openedOnOrAfter', required: false})
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectPublicSummaryResponse] })
   async findPublicSummary(
-    @Query('includeCommentOpen') includeCommentOpen: string = 'true',
-    @Query('includePostCommentOpen') includePostCommentOpen: string = 'true',
+    @Query('includeCommentOpen', ParseBoolPipe) includeCommentOpen: boolean = true,
+    @Query('includePostCommentOpen', ParseBoolPipe) includePostCommentOpen: boolean = true,
     @Query('forestClientName') forestClientName?: string,
     @Query('openedOnOrAfter') openedOnOrAfter?: string,
     ): Promise<ProjectPublicSummaryResponse[]> {
@@ -41,15 +40,15 @@ export class ProjectController extends BaseController<Project> {
         findCriteria.likeForestClientName = forestClientName;
       }
 
-      if (includeCommentOpen == 'true') {
+      if (includeCommentOpen) {
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_OPEN);
       } 
-      if (includePostCommentOpen == 'true') {
+      if (includePostCommentOpen) {
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_CLOSED);
         findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.FINALIZED);
         // Deliberately exclude EXPIRED
       }
-      if (includeCommentOpen != 'true' && includePostCommentOpen != 'true') {
+      if (!includeCommentOpen && !includePostCommentOpen) {
         throw new BadRequestException("Either includeCommentOpen or includePostCommentOpen must be true");
       }
 
@@ -64,7 +63,7 @@ export class ProjectController extends BaseController<Project> {
   // Anonymous access allowed
   @Get('/spatialDetails/:id') 
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectSpatialDetail] })
-  async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
+  async getSpatialDetails(@Param('id', ParseIntPipe) id: number): Promise<ProjectSpatialDetail[]> {
     return this.projectSpatialDetailService.findByProjectId(id);
   }
 
@@ -74,7 +73,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
   async findOne(
     @UserHeader() user: User,
-    @Param('id') id: number): Promise<ProjectResponse> {
+    @Param('id', ParseIntPipe) id: number): Promise<ProjectResponse> {
     return this.service.findOne(id, user, {
       relations: ['district', 'forestClient', 'workflowState'],
     });
@@ -89,8 +88,8 @@ export class ProjectController extends BaseController<Project> {
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectResponse] })
   async find(
     @UserRequiredHeader() user: User,
-    @Query('fspId') fspId?: number,
-    @Query('districtId') districtId?: number,
+    @Query('fspId', ParseIntPipe) fspId?: number,
+    @Query('districtId', ParseIntPipe) districtId?: number,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectResponse[]> {
@@ -116,7 +115,6 @@ export class ProjectController extends BaseController<Project> {
       if (!user.isAuthorizedForAdminSite()) {
         throw new ForbiddenException();
       }
-
       return this.service.find(findCriteria);
   }
 
@@ -136,7 +134,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiBody({ type: ProjectUpdateRequest })
   async update(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectUpdateRequest
   ): Promise<ProjectResponse> {
     return this.service.update(id, request, user);
@@ -148,7 +146,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiBody({ type: ProjectWorkflowStateChangeRequest })
   async stateChange(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectWorkflowStateChangeRequest
   ): Promise<ProjectResponse> {
     return this.service.workflowStateChange(id, request, user);
@@ -159,7 +157,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiResponse({ status: HttpStatus.OK })
   async remove(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number) {
+    @Param('id', ParseIntPipe) id: number) {
     this.service.delete(id, user);
   }
 }

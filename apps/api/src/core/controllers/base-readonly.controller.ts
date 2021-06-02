@@ -1,4 +1,4 @@
-import { Controller, Param } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly.service';
 
@@ -13,7 +13,7 @@ export class BaseReadOnlyController<E, C> {
     return this.service.findAll<C>();
   }
 
-  findOne(@Param('id') id: number): Promise<C> {
+  findOne(id: number): Promise<C> {
     return this.service.findOne<C>(id);
   }
 }

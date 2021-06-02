@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, Param, Query, HttpStatus, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, Param, Query, HttpStatus, UsePipes, ValidationPipe, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { PublicCommentService } from './public-comment.service';
@@ -31,7 +31,7 @@ export class PublicCommentController {
   @ApiResponse({ status: HttpStatus.OK, type: PublicCommentAdminResponse })
   async update(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: PublicCommentAdminUpdateRequest
   ): Promise<PublicCommentAdminResponse> {
     return this.service.update(id, updateDto, user);
@@ -42,7 +42,7 @@ export class PublicCommentController {
   @ApiResponse({ status: HttpStatus.OK, type: [PublicCommentAdminResponse] })
   async find(
     @UserRequiredHeader() user: User,
-    @Query('projectId') projectId: number): Promise<PublicCommentAdminResponse[]> {
+    @Query('projectId', ParseIntPipe) projectId: number): Promise<PublicCommentAdminResponse[]> {
       return this.service.findByProjectId(projectId, user);
   }
 
@@ -51,7 +51,7 @@ export class PublicCommentController {
   @ApiResponse({ status: HttpStatus.OK, type: PublicCommentAdminResponse })
   async findOne(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number): Promise<PublicCommentAdminResponse> {
+    @Param('id', ParseIntPipe) id: number): Promise<PublicCommentAdminResponse> {
     return this.service.findOne(id, user);
   }
 
