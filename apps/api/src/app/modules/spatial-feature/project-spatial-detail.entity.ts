@@ -40,10 +40,6 @@ export class ProjectSpatialDetail {
   @ApiProperty()
   plannedLengthKm: number;
 
-  @ViewColumn({name: 'submission_type_code'})
-  @ApiProperty()
-  submissionTypeCode: string;
-
   @ManyToOne(() => SubmissionTypeCode)
   @JoinColumn({ name: 'submission_type_code', referencedColumnName: 'code' })
   @ApiProperty()

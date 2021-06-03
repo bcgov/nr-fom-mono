@@ -1,21 +1,30 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe, ParseBoolPipe } from '@nestjs/common';
+import { Controller, Get, Param, Query, HttpStatus, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import * as dayjs from 'dayjs';
 
-import { ProjectService, ProjectFindCriteria } from './project.service';
-import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
-import { WorkflowStateEnum } from './workflow-state-code.entity';
-import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { ProjectSpatialDetailService } from '../spatial-feature/project-spatial-detail.service'
+import { ProjectSpatialDetail } from '../spatial-feature/project-spatial-detail.entity';
 
-
-@ApiTags('project')
-@Controller('project')
-export class ProjectController {
+@ApiTags('spatial-feature')
+@Controller('spatial-feature')
+export class SpatialFeatureController {
   constructor(
-    private readonly service: ProjectService) {
+    private readonly projectSpatialDetailService: ProjectSpatialDetailService) {
   }
 
+  // Anonymous access allowed
+  @Get('/spatialDetails/:id') 
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectSpatialDetail] })
+  async getSpatialDetails(@Param('id', ParseIntPipe) id: number): Promise<ProjectSpatialDetail[]> {
+    return this.projectSpatialDetailService.findByProjectId(id);
+  }
+
+  @Get('/bcgw/v1') 
+  async getBcgwExtract(): Promise<any> {
+    return null;
+  }
+
+
+/*
   // Anonymous access allowed
   @Get('/publicSummary')
   @ApiQuery({ name: 'includeCommentOpen', required: false})
@@ -55,14 +64,6 @@ export class ProjectController {
 
       return this.service.findPublicSummaries(findCriteria);
   }
-
-  // TODO: Clean up.
-  // Anonymous access allowed
-  // @Get('/spatialDetails/:id') 
-  // @ApiResponse({ status: HttpStatus.OK, type: [ProjectSpatialDetail] })
-  // async getSpatialDetails(@Param('id', ParseIntPipe) id: number): Promise<ProjectSpatialDetail[]> {
-  //   return this.projectSpatialDetailService.findByProjectId(id);
-  // }
 
   // Anonymous access allowed
   @Get(':id')
@@ -157,4 +158,5 @@ export class ProjectController {
     @Param('id', ParseIntPipe) id: number) {
     this.service.delete(id, user);
   }
+*/
 }
