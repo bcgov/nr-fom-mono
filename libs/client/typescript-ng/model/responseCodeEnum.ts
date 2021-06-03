@@ -9,12 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ResponseCodeEnum } from './responseCodeEnum';
 
 
-export interface PublicCommentAdminUpdateRequest { 
-    revisionCount: number;
-    responseCode: ResponseCodeEnum;
-    responseDetails: string;
-}
+export type ResponseCodeEnum = 'IRRELEVANT' | 'CONSIDERED' | 'ADDRESSED';
+
+export const ResponseCodeEnum = {
+    Irrelevant: 'IRRELEVANT' as ResponseCodeEnum,
+    Considered: 'CONSIDERED' as ResponseCodeEnum,
+    Addressed: 'ADDRESSED' as ResponseCodeEnum
+};
 

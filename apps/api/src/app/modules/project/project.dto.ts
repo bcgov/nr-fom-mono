@@ -55,7 +55,7 @@ export class ProjectWorkflowStateChangeRequest {
   @IsNumber()
   revisionCount: number;
 
-  @ApiProperty()
+  @ApiProperty({enum: WorkflowStateEnum, enumName: 'WorkflowStateEnum'})
   @IsEnum(WorkflowStateEnum)
   workflowStateCode: string;
 }

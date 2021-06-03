@@ -53,7 +53,7 @@ export class PublicCommentAdminUpdateRequest {
   @IsNumber()
   revisionCount: number;
 
-  @ApiProperty()
+  @ApiProperty({ enum: ResponseCodeEnum, enumName: 'ResponseCodeEnum'})
   @IsEnum(ResponseCodeEnum)
   responseCode: string;
 
