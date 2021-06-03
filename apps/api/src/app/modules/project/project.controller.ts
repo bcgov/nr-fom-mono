@@ -56,14 +56,6 @@ export class ProjectController {
       return this.service.findPublicSummaries(findCriteria);
   }
 
-  // TODO: Clean up.
-  // Anonymous access allowed
-  // @Get('/spatialDetails/:id') 
-  // @ApiResponse({ status: HttpStatus.OK, type: [ProjectSpatialDetail] })
-  // async getSpatialDetails(@Param('id', ParseIntPipe) id: number): Promise<ProjectSpatialDetail[]> {
-  //   return this.projectSpatialDetailService.findByProjectId(id);
-  // }
-
   // Anonymous access allowed
   @Get(':id')
   @ApiBearerAuth()

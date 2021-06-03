@@ -1,7 +1,6 @@
-import { Controller, Get, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Query, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
 
-import { ProjectSpatialDetail } from '../spatial-feature/project-spatial-detail.entity';
 import { SpatialFeatureBcgwResponse, SpatialFeaturePublicResponse } from './spatial-feature.dto';
 import { SpatialFeatureService } from './spatial-feature.service';
 
@@ -20,9 +19,16 @@ export class SpatialFeatureController {
     return this.spatialFeatureService.findByProjectId(projectId);
   }
 
-  @Get('/bcgw-extract/v1') 
+  @Get('/bcgw-extract') 
   @ApiOkResponse({ type: [SpatialFeatureBcgwResponse] })
-  async getBcgwExtract(): Promise<any> {
+  async getBcgwExtract(
+    @Query('version') version: string): Promise<any> {
+
+    // Version acts as an informal API key (to prevent casual exploration of an expensive operation) plus provides a versioning capability.
+    if (version != '1.0-final') {
+      throw new BadRequestException('Invalid version');
+    }
+    
     return this.spatialFeatureService.getBcgwExtract();
   }
 

@@ -1,64 +1,66 @@
-import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { SubmissionTypeCode } from "../submission/submission-type-code.entity";
 
 export class SpatialFeaturePublicResponse {
 
-    @ApiResponseProperty({ enum: ['cut_block', 'road_section', 'retention_area']})
+    @ApiProperty({ enum: ['cut_block', 'road_section', 'retention_area']})
     featureType: string;
 
-    @ApiResponseProperty()
+    @ApiProperty()
     featureId: number;
 
-    @ApiResponseProperty()
+    @ApiProperty()
     name: string;
 
-    @ApiResponseProperty({ format: 'GeoJSON Geometry' })
+    @ApiProperty({ description: 'Format: GeoJSON Geometry object' })
     geometry: object;
 
-    @ApiResponseProperty({ format: 'YYYY-MM-DD'})
+    @ApiProperty({ description: 'Format: YYYY-MM-DD'})
     plannedDevelopmentDate: string;
   
-    @ApiResponseProperty()
+    @ApiProperty()
     plannedAreaHa: number;
   
-    @ApiResponseProperty()
+    @ApiProperty()
     plannedLengthKm: number;
 
-    @ApiResponseProperty()
+    @ApiProperty()
     submissionType: SubmissionTypeCode;    
  }
 
 // Keep this BCGW API completely separated from the API used by FOM Public.
+// More heavily documented to support use by third party.
 export class SpatialFeatureBcgwResponse {
 
-    @ApiResponseProperty()
+    @ApiProperty()
     fomId: number;
   
-    @ApiResponseProperty({ enum: ['cut_block', 'road_section', 'retention_area']})
+    @ApiProperty({ enum: ['cut_block', 'road_section', 'retention_area']})
     featureType: string;
 
-    @ApiResponseProperty()
+    @ApiProperty()
     featureId: number;
 
-    @ApiResponseProperty({ format: 'max length expected to be < 100'})
+    @ApiProperty({ description: 'Maximum length is expected to be < 100'})
     fspHolderName: string;
 
-    @ApiResponseProperty({ enum: ['Proposed', 'Final']})
+    @ApiProperty({ enum: ['Proposed', 'Final']})
     lifecycleStatus: string;
   
-    @ApiResponseProperty({ format: 'YYYY-MM-DD'})
+    @ApiProperty({ description: 'Format: YYYY-MM-DD', example: '2021-03-31'})
     createDate: string;
 
-    @ApiResponseProperty({ format: 'GeoJSON Geometry', example: 'Cut Block / Retention Area Example: {"type":"Polygon","coordinates":[[[-121.652853481,51.67951884],[-121.499131212,51.763467947],[-121.363845891,51.668139701],[-121.373301212,51.578595415],[-121.661722435,51.589952346],[-121.652853481,51.67951884]]]} Road Section Example: {"type":"LineString","coordinates":[[-124.667049923,52.651503193],[-124.739768473,52.697146151],[-124.816364174,52.60827305]]}'})
+    @ApiProperty({ description: 'Format: GeoJSON Geometry as per RFC 7946 https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.', 
+        example: 'Cut Block / Retention Area Example: {"type":"Polygon","coordinates":[[[-121.652853481,51.67951884],[-121.499131212,51.763467947],[-121.363845891,51.668139701],[-121.373301212,51.578595415],[-121.661722435,51.589952346],[-121.652853481,51.67951884]]]} Road Section Example: {"type":"LineString","coordinates":[[-124.667049923,52.651503193],[-124.739768473,52.697146151],[-124.816364174,52.60827305]]}'})
     geometry: object;
 
-    @ApiResponseProperty({ format: 'YYYY-MM-DD'})
+    @ApiProperty({ description: 'Format: YYYY-MM-DD', example: '2021-03-31'})
     plannedDevelopmentDate: string;
   
-    @ApiResponseProperty()
+    @ApiProperty({ example: '1.2345'})
     plannedAreaHa: number;
   
-    @ApiResponseProperty()
+    @ApiProperty({ example: '1.2345'})
     plannedLengthKm: number;
   
 }

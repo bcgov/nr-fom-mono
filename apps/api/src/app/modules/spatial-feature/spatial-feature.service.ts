@@ -40,11 +40,8 @@ async findByProjectId(projectId: number): Promise<SpatialFeaturePublicResponse[]
     .leftJoinAndSelect("f.submissionType", "submissionType")
     .andWhere("f.workflow_state_code IN (:...workflowStateCodes)", 
       { workflowStateCodes: [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED, WorkflowStateEnum.FINALIZED] })
-    // TODO: Reconsider this sorting...
-    .addOrderBy('f.project_id', 'DESC') // Newest first
-    .addOrderBy('f.feature_type', 'ASC') 
-    .addOrderBy('f.feature_id', 'DESC') // Newest first
     ;
+    // Don't do any sorting to minimize performance impact. BCGW's processing won't care about sort order.
 
     const result: SpatialFeature[] = await query.getMany();
 
