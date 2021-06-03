@@ -9,12 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ResponseCodeEnum } from './responseCodeEnum';
+import { AttachmentTypeEnum } from './attachmentTypeEnum';
 
 
-export interface PublicCommentAdminUpdateRequest { 
-    revisionCount: number;
-    responseCode: ResponseCodeEnum;
-    responseDetails: string;
+export interface AttachmentResponse { 
+    id: number;
+    projectId: number;
+    fileName: string;
+    attachmentType: AttachmentTypeEnum;
 }
 

@@ -9,12 +9,11 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { ResponseCodeEnum } from './responseCodeEnum';
+import { WorkflowStateEnum } from './workflowStateEnum';
 
 
-export interface PublicCommentAdminUpdateRequest { 
+export interface ProjectWorkflowStateChangeRequest { 
     revisionCount: number;
-    responseCode: ResponseCodeEnum;
-    responseDetails: string;
+    workflowStateCode: WorkflowStateEnum;
 }
 
