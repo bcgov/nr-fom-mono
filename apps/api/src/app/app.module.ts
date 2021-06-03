@@ -9,6 +9,8 @@ import { ForestClientModule } from './modules/forest-client/forest-client.module
 import { ProjectModule } from './modules/project/project.module';
 import { PublicCommentModule } from './modules/public-comment/public-comment.module';
 import { SubmissionModule } from './modules/submission/submission.module';
+import { SpatialFeatureModule } from './modules/spatial-feature/spatial-feature.module';
+
 // Other Modules
 import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './modules/app-config/app-config.module';
@@ -55,6 +57,7 @@ function getLogLevel():string {
     ProjectModule,
     PublicCommentModule,
     SubmissionModule,
+    SpatialFeatureModule,
   ],
 })
 export class AppModule {

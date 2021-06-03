@@ -3,10 +3,7 @@ import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/
 import * as dayjs from 'dayjs';
 
 import { ProjectService, ProjectFindCriteria } from './project.service';
-import { Project } from './project.entity';
 import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
-import { ProjectSpatialDetailService } from './project-spatial-detail.service'
-import { ProjectSpatialDetail } from './project-spatial-detail.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
@@ -16,8 +13,7 @@ import { User } from 'apps/api/src/core/security/user';
 @Controller('project')
 export class ProjectController {
   constructor(
-    private readonly service: ProjectService,
-    private readonly projectSpatialDetailService: ProjectSpatialDetailService) {
+    private readonly service: ProjectService) {
   }
 
   // Anonymous access allowed
@@ -58,13 +54,6 @@ export class ProjectController {
       } 
 
       return this.service.findPublicSummaries(findCriteria);
-  }
-
-  // Anonymous access allowed
-  @Get('/spatialDetails/:id') 
-  @ApiResponse({ status: HttpStatus.OK, type: [ProjectSpatialDetail] })
-  async getSpatialDetails(@Param('id', ParseIntPipe) id: number): Promise<ProjectSpatialDetail[]> {
-    return this.projectSpatialDetailService.findByProjectId(id);
   }
 
   // Anonymous access allowed

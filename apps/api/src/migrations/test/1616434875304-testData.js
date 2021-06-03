@@ -75,6 +75,7 @@ module.exports = class testdata1616434875304 {
 
 		-- Update geometric-derived fields to simulate what the application would do
 		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id < 1000;
+		update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id < 1000;
 		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id < 1000;
 
 		with project_geometries as (

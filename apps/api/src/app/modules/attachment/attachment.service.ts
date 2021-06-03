@@ -23,8 +23,15 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
   async create(request: AttachmentCreateRequest, user: User): Promise<AttachmentResponse> {
 
+    const allowedExtensionsForPublicNotice: string[] = ['jpg', 'jpeg', 'png', 'tif', 'pdf'];
+    const allowedExtensionsForOthers: string[] = ['doc', 'docx', 'pdf', 'jpg', 'jpeg', 'xls', 'xlsx', 'csv', 'msg', 'png', 'txt', 'rtf', 'tif'];
+
+    let allowedExtensions: string[] = allowedExtensionsForOthers;
+    if (request.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
+      allowedExtensions = allowedExtensionsForPublicNotice;
+    }
+
     const fileExtension:string = request.fileName.split('.').pop();
-    const allowedExtensions: string[] = ['txt', 'pdf', 'docx', 'doc', 'jpg', 'png', 'msg']; // TODO: Need to validate the set of extensions.
     if (!allowedExtensions.includes(fileExtension)) {
       throw new BadRequestException("Attachment of that extension not permitted.");
     }
