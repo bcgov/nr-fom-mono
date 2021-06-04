@@ -41,7 +41,7 @@ export class SpatialFeatureBcgwResponse {
     @ApiProperty()
     featureId: number;
 
-    @ApiProperty({ description: 'Maximum length is expected to be < 100'})
+    @ApiProperty({ description: 'Maximum length is expected to be <= 100'})
     fspHolderName: string;
 
     @ApiProperty({ enum: ['Proposed', 'Final']})
