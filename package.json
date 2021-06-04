@@ -22,6 +22,7 @@
     "test-unit": "set LOG_LEVEL=warn&&nx run api:test --testFile='/((?!e2e).)*$'",
     "test-unit-watch": "set LOG_LEVEL=warn&&nx run api:test --testFile='/((?!e2e).)*$' -- --watch=true",
     "test-e2e": "set LOG_LEVEL=warn&&nx run api:test --testFile='e2e.spec.ts$'",
+    "perf-test:gen-data": "node apps/api/src/perftest/generate-data.js",
     "lint": "nx workspace-lint && nx lint",
     "affected:apps": "nx affected:apps",
     "affected:libs": "nx affected:libs",
