@@ -10,6 +10,6 @@ On execution, the migration config (in ormconfig-migration-{main|test}.ts loads 
 
 ### To create a new migration
 
-- npm run typeorm migration:create -- -f ./apps/api/src/migrations/ormconfig-migration-{test|main}.ts -n {name}
-
+- npm run typeorm migration:create -- -o -f ./apps/api/src/migrations/ormconfig-migration-{test|main}.ts -n {name}
+(Need to ensure a .js javascript migration is created, not a .ts typescript, to run migrations at startup).
 
