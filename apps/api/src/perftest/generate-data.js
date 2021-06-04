@@ -24,16 +24,18 @@ DELETE FROM app_fom.project where project_id >= 1000;
     `);
 }
 
-function generateProjectInserts(index, point) {
+function generateProjectInserts(index, isCommentingOpen, point) {
     id = 1000+index;
     cutblockId=id+index*4;
     x = point.x;
     y = point.y;
+    state = isCommentingOpen ? 'COMMENT_OPEN' : 'COMMENT_CLOSED';
+
     console.log(`
 INSERT INTO app_fom.project(
 project_id, name, description, fsp_id, district_id, forest_client_number, workflow_state_code,
 commenting_open_date, commenting_closed_date, create_user ) VALUES
-(${id}, 'Fake name ${id}', 'Description ${id}, location ${x}, ${y}. ', 11, null, 1201, 'COMMENT_CLOSED', '2020-01-01', '2021-01-31', 'testdata');
+(${id}, 'Fake name ${id}', 'Description ${id}, location ${x}, ${y}. ', 11, null, 1201, '${state}', '2020-01-01', '2021-01-31', 'testdata');
 INSERT INTO app_fom.submission(submission_id, project_id, submission_type_code, create_user) values
 (${id}, ${id}, 'PROPOSED', 'testdata');
 INSERT INTO app_fom.cut_block (cut_block_id, submission_id, name, planned_development_date, geometry, create_user) VALUES
@@ -71,7 +73,8 @@ function generateAllProjectInserts() {
         for (row = 0; row < numRows; row++) {
             x = topLeft.x + (row*startXDelta) + xDelta * col + (Math.random()*2-1)*xDelta;            
             y = topLeft.y + yDelta * row + (Math.random()*2-1)*yDelta;
-            generateProjectInserts(projectIndex, { x: x, y: y})
+            commentingOpen = (projectIndex % (12*numYears) == 0);
+            generateProjectInserts(projectIndex, commentingOpen, { x: x, y: y})
             projectIndex++;
         }
     }
