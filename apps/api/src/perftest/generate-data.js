@@ -51,9 +51,9 @@ INSERT INTO app_fom.retention_area(retention_area_id, submission_id, geometry, c
 
 function generateAllProjectInserts() {
     // Generation range for locations:    
-    const topLeft = {x: 553476, y:1593074 };
+    const topLeft = {x: 503476, y:1593074 };
     const topRight = {x: 1125486, y:1592654 };
-    const botLeft = { x: 1207859, y:558042 };
+    const botLeft = { x: 1007859, y:508042 };
     // const botRight = { x:1695770, y:635396 };
 
     numYears = 3;
@@ -69,12 +69,22 @@ function generateAllProjectInserts() {
     projectIndex = 1;
     for (col = 0; col < projectsPerRow; col++) {
         for (row = 0; row < numRows; row++) {
-            x = topLeft.x + (row*startXDelta) + xDelta * col;
-            y = topLeft.y + yDelta * row;
+            x = topLeft.x + (row*startXDelta) + xDelta * col + (Math.random()*2-1)*xDelta;            
+            y = topLeft.y + yDelta * row + (Math.random()*2-1)*yDelta;
             generateProjectInserts(projectIndex, { x: x, y: y})
             projectIndex++;
         }
     }
+}
+
+function generateSequenceUpdates() {
+    console.log(`
+alter sequence app_fom.project_project_id_seq restart with 100000;
+alter sequence app_fom.submission_submission_id_seq restart with 100000;
+alter sequence app_fom.cut_block_cut_block_id_seq restart with 100000;
+alter sequence app_fom.retention_area_retention_area_id_seq restart with 100000;
+alter sequence app_fom.road_section_road_section_id_seq restart with 100000;
+        `);
 }
 
 function generateGeoSpatialUpdates() {
@@ -103,4 +113,5 @@ where project_id >= 1000
 
 generateDeletes();
 generateAllProjectInserts();
+generateSequenceUpdates();
 generateGeoSpatialUpdates();
