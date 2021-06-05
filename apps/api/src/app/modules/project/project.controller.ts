@@ -7,13 +7,15 @@ import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, Pr
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
+import { PinoLogger } from 'nestjs-pino';
 
 
 @ApiTags('project')
 @Controller('project')
 export class ProjectController {
   constructor(
-    private readonly service: ProjectService) {
+    private readonly service: ProjectService,
+    private readonly logger: PinoLogger) {
   }
 
   // Anonymous access allowed
@@ -52,6 +54,9 @@ export class ProjectController {
       if (openedOnOrAfter) {
         findCriteria.commentingOpenedOnOrAfter = dayjs(openedOnOrAfter).format(DATE_FORMAT);
       } 
+
+      // Logging at info level to help measure performance.
+      this.logger.info('get /project/publicSummary with criteria %o', findCriteria);
 
       return this.service.findPublicSummaries(findCriteria);
   }

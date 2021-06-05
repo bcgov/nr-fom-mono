@@ -1,5 +1,6 @@
 import { Controller, Get, Query, ParseIntPipe, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import { PinoLogger } from 'nestjs-pino';
 
 import { SpatialFeatureBcgwResponse, SpatialFeaturePublicResponse } from './spatial-feature.dto';
 import { SpatialFeatureService } from './spatial-feature.service';
@@ -8,7 +9,8 @@ import { SpatialFeatureService } from './spatial-feature.service';
 @Controller('spatial-feature')
 export class SpatialFeatureController {
   constructor(
-    private readonly spatialFeatureService: SpatialFeatureService) {
+    private readonly spatialFeatureService: SpatialFeatureService,
+    private readonly logger: PinoLogger) {
   }
 
   // Anonymous access allowed
@@ -28,7 +30,9 @@ export class SpatialFeatureController {
     if (version != '1.0-final') {
       throw new BadRequestException('Invalid version');
     }
-    
+
+    this.logger.info('Start get /spatial-feature/bcgw-extract'); // At info level for measuring performance during normal operations.
+  
     return this.spatialFeatureService.getBcgwExtract();
   }
 
