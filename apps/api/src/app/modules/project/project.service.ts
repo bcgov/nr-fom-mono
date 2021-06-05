@@ -184,23 +184,16 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       ;
     findCriteria.applyFindCriteria(query);
 
-    console.log(query.getSql());
     const entityResult:Project[] = await query.getMany();
-
     
-    console.log(JSON.stringify(Object.keys(entityResult[0])));
-
     const result = entityResult.map(project => {
-      // var response = {... project} as ProjectPublicSummaryResponse;
-      var summary = new ProjectPublicSummaryResponse();
-
-      summary.forestClientName = project.forestClient.name;
-      summary.fspId = project.fspId;
-      summary.geojson = project.geojson;
-      summary.id = project.id;
-      summary.name = project.name;
-      summary.workflowStateName = project.workflowState.description;
-      return summary;
+      // Avoid creating new object to optimize performance.
+      const response = project as (ProjectPublicSummaryResponse & Project);
+      response.forestClientName = project.forestClient.name;
+      response.workflowStateName = project.workflowState.description;
+      delete response.forestClient;
+      delete response.workflowState;
+      return response;
     });
     this.cache = result;
     return result;
