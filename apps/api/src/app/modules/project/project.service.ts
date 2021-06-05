@@ -10,7 +10,7 @@ import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
-
+import NodeCache = require('node-cache');
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -40,6 +40,10 @@ export class ProjectFindCriteria {
       query.andWhere("p.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: this.includeForestClientNumbers});
     }
   }
+
+  getCacheKey(): string {
+    return JSON.stringify(this);
+  }
 }
 
 @Injectable()
@@ -53,6 +57,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   ) {
     super(repository, new Project(), logger);
   }
+
+  private cache = new NodeCache({ useClones: false});
 
   async isCreateAuthorized(dto: ProjectCreateRequest, user?: User): Promise<boolean> {
     if (!user) {
@@ -121,7 +127,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   }
 
   async find(findCriteria: ProjectFindCriteria):Promise<ProjectResponse[]> {
-    this.logger.debug(`Find criteria: ${JSON.stringify(findCriteria)}`);
+    this.logger.debug('Find criteria: %o', findCriteria);
 
     const query = this.repository.createQueryBuilder("p")
       .leftJoinAndSelect("p.forestClient", "forestClient")
@@ -165,16 +171,17 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return ['district', 'forestClient', 'workflowState'];
   }
 
-  // TODO
-  private cache;
 
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
 
     this.logger.debug('Find public summaries criteria: %o', findCriteria);
 
-    // if (this.cache) {
-    //   return this.cache;
-    // }
+    const cacheKey = 'PublicSummary-' + findCriteria.getCacheKey();
+    const cacheResult = this.cache.get(cacheKey);
+    if (cacheResult != undefined) {
+      this.logger.debug('Using cached result');
+      return cacheResult as ProjectPublicSummaryResponse[];
+    }
 
     // Use reduced select to optimize performance. 
     const query = this.repository.createQueryBuilder("p")
@@ -195,7 +202,13 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       delete response.workflowState;
       return response;
     });
-    this.cache = result;
+
+    // Public summary data only changes daily with batch update process, but we don't want to assume we know when it runs, 
+    // so just use 1 hour cache for the default (most common scenario). We don't want other searches to clog the cache so just use 10 minutes for those.
+    const defaultCacheKey = 'PublicSummary-{"includeWorkflowStateCodes":["COMMENT_OPEN","COMMENT_CLOSED","FINALIZED"],"includeForestClientNumbers":[]}';
+    const ttl = cacheKey == defaultCacheKey ? 60*60 : 10*60;
+    this.cache.set(cacheKey, result, ttl);
+
     return result;
   }
 
