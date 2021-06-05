@@ -165,20 +165,33 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return ['district', 'forestClient', 'workflowState'];
   }
 
+  // TODO
+  private cache;
+
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
 
     this.logger.debug('Find public summaries criteria: %o', findCriteria);
 
+    // if (this.cache) {
+    //   return this.cache;
+    // }
+
     // Use reduced select to optimize performance. 
     const query = this.repository.createQueryBuilder("p")
-      .select(['p.project_id', 'p.fsp_id', 'p.geometry_latlong', 'p.name', 'forestClient.name', 'workflowState.description']) 
+      .select(['p.id', 'p.geojson', 'p.fspId', 'p.name', 'forestClient.name', 'workflowState.description']) 
       .leftJoin('p.forestClient', 'forestClient')
       .leftJoin("p.workflowState", "workflowState")
       ;
     findCriteria.applyFindCriteria(query);
-    const result:Project[] = await query.getMany();
 
-    return result.map(project => {
+    console.log(query.getSql());
+    const entityResult:Project[] = await query.getMany();
+
+    
+    console.log(JSON.stringify(Object.keys(entityResult[0])));
+
+    const result = entityResult.map(project => {
+      // var response = {... project} as ProjectPublicSummaryResponse;
       var summary = new ProjectPublicSummaryResponse();
 
       summary.forestClientName = project.forestClient.name;
@@ -189,6 +202,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       summary.workflowStateName = project.workflowState.description;
       return summary;
     });
+    this.cache = result;
+    return result;
   }
 
   async workflowStateChange(projectId: number, request: ProjectWorkflowStateChangeRequest, user: User): Promise<ProjectResponse> {
