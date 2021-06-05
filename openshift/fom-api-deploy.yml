@@ -192,11 +192,11 @@ objects:
                   path: /api
                   port: ${{PORT}}
                   scheme: HTTP
-                initialDelaySeconds: 15
+                initialDelaySeconds: 30
                 timeoutSeconds: 15
                 periodSeconds: 15
                 successThreshold: 1
-                failureThreshold: 3
+                failureThreshold: 10
               livenessProbe:
                 httpGet:
                   path: /api
