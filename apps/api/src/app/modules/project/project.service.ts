@@ -167,15 +167,15 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
 
-    this.logger.debug(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
+    this.logger.debug('Find public summaries criteria: %o', findCriteria);
 
+    // Use reduced select to optimize performance. 
     const query = this.repository.createQueryBuilder("p")
-      .leftJoinAndSelect("p.forestClient", "forestClient")
-      .leftJoinAndSelect("p.workflowState", "workflowState")
-      .addOrderBy('p.project_id', 'DESC') // Newest first
+      .select(['p.project_id', 'p.fsp_id', 'p.geometry_latlong', 'p.name', 'forestClient.name', 'workflowState.description']) 
+      .leftJoin('p.forestClient', 'forestClient')
+      .leftJoin("p.workflowState", "workflowState")
       ;
     findCriteria.applyFindCriteria(query);
-
     const result:Project[] = await query.getMany();
 
     return result.map(project => {
