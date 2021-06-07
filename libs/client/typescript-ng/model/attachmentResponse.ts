@@ -9,13 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AttachmentTypeEnum } from './attachmentTypeEnum';
+import { AttachmentTypeCode } from './attachmentTypeCode';
 
 
 export interface AttachmentResponse { 
     id: number;
     projectId: number;
     fileName: string;
-    attachmentType: AttachmentTypeEnum;
+    attachmentType: AttachmentTypeCode;
 }
 

@@ -16,7 +16,7 @@ export interface SpatialFeatureBcgwResponse {
     featureType: SpatialFeatureBcgwResponse.FeatureTypeEnum;
     featureId: number;
     /**
-     * Maximum length is expected to be < 100
+     * Maximum length is expected to be <= 100
      */
     fspHolderName: string;
     lifecycleStatus: SpatialFeatureBcgwResponse.LifecycleStatusEnum;

@@ -1,6 +1,5 @@
 export * from './attachmentResponse';
 export * from './attachmentTypeCode';
-export * from './attachmentTypeEnum';
 export * from './commentScopeCode';
 export * from './districtResponse';
 export * from './forestClientResponse';
