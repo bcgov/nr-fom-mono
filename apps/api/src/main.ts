@@ -2,11 +2,12 @@ import 'dotenv/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger } from 'nestjs-pino';
+import { Logger, PinoLogger } from 'nestjs-pino';
 import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
+import { ProjectController } from './app/modules/project/project.controller';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -62,8 +63,15 @@ async function bootstrap() {
     credentials: false,
   });
 
+  
   await app.listen(port, () => {
     console.log('Listening at http://localhost:' + port + '/' + globalPrefix);
+
+    // Preload cache for public summary default data.
+    app.get(ProjectController).findPublicSummary().then( () => {
+      app.get(Logger).log('Finished cache pre-load.');
+    });
+      
   });
 }
 
