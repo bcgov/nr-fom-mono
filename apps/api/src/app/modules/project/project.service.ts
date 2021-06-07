@@ -179,11 +179,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const cacheKey = 'PublicSummary-' + findCriteria.getCacheKey();
     const cacheResult = this.cache.get(cacheKey);
     if (cacheResult != undefined) {
-      this.logger.debug('Using cached result');
+      this.logger.info('findPublicSummaries - Using cached result');
       return cacheResult as ProjectPublicSummaryResponse[];
     }
 
     // Use reduced select to optimize performance. 
+    this.logger.info('findPublicSummaries - Querying database');
     const query = this.repository.createQueryBuilder("p")
       .select(['p.id', 'p.geojson', 'p.fspId', 'p.name', 'forestClient.name', 'workflowState.description']) 
       .leftJoin('p.forestClient', 'forestClient')
