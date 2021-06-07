@@ -23,7 +23,7 @@ export class AttachmentResponse {
   @ApiProperty()
   fileName: string; 
 
-  @ApiProperty({ enum: AttachmentTypeEnum, enumName: 'AttachmentTypeEnum'})
+  @ApiProperty()
   attachmentType: AttachmentTypeCode;
 
   // Don't need revisionCount because updates are not allowed.
