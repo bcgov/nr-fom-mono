@@ -40,12 +40,19 @@
           "clientId"
         ]
       },
-      "AttachmentTypeEnum": {
-        "type": "string",
-        "enum": [
-          "PUBLIC_NOTICE",
-          "INTERACTION",
-          "SUPPORTING_DOC"
+      "AttachmentTypeCode": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "description"
         ]
       },
       "AttachmentResponse": {
@@ -61,7 +68,7 @@
             "type": "string"
           },
           "attachmentType": {
-            "$ref": "#/components/schemas/AttachmentTypeEnum"
+            "$ref": "#/components/schemas/AttachmentTypeCode"
           }
         },
         "required": [
@@ -69,21 +76,6 @@
           "projectId",
           "fileName",
           "attachmentType"
-        ]
-      },
-      "AttachmentTypeCode": {
-        "type": "object",
-        "properties": {
-          "code": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "code",
-          "description"
         ]
       },
       "ProjectPublicSummaryResponse": {
@@ -593,7 +585,7 @@
           },
           "fspHolderName": {
             "type": "string",
-            "description": "Maximum length is expected to be < 100"
+            "description": "Maximum length is expected to be <= 100"
           },
           "lifecycleStatus": {
             "type": "string",

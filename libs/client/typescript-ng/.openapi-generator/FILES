@@ -16,7 +16,6 @@ git_push.sh
 index.ts
 model/attachmentResponse.ts
 model/attachmentTypeCode.ts
-model/attachmentTypeEnum.ts
 model/commentScopeCode.ts
 model/districtResponse.ts
 model/forestClientResponse.ts
