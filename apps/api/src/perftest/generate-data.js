@@ -16,10 +16,6 @@ Each FOM will have a location (x,y) that all the shapes will be based off.
 */
 function generateDeletes() {
     console.log(`
-DELETE FROM app_fom.cut_block where submission_id >= 1000;
-DELETE FROM app_fom.road_section where submission_id >= 1000;
-DELETE FROM app_fom.retention_area where submission_id >= 1000;
-DELETE FROM app_fom.submission where submission_id >= 1000;
 DELETE FROM app_fom.project where project_id >= 1000;
     `);
 }
@@ -53,10 +49,9 @@ INSERT INTO app_fom.retention_area(retention_area_id, submission_id, geometry, c
 
 function generateAllProjectInserts() {
     // Generation range for locations:    
-    const topLeft = {x: 503476, y:1593074 };
-    const topRight = {x: 1125486, y:1592654 };
-    const botLeft = { x: 1007859, y:508042 };
-    // const botRight = { x:1695770, y:635396 };
+    const topLeft = {x: 503476, y:1689000 };
+    const topRight = {x: 1125486, y:1689000 };
+    const botLeft = { x: 1007859, y:459000 };
 
     numYears = 3;
     numProjects = 1000 * numYears;
