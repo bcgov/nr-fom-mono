@@ -47,6 +47,10 @@ async function bootstrap() {
     res.redirect('/'+globalPrefix);
   });
 
+  app.getHttpAdapter().getInstance().get('/health-check',(req,res)=> {
+    res.send ('Health check passed');
+  });
+
   const config = new DocumentBuilder()
     .setTitle('FOM API')
     .setDescription('API for FOM backend')
@@ -63,7 +67,6 @@ async function bootstrap() {
     credentials: false,
   });
 
-  
   await app.listen(port, () => {
     console.log('Listening at http://localhost:' + port + '/' + globalPrefix);
 
