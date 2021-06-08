@@ -137,7 +137,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
       }
     }
     
-    const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
+    const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId }, order: {id: 'DESC'}});
     const records = await this.repository.find(options);
     if (!records || records.length == 0) {
       return [];
