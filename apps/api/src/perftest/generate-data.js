@@ -49,8 +49,8 @@ INSERT INTO app_fom.retention_area(retention_area_id, submission_id, geometry, c
 
 function generateAllProjectInserts() {
     // Generation range for locations:    
-    const topLeft = {x: 503476, y:1689000 };
-    const topRight = {x: 1125486, y:1689000 };
+    const topLeft = {x: 503476, y:1670000 };
+    const topRight = {x: 1125486, y:1670000 };
     const botLeft = { x: 1007859, y:459000 };
 
     numYears = 3;

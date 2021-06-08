@@ -31,7 +31,8 @@ export class ProjectFindCriteria {
       query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
     }
     if (this.likeForestClientName) {
-      query.andWhere("forestClient.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
+      // Case insensitive search
+      query.andWhere("upper(forestClient.name) like :forestClientName", { forestClientName:`%${this.likeForestClientName.toUpperCase()}%`});
     }
     if (this.commentingOpenedOnOrAfter) {
       query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${this.commentingOpenedOnOrAfter}`});
@@ -136,6 +137,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       .addOrderBy('p.project_id', 'DESC') // Newest first
       ;
     findCriteria.applyFindCriteria(query);
+    query.limit(2500); // Can't use take(). Limit # of results to avoid system strain in case a ministry user does an unlimited search.
 
     const result:Project[] = await query.getMany();
 

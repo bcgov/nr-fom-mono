@@ -339,7 +339,7 @@ submission_id integer not null references app_fom.submission (submission_id) on 
 geometry GEOMETRY(POLYGON, 3005) not null  ,  
 planned_development_date date not null  ,  
 name varchar ,
-planned_area_ha real , 
+planned_area_ha numeric(11,4) , 
 
 revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
@@ -374,7 +374,7 @@ create table if not exists app_fom.retention_area
 retention_area_id serial not null primary key ,  
 submission_id integer not null references app_fom.submission (submission_id) on delete cascade , 
 geometry GEOMETRY(POLYGON, 3005) not null  ,  
-planned_area_ha real , 
+planned_area_ha numeric(11,4) , 
 
 revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
@@ -409,7 +409,7 @@ submission_id integer not null references app_fom.submission (submission_id) on 
 geometry GEOMETRY(LINESTRING, 3005) not null , 
 planned_development_date date not null  ,  
 name varchar,
-planned_length_km real , 
+planned_length_km numeric(11,4) , 
 
 revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
