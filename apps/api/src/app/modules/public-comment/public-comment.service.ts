@@ -68,6 +68,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     response.revisionCount = entity.revisionCount;
     response.scopeCutBlockId = entity.scopeCutBlockId;
     response.scopeRoadSectionId = entity.scopeRoadSectionId;
+    response.scopeFeatureName = entity.cutBlock?.name || entity.roadSection?.name || ''; // 'name' field from cutBlock or roadSection.
 
     return response;
   }
@@ -137,8 +138,13 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
       }
     }
     
-    const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId }, order: {id: 'DESC'}});
+    const options = this.addCommonRelationsToFindOptions({
+      relations: ['cutBlock', 'roadSection'], 
+      where: { projectId: projectId }, 
+      order: {id: 'DESC'}});
+
     const records = await this.repository.find(options);
+
     if (!records || records.length == 0) {
       return [];
     }

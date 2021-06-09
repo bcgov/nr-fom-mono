@@ -6,7 +6,9 @@ import {
   Column,
   ManyToOne,
   RelationId,
+  OneToMany,
 } from 'typeorm';
+import { PublicComment } from '../public-comment/public-comment.entity';
 import { Submission } from './submission.entity';
 
 @Entity('road_section', { schema: 'app_fom' })
@@ -37,4 +39,7 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   @Column({ name: 'submission_id'})
   @RelationId((roadSection: RoadSection) => roadSection.submission)
   submissionId: number;
+  
+  @OneToMany(type => PublicComment, (comment) => comment.roadSection, {cascade: true})
+  comments: PublicComment[];
 }
