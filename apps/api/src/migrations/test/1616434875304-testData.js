@@ -3,6 +3,7 @@ const { MigrationInterface, QueryRunner } = require('typeorm');
 
 module.exports = class testdata1616434875304 {
   async up(queryRunner) {
+    console.log('Starting basic test data migration');
     var key = process.env.DATA_ENCRYPTION_KEY || 'defaultkey';
     await queryRunner.query(`
 

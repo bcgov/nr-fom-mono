@@ -2,6 +2,8 @@ const { MigrationInterface, QueryRunner } = require('typeorm');
 
 module.exports = class initializeTables1613577521127 {
   async up(queryRunner) {
+    console.log('Starting initialize tables migration');
+
     // Run the master DDL script
     await queryRunner.query(`
 

@@ -3,6 +3,8 @@ const { MigrationInterface, QueryRunner } = require("typeorm");
 module.exports = class district1616014739471 {
 
     async up(queryRunner) {
+        console.log('Starting district migration');
+
         await queryRunner.query(`
         INSERT INTO app_fom.district(district_id, name, email, create_user) VALUES 
         (43, 'Campbell River', 'Forests.CampbellRiverDistrictOffice', CURRENT_USER),

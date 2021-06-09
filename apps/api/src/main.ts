@@ -28,7 +28,7 @@ async function bootstrap() {
       await dbmigrate(ormConfigTest as ConnectionOptions);
     }
   } catch (error) {
-    console.log('Error during database migration', error);
+    console.log('Error during database migration: ' + JSON.stringify(error));
     return error;
   }
   console.log("Done DB Migrations.");
@@ -78,4 +78,8 @@ async function bootstrap() {
   });
 }
 
-bootstrap();
+try {
+  bootstrap();
+} catch (error) {
+  console.log('Error during application startup: ' + JSON.stringify(error));
+}
