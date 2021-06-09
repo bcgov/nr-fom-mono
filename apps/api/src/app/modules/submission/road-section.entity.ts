@@ -5,8 +5,7 @@ import {
   JoinColumn,
   Column,
   ManyToOne,
-  RelationId,
-  OneToMany,
+  RelationId
 } from 'typeorm';
 import { PublicComment } from '../public-comment/public-comment.entity';
 import { Submission } from './submission.entity';
