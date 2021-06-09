@@ -7,6 +7,12 @@ describe('User', () => {
         user = new User();
     });
 
+    describe('isAuthorizedForAdminSite', () => {
+        it('false for default user', async () => {
+            expect(user.isAuthorizedForAdminSite()).toBe(false);
+        });
+    });
+
     describe('isAuthorizedForClientId', () => {
         it('true on match', async () => {
             user.clientIds.push('1011');
