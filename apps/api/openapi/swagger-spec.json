@@ -448,6 +448,9 @@
           },
           "responseDetails": {
             "type": "string"
+          },
+          "scopeFeatureName": {
+            "type": "string"
           }
         },
         "required": [
@@ -464,7 +467,8 @@
           "createTimestamp",
           "commentScope",
           "response",
-          "responseDetails"
+          "responseDetails",
+          "scopeFeatureName"
         ]
       },
       "SubmissionTypeCodeEnum": {
