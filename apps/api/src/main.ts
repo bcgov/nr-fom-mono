@@ -23,7 +23,6 @@ async function bootstrap() {
   try {
     console.log("Running DB Main Migrations...");
     await dbmigrate(ormConfigMain as ConnectionOptions);
-    console.log("process.env.DB_TESTDATA: ", process.env.DB_TESTDATA)
     if (process.env.DB_TESTDATA  == "true") {
       console.log("Running DB Test Data Migrations...");
       await dbmigrate(ormConfigTest as ConnectionOptions);
