@@ -74,7 +74,7 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
   }
 
   protected getCommonRelations(): string[] {
-    return ['commentScope', 'response'];
+    return ['commentScope', 'response', 'cutBlock', 'roadSection'];
   }
 
   private async encryptSensitiveColumns(entity: PublicComment) {
@@ -139,7 +139,6 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     }
     
     const options = this.addCommonRelationsToFindOptions({
-      relations: ['cutBlock', 'roadSection'], 
       where: { projectId: projectId }, 
       order: {id: 'DESC'}});
 
