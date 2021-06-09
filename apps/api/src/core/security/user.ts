@@ -30,19 +30,21 @@ export class User {
       if (jwt['resource_access'] && jwt['resource_access']['fom']) {
         roles = jwt['resource_access']['fom']['roles'];
       }
-      roles.forEach(role => {
-        if (role == 'fom_ministry') {
-          user.isMinistry = true;
-        }
-        if (role.startsWith('fom_forest_client')) {
-          user.isForestClient = true;
-          const clientStartIndex = 'fom_forest_client_'.length;
-          if (role.length > clientStartIndex) {
-            const clientId = role.substr(clientStartIndex);
-            user.clientIds.push(clientId);
+      if (roles) {
+        roles.forEach(role => {
+          if (role == 'fom_ministry') {
+            user.isMinistry = true;
           }
-        }
-      })
+          if (role.startsWith('fom_forest_client')) {
+            user.isForestClient = true;
+            const clientStartIndex = 'fom_forest_client_'.length;
+            if (role.length > clientStartIndex) {
+              const clientId = role.substr(clientStartIndex);
+              user.clientIds.push(clientId);
+            }
+          }
+        });
+      }
   
       return user;
     }
