@@ -31,5 +31,6 @@ export interface PublicCommentAdminResponse {
     commentScope: CommentScopeCode;
     response: ResponseCode;
     responseDetails: string;
+    scopeFeatureName: string;
 }
 
