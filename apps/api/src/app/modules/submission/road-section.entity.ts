@@ -39,7 +39,4 @@ export class RoadSection extends ApiBaseEntity<RoadSection> {
   @Column({ name: 'submission_id'})
   @RelationId((roadSection: RoadSection) => roadSection.submission)
   submissionId: number;
-  
-  @OneToMany(type => PublicComment, (comment) => comment.roadSection, {cascade: true})
-  comments: PublicComment[];
 }

@@ -39,7 +39,4 @@ export class CutBlock extends ApiBaseEntity<CutBlock> {
   @Column({name: 'submission_id'})
   @RelationId((cutBlock: CutBlock) => cutBlock.submission)
   submissionId: number;
-
-  @OneToMany(type => PublicComment, (comment) => comment.cutBlock, {cascade: true})
-  comments: PublicComment[];
 }
