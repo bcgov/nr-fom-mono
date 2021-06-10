@@ -17,7 +17,7 @@ function DeleteApiStack {
 }
 
 function CreateApiStack {
-    param ($ApiVersion, $Suffix, $Env, $TestData)
+    param ($ApiVersion, $Suffix, $Env, $TestData="false", $ReplicaCount=2, $KeycloakEnabled="true")
 
     DeleteApiStack -Suffix $Suffix -Env $Env
 
@@ -29,6 +29,9 @@ function CreateApiStack {
     Write-Output "Delay creation of API to allow time for database to be created and start up..."
     Start-Sleep -s 60
 
+    $Hostname="fom-nrs$Suffix.apps.silver.devops.gov.bc.ca"
+    # $Hostname="nr-fom-api$Suffix.apps.silver.devops.gov.bc.ca" TODO: Old format hostname.
+
     Write-Output "Creating api backend..."
-    oc process -f fom-api-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix -p HOSTNAME="nr-fom-api$Suffix" -p IMAGE_STREAM_VERSION=$ApiVersion -p DB_TESTDATA=$TestData | oc create -n a4b31c-$Env -f -
+    oc process -f fom-api-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix -p HOSTNAME=$Hostname -p IMAGE_STREAM_VERSION=$ApiVersion -p DB_TESTDATA=$TestData -p REPLICA_COUNT=$ReplicaCount -p KEYCLOAK_ENABLED=$KeycloakEnabled | oc create -n a4b31c-$Env -f -
 }

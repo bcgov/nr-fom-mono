@@ -42,11 +42,12 @@ async function bootstrap() {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  // Redirect root to /api
-  app.getHttpAdapter().getInstance().get('/', (req, res) => {
-    res.redirect('/'+globalPrefix);
-  });
+  // Redirect root to /api No longer required with dedicated /api route.
+  // app.getHttpAdapter().getInstance().get('/', (req, res) => {
+  //   res.redirect('/'+globalPrefix);
+  // });
 
+  // Only meant for running locally, not accessible via /api route.
   app.getHttpAdapter().getInstance().get('/health-check',(req,res)=> {
     res.send ('Health check passed');
   });
