@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, PinoLogger } from 'nestjs-pino';
@@ -18,20 +18,16 @@ async function dbmigrate(config: ConnectionOptions) {
     }
 }
 
-async function bootstrap() {
+async function bootstrap():Promise<INestApplication> {
 
   try {
     console.log("Running DB Main Migrations...");
     await dbmigrate(ormConfigMain as ConnectionOptions);
-    if (process.env.DB_TESTDATA  == "true") {
-      console.log("Running DB Test Data Migrations...");
-      await dbmigrate(ormConfigTest as ConnectionOptions);
-    }
+    console.log("Done DB Migrations.");
   } catch (error) {
     console.log('Error during database migration: ' + JSON.stringify(error));
-    return error;
+    return null;
   }
-  console.log("Done DB Migrations.");
 
   const app = await NestFactory.create(AppModule, { logger: false });
   app.useLogger(app.get(Logger));
@@ -41,11 +37,6 @@ async function bootstrap() {
   }));
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-
-  // Redirect root to /api No longer required with dedicated /api route.
-  // app.getHttpAdapter().getInstance().get('/', (req, res) => {
-  //   res.redirect('/'+globalPrefix);
-  // });
 
   // Only meant for running locally, not accessible via /api route.
   app.getHttpAdapter().getInstance().get('/health-check',(req,res)=> {
@@ -69,18 +60,43 @@ async function bootstrap() {
   });
 
   await app.listen(port, () => {
-    console.log('Listening at http://localhost:' + port + '/' + globalPrefix);
+    app.get(Logger).log('Listening at http://localhost:' + port + '/' + globalPrefix);
+  });
+
+  return app;
+}
+
+async function postStartup(app: INestApplication) {
+  try {
+    const logger = app.get(Logger);
+    logger.log("Starting postStartup...");
+
+    if (process.env.DB_TESTDATA  == "true") {
+      logger.log("Running DB Test Data Migrations...");
+      // Need different name from default connection that is already active.
+      // We don't change ormConfigTest's actual definition because when run via 'npm run' needs to use default connection.
+      ormConfigTest['name'] = 'test-migration'; 
+      await dbmigrate(ormConfigTest as ConnectionOptions);
+    }
 
     // Preload cache for public summary default data.
-    app.get(ProjectController).findPublicSummary().then( () => {
-      app.get(Logger).log('Finished cache pre-load.');
-    });
-      
-  });
+    logger.log("Starting public summary cache pre-load...");
+    await app.get(ProjectController).findPublicSummary();
+
+    logger.log("Done postStartup.");
+  } catch (error) {
+    console.log('Error during post startup: ' + JSON.stringify(error));
+  }
+}
+
+async function start() {
+  const app = await bootstrap();
+  app.get(Logger).log("Done regular startup.");
+  postStartup(app); // Don't await so non-blocking - allows OpenShift container (pod) to be marked ready for traffic.
 }
 
 try {
-  bootstrap();
+  start();
 } catch (error) {
   console.log('Error during application startup: ' + JSON.stringify(error));
 }
