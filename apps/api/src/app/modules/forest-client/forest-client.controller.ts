@@ -5,7 +5,7 @@ import { BaseReadOnlyController } from '@controllers';
 import { ForestClientService } from './forest-client.service';
 import { ForestClient } from './forest-client.entity';
 import { ForestClientResponse } from './forest-client.dto';
-import { UserHeader } from 'apps/api/src/core/security/auth.service';
+import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 
 @ApiTags('forest-client')
@@ -22,7 +22,7 @@ export class ForestClientController extends BaseReadOnlyController<
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: [ForestClientResponse], description: 'Returns only forest clients that the user is authorized for.' })
   async find(
-    @UserHeader() user: User,
+    @UserRequiredHeader() user: User,
   ): Promise<ForestClientResponse[]> {
     return this.service.find(user.clientIds);
   }
