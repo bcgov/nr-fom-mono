@@ -112,7 +112,7 @@ export class AttachmentController {
   async remove(
     @UserRequiredHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
-    return this.service.delete(id);
+    return this.service.delete(id, user);
   }
 
 }
