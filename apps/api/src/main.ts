@@ -8,6 +8,7 @@ import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
 import { ProjectController } from './app/modules/project/project.controller';
+import helmet = require('helmet');
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -31,7 +32,15 @@ async function bootstrap():Promise<INestApplication> {
 
   const app = await NestFactory.create(AppModule, { logger: false });
   app.useLogger(app.get(Logger));
-  app.getHttpAdapter().getInstance().disable('x-powered-by'); // Poor security to report the technology used, so disable this response header.
+
+  app.getHttpAdapter().getInstance().use(helmet({ 
+    crossOriginResourcePolicy: true, 
+    crossOriginOpenerPolicy: true,
+    crossOriginEmbedderPolicy: true,
+    originAgentCluster: true,
+    contentSecurityPolicy: false 
+  }));
+
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
   }));
@@ -54,11 +63,26 @@ async function bootstrap():Promise<INestApplication> {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  app.enableCors({
-    origin: '*',
-    credentials: false,
-  });
-
+  if (process.env.BYPASS_CORS) {
+    // For local development only, leave env var undefined within OpenShift deployments.
+    app.enableCors({
+      origin: '*',
+      credentials: false,
+    });
+  }
+/*
+// CORS setup
+app.use(
+  cors({
+    credentials: true,
+    preflightContinue: true,
+    optionsSuccessStatus: 200,
+    origin: process.env.REACT_APP_CLIENT_POINT,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "HEAD", "PATCH", "DELETE"],
+  })
+);
+*/
   await app.listen(port, () => {
     app.get(Logger).log('Listening at http://localhost:' + port + '/' + globalPrefix);
   });
