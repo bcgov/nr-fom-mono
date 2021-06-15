@@ -33,7 +33,23 @@ async function bootstrap():Promise<INestApplication> {
   const app = await NestFactory.create(AppModule, { logger: false });
   app.useLogger(app.get(Logger));
 
-  app.getHttpAdapter().getInstance().use(helmet({ 
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true, // Strips unknown properties not listed in input DTOs.
+  }));
+  const globalPrefix = 'api';
+  app.setGlobalPrefix(globalPrefix);
+
+  // TODO: Temporarily bypass CORS for testing.
+  // if (process.env.BYPASS_CORS) {
+    // For local development only, leave env var undefined within OpenShift deployments.
+    app.enableCors({
+      origin: '*',
+      credentials: false,
+    });
+  // }
+
+  const httpAdapter = app.getHttpAdapter().getInstance();
+  httpAdapter.use(helmet({ 
     crossOriginResourcePolicy: true, 
     crossOriginOpenerPolicy: true,
     crossOriginEmbedderPolicy: true,
@@ -41,14 +57,20 @@ async function bootstrap():Promise<INestApplication> {
     contentSecurityPolicy: false 
   }));
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true, // Strips unknown properties not listed in input DTOs.
-  }));
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  let cacheMiddleware = (req, res, next) => {
+    // Recommended security settings. 
+    // TODO: Could override this to allow caching for certain GETS
+    // if (req.method == 'GET') {
+    //   res.set('Cache-control', 'private, max-age=300); // max-age in seconds.
+    // }
+    res.set('Cache-control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    next();
+  }
+  httpAdapter.use(cacheMiddleware);
 
   // Only meant for running locally, not accessible via /api route.
-  app.getHttpAdapter().getInstance().get('/health-check',(req,res)=> {
+  httpAdapter.get('/health-check', (req, res) => {
     res.send ('Health check passed');
   });
 
@@ -63,26 +85,6 @@ async function bootstrap():Promise<INestApplication> {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  if (process.env.BYPASS_CORS) {
-    // For local development only, leave env var undefined within OpenShift deployments.
-    app.enableCors({
-      origin: '*',
-      credentials: false,
-    });
-  }
-/*
-// CORS setup
-app.use(
-  cors({
-    credentials: true,
-    preflightContinue: true,
-    optionsSuccessStatus: 200,
-    origin: process.env.REACT_APP_CLIENT_POINT,
-    allowedHeaders: ["Content-Type", "Authorization"],
-    methods: ["GET", "POST", "PUT", "HEAD", "PATCH", "DELETE"],
-  })
-);
-*/
   await app.listen(port, () => {
     app.get(Logger).log('Listening at http://localhost:' + port + '/' + globalPrefix);
   });
