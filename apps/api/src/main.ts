@@ -52,8 +52,8 @@ async function bootstrap():Promise<INestApplication> {
     crossOriginResourcePolicy: true, 
     crossOriginOpenerPolicy: true,
     crossOriginEmbedderPolicy: true,
-    originAgentCluster: true,
-    contentSecurityPolicy: false 
+    originAgentCluster: false,
+    contentSecurityPolicy: true
   }));
 
   let cacheMiddleware = (req, res, next) => {
