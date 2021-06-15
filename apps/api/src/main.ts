@@ -39,14 +39,13 @@ async function bootstrap():Promise<INestApplication> {
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
 
-  // TODO: Temporarily bypass CORS for testing.
-  // if (process.env.BYPASS_CORS) {
+  if (process.env.BYPASS_CORS) {
     // For local development only, leave env var undefined within OpenShift deployments.
     app.enableCors({
       origin: '*',
       credentials: false,
     });
-  // }
+  }
 
   const httpAdapter = app.getHttpAdapter().getInstance();
   httpAdapter.use(helmet({ 
@@ -58,12 +57,8 @@ async function bootstrap():Promise<INestApplication> {
   }));
 
   let cacheMiddleware = (req, res, next) => {
-    // Recommended security settings. 
-    // TODO: Could override this to allow caching for certain GETS
-    // if (req.method == 'GET') {
-    //   res.set('Cache-control', 'private, max-age=300); // max-age in seconds.
-    // }
-    res.set('Cache-control', 'no-cache, no-store, must-revalidate');
+    // Disable caching entirely by default for all APIs.
+    res.set('Cache-control', 'no-store, max-age=0');
     res.set('Pragma', 'no-cache');
     next();
   }
