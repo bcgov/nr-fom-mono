@@ -48,6 +48,7 @@ async function bootstrap():Promise<INestApplication> {
   }
 
   const httpAdapter = app.getHttpAdapter().getInstance();
+  httpAdapter.disable("x-powered-by");
   httpAdapter.use(helmet({ 
     crossOriginResourcePolicy: true, 
     crossOriginOpenerPolicy: true,
