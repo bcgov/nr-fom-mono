@@ -8,6 +8,7 @@ import { DistrictService } from './api/district.service';
 import { ForestClientService } from './api/forestClient.service';
 import { ProjectService } from './api/project.service';
 import { PublicCommentService } from './api/publicComment.service';
+import { SpatialFeatureService } from './api/spatialFeature.service';
 import { SubmissionService } from './api/submission.service';
 
 @NgModule({

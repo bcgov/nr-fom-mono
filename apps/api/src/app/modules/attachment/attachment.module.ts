@@ -10,10 +10,12 @@ import { SecurityModule } from 'apps/api/src/core/security/security.module';
 import { AttachmentTypeCode } from './attachment-type-code.entity';
 import { AttachmentTypeCodeService } from './attachment-type-code.service';
 import { AttachmentTypeCodeController } from './attachment-type-code.controller';
+import { ProjectModule } from '../project/project.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Attachment, AttachmentTypeCode]),
+    ProjectModule,
     SecurityModule,  
   ],
   controllers: [AttachmentController, AttachmentTypeCodeController],

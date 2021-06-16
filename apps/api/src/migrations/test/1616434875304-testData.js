@@ -3,6 +3,7 @@ const { MigrationInterface, QueryRunner } = require('typeorm');
 
 module.exports = class testdata1616434875304 {
   async up(queryRunner) {
+    console.log('Starting basic test data migration');
     var key = process.env.DATA_ENCRYPTION_KEY || 'defaultkey';
     await queryRunner.query(`
 
@@ -10,7 +11,7 @@ module.exports = class testdata1616434875304 {
         -- Project #1 - INITIAL state, no submissions
         -- Project #2 - INITIAL state, proposed submission
         -- Project #3 - COMMENTING_OPEN state, proposed submission, lots of public comments
-        -- Project #4 - COMMENTING_CLOSED state, proposed submission
+        -- Project #4 - COMMENTING_CLOSED state, proposed submission, lots of attachments
         -- Project #5 - COMMENTING_CLOSED state, proposed + final submissions
         -- Project #6 - FINALIZED state, proposed + final submission, identical shapes
         -- Project #7 - PUBLISHED state, proposed submission
@@ -23,7 +24,7 @@ module.exports = class testdata1616434875304 {
         (1, 'Fake name 1', 'Initial no submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, null, 1011, 'INITIAL', null, null, 'testdata')
         , (2, 'Fake name 2 a bit longer', 'Initial with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'INITIAL', '2021-03-03', null, 'testdata')
         , (3, 'Fake name 3 with lots of comments', 'Commenting open with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_OPEN', '2021-04-01', '2022-04-01', 'testdata')
-        , (4, 'Fake name 4 50 char long 123456789 123456789 123456789', 'Commenting closed with only proposed submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1016, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
+        , (4, 'Fake name 4 with lots of attachments & name 50 chars', 'Commenting closed with only proposed submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1016, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
         , (5, 'Fake name 5', 'Commenting closed with proposed + final submissions project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1016, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
         , (6, 'Fake name 6', 'Finalized project with identical proposed/final shapes. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 46, 1021, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
         , (7, 'Fake name 7', 'Published project with proposed submission. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 46, 1021, 'PUBLISHED', '2022-04-01', '2022-05-01', 'testdata')
@@ -75,6 +76,7 @@ module.exports = class testdata1616434875304 {
 
 		-- Update geometric-derived fields to simulate what the application would do
 		update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id < 1000;
+		update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id < 1000;
 		update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id < 1000;
 
 		with project_geometries as (
@@ -267,11 +269,24 @@ module.exports = class testdata1616434875304 {
         , (198, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata', 'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         , (199, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata', 'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         ;
+
+        insert into app_fom.attachment(attachment_id, project_id, attachment_type_code, file_name, file_contents, create_user) values
+        (10, 1, 'SUPPORTING_DOC', 'file1.txt', 'file contents', 'testdata')
+        , (20, 2, 'PUBLIC_NOTICE', 'notice.txt', 'file contents here', 'testdata')
+        , (40, 4, 'PUBLIC_NOTICE', 'notice.txt', 'file contents here', 'testdata')
+        , (41, 4, 'SUPPORTING_DOC', 'doc1.txt', 'file contents here', 'testdata')
+        , (42, 4, 'SUPPORTING_DOC', 'doc2.txt', 'file contents here', 'testdata')
+        , (43, 4, 'INTERACTION', 'interaction1.txt', 'file contents here', 'testdata')
+        , (44, 4, 'INTERACTION', 'interaction2.txt', 'file contents here', 'testdata')
+        ;
+        
         `);
   }
 
+  // This can fail if manually-created test data references this automatically created test data.
   async down(queryRunner) {
     await queryRunner.query(`
+        DELETE FROM app_fom.attachment where attachment_id < 1000;
         DELETE FROM app_fom.public_comment where public_comment_id < 1000;
         DELETE FROM app_fom.cut_block where submission_id < 1000;
         DELETE FROM app_fom.road_section where submission_id < 1000;

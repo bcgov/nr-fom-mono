@@ -68,12 +68,13 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
     response.revisionCount = entity.revisionCount;
     response.scopeCutBlockId = entity.scopeCutBlockId;
     response.scopeRoadSectionId = entity.scopeRoadSectionId;
+    response.scopeFeatureName = entity.cutBlock?.name || entity.roadSection?.name || ''; // 'name' field from cutBlock or roadSection.
 
     return response;
   }
 
   protected getCommonRelations(): string[] {
-    return ['commentScope', 'response'];
+    return ['commentScope', 'response', 'cutBlock', 'roadSection'];
   }
 
   private async encryptSensitiveColumns(entity: PublicComment) {
@@ -137,8 +138,12 @@ export class PublicCommentService extends DataService<PublicComment, Repository<
       }
     }
     
-    const options = this.addCommonRelationsToFindOptions({ where: { projectId: projectId } });
+    const options = this.addCommonRelationsToFindOptions({
+      where: { projectId: projectId }, 
+      order: {id: 'DESC'}});
+
     const records = await this.repository.find(options);
+
     if (!records || records.length == 0) {
       return [];
     }

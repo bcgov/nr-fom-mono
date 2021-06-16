@@ -87,6 +87,14 @@ describe('ProjectService', () => {
       entity.workflowStateCode = WorkflowStateEnum.FINALIZED;
       expect(await service.isUpdateAuthorized(request, entity, user)).toBe(false);
     });
+    it ('forestry user cannot update when published', async () => {
+      user.isForestClient = true;
+      user.clientIds.push(TEST_CLIENT_ID);
+      entity.forestClientId = TEST_CLIENT_ID;
+      entity.workflowStateCode = WorkflowStateEnum.PUBLISHED;
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(false);
+    });
+
   });
 
 

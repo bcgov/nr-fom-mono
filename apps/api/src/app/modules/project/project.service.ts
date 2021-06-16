@@ -10,7 +10,7 @@ import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
-
+import NodeCache = require('node-cache');
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -31,7 +31,8 @@ export class ProjectFindCriteria {
       query.andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: this.includeWorkflowStateCodes});
     }
     if (this.likeForestClientName) {
-      query.andWhere("forestClient.name like :forestClientName", { forestClientName:`%${this.likeForestClientName}%`});
+      // Case insensitive search
+      query.andWhere("upper(forestClient.name) like :forestClientName", { forestClientName:`%${this.likeForestClientName.toUpperCase()}%`});
     }
     if (this.commentingOpenedOnOrAfter) {
       query.andWhere("p.commenting_open_date >= :openDate", {openDate: `${this.commentingOpenedOnOrAfter}`});
@@ -39,6 +40,10 @@ export class ProjectFindCriteria {
     if (this.includeForestClientNumbers && this.includeForestClientNumbers.length > 0) {
       query.andWhere("p.forest_client_number IN (:...forestClientNumbers)", { forestClientNumbers: this.includeForestClientNumbers});
     }
+  }
+
+  getCacheKey(): string {
+    return JSON.stringify(this);
   }
 }
 
@@ -53,6 +58,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   ) {
     super(repository, new Project(), logger);
   }
+
+  private cache = new NodeCache({ useClones: false});
 
   async isCreateAuthorized(dto: ProjectCreateRequest, user?: User): Promise<boolean> {
     if (!user) {
@@ -81,7 +88,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return false;
     }
     // Workflow states that forest client user is allowed to edit in. 
-    return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.PUBLISHED, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
+    return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
   }
 
   async isDeleteAuthorized(entity: Project, user?: User): Promise<boolean> {
@@ -121,7 +128,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   }
 
   async find(findCriteria: ProjectFindCriteria):Promise<ProjectResponse[]> {
-    this.logger.debug(`Find criteria: ${JSON.stringify(findCriteria)}`);
+    this.logger.debug('Find criteria: %o', findCriteria);
 
     const query = this.repository.createQueryBuilder("p")
       .leftJoinAndSelect("p.forestClient", "forestClient")
@@ -130,6 +137,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       .addOrderBy('p.project_id', 'DESC') // Newest first
       ;
     findCriteria.applyFindCriteria(query);
+    query.limit(2500); // Can't use take(). Limit # of results to avoid system strain in case a ministry user does an unlimited search.
 
     const result:Project[] = await query.getMany();
 
@@ -165,30 +173,46 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return ['district', 'forestClient', 'workflowState'];
   }
 
+
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
 
-    this.logger.debug(`Find public summaries criteria: ${JSON.stringify(findCriteria)}`);
+    this.logger.debug('Find public summaries criteria: %o', findCriteria);
 
+    const cacheKey = 'PublicSummary-' + findCriteria.getCacheKey();
+    const cacheResult = this.cache.get(cacheKey);
+    if (cacheResult != undefined) {
+      this.logger.info('findPublicSummaries - Using cached result');
+      return cacheResult as ProjectPublicSummaryResponse[];
+    }
+
+    // Use reduced select to optimize performance. 
+    this.logger.info('findPublicSummaries - Querying database');
     const query = this.repository.createQueryBuilder("p")
-      .leftJoinAndSelect("p.forestClient", "forestClient")
-      .leftJoinAndSelect("p.workflowState", "workflowState")
-      .addOrderBy('p.project_id', 'DESC') // Newest first
+      .select(['p.id', 'p.geojson', 'p.fspId', 'p.name', 'forestClient.name', 'workflowState.description']) 
+      .leftJoin('p.forestClient', 'forestClient')
+      .leftJoin("p.workflowState", "workflowState")
       ;
     findCriteria.applyFindCriteria(query);
 
-    const result:Project[] = await query.getMany();
-
-    return result.map(project => {
-      var summary = new ProjectPublicSummaryResponse();
-
-      summary.forestClientName = project.forestClient.name;
-      summary.fspId = project.fspId;
-      summary.geojson = project.geojson;
-      summary.id = project.id;
-      summary.name = project.name;
-      summary.workflowStateName = project.workflowState.description;
-      return summary;
+    const entityResult:Project[] = await query.getMany();
+    
+    const result = entityResult.map(project => {
+      // Avoid creating new object to optimize performance.
+      const response = project as (ProjectPublicSummaryResponse & Project);
+      response.forestClientName = project.forestClient.name;
+      response.workflowStateName = project.workflowState.description;
+      delete response.forestClient;
+      delete response.workflowState;
+      return response;
     });
+
+    // Public summary data only changes daily with batch update process, but we don't want to assume we know when it runs, 
+    // so just use 1 hour cache for the default (most common scenario). We don't want other searches to clog the cache so just use 10 minutes for those.
+    const defaultCacheKey = 'PublicSummary-{"includeWorkflowStateCodes":["COMMENT_OPEN","COMMENT_CLOSED","FINALIZED"],"includeForestClientNumbers":[]}';
+    const ttl = cacheKey == defaultCacheKey ? 60*60 : 10*60;
+    this.cache.set(cacheKey, result, ttl);
+
+    return result;
   }
 
   async workflowStateChange(projectId: number, request: ProjectWorkflowStateChangeRequest, user: User): Promise<ProjectResponse> {
@@ -256,7 +280,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     entity.revisionCount +=1;
     entity.updateUser = user.userName;
-    entity.updateTimestamp = new Date();  // dayjs().toDate(); // TODO: confirm this works.
+    entity.updateTimestamp = new Date();  
     entity.workflowStateCode = request.workflowStateCode;
 
     const updateCount = (await this.repository.update(projectId, entity)).affected;

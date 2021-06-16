@@ -3,6 +3,8 @@ const { MigrationInterface, QueryRunner } = require("typeorm");
 module.exports = class forestClient1616015261635 {
 
     async up(queryRunner) {
+        console.log('Starting forest client migration');
+
         await queryRunner.query(`
         INSERT INTO app_fom.forest_client(forest_client_number, name, create_user) VALUES 
         ('1011', 'AKIECA EXPLORERS LTD.', CURRENT_USER),

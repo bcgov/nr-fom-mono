@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository } from 'typeorm';
 import { ApiBaseEntity } from '@entities';
@@ -36,7 +36,10 @@ export abstract class DataReadOnlyService<E extends ApiBaseEntity<E>, R extends 
   async findOne<C>(id: number): Promise<C> {
     this.logger.debug(`${this.constructor.name}.findOne id %o`, id);
 
-    const record = await this.repository.findOne(id);
+    const record: E = await this.repository.findOne(id);
+    if (!record) {
+      throw new BadRequestException("Entity not found");
+    }
 
     return this.convertEntity(record) as C;
   }

@@ -1,17 +1,15 @@
 import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
-import { BaseController } from '@controllers';
 import { InteractionService } from './interaction.service';
 import { Interaction } from './interaction.entity';
 import { InteractionDto } from './interaction.dto';
 
 @ApiTags('interaction')
 @Controller('interaction')
-export class InteractionController extends BaseController<Interaction> {
+export class InteractionController {
 
-  constructor(protected readonly service: InteractionService) {
-    super(service);
+  constructor(private readonly service: InteractionService) {
   }
 
   /*

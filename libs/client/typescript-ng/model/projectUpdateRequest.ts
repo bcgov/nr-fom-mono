@@ -25,6 +25,5 @@ export interface ProjectUpdateRequest {
     fspId?: number;
     districtId?: number;
     revisionCount: number;
-    workflowStateCode: string;
 }
 

@@ -76,6 +76,10 @@ parameters:
     displayName: Keycloak Server URL
     name: KEYCLOAK_URL
     value: 'https://dev.oidc.gov.bc.ca/auth'
+  - description: Whether use of Keycloak is enabled. 
+    displayName: Keycloak Enabled
+    name: KEYCLOAK_ENABLED
+    value: 'true'
   - description: Secret key for data encryption within database
     displayName: Data encryption key
     name: DATA_ENCRYPTION_KEY
@@ -87,7 +91,7 @@ objects:
   - kind: ConfigMap
     apiVersion: v1
     data: 
-      hostname: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
+      hostname: ${HOSTNAME}
       # Store this in config map to allow it to be changed.
       keycloak-url: ${KEYCLOAK_URL}
     metadata:
@@ -174,6 +178,8 @@ objects:
                 # This is the application port
                 - name: PORT
                   value: '${PORT}'
+                - name: KEYCLOAK_ENABLED
+                  value: ${KEYCLOAK_ENABLED}
                 - name: KEYCLOAK_URL
                   valueFrom:
                     configMapKeyRef:
@@ -192,27 +198,19 @@ objects:
                   path: /api
                   port: ${{PORT}}
                   scheme: HTTP
-                initialDelaySeconds: 15
-                timeoutSeconds: 15
+                initialDelaySeconds: 30
+                timeoutSeconds: 30
                 periodSeconds: 15
                 successThreshold: 1
-                failureThreshold: 3
-              livenessProbe:
-                httpGet:
-                  path: /api
-                  port: ${{PORT}}
-                  scheme: HTTP
-                timeoutSeconds: 1
-                periodSeconds: 10
-                successThreshold: 1
-                failureThreshold: 3
+                failureThreshold: 30
+              # Don't need a liveness probe because node is executed as the root (only) process in the container, if it crashes the container will get restarted.
               readinessProbe:
                 httpGet:
                   path: /api
                   port: ${{PORT}}
                   scheme: HTTP
-                timeoutSeconds: 1
-                periodSeconds: 10
+                timeoutSeconds: 15
+                periodSeconds: 15
                 successThreshold: 1
                 failureThreshold: 3
               terminationMessagePath: /dev/termination-log
@@ -247,8 +245,11 @@ objects:
         # Number of HTTP requests that a client IP can make in a 3-second period
         # Needs to be high enough to handle normal case of concurrent requests from Admin at startup.
         haproxy.router.openshift.io/rate-limit-connections.rate-http: "20"
+        # Performance testing for BCGW extract and public map needs longer timeout.
+        haproxy.router.openshift.io/timeout: "120s"
     spec:
-      host: ${HOSTNAME}.apps.silver.devops.gov.bc.ca
+      host: ${HOSTNAME}
+      path: /api
       to:
         kind: Service
         name: ${NAME}${SUFFIX}
