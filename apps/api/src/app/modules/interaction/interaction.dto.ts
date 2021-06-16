@@ -1,18 +1,44 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
+import { IsDateString, IsInt, IsOptional, MaxLength, MinLength, ValidateIf } from 'class-validator';
 
-// TODO: Need Request/Response objects.
-export class InteractionDto {
+export class InteractionCreateRequest {
+  constructor(projectId = null, 
+              stakeholder = null, 
+              communicationDate = null, 
+              communicationDetails = null,
+              fileName = null,
+              file = null) {
+    this.projectId = projectId;
+    this.stakeholder = stakeholder;
+    this.communicationDate = communicationDate;
+    this.communicationDetails = communicationDetails;
+    this.fileName = fileName;
+    this.file = file;
+  }
+
   @ApiProperty()
-  stakeholder: string;
-  @ApiProperty()
-  communicationDate: string; // timestamp
-  @ApiProperty()
-  communicationDetails: string;
-  // Relationships
-  @ApiProperty()
+  @IsInt({message: '"$property" must be a number.'})
   projectId: number;
+  
+  @ApiProperty({ required: false })
+  @IsOptional()
+  stakeholder: string;
+
+  @ApiProperty({ required: false })
+  @IsDateString(null, {message: '"$property" must be ISO-formatted date.'})
+  communicationDate?: string;
+
   @ApiProperty()
-  attachmentId: number;
+  @MaxLength(4000)
+  @MinLength(1, {message: '"$property" must have at least 1 character.'}) 
+  communicationDetails: string;
+  
+  fileName: string; 
+
+  file: Buffer;
 }
 
-export class UpdateInteractionDto extends InteractionDto {}
+export class InteractionResponse extends OmitType(InteractionCreateRequest, ['file']) {
+  @ApiProperty({ required: false })
+  attachmentId: number;
+}
