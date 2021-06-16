@@ -7,24 +7,35 @@ import { PinoLogger } from 'nestjs-pino';
 import { User } from 'apps/api/src/core/security/user';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
+import { InteractionCreateRequest, InteractionResponse } from './interaction.dto';
+import _ = require('lodash');
 
 @Injectable()
-export class InteractionService extends DataService<Interaction, Repository<Interaction>, Interaction> {
+export class InteractionService extends DataService<Interaction, Repository<Interaction>, InteractionResponse> {
   constructor(
     @InjectRepository(Interaction)
     repository: Repository<Interaction>,
     logger: PinoLogger,
-    private projectAuthService: ProjectAuthService,
+    private projectAuthService: ProjectAuthService
   ) {
     super(repository, new Interaction(), logger);
   }
 
-  async isCreateAuthorized(dto: any, user?: User): Promise<boolean> {
-    return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, [WorkflowStateEnum.COMMENT_CLOSED], user);
+  async create(request: InteractionCreateRequest, user: User): Promise<InteractionResponse> {
+    const {file, fileName} = request;
+    // TODO: save attachment.
+    const response = await super.create(request, user) as InteractionResponse;
+    return response;
+  }
+
+  async isCreateAuthorized(dto: InteractionCreateRequest, user?: User): Promise<boolean> {
+    return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
+      [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
   
-  async isUpdateAuthorized(dto: unknown, entity: Interaction, user?: User): Promise<boolean> {
-    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, [WorkflowStateEnum.COMMENT_CLOSED], user);
+  async isUpdateAuthorized(dto: InteractionCreateRequest, entity: Interaction, user?: User): Promise<boolean> {
+    return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
+      [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
 
   async isDeleteAuthorized(entity: Interaction, user?: User): Promise<boolean> {
@@ -44,5 +55,17 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     return this.projectAuthService.isForestClientUserAccess(entity.projectId, user);
   }
 
+  protected convertEntity(entity: Interaction): InteractionResponse {
+    const response = new InteractionResponse();
+    response.projectId = entity.projectId;
+    response.stakeholder = entity.stakeholder;
+    response.communicationDate = entity.communicationDate;
+    response.communicationDetails = entity.communicationDetails;
+    response.attachmentId = entity.attachmentId;
+    response.createTimestamp = entity.createTimestamp.toISOString();
+    response.revisionCount = entity.revisionCount;
+    response.id = entity.id;
+    return response;
+  }
 
 }

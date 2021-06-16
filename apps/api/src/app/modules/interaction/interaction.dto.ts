@@ -38,7 +38,16 @@ export class InteractionCreateRequest {
   file: Buffer;
 }
 
-export class InteractionResponse extends OmitType(InteractionCreateRequest, ['file']) {
-  @ApiProperty({ required: false })
+export class InteractionResponse extends OmitType(InteractionCreateRequest, ['file', 'fileName']) {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  revisionCount: number;
+
+  @ApiProperty({ description: 'ISO-formatted timestamp'})
+  createTimestamp: string;
+
+  @ApiProperty()
   attachmentId: number;
 }

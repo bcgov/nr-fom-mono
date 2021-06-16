@@ -53,15 +53,15 @@ export class InteractionController {
   }
 
   @Post()
-  // @ApiBearerAuth()
+  @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: maxFileSizeBytes, files: 1} }))
   @ApiConsumes('multipart/form-data')
   @AttachmentPostBody() // This provides the OpenAPI documentation.
   @ApiResponse({ status: HttpStatus.CREATED })
   async create(
-    // @UserRequiredHeader() user: User,
+    @UserRequiredHeader() user: User,
     @UploadedFile('file') file: Express.Multer.File,
-    @Req() request: Request): Promise<void> {
+    @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? dayjs().format('YYYY-MM-DD')
                       : dayjs(request.body['communicationDate']).format('YYYY-MM-DD');
@@ -81,7 +81,7 @@ export class InteractionController {
         console.log("validate errors: ", errMsgs);
         throw new BadRequestException(`Validation failed (${errMsgs})`);
       }
-      // const created = await this.service.create(request, user); // TODO
+      return this.service.create(createRequest, user);
   }
 
   @Get()
