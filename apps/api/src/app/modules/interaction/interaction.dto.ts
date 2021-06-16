@@ -1,5 +1,5 @@
 import { ApiProperty, OmitType } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsOptional, MaxLength, MinLength, ValidateIf } from 'class-validator';
+import { IsDateString, IsInt, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class InteractionCreateRequest {
   constructor(projectId = null, 
@@ -36,6 +36,9 @@ export class InteractionCreateRequest {
   fileName: string; 
 
   file: Buffer;
+  
+  @ApiProperty()
+  attachmentId: number;
 }
 
 export class InteractionResponse extends OmitType(InteractionCreateRequest, ['file', 'fileName']) {
@@ -47,7 +50,4 @@ export class InteractionResponse extends OmitType(InteractionCreateRequest, ['fi
 
   @ApiProperty({ description: 'ISO-formatted timestamp'})
   createTimestamp: string;
-
-  @ApiProperty()
-  attachmentId: number;
 }
