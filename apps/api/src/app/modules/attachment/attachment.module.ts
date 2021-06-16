@@ -20,6 +20,6 @@ import { ProjectModule } from '../project/project.module';
   ],
   controllers: [AttachmentController, AttachmentTypeCodeController],
   providers: [AttachmentService, AttachmentTypeCodeService],
-  exports: [],
+  exports: [AttachmentService],
 })
 export class AttachmentModule {}
