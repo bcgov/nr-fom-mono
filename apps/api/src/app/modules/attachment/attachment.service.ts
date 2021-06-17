@@ -72,7 +72,14 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async isDeleteAuthorized(entity: Attachment, user?: User):Promise<boolean> {
-    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
+    // for Interaction.
+    if (entity.attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
+      return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+        [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
+    }
+
+    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+      [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
 
   async isViewAuthorized(entity: Attachment, user?: User): Promise<boolean> {

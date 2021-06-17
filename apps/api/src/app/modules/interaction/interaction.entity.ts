@@ -1,7 +1,5 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
-import { Project } from '../project/project.entity';
-import { Attachment } from '../attachment/attachment.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('interaction', {schema: 'app_fom'})
 export class Interaction extends ApiBaseEntity<Interaction> {
@@ -24,10 +22,6 @@ export class Interaction extends ApiBaseEntity<Interaction> {
   @Column({ name: 'project_id'})
   projectId: number;
 
-  // @JoinColumn({ name: 'attachment_id', referencedColumnName: 'id' })
-  // attachment: Attachment;
-
   @Column({ name: 'attachment_id'})
-  // @RelationId((interaction: Interaction) => interaction.attachment)
   attachmentId: number;
 }
