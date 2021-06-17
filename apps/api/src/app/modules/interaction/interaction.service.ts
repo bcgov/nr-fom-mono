@@ -42,7 +42,11 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     // Attachment update
     if (!_.isEmpty(fileName)) {
       const entity = await super.findEntityForUpdate(id);
-      await super.updateEntity(id, {attachmentId: null}, entity); // remove previous attachment from Interaction first.
+      const prviousAttachmentId = entity.attachmentId;
+      if (prviousAttachmentId) {
+        const updated = await super.updateEntity(id, {attachmentId: undefined}, entity); // remove previous attachment from Interaction first.
+        await this.attachmentService.delete(prviousAttachmentId, user);
+      }
       updateRequest.attachmentId = await this.addNewAttachment(updateRequest.projectId, fileName, file, user);
     }
 
