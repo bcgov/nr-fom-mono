@@ -125,7 +125,11 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     return attachmentFileResponse;
   }
 
-  async findByProjectId(projectId: number, user?: User): Promise<AttachmentResponse[]> {
+  /* This function only returns attachments of the following types:
+  * - PUBLIC NOTICE
+  * - SUPPORTING_DOC
+  */
+  async findByProjectIdNoInteraction(projectId: number, user?: User): Promise<AttachmentResponse[]> {
     const criteria = { where: { projectId: projectId } };
 
     if (user && !user.isMinistry) {
@@ -140,10 +144,8 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
       .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
       .addOrderBy('a.attachment_id', 'DESC') // Newest first
       ;
-    if (!user) {
-      // Anonymous users can only see public notices and supporting documents (not interactions).
+
       query.andWhere('a.attachment_type_code IN (:...attachmentTypeCodes)', { attachmentTypeCodes: [AttachmentTypeEnum.PUBLIC_NOTICE, AttachmentTypeEnum.SUPPORTING_DOC] });
-    }
 
     const records:Attachment[] = await query.getMany();
     return records.map(attachment => this.convertEntity(attachment));

@@ -48,12 +48,13 @@ async function bootstrap():Promise<INestApplication> {
   }
 
   const httpAdapter = app.getHttpAdapter().getInstance();
+  httpAdapter.disable("x-powered-by");
   httpAdapter.use(helmet({ 
     crossOriginResourcePolicy: true, 
     crossOriginOpenerPolicy: true,
     crossOriginEmbedderPolicy: true,
-    originAgentCluster: true,
-    contentSecurityPolicy: false 
+    originAgentCluster: false,
+    contentSecurityPolicy: true
   }));
 
   let cacheMiddleware = (req, res, next) => {
