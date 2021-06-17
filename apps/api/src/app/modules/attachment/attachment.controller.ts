@@ -103,7 +103,7 @@ export class AttachmentController {
   async find(
     @UserHeader() user: User,
     @Query('projectId', ParseIntPipe) projectId: number): Promise<AttachmentResponse[]> {
-      return this.service.findByProjectId(projectId, user);
+      return this.service.findByProjectIdNoInteraction(projectId, user);
   }
 
 
