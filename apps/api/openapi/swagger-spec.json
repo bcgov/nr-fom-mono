@@ -303,6 +303,43 @@
           "workflowStateCode"
         ]
       },
+      "InteractionResponse": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "stakeholder": {
+            "type": "string"
+          },
+          "communicationDate": {
+            "type": "string"
+          },
+          "communicationDetails": {
+            "type": "string"
+          },
+          "attachmentId": {
+            "type": "number"
+          },
+          "id": {
+            "type": "number"
+          },
+          "revisionCount": {
+            "type": "number"
+          },
+          "createTimestamp": {
+            "type": "string",
+            "description": "ISO-formatted timestamp"
+          }
+        },
+        "required": [
+          "projectId",
+          "communicationDetails",
+          "id",
+          "revisionCount",
+          "createTimestamp"
+        ]
+      },
       "PublicCommentCreateRequest": {
         "type": "object",
         "properties": {
@@ -1285,6 +1322,155 @@
         },
         "tags": [
           "forest-client"
+        ]
+      }
+    },
+    "/api/interaction": {
+      "post": {
+        "operationId": "InteractionController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "projectId": {
+                    "type": "number"
+                  },
+                  "stakeholder": {
+                    "type": "string"
+                  },
+                  "communicationDate": {
+                    "type": "string"
+                  },
+                  "communicationDetails": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "interaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "InteractionController_find",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InteractionResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "interaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/interaction/{id}": {
+      "put": {
+        "operationId": "InteractionController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "projectId": {
+                    "type": "number"
+                  },
+                  "stakeholder": {
+                    "type": "string"
+                  },
+                  "communicationDate": {
+                    "type": "string"
+                  },
+                  "communicationDetails": {
+                    "type": "string"
+                  },
+                  "revisionCount": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InteractionResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "interaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
         ]
       }
     },
