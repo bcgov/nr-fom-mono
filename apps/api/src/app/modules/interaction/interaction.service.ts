@@ -98,7 +98,8 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
   }
 
   async isDeleteAuthorized(entity: Interaction, user?: User): Promise<boolean> {
-    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, [WorkflowStateEnum.COMMENT_CLOSED], user);
+    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+      [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
 
   async isViewAuthorized(entity: Interaction, user?: User): Promise<boolean> {
