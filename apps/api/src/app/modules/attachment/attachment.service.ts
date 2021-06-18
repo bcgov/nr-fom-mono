@@ -38,8 +38,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     }
 
     // Only one public notice and one interaction can exist per project
-    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE 
-        || attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
+    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
        
       const founds: Attachment[] = await this.repository.find({where: { projectId: request.projectId, attachmentTypeCode: attachmentTypeCode } });
       if (founds.length > 0) {
