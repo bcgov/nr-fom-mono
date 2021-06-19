@@ -1351,6 +1351,9 @@
                   },
                   "communicationDetails": {
                     "type": "string"
+                  },
+                  "filename": {
+                    "type": "string"
                   }
                 }
               }
@@ -1446,6 +1449,9 @@
                   },
                   "revisionCount": {
                     "type": "number"
+                  },
+                  "filename": {
+                    "type": "string"
                   }
                 }
               }

@@ -103,13 +103,14 @@ export class InteractionService {
      * @param stakeholder 
      * @param communicationDate 
      * @param communicationDetails 
+     * @param filename 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -164,6 +165,9 @@ export class InteractionService {
         }
         if (communicationDetails !== undefined) {
             formParams = formParams.append('communicationDetails', <any>communicationDetails) as any || formParams;
+        }
+        if (filename !== undefined) {
+            formParams = formParams.append('filename', <any>filename) as any || formParams;
         }
 
         let responseType: 'text' | 'json' = 'json';
@@ -249,13 +253,14 @@ export class InteractionService {
      * @param communicationDate 
      * @param communicationDetails 
      * @param revisionCount 
+     * @param filename 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<InteractionResponse>;
-    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<InteractionResponse>>;
-    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<InteractionResponse>>;
-    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<InteractionResponse>;
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<InteractionResponse>>;
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<InteractionResponse>>;
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling interactionControllerUpdate.');
         }
@@ -317,6 +322,9 @@ export class InteractionService {
         }
         if (revisionCount !== undefined) {
             formParams = formParams.append('revisionCount', <any>revisionCount) as any || formParams;
+        }
+        if (filename !== undefined) {
+            formParams = formParams.append('filename', <any>filename) as any || formParams;
         }
 
         let responseType: 'text' | 'json' = 'json';
