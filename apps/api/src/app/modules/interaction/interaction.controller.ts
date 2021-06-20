@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, HttpStatus, Query, ParseIntPipe, UseInterceptors, BadRequestException, Req } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, HttpStatus, Query, ParseIntPipe, UseInterceptors, BadRequestException, Req, UploadedFile } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { InteractionService } from './interaction.service';
@@ -93,6 +93,11 @@ export class InteractionController {
     private logger: PinoLogger) {
   }
 
+  // note, for @UploadedFile('file') file field:
+  // Using formData posted, we can obtain fileContent/filename directly from post body, as long as
+  // you defined the fields(also filename field) for it and not necessarily needing to get from Multer.File.
+  // Especially for using generated 'api-client' it can only be obrained from 'body' but from Swagger's
+  // OpenAPI page, you get the file from using @UploadedFile field.
   @Post()
   @ApiBearerAuth()
   @UseInterceptors(FileInterceptor('file', { limits: { fileSize: maxFileSizeBytes, files: 1} }))
@@ -101,7 +106,7 @@ export class InteractionController {
   @ApiResponse({ status: HttpStatus.CREATED })
   async create(
     @UserRequiredHeader() user: User,
-    // @UploadedFile('file') file: Express.Multer.File,
+    @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? dayjs().format(this.DATE_FORMAT)
@@ -111,8 +116,8 @@ export class InteractionController {
         request.body['stakeholder'],
         reqDate,
         request.body['communicationDetails'],
-        request.body['filename'],
-        request.body['file']    // note, using formData posted, we can obtain fileContent/filename directly from post body.
+        file? file.originalname: request.body['filename'],
+        file? file: request.body['file']
       );
 
       // Validate fields.
@@ -143,7 +148,7 @@ export class InteractionController {
   async update(
     @UserRequiredHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
-    // @UploadedFile('file') file: Express.Multer.File,
+    @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? dayjs().format(this.DATE_FORMAT)
@@ -153,8 +158,8 @@ export class InteractionController {
         request.body['stakeholder'],
         reqDate,
         request.body['communicationDetails'],
-        request.body['filename'],
-        request.body['file'],
+        file? file.originalname: request.body['filename'],
+        file? file: request.body['file'],
         id,
         await new ParseIntPipe().transform(request.body['revisionCount'], null)
       );

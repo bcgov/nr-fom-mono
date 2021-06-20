@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDateString, IsInt, IsPositive, MaxLength, Min, MinLength } from 'class-validator';
+import _ = require('lodash');
 
 export class InteractionCreateRequest {
   constructor(projectId = null, 
@@ -12,7 +13,7 @@ export class InteractionCreateRequest {
     this.stakeholder = stakeholder;
     this.communicationDate = communicationDate;
     this.communicationDetails = communicationDetails;
-    this.fileName = fileName;
+    this.fileName = (!_.isNil(fileName) && fileName !== 'null')? fileName: null;
     this.file = file;
   }
 

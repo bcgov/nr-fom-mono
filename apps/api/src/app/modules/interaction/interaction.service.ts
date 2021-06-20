@@ -28,7 +28,7 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
   async create(request: InteractionCreateRequest, user: User): Promise<InteractionResponse> {
     const {file, fileName} = request;
     // save attachment first.
-    if (!_.isEmpty(fileName)) {
+    if (!_.isNil(fileName) && !_.isEmpty(fileName)) {
       request.attachmentId = await this.addNewAttachment(request.projectId, fileName, file, user);
     }
 
@@ -40,7 +40,7 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     const {file, fileName} = updateRequest;
 
     // Attachment update
-    if (!_.isEmpty(fileName)) {
+    if (!_.isNil(fileName) && !_.isEmpty(fileName)) {
       const entity = await super.findEntityForUpdate(id);
       const prviousAttachmentId = entity.attachmentId;
       if (prviousAttachmentId) {
