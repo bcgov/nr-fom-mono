@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Interaction } from './interaction.entity';
@@ -42,6 +42,9 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     // Attachment update
     if (!_.isNil(fileName) && !_.isEmpty(fileName)) {
       const entity = await super.findEntityForUpdate(id);
+      if (entity == undefined) {
+        throw new BadRequestException("Entity does not exist.");
+      }
       const prviousAttachmentId = entity.attachmentId;
       if (prviousAttachmentId) {
         const updated = await super.updateEntity(id, {attachmentId: undefined}, entity); // remove previous attachment from Interaction first.
@@ -53,6 +56,20 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     // update interaction.
     updateRequest = _.omit(updateRequest, ['fileName', 'file']) as InteractionUpdateRequest;
     return super.update(id, updateRequest, user);
+  }
+
+  async delete(id: number, user?: User): Promise<void> {
+    const entity = await super.findEntityForUpdate(id);
+    if (entity == undefined) {
+      return;
+    }
+    const attachmentId = entity.attachmentId;
+
+    await super.delete(id, user);
+    if (attachmentId) {
+      await this.attachmentService.delete(attachmentId, user);
+    }
+    return;
   }
 
   private async addNewAttachment(projectId: number, fileName: string, file: Buffer, user: User): Promise<number> {
