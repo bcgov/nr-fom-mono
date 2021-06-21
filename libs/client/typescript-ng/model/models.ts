@@ -3,6 +3,7 @@ export * from './attachmentTypeCode';
 export * from './commentScopeCode';
 export * from './districtResponse';
 export * from './forestClientResponse';
+export * from './interactionResponse';
 export * from './keycloakConfig';
 export * from './projectCreateRequest';
 export * from './projectPublicSummaryResponse';

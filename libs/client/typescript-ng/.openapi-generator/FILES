@@ -6,6 +6,7 @@ api/attachment.service.ts
 api/auth.service.ts
 api/district.service.ts
 api/forestClient.service.ts
+api/interaction.service.ts
 api/project.service.ts
 api/publicComment.service.ts
 api/spatialFeature.service.ts
@@ -19,6 +20,7 @@ model/attachmentTypeCode.ts
 model/commentScopeCode.ts
 model/districtResponse.ts
 model/forestClientResponse.ts
+model/interactionResponse.ts
 model/keycloakConfig.ts
 model/models.ts
 model/projectCreateRequest.ts

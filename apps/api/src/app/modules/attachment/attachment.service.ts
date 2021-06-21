@@ -26,26 +26,27 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const allowedExtensionsForPublicNotice: string[] = ['jpg', 'jpeg', 'png', 'tif', 'pdf'];
     const allowedExtensionsForOthers: string[] = ['doc', 'docx', 'pdf', 'jpg', 'jpeg', 'xls', 'xlsx', 'csv', 'msg', 'png', 'txt', 'rtf', 'tif'];
 
+    const attachmentTypeCode = request.attachmentTypeCode;
     let allowedExtensions: string[] = allowedExtensionsForOthers;
-    if (request.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
+    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
       allowedExtensions = allowedExtensionsForPublicNotice;
     }
 
     const fileExtension:string = request.fileName.split('.').pop();
     if (!allowedExtensions.includes(fileExtension)) {
-      throw new BadRequestException("Attachment of that extension not permitted.");
+      throw new BadRequestException(`Attachment of ${fileExtension} extension not permitted for ${attachmentTypeCode} attachment.`);
     }
 
-    // Only one public notice can exist per project
-    if (request.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
-
-      const publicNotices:Attachment[] = await this.repository.find({where: { projectId: request.projectId, attachmentTypeCode: AttachmentTypeEnum.PUBLIC_NOTICE } });
-      if (publicNotices.length > 0) {
+    // Only one public notice and one interaction can exist per project
+    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
+       
+      const founds: Attachment[] = await this.repository.find({where: { projectId: request.projectId, attachmentTypeCode: attachmentTypeCode } });
+      if (founds.length > 0) {
         // Need to do a security check before we actually delete the existing public notice. In this case, create permission implies delete permission.
         if (!this.isCreateAuthorized(request, user)) {
           throw new ForbiddenException();
         }
-        await this.repository.delete(publicNotices[0].id);
+        await this.repository.delete(founds[0].id);
 
         // Now that the public notice is deleted, we can proceed with the regular creation.
       }
@@ -55,7 +56,14 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async isCreateAuthorized(dto: AttachmentCreateRequest, user?: User): Promise<boolean> {
-    return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
+    if (dto.attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
+      return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
+        [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
+    }
+    else {
+      return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
+        [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
+    }
   }
   
   async isUpdateAuthorized(dto: any, entity: Attachment, user?: User):Promise<boolean> {
@@ -63,7 +71,14 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async isDeleteAuthorized(entity: Attachment, user?: User):Promise<boolean> {
-    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
+    // for Interaction.
+    if (entity.attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
+      return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+        [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
+    }
+
+    return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+      [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
 
   async isViewAuthorized(entity: Attachment, user?: User): Promise<boolean> {

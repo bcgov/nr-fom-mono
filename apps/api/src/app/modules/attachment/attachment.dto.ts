@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-import { AttachmentTypeCode, AttachmentTypeEnum } from './attachment-type-code.entity';
+import { AttachmentTypeCode } from './attachment-type-code.entity';
 
 // See AttachmentController.create for why these are not annotated with @ApiProperty.
 export class AttachmentCreateRequest {

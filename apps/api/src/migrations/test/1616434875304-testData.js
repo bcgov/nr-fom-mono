@@ -280,6 +280,13 @@ module.exports = class testdata1616434875304 {
         , (44, 4, 'INTERACTION', 'interaction2.txt', 'file contents here', 'testdata')
         ;
         
+        -- app_fom.interaction - inserts
+        INSERT INTO app_fom.interaction(
+            interaction_id, project_id, attachment_id, stakeholder, communication_date, communication_details, revision_count, create_user) VALUES
+        (43, 4, 43, 'Bordering Land Owner Bob', '2021-06-18', 'Anonymous feedback from someone. Lorem ipsum dolor sit amet', 1, 'testdata')
+        , (44, 4, 44, 'Pacific Mining Owner Scott', '2021-06-18', 'Anonymous feedback from someone. Lorem ipsum dolor sit amet', 1, 'testdata')
+        ;
+
         `);
   }
 

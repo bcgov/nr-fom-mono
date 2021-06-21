@@ -1,7 +1,5 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
-import { Project } from '../project/project.entity';
-import { Attachment } from '../attachment/attachment.entity';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('interaction', {schema: 'app_fom'})
 export class Interaction extends ApiBaseEntity<Interaction> {
@@ -21,19 +19,9 @@ export class Interaction extends ApiBaseEntity<Interaction> {
   @Column({ name: 'communication_details'})
   communicationDetails: string;
 
-  @ManyToOne(() => Project, { eager: true })
-  @JoinColumn({ name: 'project_id', referencedColumnName: 'id' })
-  project: Project;
-
   @Column({ name: 'project_id'})
-  @RelationId((interaction: Interaction) => interaction.project)
   projectId: number;
 
-  @ManyToOne(() => Attachment, { eager: true })
-  @JoinColumn({ name: 'attachment_id', referencedColumnName: 'id' })
-  attachment: Attachment;
-
   @Column({ name: 'attachment_id'})
-  @RelationId((interaction: Interaction) => interaction.attachment)
   attachmentId: number;
 }
