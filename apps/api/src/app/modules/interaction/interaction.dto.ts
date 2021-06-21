@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsPositive, MaxLength, Min, MinLength } from 'class-validator';
+import { IsDateString, IsInt, IsPositive, maxLength, MaxLength, Min, MinLength } from 'class-validator';
 import _ = require('lodash');
 
 export class InteractionCreateRequest {
@@ -22,6 +22,7 @@ export class InteractionCreateRequest {
   projectId: number;
   
   @ApiProperty({ required: false })
+  @MaxLength(55)
   stakeholder: string;
 
   @ApiProperty({ required: false })
