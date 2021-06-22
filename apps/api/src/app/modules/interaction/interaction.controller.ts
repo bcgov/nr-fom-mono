@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Param, HttpStatus, Query, ParseIntPipe, UseInterceptors, BadRequestException, Req, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Put, Param, HttpStatus, Query, ParseIntPipe, UseInterceptors, BadRequestException, Req, UploadedFile, Delete } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { InteractionService } from './interaction.service';
@@ -172,6 +172,15 @@ export class InteractionController {
         throw new BadRequestException(`Validation failed (${errMsgs})`);
       }
       return this.service.update(id, updateRequest, user);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK })
+  async remove(
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number) {
+    this.service.delete(id, user);
   }
 
 }
