@@ -21,11 +21,11 @@ DELETE FROM app_fom.project where project_id >= 1000;
 }
 
 function generateProjectInserts(index, isCommentingOpen, point) {
-    id = 1000+index;
-    cutblockId=id+index*4;
-    x = point.x;
-    y = point.y;
-    state = isCommentingOpen ? 'COMMENT_OPEN' : 'COMMENT_CLOSED';
+    const id = 1000+index;
+    const cutblockId=id+index*4;
+    const x = point.x;
+    const y = point.y;
+    const state = isCommentingOpen ? 'COMMENT_OPEN' : 'COMMENT_CLOSED';
 
     console.log(`
 INSERT INTO app_fom.project(
@@ -53,22 +53,22 @@ function generateAllProjectInserts() {
     const topRight = {x: 1125486, y:1670000 };
     const botLeft = { x: 1007859, y:459000 };
 
-    numYears = 3;
-    numProjects = 1000 * numYears;
+    const numYears = 3;
+    const numProjects = 1000 * numYears;
 
-    projectsPerRow = Math.sqrt(numProjects);
-    numRows = (numProjects / projectsPerRow);
+    const projectsPerRow = Math.sqrt(numProjects);
+    const numRows = (numProjects / projectsPerRow);
 
     const xDelta = (topRight.x - topLeft.x)/Math.sqrt(numProjects);
     const yDelta = (botLeft.y - topLeft.y)/Math.sqrt(numProjects);
     const startXDelta = (botLeft.x - topLeft.x)/Math.sqrt(numProjects);
     
-    projectIndex = 1;
+    let projectIndex = 1;
     for (col = 0; col < projectsPerRow; col++) {
         for (row = 0; row < numRows; row++) {
-            x = topLeft.x + (row*startXDelta) + xDelta * col + (Math.random()*2-1)*xDelta;            
-            y = topLeft.y + yDelta * row + (Math.random()*2-1)*yDelta;
-            commentingOpen = (projectIndex % (12*numYears) == 0);
+            const x = topLeft.x + (row*startXDelta) + xDelta * col + (Math.random()*2-1)*xDelta;            
+            const y = topLeft.y + yDelta * row + (Math.random()*2-1)*yDelta;
+            const commentingOpen = (projectIndex % (12*numYears) == 0);
             generateProjectInserts(projectIndex, commentingOpen, { x: x, y: y})
             projectIndex++;
         }

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger, PinoLogger } from 'nestjs-pino';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
@@ -112,13 +112,16 @@ async function postStartup(app: INestApplication) {
 }
 
 async function start() {
-  const app = await bootstrap();
-  app.get(Logger).log("Done regular startup.");
-  postStartup(app); // Don't await so non-blocking - allows OpenShift container (pod) to be marked ready for traffic.
+  try {
+    const app = await bootstrap();
+    app.get(Logger).log("Done regular startup.");
+    // Don't await so non-blocking - allows OpenShift container (pod) to be marked ready for traffic.
+    postStartup(app).catch((postError) => {
+      console.log('Error during post startup: ' + JSON.stringify(postError));
+    });
+  } catch (error) {
+    console.log('Error during application startup: ' + JSON.stringify(error));
+  }  
 }
 
-try {
-  start();
-} catch (error) {
-  console.log('Error during application startup: ' + JSON.stringify(error));
-}
+start();

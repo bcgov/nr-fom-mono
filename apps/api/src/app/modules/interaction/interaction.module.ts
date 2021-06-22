@@ -7,7 +7,6 @@ import { InteractionController } from './interaction.controller';
 import { SecurityModule } from 'apps/api/src/core/security/security.module';
 import { ProjectModule } from '../project/project.module';
 import { AttachmentModule } from '../attachment/attachment.module';
-import { AttachmentService } from '../attachment/attachment.service';
 
 @Module({
   imports: [

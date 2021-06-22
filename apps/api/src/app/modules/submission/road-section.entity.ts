@@ -7,7 +7,6 @@ import {
   ManyToOne,
   RelationId
 } from 'typeorm';
-import { PublicComment } from '../public-comment/public-comment.entity';
 import { Submission } from './submission.entity';
 
 @Entity('road_section', { schema: 'app_fom' })
