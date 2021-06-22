@@ -239,7 +239,7 @@ export class SubmissionService {
     const spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
     spatialObjs.forEach((s) => {s.submissionId = submissionId}); // assign them to the submission 
 
-    this.logger.info(`FOM spatial objects prepared: ${JSON.stringify(spatialObjs)}`);
+    this.logger.debug('FOM spatial objects prepared: %o', spatialObjs);
     return spatialObjs;
   }
   
@@ -248,8 +248,8 @@ export class SubmissionService {
   // update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
   // update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
   async updateGeospatialAreaOrLength(spatialObjectCode: SpatialObjectCodeEnum, submissionId: number, spatialObjects: SpatialObject[]) {
-    this.logger.info(`Method updateGeospatialAreaOrLength called with spatialObjectCode:${spatialObjectCode}, 
-      submissionId:${submissionId} and spatialObjects:${JSON.stringify(spatialObjects)}`)
+    this.logger.debug(`Method updateGeospatialAreaOrLength called with spatialObjectCode:${spatialObjectCode}, 
+      submissionId:${submissionId} and spatialObjects: %o`, spatialObjects);
     let entityName: string;
     let setClause: object;
     switch (spatialObjectCode) {

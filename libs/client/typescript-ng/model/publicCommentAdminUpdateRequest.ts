@@ -9,11 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ResponseCodeEnum } from './responseCodeEnum';
 
 
 export interface PublicCommentAdminUpdateRequest { 
     revisionCount: number;
-    responseCode: string;
+    responseCode: ResponseCodeEnum;
     responseDetails: string;
 }
 

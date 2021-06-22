@@ -22,7 +22,7 @@ export class PublicCommentCreateRequest {
 
   @ApiProperty()
   @MaxLength(4000) // Confirmed by business
-  @MinLength(5) 
+  @MinLength(1) 
   feedback: string;
 
   @ApiProperty()
@@ -53,7 +53,7 @@ export class PublicCommentAdminUpdateRequest {
   @IsNumber()
   revisionCount: number;
 
-  @ApiProperty()
+  @ApiProperty({ enum: ResponseCodeEnum, enumName: 'ResponseCodeEnum'})
   @IsEnum(ResponseCodeEnum)
   responseCode: string;
 
@@ -81,4 +81,7 @@ export class PublicCommentAdminResponse extends OmitType(PublicCommentCreateRequ
   
   @ApiProperty()
   responseDetails?: string;
+
+  @ApiProperty()
+  scopeFeatureName?: string; //cutBlock.name or roadSection.name
 }

@@ -1,24 +1,21 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe, ParseBoolPipe } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import * as dayjs from 'dayjs';
-import { BaseController } from '@controllers';
+
 import { ProjectService, ProjectFindCriteria } from './project.service';
-import { Project } from './project.entity';
 import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
-import { ProjectSpatialDetailService } from './project-spatial-detail.service'
-import { ProjectSpatialDetail } from './project-spatial-detail.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
+import { PinoLogger } from 'nestjs-pino';
 
 
 @ApiTags('project')
 @Controller('project')
-export class ProjectController extends BaseController<Project> {
+export class ProjectController {
   constructor(
-    protected readonly service: ProjectService,
-    private projectSpatialDetailService: ProjectSpatialDetailService) {
-    super(service);
+    private readonly service: ProjectService,
+    private readonly logger: PinoLogger) {
   }
 
   // Anonymous access allowed
@@ -58,14 +55,10 @@ export class ProjectController extends BaseController<Project> {
         findCriteria.commentingOpenedOnOrAfter = dayjs(openedOnOrAfter).format(DATE_FORMAT);
       } 
 
-      return this.service.findPublicSummaries(findCriteria);
-  }
+      // Logging at info level to help measure performance.
+      this.logger.info('get /project/publicSummary with criteria %o', findCriteria);
 
-  // Anonymous access allowed
-  @Get('/spatialDetails/:id') 
-  @ApiResponse({ status: HttpStatus.OK, type: [ProjectSpatialDetail] })
-  async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
-    return this.projectSpatialDetailService.findByProjectId(id);
+      return this.service.findPublicSummaries(findCriteria);
   }
 
   // Anonymous access allowed
@@ -74,7 +67,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
   async findOne(
     @UserHeader() user: User,
-    @Param('id') id: number): Promise<ProjectResponse> {
+    @Param('id', ParseIntPipe) id: number): Promise<ProjectResponse> {
     return this.service.findOne(id, user, {
       relations: ['district', 'forestClient', 'workflowState'],
     });
@@ -89,8 +82,8 @@ export class ProjectController extends BaseController<Project> {
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectResponse] })
   async find(
     @UserRequiredHeader() user: User,
-    @Query('fspId') fspId?: number,
-    @Query('districtId') districtId?: number,
+    @Query('fspId') fspId?: string,
+    @Query('districtId') districtId?: string,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectResponse[]> {
@@ -98,10 +91,10 @@ export class ProjectController extends BaseController<Project> {
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
       if (fspId) {
-        findCriteria.fspId = fspId;
+        findCriteria.fspId = await new ParseIntPipe().transform(fspId, null);
       }
       if (districtId) {
-        findCriteria.districtId = districtId;
+        findCriteria.districtId = await new ParseIntPipe().transform(districtId, null);
       }
       if (workflowStateCode) {
         findCriteria.includeWorkflowStateCodes.push(workflowStateCode);
@@ -116,7 +109,6 @@ export class ProjectController extends BaseController<Project> {
       if (!user.isAuthorizedForAdminSite()) {
         throw new ForbiddenException();
       }
-
       return this.service.find(findCriteria);
   }
 
@@ -136,7 +128,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiBody({ type: ProjectUpdateRequest })
   async update(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectUpdateRequest
   ): Promise<ProjectResponse> {
     return this.service.update(id, request, user);
@@ -148,7 +140,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiBody({ type: ProjectWorkflowStateChangeRequest })
   async stateChange(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectWorkflowStateChangeRequest
   ): Promise<ProjectResponse> {
     return this.service.workflowStateChange(id, request, user);
@@ -159,7 +151,7 @@ export class ProjectController extends BaseController<Project> {
   @ApiResponse({ status: HttpStatus.OK })
   async remove(
     @UserRequiredHeader() user: User,
-    @Param('id') id: number) {
+    @Param('id', ParseIntPipe) id: number) {
     this.service.delete(id, user);
   }
 }

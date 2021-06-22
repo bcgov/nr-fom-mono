@@ -6,12 +6,11 @@ import { SubmissionRequest } from './submission.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
 
-// Don't need all the normal CRUD operations accessible via API so don't extend BaseController.
 @ApiTags('submission')
 @Controller('submission')
 export class SubmissionController {
  
-  constructor(readonly service: SubmissionService) {}
+  constructor(private readonly service: SubmissionService) {}
 
   @Post()
   @ApiBearerAuth()

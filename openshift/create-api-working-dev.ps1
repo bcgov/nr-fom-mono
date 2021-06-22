@@ -2,4 +2,4 @@
 
 #DeleteApiStack -Suffix "-working-dev" -Env "dev"
 
-CreateApiStack -Suffix "-working-dev" -Env "dev" -ApiVersion "dev" -TestData "true"
+CreateApiStack -Suffix "-working-dev" -Env "dev" -ApiVersion "dev" -TestData "true" -ReplicaCount 1

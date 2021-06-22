@@ -81,7 +81,7 @@ export abstract class DataService<
     this.logger.debug(`${this.constructor.name}.create dto %o`, requestDto);
 
     if (! await this.isCreateAuthorized(requestDto, user)) {
-      throw new ForbiddenException();
+      throw new ForbiddenException(`User ${user.userName} is not granted for 'create' action.`);
     }
 
     requestDto.createUser = user ? user.userName : 'Anonymous';

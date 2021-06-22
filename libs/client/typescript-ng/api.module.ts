@@ -6,8 +6,10 @@ import { AttachmentService } from './api/attachment.service';
 import { AuthService } from './api/auth.service';
 import { DistrictService } from './api/district.service';
 import { ForestClientService } from './api/forestClient.service';
+import { InteractionService } from './api/interaction.service';
 import { ProjectService } from './api/project.service';
 import { PublicCommentService } from './api/publicComment.service';
+import { SpatialFeatureService } from './api/spatialFeature.service';
 import { SubmissionService } from './api/submission.service';
 
 @NgModule({

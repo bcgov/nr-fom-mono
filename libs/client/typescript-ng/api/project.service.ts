@@ -20,8 +20,8 @@ import { Observable }                                        from 'rxjs';
 import { ProjectCreateRequest } from '../model/models';
 import { ProjectPublicSummaryResponse } from '../model/models';
 import { ProjectResponse } from '../model/models';
-import { ProjectSpatialDetail } from '../model/models';
 import { ProjectUpdateRequest } from '../model/models';
+import { ProjectWorkflowStateChangeRequest } from '../model/models';
 import { WorkflowStateCode } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
@@ -158,10 +158,10 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectResponse>>;
-    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectResponse>>>;
-    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectResponse>>>;
-    public projectControllerFind(fspId?: number, districtId?: number, workflowStateCode?: string, forestClientName?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectResponse>>;
+    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectResponse>>>;
+    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectResponse>>>;
+    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
         if (fspId !== undefined && fspId !== null) {
@@ -339,50 +339,6 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerGetSpatialDetails(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectSpatialDetail>>;
-    public projectControllerGetSpatialDetails(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectSpatialDetail>>>;
-    public projectControllerGetSpatialDetails(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectSpatialDetail>>>;
-    public projectControllerGetSpatialDetails(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling projectControllerGetSpatialDetails.');
-        }
-
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<Array<ProjectSpatialDetail>>(`${this.configuration.basePath}/api/project/spatialDetails/${encodeURIComponent(String(id))}`,
-            {
-                responseType: <any>responseType,
-                withCredentials: this.configuration.withCredentials,
-                headers: headers,
-                observe: observe,
-                reportProgress: reportProgress
-            }
-        );
-    }
-
-    /**
-     * @param id 
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
     public projectControllerRemove(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
     public projectControllerRemove(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
     public projectControllerRemove(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
@@ -418,6 +374,71 @@ export class ProjectService {
         }
 
         return this.httpClient.delete<any>(`${this.configuration.basePath}/api/project/${encodeURIComponent(String(id))}`,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param id 
+     * @param projectWorkflowStateChangeRequest 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public projectControllerStateChange(id: number, projectWorkflowStateChangeRequest: ProjectWorkflowStateChangeRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<ProjectResponse>;
+    public projectControllerStateChange(id: number, projectWorkflowStateChangeRequest: ProjectWorkflowStateChangeRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<ProjectResponse>>;
+    public projectControllerStateChange(id: number, projectWorkflowStateChangeRequest: ProjectWorkflowStateChangeRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<ProjectResponse>>;
+    public projectControllerStateChange(id: number, projectWorkflowStateChangeRequest: ProjectWorkflowStateChangeRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling projectControllerStateChange.');
+        }
+        if (projectWorkflowStateChangeRequest === null || projectWorkflowStateChangeRequest === undefined) {
+            throw new Error('Required parameter projectWorkflowStateChangeRequest was null or undefined when calling projectControllerStateChange.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.put<ProjectResponse>(`${this.configuration.basePath}/api/project/workflowState/${encodeURIComponent(String(id))}`,
+            projectWorkflowStateChangeRequest,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
