@@ -106,6 +106,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     response.attachmentType = entity.attachmentType;
     response.fileName = entity.fileName;
     response.id = entity.id;
+    response.createTimestamp = entity.createTimestamp;
 
     return response;
   }
