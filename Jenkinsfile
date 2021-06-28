@@ -10,7 +10,7 @@ pipeline {
         echo "Aborting all running jobs ..."
         script {
           abortAllPreviousBuildInProgress(currentBuild)
-          sh "npx @bcgov/nrdk build --pr=${CHANGE_ID}"
+          sh "npx @bcgov/nrdk build --pr=${CHANGE_ID} --no-rfc-validation"
         }
       }
     }
@@ -41,7 +41,7 @@ pipeline {
           script {
             // Use Pipeline-cli node project to deploy the wiof-build image to Dev Stage
             echo "Deploying to DEV ..."
-            sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=dev"
+            sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=dev --no-rfc-validation"
           }
         }
     }
@@ -74,7 +74,7 @@ pipeline {
             script {
               // Use Pipeline-cli node project to deploy the wiof-build image to Test Stage
               echo "Deploying to Test ..."
-              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=test"
+              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=test --no-rfc-validation"
             }
           }
       }
@@ -107,7 +107,7 @@ pipeline {
             script {
               // Use Pipeline-cli node project to deploy the wiof-build image to Prod Stage
               echo "Deploying to Prod ..."
-              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=prod"
+              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=prod --no-rfc-validation"
             }
         }
       }
