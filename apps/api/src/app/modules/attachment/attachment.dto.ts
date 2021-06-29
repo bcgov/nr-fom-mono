@@ -25,6 +25,9 @@ export class AttachmentResponse {
 
   @ApiProperty()
   attachmentType: AttachmentTypeCode;
+  
+  @ApiProperty()
+  createTimestamp: Date;
 
   // Don't need revisionCount because updates are not allowed.
 }

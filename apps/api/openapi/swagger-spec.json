@@ -69,13 +69,18 @@
           },
           "attachmentType": {
             "$ref": "#/components/schemas/AttachmentTypeCode"
+          },
+          "createTimestamp": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
           "id",
           "projectId",
           "fileName",
-          "attachmentType"
+          "attachmentType",
+          "createTimestamp"
         ]
       },
       "ProjectPublicSummaryResponse": {
