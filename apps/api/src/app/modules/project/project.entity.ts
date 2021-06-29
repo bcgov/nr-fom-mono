@@ -3,7 +3,6 @@ import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, Relation
 import { WorkflowStateCode } from './workflow-state-code.entity';
 import { District } from '../district/district.entity';
 import { ForestClient } from '../forest-client/forest-client.entity';
-import { Submission } from '../submission/submission.entity';
 import { FomPoint } from './project.dto';
 
 @Entity('project', {schema: 'app_fom'})
@@ -56,8 +55,5 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'workflow_state_code'})
   @RelationId((project: Project) => project.workflowState)
   workflowStateCode: string;
-
-  @OneToMany(type => Submission, (submission) => submission.projectId)
-  submissions: Submission[];
 
 }

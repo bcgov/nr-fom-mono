@@ -120,7 +120,6 @@ export class SubmissionService {
       where: { projectId: projectId, submissionTypeCode: submissionTypeCode },
       relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
     });
-    this.logger.info('# existing submissions ' + existingSubmissions.length);
 
     var submission: Submission;
     if (existingSubmissions.length == 0) {
