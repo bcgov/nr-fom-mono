@@ -62,7 +62,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     }
     else {
       return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
-        [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
+        [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
     }
   }
   
@@ -78,7 +78,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     }
 
     return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
-      [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user);
+      [WorkflowStateEnum.INITIAL], user);
   }
 
   async isViewAuthorized(entity: Attachment, user?: User): Promise<boolean> {
