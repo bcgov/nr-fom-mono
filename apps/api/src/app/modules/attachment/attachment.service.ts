@@ -77,7 +77,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
         [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
     }
 
-    // for public notice; // public notice can't be deleted but can be replaced.
+    // for public notice; public notice can't be deleted but can be replaced after initial state.
     if (entity.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
       return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
         [WorkflowStateEnum.INITIAL], user);
