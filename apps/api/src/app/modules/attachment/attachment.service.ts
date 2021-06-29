@@ -77,8 +77,15 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
         [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
     }
 
+    // for public notice; // public notice can't be deleted but can be replaced.
+    if (entity.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
+      return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+        [WorkflowStateEnum.INITIAL], user);
+    }
+
+    // for other types, like supporting doc
     return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
-      [WorkflowStateEnum.INITIAL], user);
+      [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
   }
 
   async isViewAuthorized(entity: Attachment, user?: User): Promise<boolean> {
