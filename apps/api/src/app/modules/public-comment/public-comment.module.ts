@@ -12,15 +12,16 @@ import { CommentScopeCode } from './comment-scope-code.entity';
 import { ResponseCode } from './response-code.entity';
 import { ResponseCodeController } from './response-code.controller';
 import { ResponseCodeService } from './response-code.service';
+import { ProjectAuthModule } from '../project/project-auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PublicComment, CommentScopeCode, ResponseCode]),
-    ProjectModule,
+    ProjectAuthModule,
     SecurityModule,
   ],
   controllers: [PublicCommentController, CommentScopeCodeController, ResponseCodeController],
   providers: [PublicCommentService, CommentScopeCodeService, ResponseCodeService],
-  exports: [],
+  exports: [PublicCommentService],
 })
 export class PublicCommentModule {}

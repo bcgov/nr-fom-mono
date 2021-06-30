@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository, Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
@@ -15,8 +15,6 @@ import { isNil } from 'lodash';
 import { SubmissionTypeCodeEnum } from '../submission/submission-type-code.entity';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { PublicCommentService } from '../public-comment/public-comment.service';
-import { Attachment } from '../attachment/attachment.entity';
-import { PublicComment } from '../public-comment/public-comment.entity';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
 
 export class ProjectFindCriteria {
@@ -64,6 +62,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     private districtService: DistrictService,
     private forestClientService: ForestClientService,
     private attachmentService: AttachmentService,
+    private publicCommentService: PublicCommentService
   ) {
     super(repository, new Project(), logger);
   }
@@ -385,18 +384,15 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // Public Notice attached
-      // const publicNotices = await this.attachmentService.findByProjectIdAndAttachmentTypes(entity.id, 
-      //                       [AttachmentTypeEnum.PUBLIC_NOTICE]);
-      const publicNotices = await this.findByProjectIdAndAttachmentTypes(entity.id, 
-        [AttachmentTypeEnum.PUBLIC_NOTICE]);
+      const publicNotices = await this.attachmentService.findByProjectIdAndAttachmentTypes(entity.id, 
+                            [AttachmentTypeEnum.PUBLIC_NOTICE]);
       if (!publicNotices || publicNotices.length == 0) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         Public Notice is required.`);
       }
 
       // All comments classified
-      // const publicComments = await this.publicCommentService.findByProjectId(entity.id, user);
-      const publicComments = await this.findPublicCommentsByProjectId(entity.id);
+      const publicComments = await this.publicCommentService.findByProjectId(entity.id, user);
       if (publicComments && publicComments.length > 0) {
         const unClassifiedComments = publicComments.filter(p => p.response == null);
         if (unClassifiedComments && unClassifiedComments.length > 0) {
@@ -435,32 +431,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     catch (error) {
       return false;
     }
-  }
-
-  // TODO: remove if AttachmentService injection works.
-  async findByProjectIdAndAttachmentTypes(projectId: number, attachmentTypeCodes: AttachmentTypeEnum[]): Promise<Attachment[]> {
-    
-    const attachmentRepository = getRepository(Attachment);
-
-    const query = attachmentRepository.createQueryBuilder("a")
-      .leftJoinAndSelect("a.attachmentType", "attachmentType")
-      .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
-      .andWhere('a.attachment_type_code IN (:...attachmentTypeCodes)', 
-                { attachmentTypeCodes: attachmentTypeCodes})
-      .addOrderBy('a.attachment_id', 'DESC');
-
-    return await query.getMany();
-  }
-
-  // TODO: remove if PublicCommentService injection works.
-  async findPublicCommentsByProjectId(projectId: number): Promise<PublicComment[]>{
-    const publicCommentRepository = getRepository(PublicComment);
-    const query = publicCommentRepository.createQueryBuilder("a")
-      .leftJoinAndSelect("a.response", "response")
-      .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
-      .addOrderBy('a.project_id', 'DESC');
-
-    return await query.getMany();
   }
 
 }
