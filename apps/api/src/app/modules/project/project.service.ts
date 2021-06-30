@@ -304,8 +304,9 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       // We query for projects with dates not only equal but also before the current date in case the batch process happens to not run one day, the subsequent day's 
       // execution will set everything to the proper state.
 
-      // Query for projects with workflowState = PUBLISHED and COMMENT_OPEN_DATE equal to or before today and update to have workflow state = COMMENT_OPEN
-      // Query for projects with workflowState = COMMENT_OPEN and COMMENT_CLOSED_DATE equal to or before today and update to have workflow state = COMMENT_CLOSED
+      // Query for projects with workflowState = PUBLISHED and COMMENT_OPEN_DATE equal to or before today: update to have workflow state = COMMENT_OPEN
+      // Query for projects with workflowState = COMMENT_OPEN and COMMENT_CLOSED_DATE equal to or before today:  update to have workflow state = COMMENT_CLOSED
+      // Query for projects with workflowState = FINALIZED and COMMENT_OPEN_DATE more than 3 years ago (need to check regarding exact business rule): update to have workflow state = EXPIRED
 
       // TODO: Implement.
 

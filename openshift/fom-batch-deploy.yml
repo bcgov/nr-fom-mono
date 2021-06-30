@@ -117,8 +117,6 @@ objects:
           deploymentconfig: fom-db${SUFFIX}
       ingress:
         - from:
-            # Empty pod selector selects all pods in the namespace - haven't figured out how to scope to only the Cron job pods, as they have
-            # dynamically-generated labels.
            - podSelector:
                matchLabels:
                  cronjob: ${NAME}${SUFFIX}
