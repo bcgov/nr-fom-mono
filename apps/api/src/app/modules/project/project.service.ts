@@ -281,12 +281,13 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         throw new InternalServerErrorException("Unrecognized requested workflow state " + request.workflowStateCode);
     }
 
-    entity.revisionCount +=1;
-    entity.updateUser = user.userName;
-    entity.updateTimestamp = new Date();  
-    entity.workflowStateCode = request.workflowStateCode;
-
-    const updateCount = (await this.repository.update(projectId, entity)).affected;
+    // Do not pass entity itself to repository.update(). Only pass the partial.
+    const updatePartial = {revisionCount: entity.revisionCount + 1, 
+                        updateUser: user.userName,
+                        updateTimestamp: new Date(),
+                        workflowStateCode: request.workflowStateCode
+                      };
+    const updateCount = (await this.repository.update(projectId, updatePartial)).affected;
     if (updateCount != 1) {
       throw new InternalServerErrorException("Error updating object");
     }
@@ -350,7 +351,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       // Required COMMENTING_OPEN_DATE: must be at least one day after publish is pushed
       const publishDate = dayjs().startOf('day');
       const commentingOpenDate = dayjs(entity.commentingOpenDate).startOf('day');
-      let dayDiff = publishDate.diff(commentingOpenDate, "day");
+      let dayDiff = commentingOpenDate.diff(publishDate, "day");
       if (dayDiff < 1) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         COMMENTING_OPEN_DATE: must be at least one day after publish is pushed.`);
