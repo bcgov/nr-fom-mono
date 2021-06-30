@@ -42,5 +42,6 @@ RUN npm ci --only=production
 EXPOSE 3333
 
 # Run the web service on container startup.
-CMD [ "node", "/app/apps/api/main.js" ]
+# Use entrypoint so that same image can be reused to run batch process with batch argument supplied.
+ENTRYPOINT [ "node", "/app/apps/api/main.js" ]
 

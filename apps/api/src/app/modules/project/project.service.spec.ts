@@ -9,7 +9,7 @@ describe('ProjectService', () => {
   let service: ProjectService;
 
   beforeEach(async () => {
-    service = new ProjectService(null, mockLoggerFactory(), null, null);
+    service = new ProjectService(null, mockLoggerFactory(), null, null, null);
   });
 
   describe('isCreateAuthorized', () => {

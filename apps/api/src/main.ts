@@ -124,4 +124,11 @@ async function start() {
   }  
 }
 
-start();
+if (process.argv.length > 2 && '-batch' == process.argv[2]) {
+  console.log("Running batch process...");
+  // Do batch
+  console.log("Batch process completed.");
+  process.exit(0);
+} else {
+  start();
+}

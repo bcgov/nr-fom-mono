@@ -11,6 +11,7 @@ import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
+import { AttachmentService } from '@api-modules/attachment/attachment.service';
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -55,6 +56,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     logger: PinoLogger,
     private districtService: DistrictService,
     private forestClientService: ForestClientService,
+    private attachmentService: AttachmentService,
   ) {
     super(repository, new Project(), logger);
   }
