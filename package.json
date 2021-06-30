@@ -41,6 +41,7 @@
     "help": "nx help",
     "init:dev": "docker-compose -p nr-fom-api up --build -V",
     "start:api": "nest start --path apps/api/tsconfig.json --watch",
+    "start:batch": "nest start --path apps/api/tsconfig.json -- -batch",
     "gen:client-api:ng": "openapi-generator-cli generate -g typescript-angular -i apps/api/openapi/swagger-spec.json -o libs/client/typescript-ng"
   },
   "private": true,
@@ -51,6 +52,7 @@
     "@nestjs/mapped-types": "^0.3.0",
     "@nestjs/microservices": "^7.6.15",
     "@nestjs/platform-express": "^7.6.15",
+    "@nestjs/schedule": "^0.4.3",
     "@nestjs/swagger": "^4.8.0",
     "@nestjs/typeorm": "^7.1.5",
     "@types/faker": "^5.1.7",
@@ -93,6 +95,7 @@
     "@nrwl/workspace": "11.2.0",
     "@openapitools/openapi-generator-cli": "^2.1.26",
     "@testing-library/jest-native": "3.4.3",
+    "@types/cron": "^1.7.2",
     "@types/express-session": "^1.17.3",
     "@types/geojson": "^7946.0.7",
     "@types/jest": "^26.0.21",

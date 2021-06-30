@@ -94,6 +94,7 @@ objects:
     spec:
       lookupPolicy:
         local: false
+    # TODO: Not used anymore.
     # ConfigMap - Hostname - for lookup by Admin/Public
   - kind: ConfigMap
     apiVersion: v1

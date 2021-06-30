@@ -1,5 +1,5 @@
 
-FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim as build
+FROM node:14-slim as build
 # FROM node:14-alpine
 
 # Workaround npm limitation with building as non-root
@@ -22,7 +22,7 @@ COPY . .
 
 RUN npm run build
 
-FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim AS run
+FROM node:14-slim AS run
 
 # Workaround npm limitation with installing as non-root
 USER 0
@@ -42,6 +42,5 @@ RUN npm ci --only=production
 EXPOSE 3333
 
 # Run the web service on container startup.
-# Use entrypoint so that same image can be reused to run batch process with batch argument supplied.
-ENTRYPOINT [ "node", "/app/apps/api/main.js" ]
+CMD [ "node", "/app/apps/api/main.js", "-batch" ]
 

@@ -17,5 +17,6 @@ export interface AttachmentResponse {
     projectId: number;
     fileName: string;
     attachmentType: AttachmentTypeCode;
+    createTimestamp: string;
 }
 

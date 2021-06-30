@@ -1,5 +1,4 @@
 import { ViewEntity, JoinColumn, ManyToOne, ViewColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
 import { SubmissionTypeCode } from '../submission/submission-type-code.entity';
 import { ForestClient } from '../forest-client/forest-client.entity';
 

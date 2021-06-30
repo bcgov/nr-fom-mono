@@ -2,13 +2,14 @@ import 'dotenv/config';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger, PinoLogger } from 'nestjs-pino';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
 import { ProjectController } from './app/modules/project/project.controller';
 import helmet = require('helmet');
+import { ProjectService } from '@api-modules/project/project.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -17,6 +18,12 @@ async function dbmigrate(config: ConnectionOptions) {
     } finally {
       await connection.close();
     }
+}
+
+async function createApp():Promise<INestApplication>  {
+  const app = await NestFactory.create(AppModule, { logger: false });
+  app.useLogger(app.get(Logger));
+  return app;
 }
 
 async function bootstrap():Promise<INestApplication> {
@@ -30,8 +37,7 @@ async function bootstrap():Promise<INestApplication> {
     return null;
   }
 
-  const app = await NestFactory.create(AppModule, { logger: false });
-  app.useLogger(app.get(Logger));
+  const app = await createApp();
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
@@ -67,7 +73,7 @@ async function bootstrap():Promise<INestApplication> {
 
   // Only meant for running locally, not accessible via /api route.
   httpAdapter.get('/health-check', (req, res) => {
-    res.send ('Health check passed');
+    res.send('Health check passed');
   });
 
   const config = new DocumentBuilder()
@@ -111,14 +117,35 @@ async function postStartup(app: INestApplication) {
   }
 }
 
-async function start() {
-  const app = await bootstrap();
-  app.get(Logger).log("Done regular startup.");
-  postStartup(app); // Don't await so non-blocking - allows OpenShift container (pod) to be marked ready for traffic.
+async function startApi() {
+  try {
+    const app = await bootstrap();
+    app.get(Logger).log("Done regular startup.");
+    // Don't await so non-blocking - allows OpenShift container (pod) to be marked ready for traffic.
+    postStartup(app).catch((postError) => {
+      console.log('Error during post startup: ' + JSON.stringify(postError));
+    });
+  } catch (error) {
+    console.log('Error during application startup: ' + JSON.stringify(error));
+    process.exit(1);
+  }  
 }
 
-try {
-  start();
-} catch (error) {
-  console.log('Error during application startup: ' + JSON.stringify(error));
+async function runBatch() {
+  try {
+    const app = await createApp();
+    app.get(Logger).log("Done startup.");
+    await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    process.exit(0);
+  } catch (error) {
+    console.log('Error during batch execution: ' + JSON.stringify(error));
+    process.exit(1);
+  }  
+}
+
+if (process.argv.length > 2 && '-batch' == process.argv[2]) {
+  console.log("Running batch process at " + new Date().toISOString() + " ...");
+  runBatch();
+} else {
+  startApi();
 }

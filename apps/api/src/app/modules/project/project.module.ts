@@ -12,6 +12,8 @@ import { WorkflowStateCodeController } from './workflow-state-code.controller';
 import { WorkflowStateCodeService } from './workflow-state-code.service';
 import { WorkflowStateCode } from './workflow-state-code.entity';
 import { ProjectAuthService } from './project-auth.service';
+import { AttachmentModule } from '@api-modules/attachment/attachment.module';
+import { PublicCommentModule } from '../public-comment/public-comment.module';
 
 @Module({
   imports: [
@@ -19,6 +21,8 @@ import { ProjectAuthService } from './project-auth.service';
     DistrictModule,
     ForestClientModule,
     SecurityModule,
+    AttachmentModule,
+    PublicCommentModule
   ],
   controllers: [ProjectController, WorkflowStateCodeController],
   providers: [ProjectService, ProjectAuthService, WorkflowStateCodeService],

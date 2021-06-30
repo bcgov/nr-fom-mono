@@ -5,14 +5,13 @@ import { Interaction } from './interaction.entity';
 import { InteractionService } from './interaction.service';
 import { InteractionController } from './interaction.controller';
 import { SecurityModule } from 'apps/api/src/core/security/security.module';
-import { ProjectModule } from '../project/project.module';
 import { AttachmentModule } from '../attachment/attachment.module';
-import { AttachmentService } from '../attachment/attachment.service';
+import { ProjectAuthModule } from '@api-modules/project/project-auth.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Interaction]),
-    ProjectModule,
+    ProjectAuthModule,
     AttachmentModule,
     SecurityModule,
   ],
