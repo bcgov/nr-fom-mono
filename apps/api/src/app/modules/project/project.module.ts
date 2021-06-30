@@ -20,7 +20,7 @@ import { AttachmentModule } from '@api-modules/attachment/attachment.module';
     DistrictModule,
     ForestClientModule,
     SecurityModule,
-    AttachmentModule,
+    AttachmentModule
   ],
   controllers: [ProjectController, WorkflowStateCodeController],
   providers: [ProjectService, ProjectAuthService, WorkflowStateCodeService],
