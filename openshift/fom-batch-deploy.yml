@@ -119,4 +119,24 @@ objects:
                     limits:
                       cpu: ${LIMIT_CPU}
                       memory: ${LIMIT_MEMORY}
+  ### Network Policy - App to DB Traffic
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: batch-to-db-allow-${NAME}${SUFFIX}
+    spec:
+      podSelector:
+        matchLabels:
+          deploymentconfig: fom-db${SUFFIX}
+      ingress:
+        - from:
+            # Empty pod selector selects all pods in the namespace - haven't figured out how to scope to only the Cron job pods, as they have
+            # dynamically-generated labels.
+            # - podSelector:
+#                matchLabels:
+ #                 deploymentconfig: ${NAME}${SUFFIX}
+          ports:
+            - protocol: TCP
+              port: 5432
+
 

@@ -20,6 +20,12 @@ async function dbmigrate(config: ConnectionOptions) {
     }
 }
 
+async function createApp():Promise<INestApplication>  {
+  const app = await NestFactory.create(AppModule, { logger: false });
+  app.useLogger(app.get(Logger));
+  return app;
+}
+
 async function bootstrap():Promise<INestApplication> {
 
   try {
@@ -31,8 +37,7 @@ async function bootstrap():Promise<INestApplication> {
     return null;
   }
 
-  const app = await NestFactory.create(AppModule, { logger: false });
-  app.useLogger(app.get(Logger));
+  const app = await createApp();
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
@@ -122,18 +127,19 @@ async function startApi() {
     });
   } catch (error) {
     console.log('Error during application startup: ' + JSON.stringify(error));
+    process.exit(1);
   }  
 }
 
 async function runBatch() {
   try {
-    // TODO: Use different bootstrap
-    const app = await bootstrap();
-    app.get(Logger).log("Done regular startup.");
+    const app = await createApp();
+    app.get(Logger).log("Done startup.");
     await app.get(ProjectService).batchDateBasedWorkflowStateChange();
     process.exit(0);
   } catch (error) {
     console.log('Error during application startup: ' + JSON.stringify(error));
+    process.exit(1);
   }  
 }
 
