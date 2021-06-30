@@ -322,7 +322,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async validateWorkflowTransitionRules(entity: Project, stateTransition: WorkflowStateEnum, user: User) {
     const fspId = entity.fspId;
     const districtId = entity.districtId;
-    const forestClientId = entity.forestClientId;
 
     if (isNil(fspId) || isNaN(fspId)) {
       throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}. 
@@ -332,11 +331,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     if (!this.isDistrictExist(districtId)) {
       throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
             Missing District.`);
-    }
-
-    if (!this.isForestClientExist(forestClientId)) {
-      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
-            Missing FOM Holder.`);
     }
 
     // validating PUBLISHED transitioning
@@ -418,20 +412,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return false;
     }
   }
-
-  async isForestClientExist(forestClientId: string): Promise<boolean> {
-    if (isNil(forestClientId) || isNaN(Number.parseInt(forestClientId))) {
-      return false;
-    }
-
-    try {
-      await this.forestClientService.findOne(Number.parseInt(forestClientId));
-      return true;
-    }
-    catch (error) {
-      return false;
-    }
-  }  
 
   // Batch process to check for projects that need to either move to comment open (from published), or move to comment closed (from comment open)
   // based on commenting open/closed dates.
