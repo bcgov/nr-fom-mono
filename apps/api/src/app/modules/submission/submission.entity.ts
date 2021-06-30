@@ -5,6 +5,7 @@ import { SubmissionTypeCode } from './submission-type-code.entity';
 import { CutBlock } from './cut-block.entity';
 import { RetentionArea } from './retention-area.entity';
 import { RoadSection } from './road-section.entity';
+import { Project } from '../project/project.entity';
 
 @Entity('submission', {schema: 'app_fom'})
 export class Submission extends ApiBaseEntity<Submission> {
@@ -17,6 +18,10 @@ export class Submission extends ApiBaseEntity<Submission> {
 
   @Column({name: 'project_id'})
   projectId: number;
+
+  @ManyToOne(() => Project, project => project.submissions)
+  @JoinColumn({ name: 'project_id' })
+  project: Project;
 
   @ManyToOne(() => SubmissionTypeCode)
   @JoinColumn({ name: 'submission_type_code', referencedColumnName: 'code' })
