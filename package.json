@@ -41,7 +41,7 @@
     "help": "nx help",
     "init:dev": "docker-compose -p nr-fom-api up --build -V",
     "start:api": "nest start --path apps/api/tsconfig.json --watch",
-    "start:batch": "nest start --path apps/batch/tsconfig.json --watch",
+    "start:batch": "nest start --path apps/api/tsconfig.json -- -batch",
     "gen:client-api:ng": "openapi-generator-cli generate -g typescript-angular -i apps/api/openapi/swagger-spec.json -o libs/client/typescript-ng"
   },
   "private": true,

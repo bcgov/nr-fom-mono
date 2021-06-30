@@ -9,6 +9,7 @@ import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
 import { ProjectController } from './app/modules/project/project.controller';
 import helmet = require('helmet');
+import { ProjectService } from '@api-modules/project/project.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -111,7 +112,7 @@ async function postStartup(app: INestApplication) {
   }
 }
 
-async function start() {
+async function startApi() {
   try {
     const app = await bootstrap();
     app.get(Logger).log("Done regular startup.");
@@ -124,11 +125,21 @@ async function start() {
   }  
 }
 
+async function runBatch() {
+  try {
+    // TODO: Use different bootstrap
+    const app = await bootstrap();
+    app.get(Logger).log("Done regular startup.");
+    await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    process.exit(0);
+  } catch (error) {
+    console.log('Error during application startup: ' + JSON.stringify(error));
+  }  
+}
+
 if (process.argv.length > 2 && '-batch' == process.argv[2]) {
   console.log("Running batch process...");
-  // Do batch
-  console.log("Batch process completed.");
-  process.exit(0);
+  runBatch();
 } else {
-  start();
+  startApi();
 }

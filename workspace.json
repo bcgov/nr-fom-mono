@@ -102,65 +102,6 @@
           }
         }
       }
-    },
-    "batch": {
-      "root": "apps/batch",
-      "sourceRoot": "apps/batch/src",
-      "projectType": "application",
-      "prefix": "batch",
-      "targets": {
-        "build": {
-          "executor": "@nrwl/node:build",
-          "outputs": [
-            "{options.outputPath}"
-          ],
-          "options": {
-            "outputPath": "dist/apps/batch",
-            "main": "apps/batch/src/main.ts",
-            "tsConfig": "apps/batch/tsconfig.app.json",
-            "assets": [
-              "apps/batch/src/assets"
-            ]
-          },
-          "configurations": {
-            "production": {
-              "optimization": true,
-              "extractLicenses": true,
-              "inspect": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/batch/src/environments/environment.ts",
-                  "with": "apps/batch/src/environments/environment.prod.ts"
-                }
-              ]
-            }
-          }
-        },
-        "serve": {
-          "executor": "@nrwl/node:execute",
-          "options": {
-            "buildTarget": "batch:build"
-          }
-        },
-        "lint": {
-          "executor": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": [
-              "apps/batch/**/*.ts"
-            ]
-          }
-        },
-        "test": {
-          "executor": "@nrwl/jest:jest",
-          "outputs": [
-            "coverage/apps/batch"
-          ],
-          "options": {
-            "jestConfig": "apps/batch/jest.config.js",
-            "passWithNoTests": true
-          }
-        }
-      }
     }
   }
 }

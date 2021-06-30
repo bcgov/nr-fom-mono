@@ -87,6 +87,7 @@ parameters:
     generate: expression
 
 objects:
+    # TODO: Not used anymore...
     # ConfigMap - Hostname - for lookup by Admin/Public
   - kind: ConfigMap
     apiVersion: v1
