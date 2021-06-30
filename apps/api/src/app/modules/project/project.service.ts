@@ -431,6 +431,15 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     catch (error) {
       return false;
     }
+  }  
+
+  // Batch process to check for projects that need to either move to comment open (from published), or move to comment closed (from comment open)
+  // based on commenting open/closed dates.
+  async batchDateBasedWorkflowStateChange(): Promise<any> {
+      this.logger.info("Starting batch process for date-based workflow state changes...");
+      // TODO: Implement.
+      
+      this.logger.info("Completed batch process for date-based workflow state changes...");
   }
 
 }

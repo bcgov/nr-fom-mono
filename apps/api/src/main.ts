@@ -9,6 +9,7 @@ import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
 import { ProjectController } from './app/modules/project/project.controller';
 import helmet = require('helmet');
+import { ProjectService } from '@api-modules/project/project.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -17,6 +18,12 @@ async function dbmigrate(config: ConnectionOptions) {
     } finally {
       await connection.close();
     }
+}
+
+async function createApp():Promise<INestApplication>  {
+  const app = await NestFactory.create(AppModule, { logger: false });
+  app.useLogger(app.get(Logger));
+  return app;
 }
 
 async function bootstrap():Promise<INestApplication> {
@@ -30,8 +37,7 @@ async function bootstrap():Promise<INestApplication> {
     return null;
   }
 
-  const app = await NestFactory.create(AppModule, { logger: false });
-  app.useLogger(app.get(Logger));
+  const app = await createApp();
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
@@ -111,7 +117,7 @@ async function postStartup(app: INestApplication) {
   }
 }
 
-async function start() {
+async function startApi() {
   try {
     const app = await bootstrap();
     app.get(Logger).log("Done regular startup.");
@@ -121,14 +127,25 @@ async function start() {
     });
   } catch (error) {
     console.log('Error during application startup: ' + JSON.stringify(error));
+    process.exit(1);
+  }  
+}
+
+async function runBatch() {
+  try {
+    const app = await createApp();
+    app.get(Logger).log("Done startup.");
+    await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    process.exit(0);
+  } catch (error) {
+    console.log('Error during application startup: ' + JSON.stringify(error));
+    process.exit(1);
   }  
 }
 
 if (process.argv.length > 2 && '-batch' == process.argv[2]) {
-  console.log("Running batch process...");
-  // Do batch
-  console.log("Batch process completed.");
-  process.exit(0);
+  console.log("Running batch process at " + new Date().toISOString() + " ...");
+  runBatch();
 } else {
-  start();
+  startApi();
 }

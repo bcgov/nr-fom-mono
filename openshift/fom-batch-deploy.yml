@@ -1,0 +1,142 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: fom-batch-deploy
+  app: fom
+  app-component: ${NAME}
+  # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
+  suffix: fom${SUFFIX}
+  app.kubernetes.io/part-of: fom
+metadata:
+  name: fom-batch-deploy
+parameters:
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+  - description: OpenShift Project (namespace prefix).
+    displayName: Project
+    name: PROJECT
+    value: a4b31c
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-batch
+  - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
+    displayName: Suffix
+    name: SUFFIX
+    value: -main-dev
+  - description: Request for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource request
+    name: REQUEST_CPU
+    required: false
+    value: 50m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 50Mi
+  - description: Limit for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource limit
+    name: LIMIT_CPU
+    required: false
+    value: 200m
+  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource limit
+    name: LIMIT_MEMORY
+    required: false
+    value: 1Gi
+  - description: API Image Version to use
+    displayName: API Image Version
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: main
+    # TODO: Remove many of these.
+  - description: Secret key for data encryption within database
+    displayName: Data encryption key
+    name: DATA_ENCRYPTION_KEY
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+
+objects:
+  - kind: CronJob
+    apiVersion: batch/v1beta1
+    metadata: 
+      name: ${NAME}${SUFFIX}
+    spec:
+      concurrencyPolicy: "Forbid"
+      # TODO: Determine timezone being used? Is it BC timezone or GMT? Want to run in early morning BC time.
+      #schedule: '0 1 * * * ' # Run at 1am each day. 
+      schedule: '*/1 * * * * ' # Run every minute for testing.
+      # TODO: Triggers not recognized.
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - app
+            from:
+              kind: ImageStreamTag
+              namespace: ${PROJECT}-tools
+              name: ${NAME}:${IMAGE_STREAM_VERSION}
+        - type: ConfigChange      
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              restartPolicy: OnFailure
+              containers:
+                - name: batch
+                  # Supply a space to image:, will use settings in ImageChange trigger.
+                  image: "image-registry.openshift-image-registry.svc:5000/${PROJECT}-tools/fom-api:${IMAGE_STREAM_VERSION}"  
+                  imagePullPolicy: Always
+                  args: ["-batch"] 
+                  env:
+                    - name: DB_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-password
+                          name: fom-db${SUFFIX}
+                    - name: DB_USERNAME 
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-user
+                          name: fom-db${SUFFIX}
+                    - name: DB_NAME
+                      valueFrom:
+                          secretKeyRef:
+                            key: database-name
+                            name: fom-db${SUFFIX}
+                    - name: DB_HOST
+                      valueFrom:
+                          secretKeyRef:
+                            key: database-host
+                            name: fom-db${SUFFIX}
+                  resources:
+                    requests:
+                      cpu: ${REQUEST_CPU}
+                      memory: ${REQUEST_MEMORY}
+                    limits:
+                      cpu: ${LIMIT_CPU}
+                      memory: ${LIMIT_MEMORY}
+  ### Network Policy - App to DB Traffic
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: batch-to-db-allow-${NAME}${SUFFIX}
+    spec:
+      podSelector:
+        matchLabels:
+          deploymentconfig: fom-db${SUFFIX}
+      ingress:
+        - from:
+            # Empty pod selector selects all pods in the namespace - haven't figured out how to scope to only the Cron job pods, as they have
+            # dynamically-generated labels.
+            # - podSelector:
+#                matchLabels:
+ #                 deploymentconfig: ${NAME}${SUFFIX}
+          ports:
+            - protocol: TCP
+              port: 5432
+
+
