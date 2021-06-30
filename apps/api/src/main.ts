@@ -67,7 +67,7 @@ async function bootstrap():Promise<INestApplication> {
 
   // Only meant for running locally, not accessible via /api route.
   httpAdapter.get('/health-check', (req, res) => {
-    res.send ('Health check passed');
+    res.send('Health check passed');
   });
 
   const config = new DocumentBuilder()

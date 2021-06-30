@@ -17,6 +17,7 @@
   },
   "projects": {
     "api": { "tags": [] },
-    "core": { "tags": [] }
+    "core": { "tags": [] },
+    "batch": { "tags": [] }
   }
 }
