@@ -51,43 +51,28 @@ parameters:
     name: IMAGE_STREAM_VERSION
     required: true
     value: main
-    # TODO: Remove many of these.
-  - description: Secret key for data encryption within database
-    displayName: Data encryption key
-    name: DATA_ENCRYPTION_KEY
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
-
 objects:
   - kind: CronJob
     apiVersion: batch/v1beta1
     metadata: 
       name: ${NAME}${SUFFIX}
     spec:
-      concurrencyPolicy: "Forbid"
-      # TODO: Determine timezone being used? Is it BC timezone or GMT? Want to run in early morning BC time.
-      #schedule: '0 1 * * * ' # Run at 1am each day. 
-      schedule: '*/1 * * * * ' # Run every minute for testing.
-      # TODO: Triggers not recognized.
-      triggers:
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - app
-            from:
-              kind: ImageStreamTag
-              namespace: ${PROJECT}-tools
-              name: ${NAME}:${IMAGE_STREAM_VERSION}
-        - type: ConfigChange      
+      concurrencyPolicy: Replace
+      # Timezone used for Cron schedule appears to be UTC. We want this process to run early morning BC time, which is -7 UTC ignoring daylights savings. So 9am UTC should be good enough.
+      schedule: '0 9 * * * ' # Run at 9:00am UTC each day. 
+      #schedule: '*/1 * * * * ' # Run every minute for testing.
       jobTemplate:
         spec:
           template:
+            metadata:
+              labels:
+                cronjob: ${NAME}${SUFFIX}
             spec:
               restartPolicy: OnFailure
               containers:
                 - name: batch
-                  # Supply a space to image:, will use settings in ImageChange trigger.
+                  # Cron Jobs don't support ImageChangeTriggers, so we explicitly specify the image, with a policy of pull always so it should always use the 
+                  # most up-to-date image.
                   image: "image-registry.openshift-image-registry.svc:5000/${PROJECT}-tools/fom-api:${IMAGE_STREAM_VERSION}"  
                   imagePullPolicy: Always
                   args: ["-batch"] 
@@ -112,6 +97,8 @@ objects:
                           secretKeyRef:
                             key: database-host
                             name: fom-db${SUFFIX}
+                    # We don't supply the data encryption key because the batch process doesn't need to interact with encrypted data.
+                    # We don't supply keycloak configuration because the batch process doesn't need to interact with Keycloak.
                   resources:
                     requests:
                       cpu: ${REQUEST_CPU}
@@ -123,18 +110,16 @@ objects:
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
-      name: batch-to-db-allow-${NAME}${SUFFIX}
+      name: app-to-db-allow-${NAME}${SUFFIX}
     spec:
       podSelector:
         matchLabels:
           deploymentconfig: fom-db${SUFFIX}
       ingress:
         - from:
-            # Empty pod selector selects all pods in the namespace - haven't figured out how to scope to only the Cron job pods, as they have
-            # dynamically-generated labels.
-            # - podSelector:
-#                matchLabels:
- #                 deploymentconfig: ${NAME}${SUFFIX}
+           - podSelector:
+               matchLabels:
+                 cronjob: ${NAME}${SUFFIX}
           ports:
             - protocol: TCP
               port: 5432

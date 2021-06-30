@@ -138,7 +138,7 @@ async function runBatch() {
     await app.get(ProjectService).batchDateBasedWorkflowStateChange();
     process.exit(0);
   } catch (error) {
-    console.log('Error during application startup: ' + JSON.stringify(error));
+    console.log('Error during batch execution: ' + JSON.stringify(error));
     process.exit(1);
   }  
 }

@@ -414,11 +414,18 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   }
 
   // Batch process to check for projects that need to either move to comment open (from published), or move to comment closed (from comment open)
-  // based on commenting open/closed dates.
+  // based on commenting open/closed dates. This needs to be idempotent - multiple executions within the same day should be safe.
   async batchDateBasedWorkflowStateChange(): Promise<any> {
       this.logger.info("Starting batch process for date-based workflow state changes...");
+      // We query for projects with dates not only equal but also before the current date in case the batch process happens to not run one day, the subsequent day's 
+      // execution will set everything to the proper state.
+
+      // Query for projects with workflowState = PUBLISHED and COMMENT_OPEN_DATE equal to or before today: update to have workflow state = COMMENT_OPEN
+      // Query for projects with workflowState = COMMENT_OPEN and COMMENT_CLOSED_DATE equal to or before today:  update to have workflow state = COMMENT_CLOSED
+      // Query for projects with workflowState = FINALIZED and COMMENT_OPEN_DATE more than 3 years ago (need to check regarding exact business rule): update to have workflow state = EXPIRED
+
       // TODO: Implement.
-      
+
       this.logger.info("Completed batch process for date-based workflow state changes...");
   }
 
