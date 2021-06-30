@@ -2,9 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Interaction } from './interaction.entity';
-import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
-import { User } from 'apps/api/src/core/security/user';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
@@ -12,6 +10,8 @@ import _ = require('lodash');
 import { AttachmentService } from '../attachment/attachment.service';
 import { AttachmentCreateRequest } from '../attachment/attachment.dto';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
+import { User } from 'apps/api/src/core/security/user';
+import { DataService } from 'apps/api/src/core/models/data.service';
 
 @Injectable()
 export class InteractionService extends DataService<Interaction, Repository<Interaction>, InteractionResponse> {
@@ -99,9 +99,19 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
       return [];
     }
 
-    return records.map((r) => {
-      return this.convertEntity(r);
+    const interactionResponses = records.map((r) => {
+      const interactionResponse = this.convertEntity(r);
+      return interactionResponse;
     });
+
+    // include attachment meta info(if any)
+    for (const interaction of interactionResponses) {
+      if (interaction.attachmentId) {
+        const attachment = await this.attachmentService.findOne(interaction.attachmentId, user);
+        interaction.fileName = attachment.fileName;
+      }
+    }
+    return interactionResponses;
   }
   
   async isCreateAuthorized(dto: InteractionCreateRequest, user?: User): Promise<boolean> {
