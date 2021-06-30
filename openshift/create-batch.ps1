@@ -1,8 +1,7 @@
-
 function CreateBatchStack {
     param ($ImageVersion, $Suffix, $Env)
 
-    oc delete CronJob -n a4b31c-$Env -l template=fom-batch-deploy,suffix="fom$Suffix"
+    oc delete CronJob,NetworkPolicy -n a4b31c-$Env -l template=fom-batch-deploy,suffix="fom$Suffix"
 
     Write-Output "Create Batch for suffix $Suffix and env $Env ..."
 
