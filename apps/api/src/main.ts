@@ -144,7 +144,7 @@ async function runBatch() {
 }
 
 if (process.argv.length > 2 && '-batch' == process.argv[2]) {
-  console.log("Running batch process...");
+  console.log("Running batch process at " + new Date().toISOString() + " ...");
   runBatch();
 } else {
   startApi();
