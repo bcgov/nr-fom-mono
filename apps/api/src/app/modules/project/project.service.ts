@@ -13,11 +13,11 @@ import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
 import { isNil } from 'lodash';
 import { SubmissionTypeCodeEnum } from '../submission/submission-type-code.entity';
-import { AttachmentService } from '../attachment/attachment.service';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { PublicCommentService } from '../public-comment/public-comment.service';
 import { Attachment } from '../attachment/attachment.entity';
 import { PublicComment } from '../public-comment/public-comment.entity';
+import { AttachmentService } from '@api-modules/attachment/attachment.service';
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -63,8 +63,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     logger: PinoLogger,
     private districtService: DistrictService,
     private forestClientService: ForestClientService,
-    // private attachmentService: AttachmentService,
     // private publicCommentService: PublicCommentService
+    private attachmentService: AttachmentService,
   ) {
     super(repository, new Project(), logger);
   }
@@ -358,7 +358,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // Required proposed submission
-      const submissions = entity.submissions;
+      const submissions = null; // TODO: getting submission entity.submissions;
       if (!submissions || submissions.length == 0) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         Proposed submission is required.`);
@@ -373,7 +373,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     // validating FINALIZED transitioning
     if (WorkflowStateEnum.FINALIZED === stateTransition) {
       // Final Submission submitted
-      const submissions = entity.submissions;
+      const submissions = null; // TODO: getting submission entity.submissions; entity.submissions;
       if (!submissions || submissions.length == 0) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         Final Submission is required.`);

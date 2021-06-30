@@ -7,6 +7,7 @@ import { InteractionModule } from './modules/interaction/interaction.module';
 import { DistrictModule } from './modules/district/district.module';
 import { ForestClientModule } from './modules/forest-client/forest-client.module';
 import { ProjectModule } from './modules/project/project.module';
+import { ProjectAuthModule } from './modules/project/project-auth.module';
 import { PublicCommentModule } from './modules/public-comment/public-comment.module';
 import { SubmissionModule } from './modules/submission/submission.module';
 import { SpatialFeatureModule } from './modules/spatial-feature/spatial-feature.module';
@@ -55,6 +56,7 @@ function getLogLevel():string {
     DistrictModule,
     ForestClientModule,
     ProjectModule,
+    ProjectAuthModule,
     PublicCommentModule,
     SubmissionModule,
     SpatialFeatureModule,
