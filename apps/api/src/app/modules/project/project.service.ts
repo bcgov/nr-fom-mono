@@ -11,6 +11,10 @@ import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from 'apps/api/src/core/security/user';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
+import { isNil } from 'lodash';
+import { SubmissionTypeCodeEnum } from '../submission/submission-type-code.entity';
+import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
+import { PublicCommentService } from '../public-comment/public-comment.service';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
 
 export class ProjectFindCriteria {
@@ -50,6 +54,7 @@ export class ProjectFindCriteria {
 
 @Injectable()
 export class ProjectService extends DataService<Project, Repository<Project>, ProjectResponse> { 
+
   constructor(
     @InjectRepository(Project)
     repository: Repository<Project>,
@@ -57,6 +62,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     private districtService: DistrictService,
     private forestClientService: ForestClientService,
     private attachmentService: AttachmentService,
+    private publicCommentService: PublicCommentService
   ) {
     super(repository, new Project(), logger);
   }
@@ -221,7 +227,9 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     this.logger.debug(`${this.constructor.name}.workflowStateChange projectId %o request %o`, projectId, request);
 
-    const entity:Project = await this.findEntityForUpdate(projectId);
+    const options = {relations: []};
+    options.relations.push('submissions'); // add this extra relation for later use.
+    const entity:Project = await this.findEntityWithCommonRelations(projectId, options);
     if (! entity) {
       throw new UnprocessableEntityException("Entity not found.");
     }
@@ -244,30 +252,25 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         throw new BadRequestException("Changing state back to INITIAL not permitted.");
 
       case WorkflowStateEnum.PUBLISHED:
-        this.logger.info("Published state change."); // TODO: REMOVE
-
         if (entity.workflowStateCode != WorkflowStateEnum.INITIAL) {
           throw new BadRequestException("Can only publish if workflow state is Initial.");
         }
 
-        // TODO: Check busines rules.
-        
+        await this.validateWorkflowTransitionRules(entity, WorkflowStateEnum.PUBLISHED, user);   
         break;
 
       case WorkflowStateEnum.COMMENT_OPEN:
-        throw new BadRequestException("Requesting state change to COMMENT_CLOSED is not permitted.");
+        throw new BadRequestException("Requesting state change to COMMENT_OPEN is not permitted.");
 
       case WorkflowStateEnum.COMMENT_CLOSED:
         throw new BadRequestException("Requesting state change to COMMENT_CLOSED is not permitted.");
 
       case WorkflowStateEnum.FINALIZED:
-        this.logger.info("Finalized state change."); // TODO: REMOVE
         if (entity.workflowStateCode != WorkflowStateEnum.COMMENT_CLOSED) {
           throw new BadRequestException("Can only finalize if workflow state is Commenting Closed.");
         }
 
-        // TODO: Check busines rules.
-
+        await this.validateWorkflowTransitionRules(entity, WorkflowStateEnum.FINALIZED, user);
         break;
 
       case WorkflowStateEnum.EXPIRED:
@@ -276,25 +279,158 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       default:
         throw new InternalServerErrorException("Unrecognized requested workflow state " + request.workflowStateCode);
     }
-    // TODO: Check that the state change is permitted based on
-    // 1. Current workflow state
-    // 2. Business rules.
 
-    entity.revisionCount +=1;
-    entity.updateUser = user.userName;
-    entity.updateTimestamp = new Date();  
-    entity.workflowStateCode = request.workflowStateCode;
-
-    const updateCount = (await this.repository.update(projectId, entity)).affected;
+    // Do not pass entity itself to repository.update(). Only pass the partial.
+    const updatePartial = {revisionCount: entity.revisionCount + 1, 
+                        updateUser: user.userName,
+                        updateTimestamp: new Date(),
+                        workflowStateCode: request.workflowStateCode
+                      };
+    const updateCount = (await this.repository.update(projectId, updatePartial)).affected;
     if (updateCount != 1) {
       throw new InternalServerErrorException("Error updating object");
     }
 
-    const updatedEntity = await this.findEntityWithCommonRelations(projectId);
+    const updatedEntity = await this.findEntityForUpdate(projectId);
     this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
+
+    // TODO notify emails should be sent to district for FINALIZED FOM
 
     return this.convertEntity(updatedEntity);
 
+  }
+  
+  /**
+   * The method validates business rules are met before FOM transitioning.
+   * "manual/human-triggered" transition workflowStats only happens on "PUBLISH", "FINALIZED".
+   * 
+   * Business Rules:
+   * Fields needed in general: FSP ID, District, FOM Holder.
+   * 
+   * INITIAL -> PUBLISH:
+   *        - Proposed submission required.
+   *        - COMMENTING_OPEN_DATE required: must be at least one day after publish is pushed
+   * 
+   * COMMENT_CLOSED -> FINALIZED
+   *        - Public Notice attached
+   *        - Final Submission submitted
+   *        - All comments classified
+   * 
+   * @param entity current FOM the workflowState transition applies to
+   * @param stateTransition WorkflowStateEnum transition to
+   */
+  async validateWorkflowTransitionRules(entity: Project, stateTransition: WorkflowStateEnum, user: User) {
+    const fspId = entity.fspId;
+    const districtId = entity.districtId;
+    const forestClientId = entity.forestClientId;
+
+    if (isNil(fspId) || isNaN(fspId)) {
+      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}. 
+            Missing FSP ID.`);
+    }
+
+    if (!this.isDistrictExist(districtId)) {
+      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+            Missing District.`);
+    }
+
+    if (!this.isForestClientExist(forestClientId)) {
+      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+            Missing FOM Holder.`);
+    }
+
+    // validating PUBLISHED transitioning
+    if (WorkflowStateEnum.PUBLISHED === stateTransition) {
+      // Required COMMENTING_OPEN_DATE
+      if (isNil(entity.commentingOpenDate) || !dayjs(entity.commentingOpenDate, 'YYYY-MM-DD').isValid()) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Missing COMMENTING_OPEN_DATE.`);
+      }
+
+      // Required COMMENTING_OPEN_DATE: must be at least one day after publish is pushed
+      const publishDate = dayjs().startOf('day');
+      const commentingOpenDate = dayjs(entity.commentingOpenDate).startOf('day');
+      let dayDiff = commentingOpenDate.diff(publishDate, "day");
+      if (dayDiff < 1) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        COMMENTING_OPEN_DATE: must be at least one day after publish is pushed.`);
+      }
+
+      // Required proposed submission
+      const submissions = entity.submissions;
+      if (!submissions || submissions.length == 0) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Proposed submission is required.`);
+      }
+      const proposed = submissions.filter(s => s.submissionTypeCode == SubmissionTypeCodeEnum.PROPOSED);
+      if (!proposed) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Proposed submission is required.`);
+      }
+    } // end validating PUBLISHED transitioning
+
+    // validating FINALIZED transitioning
+    if (WorkflowStateEnum.FINALIZED === stateTransition) {
+      // Final Submission submitted
+      const submissions = entity.submissions;
+      if (!submissions || submissions.length == 0) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Final Submission is required.`);
+      }
+      const final = submissions.filter(s => s.submissionTypeCode == SubmissionTypeCodeEnum.FINAL);
+      if (!final) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Final Submission is required.`);
+      }
+
+      // Public Notice attached
+      const publicNotices = await this.attachmentService.findByProjectIdAndAttachmentTypes(entity.id, 
+                            [AttachmentTypeEnum.PUBLIC_NOTICE]);
+      if (!publicNotices || publicNotices.length == 0) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Public Notice is required.`);
+      }
+
+      // All comments classified
+      const publicComments = await this.publicCommentService.findByProjectId(entity.id, user);
+      if (publicComments && publicComments.length > 0) {
+        const unClassifiedComments = publicComments.filter(p => p.response == null);
+        if (unClassifiedComments && unClassifiedComments.length > 0) {
+          throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+          All comments must be classified.`);
+        }
+      }
+
+    }
+
+  }
+
+  async isDistrictExist(districtId: number): Promise<boolean> {
+    if (isNil(districtId) || isNaN(districtId)) {
+      return false;
+    }
+
+    try {
+      await this.districtService.findOne(districtId);
+      return true;
+    }
+    catch (error) {
+      return false;
+    }
+  }
+
+  async isForestClientExist(forestClientId: string): Promise<boolean> {
+    if (isNil(forestClientId) || isNaN(Number.parseInt(forestClientId))) {
+      return false;
+    }
+
+    try {
+      await this.forestClientService.findOne(Number.parseInt(forestClientId));
+      return true;
+    }
+    catch (error) {
+      return false;
+    }
   }  
 
   // Batch process to check for projects that need to either move to comment open (from published), or move to comment closed (from comment open)
@@ -313,3 +449,4 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   }
 
 }
+

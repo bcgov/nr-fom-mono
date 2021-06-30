@@ -165,5 +165,15 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     return records.map(attachment => this.convertEntity(attachment));
   }
 
+  async findByProjectIdAndAttachmentTypes(projectId: number, attachmentTypeCodes: AttachmentTypeEnum[]): Promise<Attachment[]> {
+    const query = this.repository.createQueryBuilder("a")
+      .leftJoinAndSelect("a.attachmentType", "attachmentType")
+      .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
+      .andWhere('a.attachment_type_code IN (:...attachmentTypeCodes)', 
+                { attachmentTypeCodes: attachmentTypeCodes})
+      .addOrderBy('a.attachment_id', 'DESC');
+
+    return await query.getMany();
+  }
 
 }
