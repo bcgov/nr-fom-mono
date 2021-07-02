@@ -32,6 +32,7 @@ const MyDeployer = class extends BasicDeployer{
         'DB_TESTDATA': `${config.testDataEnabled}`,
         'REPLICA_COUNT': `${config.apiReplicaCount}`,
         'KEYCLOAK_ENABLED': `${config.keycloakEnabled}`,
+        'KEYCLOAK_URL': `${config.keycloakUrl}`,
         // TODO: Add more parameters...
       }
     }));

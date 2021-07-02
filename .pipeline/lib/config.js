@@ -30,14 +30,13 @@ module.exports = class {
       // TODO: How is that going to work in dev with different change ids.
       hostname:         {build: `n/a`                         , dev: `fom-nrs-dev-${changeId}`      , test: `fom-nrs-test`              , prod: `fom-nrs-prod`},
 
-      testDataEnabled:  {build: 'n/a'                         , dev: 'true'                         , test: 'true'                      , prod: 'false'},
+      testDataEnabled:  {build: 'n/a'                         , dev: 'false'                         , test: 'true'                      , prod: 'false'},
       // Consider having only 1 replica with test data enabled as populating the large volume test data can impact startup when there are multiple replicas.
       apiReplicaCount:  {build: 'n/a'                         , dev: '1'                            , test: '2'                         , prod: '3'},
       // TODO: Need to get test/prod hostnames whitelisted in Keycloak, and need to get dev enabled most likely.
       keycloakEnabled:  {build: 'n/a'                         , dev: 'false'                        , test: 'true'                      , prod: 'true'},
+      keycloakUrl:      {build: 'n/a'                         , dev: 'https://dev.oidc.gov.bc.ca/auth'  , test: 'true'                      , prod: 'true'},
     };
-
-    // DB_TESTDATA=$TestData -p REPLICA_COUNT=$ReplicaCount -p KEYCLOAK_ENABLED=$KeycloakEnabled
 
     const phases = {};
     // Pivot configuration table, so that `phase name` becomes a top-level property
