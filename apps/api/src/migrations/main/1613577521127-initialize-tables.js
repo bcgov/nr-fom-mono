@@ -2,6 +2,8 @@ const { MigrationInterface, QueryRunner } = require('typeorm');
 
 module.exports = class initializeTables1613577521127 {
   async up(queryRunner) {
+    console.log('Starting initialize tables migration');
+
     // Run the master DDL script
     await queryRunner.query(`
 
@@ -35,7 +37,7 @@ create table if not exists app_fom.comment_scope_code
 code varchar not null primary key  ,
 description varchar not null ,  
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -57,7 +59,7 @@ comment on column app_fom.comment_scope_code.revision_count is 'Standard column 
 INSERT INTO app_fom.comment_scope_code(code, description, create_user) VALUES
 ('CUT_BLOCK', 'Cut Block', CURRENT_USER),
 ('ROAD_SECTION', 'Road Section', CURRENT_USER),
-('OVERALL', 'Overall', CURRENT_USER);
+('OVERALL', 'Overall FOM', CURRENT_USER);
 
 
 /* ------- ddl script for app_fom.response_code ---------*/  
@@ -67,7 +69,7 @@ create table if not exists app_fom.response_code
 code varchar not null primary key  ,
 description varchar not null ,  
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -99,7 +101,7 @@ create table if not exists app_fom.workflow_state_code
 code varchar not null primary key  ,
 description varchar not null ,  
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -134,7 +136,7 @@ create table if not exists app_fom.submission_type_code
 code varchar not null primary key  ,
 description varchar not null ,  
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -165,7 +167,7 @@ create table if not exists app_fom.attachment_type_code
 code varchar not null primary key  ,
 description varchar not null ,  
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -199,7 +201,7 @@ create table if not exists app_fom.forest_client
 forest_client_number varchar not null primary key ,  
 name varchar not null , 
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -227,7 +229,7 @@ district_id integer not null primary key ,
 name varchar not null , 
 email varchar not null ,
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -247,37 +249,6 @@ comment on column app_fom.district.update_timestamp is 'Time of most recent upda
 comment on column app_fom.district.update_user is 'The user id who last updated the record. For citizens creating comments, a common hardcoded user id will be used.';
 comment on column app_fom.district.revision_count is 'Standard column for optimistic locking on updates.';
 
-
-/* ------- ddl script for app_fom.forest_client_user ---------*/  
-/* Currently do not need this table.
-drop table if exists app_fom.forest_client_user ; 
-create table if not exists app_fom.forest_client_user 
-(  
-forest_client_user_id serial not null primary key ,  
-forest_client_number varchar not null references forest_client (forest_client_number) , 
-keycloak_id varchar not null unique ,  
-
-revision_count integer not null default 0 ,
-create_timestamp timestamptz not null default now() ,  
-create_user varchar not null ,  
-update_timestamp timestamptz ,  
-update_user varchar 
-);  
-
-comment on table  app_fom.forest_client_user is 'Mapping between BCeID (forest client user id) and forest client. Used for authorization to determine which FOMs a user is allowed to edit. This is a local copy of data from an external system (Source: WebADE database).';
-
-comment on column app_fom.forest_client_user.forest_client_user_id is 'Primary key ';
-comment on column app_fom.forest_client_user.forest_client_number is 'Foreign key to forest client ';
-comment on column app_fom.forest_client_user.keycloak_id is 'Keycloak user id. Will correspond to BCeID for forest client users. ';
-
-comment on column app_fom.forest_client_user.create_timestamp is 'Time of creation of the record.';
-comment on column app_fom.forest_client_user.create_user is 'The user id who created the record. For citizens creating comments, a common hardcoded user id will be used.';
-comment on column app_fom.forest_client_user.update_timestamp is 'Time of most recent update to the record.';
-comment on column app_fom.forest_client_user.update_user is 'The user id who last updated the record. For citizens creating comments, a common hardcoded user id will be used.';
-comment on column app_fom.forest_client_user.revision_count is 'Standard column for optimistic locking on updates.';
-*/
-
-
 -- MAIN TABLES
 
 /* ------- ddl script for app_fom.project ---------*/  
@@ -295,7 +266,7 @@ commenting_open_date date ,
 commenting_closed_date date , 
 geometry_latlong GEOMETRY(POINT, 4326) ,
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -308,6 +279,7 @@ create index on app_fom.project (fsp_id);
 create index on app_fom.project (district_id);
 create index on app_fom.project (workflow_state_code);
 create index on app_fom.project (commenting_open_date);
+create index on app_fom.project (commenting_closed_date);
 
 comment on table  app_fom.project is 'Root entity for the FOM application by a Forest Client. Contains the proposed FOM submission, the public comments and responses, the stakeholder interactions and attachments, and the final FOM submission. Design note: The business is not interested in what the Forest Client does prior to finalization other than capturing the proposed and final spatial submissions, so any updates to attributes in a proposed project will overwrite existing values.';
 
@@ -334,10 +306,10 @@ drop table if exists app_fom.submission ;
 create table if not exists app_fom.submission 
 (  
 submission_id serial not null primary key ,  
-project_id integer not null references app_fom.project (project_id) , 
+project_id integer not null references app_fom.project (project_id) on delete cascade , 
 submission_type_code varchar not null references app_fom.submission_type_code(code) , 
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -365,13 +337,13 @@ drop table if exists app_fom.cut_block ;
 create table if not exists app_fom.cut_block 
 ( 
 cut_block_id serial not null primary key ,  
-submission_id integer not null references app_fom.submission (submission_id) , 
+submission_id integer not null references app_fom.submission (submission_id) on delete cascade , 
 geometry GEOMETRY(POLYGON, 3005) not null  ,  
 planned_development_date date not null  ,  
 name varchar ,
-planned_area_ha real , 
+planned_area_ha numeric(11,4) , 
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -402,11 +374,11 @@ drop table if exists app_fom.retention_area ;
 create table if not exists app_fom.retention_area 
 ( 
 retention_area_id serial not null primary key ,  
-submission_id integer not null references app_fom.submission (submission_id) , 
+submission_id integer not null references app_fom.submission (submission_id) on delete cascade , 
 geometry GEOMETRY(POLYGON, 3005) not null  ,  
-planned_area_ha real , 
+planned_area_ha numeric(11,4) , 
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -435,13 +407,13 @@ drop table if exists app_fom.road_section ;
 create table if not exists app_fom.road_section 
 (  
 road_section_id serial not null primary key ,  
-submission_id integer not null references app_fom.submission (submission_id) , 
+submission_id integer not null references app_fom.submission (submission_id) on delete cascade , 
 geometry GEOMETRY(LINESTRING, 3005) not null , 
 planned_development_date date not null  ,  
 name varchar,
-planned_length_km real , 
+planned_length_km numeric(11,4) , 
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -473,12 +445,12 @@ drop table if exists app_fom.attachment ;
 create table if not exists app_fom.attachment 
 ( 
 attachment_id serial not null primary key ,  
-project_id integer not null references app_fom.project(project_id) ,  
+project_id integer not null references app_fom.project(project_id) on delete cascade,  
 attachment_type_code varchar not null references app_fom.attachment_type_code(code),  
 file_name varchar not null  ,  
 file_contents bytea not null  , 
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -508,19 +480,19 @@ drop table if exists app_fom.public_comment ;
 create table if not exists app_fom.public_comment 
 (  
 public_comment_id serial not null primary key ,  
-project_id integer not null references app_fom.project(project_id) ,  
+project_id integer not null references app_fom.project(project_id) on delete cascade ,  
 comment_scope_code varchar not null references app_fom.comment_scope_code(code) ,
 scope_road_section_id integer references app_fom.road_section(road_section_id) ,
 scope_cut_block_id integer references app_fom.cut_block(cut_block_id) ,
 feedback varchar not null  ,  
-name varchar ,  
-location varchar ,  
-email varchar ,  
-phone_number varchar ,  
+name bytea ,  
+location bytea ,  
+email bytea ,  
+phone_number bytea ,  
 response_code varchar references app_fom.response_code(code),  
 response_details varchar ,  
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -557,13 +529,13 @@ drop table if exists app_fom.interaction ;
 create table if not exists app_fom.interaction 
 ( 
 interaction_id serial not null primary key ,  
-project_id integer not null references app_fom.project(project_id) ,  
+project_id integer not null references app_fom.project(project_id) on delete cascade ,  
 attachment_id integer references app_fom.attachment(attachment_id) ,  
 stakeholder varchar not null  ,  
 communication_date date not null  ,  
 communication_details varchar not null ,  
 
-revision_count integer not null default 0 ,
+revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
 update_timestamp timestamptz ,  
@@ -588,34 +560,39 @@ comment on column app_fom.interaction.update_timestamp is 'Time of most recent u
 comment on column app_fom.interaction.update_user is 'The user id who last updated the record. For citizens creating comments, a common hardcoded user id will be used.';
 comment on column app_fom.interaction.revision_count is 'Standard column for optimistic locking on updates.';
 
-/* ------- ddl script for app_fom.project_spatial_detail ---------*/  
-/* This converts geometries to lat/long for consumption by leaflet. */
-drop view if exists app_fom.project_spatial_detail;
-create view app_fom.project_spatial_detail as 
-  select o.cut_block_id as object_id, 'cut_block' as source_table,
-  p.project_id, s.submission_type_code,  
+/* ------- ddl script for app_fom.spatial_feature ---------*/  
+/* This converts geometries to lat/long for consumption by leaflet and BCGW. */
+drop view if exists app_fom.spatial_feature;
+create view app_fom.spatial_feature as 
+  select o.cut_block_id as feature_id, 'cut_block' as feature_type,
+  p.project_id, p.forest_client_number, p.workflow_state_code,
+  s.submission_type_code,  
+  o.create_timestamp,
   o.name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, o.planned_development_date, o.planned_area_ha, 0.0 as planned_length_km
   from app_fom.cut_block o
   inner join app_fom.submission s on o.submission_id = s.submission_id
   inner join app_fom.project p on s.project_id = p.project_id
 union       
-  select o.retention_area_id as object_id, 'retention_area' as source_table,
-  p.project_id, s.submission_type_code,  
+  select o.retention_area_id as feature_id, 'retention_area' as feature_type,
+  p.project_id, p.forest_client_number, p.workflow_state_code,
+  s.submission_type_code,  
+  o.create_timestamp,
   null as name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, null as planned_development_date, o.planned_area_ha, 0.0 as planned_length_km
   from app_fom.retention_area o
   inner join app_fom.submission s on o.submission_id = s.submission_id
   inner join app_fom.project p on s.project_id = p.project_id
 union
-  select o.road_section_id as object_id, 'road_section' as source_table,
-  p.project_id, s.submission_type_code,  
+  select o.road_section_id as feature_id, 'road_section' as feature_type,
+  p.project_id, p.forest_client_number, p.workflow_state_code,
+  s.submission_type_code,  
+  o.create_timestamp,
   o.name, ST_AsGeoJson(ST_Transform(o.geometry, 4326)) as geojson, o.planned_development_date, null as planned_area_ha, o.planned_length_km
   from app_fom.road_section o
   inner join app_fom.submission s on o.submission_id = s.submission_id
   inner join app_fom.project p on s.project_id = p.project_id
 ;
 
-comment on view app_fom.project_spatial_detail is 'Denormalized table of spatial objects of FOM projects converting geometry columns to geojson with lat/long for consumption by leaflet.';
-
+comment on view app_fom.spatial_feature is 'Denormalized table of spatial features (shapes) of FOM projects converting geometry columns to geojson with lat/long.';
 
         `);
   }
@@ -623,7 +600,7 @@ comment on view app_fom.project_spatial_detail is 'Denormalized table of spatial
   async down(queryRunner) {
     await queryRunner.query(`
         -- Drop views
-        drop view if exists app_fom.project_spatial_detail;
+        drop view if exists app_fom.spatial_feature;
 
         -- Drop all tables with foreign keys in dependency order (children first, then parents, then external tables, then code tables) to allow this script to be rerunnable for testing.
         drop table if exists app_fom.interaction;

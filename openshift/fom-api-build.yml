@@ -12,14 +12,12 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-api
+  - name: SUFFIX
+    value: ''
   - description: Tag (e.g. release/build)
     displayName: Tag
     name: TAG
     value: main
-  - description: OpenShift Project (namespace prefix).
-    displayName: Project
-    name: PROJECT
-    value: a4b31c
   - description: Git Source Reference (branch/tag/ref )
     displayName: Git Ref
     name: GIT_REF
@@ -45,14 +43,14 @@ objects:
     apiVersion: v1
     metadata:
       annotations:
-      name: ${NAME}-webhook
+      name: ${NAME}${SUFFIX}-webhook
     stringData:
       WebHookSecretKey: ${WEBHOOK_SECRET_KEY}
   ### BuildConfig
   - kind: BuildConfig
     apiVersion: v1
     metadata:
-      name: ${NAME}-${TAG}
+      name: ${NAME}${SUFFIX}
       labels:
         tag: ${TAG}
     spec:
@@ -61,7 +59,6 @@ objects:
         to:
           kind: ImageStreamTag
           name: ${NAME}:${TAG}
-          namespace: ${PROJECT}-tools
       resources:
         limits:
           cpu: '2'
@@ -78,7 +75,7 @@ objects:
         git:
           uri: 'https://github.com/bcgov/nr-fom-api'
           ref: ${GIT_REF}
-        contextDir: /
+#        contextDir: /
       runPolicy: SerialLatestOnly
       triggers:
         - type: ImageChange
@@ -89,6 +86,6 @@ objects:
         - type: GitHub
           github:
             secretReference:
-              name: ${NAME}-webhook
+              name: ${NAME}${SUFFIX}-webhook
         - type: ConfigChange
           

@@ -1,4 +1,3 @@
-import { camelCase, snakeCase } from 'typeorm/util/StringUtils';
 
 /**
  * Function to recursively map a dto or entity structure's keys.
@@ -42,42 +41,27 @@ export const deepMapKeys = (
 
 export const mapToEntity = (dto, entity) => {
   Object.keys(dto).forEach((dtoKey, idx) => {
-    // Convert to snake_case here!
-    // TypeORM model properties need to be snake_case when using with Postgres
-    // - TypeORM prefers a camelCase naming convention by default
-    // - https://github.com/typeorm/typeorm/blob/master/docs/connection-options.md namingStrategy won't handle our needs
-    // - TypeORM won't handle @RelationId decorator properly if the relation id is not suffixed with _id
-    //   eg. forest_client_number instead of forest_client_id
-    const modelKey = snakeCase(dtoKey);
+    const modelKey = dtoKey;
     entity[modelKey] = dto[dtoKey];
   });
 
-  // We might not need to deep map keys here...
-  // return deepMapKeys(entity, (key) => snakeCase(key));
   return entity;
 };
 
 export const mapFromEntity = (entity, dto) => {
   Object.keys(entity).forEach((modelKey, idx) => {
-    // Convert to camelCase here!
-    // TypeORM model properties need to be snake_case when using with Postgres
-    // - TypeORM prefers a camelCase naming convention by default
-    // - https://github.com/typeorm/typeorm/blob/master/docs/connection-options.md namingStrategy won't handle our needs
-    // - TypeORM won't handle @RelationId decorator properly if the relation id is not suffixed with _id
-    //   eg. forest_client_number instead of forest_client_id
-    // TODO: This copies all entity properties, even if they don't exist on the DTO.
-    const dtoKey = camelCase(modelKey);
+    const dtoKey = (modelKey);
     dto[dtoKey] = entity[modelKey];
   });
 
   return deepMapKeys(
     dto,
-    (key) => camelCase(key),
+    (key) => key,
     (value: Date) => value.toISOString()
   );
 };
 
-// flat multidimensional array down to 1d array
+// flat multidimensional array down. d = # of level you want to reduce it.
 export const flatDeep = (arr, d = 1) => {
   return d > 0 ? arr.reduce((acc, val) => acc.concat(Array.isArray(val) ? flatDeep(val, d - 1) : val), [])
                 : arr.slice();

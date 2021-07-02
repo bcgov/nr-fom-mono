@@ -1,45 +1,36 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpException, HttpStatus, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
-import { BaseController } from '@controllers';
-import { ProjectService, ProjectFindCriteria } from './project.service';
-import { Project } from './entities/project.entity';
-import { ProjectDto } from './dto/project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { DeleteResult } from 'typeorm';
-import { ProjectSpatialDetailService } from './project-spatial-detail.service'
-import { ProjectSpatialDetail } from './entities/project-spatial-detail.entity';
-import { ProjectPublicSummaryDto } from './dto/project-public.dto.';
-import { WorkflowStateCode } from '../workflow-state-code/entities/workflow-state-code.entity';
 import * as dayjs from 'dayjs';
-import { AuthService } from 'apps/api/src/core/security/auth.service';
+
+import { ProjectService, ProjectFindCriteria } from './project.service';
+import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
+import { WorkflowStateEnum } from './workflow-state-code.entity';
+import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from 'apps/api/src/core/security/user';
+import { PinoLogger } from 'nestjs-pino';
+
 
 @ApiTags('project')
 @Controller('project')
-export class ProjectController extends BaseController<
-  Project,
-  ProjectDto,
-  UpdateProjectDto
-> {
+export class ProjectController {
   constructor(
-    protected readonly service: ProjectService,
-    private projectSpatialDetailService: ProjectSpatialDetailService,
-    private authService: AuthService) {
-    super(service);
+    private readonly service: ProjectService,
+    private readonly logger: PinoLogger) {
   }
 
+  // Anonymous access allowed
   @Get('/publicSummary')
   @ApiQuery({ name: 'includeCommentOpen', required: false})
   @ApiQuery({ name: 'includePostCommentOpen', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiQuery({ name: 'openedOnOrAfter', required: false})
-  @ApiResponse({ status: 200, type: [ProjectPublicSummaryDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectPublicSummaryResponse] })
   async findPublicSummary(
     @Query('includeCommentOpen') includeCommentOpen: string = 'true',
     @Query('includePostCommentOpen') includePostCommentOpen: string = 'true',
     @Query('forestClientName') forestClientName?: string,
     @Query('openedOnOrAfter') openedOnOrAfter?: string,
-    ): Promise<ProjectPublicSummaryDto[]> {
+    ): Promise<ProjectPublicSummaryResponse[]> {
 
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
@@ -48,15 +39,15 @@ export class ProjectController extends BaseController<
       }
 
       if (includeCommentOpen == 'true') {
-        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.COMMENT_OPEN);
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_OPEN);
       } 
       if (includePostCommentOpen == 'true') {
-        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.COMMENT_CLOSED);
-        findCriteria.includeWorkflowStateCodes.push(WorkflowStateCode.CODES.FINALIZED);
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_CLOSED);
+        findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.FINALIZED);
         // Deliberately exclude EXPIRED
       }
       if (includeCommentOpen != 'true' && includePostCommentOpen != 'true') {
-        throw new HttpException("Either includeCommentOpen or includePostCommentOpen must be true", HttpStatus.BAD_REQUEST);
+        throw new BadRequestException("Either includeCommentOpen or includePostCommentOpen must be true");
       }
 
       const DATE_FORMAT='YYYY-MM-DD';
@@ -64,7 +55,22 @@ export class ProjectController extends BaseController<
         findCriteria.commentingOpenedOnOrAfter = dayjs(openedOnOrAfter).format(DATE_FORMAT);
       } 
 
+      // Logging at info level to help measure performance.
+      this.logger.info('get /project/publicSummary with criteria %o', findCriteria);
+
       return this.service.findPublicSummaries(findCriteria);
+  }
+
+  // Anonymous access allowed
+  @Get(':id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
+  async findOne(
+    @UserHeader() user: User,
+    @Param('id', ParseIntPipe) id: number): Promise<ProjectResponse> {
+    return this.service.findOne(id, user, {
+      relations: ['district', 'forestClient', 'workflowState'],
+    });
   }
 
   @Get()
@@ -73,29 +79,22 @@ export class ProjectController extends BaseController<
   @ApiQuery({ name: 'districtId', required: false})
   @ApiQuery({ name: 'workflowStateCode', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
-  @ApiResponse({ status: 200, type: [ProjectDto] })
+  @ApiResponse({ status: HttpStatus.OK, type: [ProjectResponse] })
   async find(
-    @Headers() headers: string,
-    @Query('fspId') fspId?: number,
-    @Query('districtId') districtId?: number,
+    @UserRequiredHeader() user: User,
+    @Query('fspId') fspId?: string,
+    @Query('districtId') districtId?: string,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
-    ): Promise<ProjectDto[]> {
-
-      var user = this.authService.verifyToken(headers['authorization']);
-      console.log("User = " + JSON.stringify(user)); // TODO REMOVE
-      // If role = FOM_MINISTRY then continue
-      // else if role = FOM_CLIENT filter by clientId that user is authorized for.
-      // else return 403.
-      // Auth service to parse token return level of access. Provide stub for locally.
+    ): Promise<ProjectResponse[]> {
 
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
       if (fspId) {
-        findCriteria.fspId = fspId;
+        findCriteria.fspId = await new ParseIntPipe().transform(fspId, null);
       }
       if (districtId) {
-        findCriteria.districtId = districtId;
+        findCriteria.districtId = await new ParseIntPipe().transform(districtId, null);
       }
       if (workflowStateCode) {
         findCriteria.includeWorkflowStateCodes.push(workflowStateCode);
@@ -103,44 +102,56 @@ export class ProjectController extends BaseController<
       if (forestClientName) {
         findCriteria.likeForestClientName = forestClientName;
       }
-
+      // Ministry users can access all projects, while forest client users can only access projects for forest clients they are authorized for.
+      if (!user.isMinistry && user.isForestClient) {
+        findCriteria.includeForestClientNumbers = user.clientIds;
+      }
+      if (!user.isAuthorizedForAdminSite()) {
+        throw new ForbiddenException();
+      }
       return this.service.find(findCriteria);
   }
 
-  @Get('/spatialDetails/:id') 
-  @ApiResponse({ status: 200, type: [ProjectSpatialDetail] })
-  async getSpatialDetails(@Param('id') id: number): Promise<ProjectSpatialDetail[]> {
-    return this.projectSpatialDetailService.findByProjectId(id);
-  }
-
   @Post()
-  @ApiResponse({ status: 201, type: ProjectDto })
-  async create(@Body() createDto: ProjectDto): Promise<ProjectDto> {
-    // TODO: add buisiness logic (to service)
-    return super.create(createDto);
-  }
-
-  @Get(':id')
-  @ApiResponse({ status: 200, type: ProjectDto })
-  async findOne(@Param('id') id: number): Promise<ProjectDto> {
-    return super.findOne(id, {
-      relations: ['district', 'forest_client', 'workflow_state'],
-    });
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.CREATED, type: ProjectResponse })
+  async create(
+    @UserRequiredHeader() user: User,
+    @Body() request: ProjectCreateRequest
+    ): Promise<ProjectResponse> {
+    return this.service.create(request, user);
   }
 
   @Put(':id')
-  @ApiResponse({ status: 200, type: UpdateProjectDto })
-  @ApiBody({ type: UpdateProjectDto })
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
+  @ApiBody({ type: ProjectUpdateRequest })
   async update(
-    @Param('id') id: number,
-    @Body() updateDto: UpdateProjectDto
-  ): Promise<UpdateProjectDto> {
-    return super.update(id, updateDto);
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: ProjectUpdateRequest
+  ): Promise<ProjectResponse> {
+    return this.service.update(id, request, user);
+  }
+
+  @Put('/workflowState/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
+  @ApiBody({ type: ProjectWorkflowStateChangeRequest })
+  async stateChange(
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: ProjectWorkflowStateChangeRequest
+  ): Promise<ProjectResponse> {
+    return this.service.workflowStateChange(id, request, user);
   }
 
   @Delete(':id')
-  @ApiResponse({ status: 200, type: DeleteResult })
-  async remove(@Param('id') id: number): Promise<DeleteResult> {
-    return super.remove(id);
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK })
+  async remove(
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number) {
+    this.service.delete(id, user);
   }
 }

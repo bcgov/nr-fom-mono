@@ -1,4 +1,9 @@
-class MockLogger {
+import { PinoLogger } from "nestjs-pino";
+
+class MockLogger extends PinoLogger {
+  constructor() {
+    super({});
+  }
   trace(...args: any) {
     // Do nothing
   }

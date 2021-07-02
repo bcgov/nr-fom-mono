@@ -17,8 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { InteractionDto } from '../model/models';
-import { UpdateInteractionDto } from '../model/models';
+import { InteractionResponse } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -48,6 +47,19 @@ export class InteractionService {
         this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
     }
 
+    /**
+     * @param consumes string[] mime-types
+     * @return true: consumes contains 'multipart/form-data', false: otherwise
+     */
+    private canConsumeForm(consumes: string[]): boolean {
+        const form = 'multipart/form-data';
+        for (const consume of consumes) {
+            if (form === consume) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
         if (typeof value === "object" && value instanceof Date === false) {
@@ -86,19 +98,28 @@ export class InteractionService {
     }
 
     /**
-     * @param interactionDto 
+     * @param file 
+     * @param projectId 
+     * @param stakeholder 
+     * @param communicationDate 
+     * @param communicationDetails 
+     * @param filename 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public interactionControllerCreate(interactionDto: InteractionDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public interactionControllerCreate(interactionDto: InteractionDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public interactionControllerCreate(interactionDto: InteractionDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public interactionControllerCreate(interactionDto: InteractionDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
-        if (interactionDto === null || interactionDto === undefined) {
-            throw new Error('Required parameter interactionDto was null or undefined when calling interactionControllerCreate.');
-        }
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public interactionControllerCreate(file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, filename?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -111,14 +132,42 @@ export class InteractionService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-
         // to determine the Content-Type header
         const consumes: string[] = [
-            'application/json'
+            'multipart/form-data'
         ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any; };
+        let useForm = false;
+        let convertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new HttpParams({encoder: this.encoder});
+        }
+
+        if (file !== undefined) {
+            formParams = formParams.append('file', <any>file) as any || formParams;
+        }
+        if (projectId !== undefined) {
+            formParams = formParams.append('projectId', <any>projectId) as any || formParams;
+        }
+        if (stakeholder !== undefined) {
+            formParams = formParams.append('stakeholder', <any>stakeholder) as any || formParams;
+        }
+        if (communicationDate !== undefined) {
+            formParams = formParams.append('communicationDate', <any>communicationDate) as any || formParams;
+        }
+        if (communicationDetails !== undefined) {
+            formParams = formParams.append('communicationDetails', <any>communicationDetails) as any || formParams;
+        }
+        if (filename !== undefined) {
+            formParams = formParams.append('filename', <any>filename) as any || formParams;
         }
 
         let responseType: 'text' | 'json' = 'json';
@@ -127,7 +176,7 @@ export class InteractionService {
         }
 
         return this.httpClient.post<any>(`${this.configuration.basePath}/api/interaction`,
-            interactionDto,
+            convertFormParamsToString ? formParams.toString() : formParams,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -139,24 +188,38 @@ export class InteractionService {
     }
 
     /**
-     * @param id 
+     * @param projectId 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public interactionControllerFindOne(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public interactionControllerFindOne(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public interactionControllerFindOne(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public interactionControllerFindOne(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling interactionControllerFindOne.');
+    public interactionControllerFind(projectId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<InteractionResponse>>;
+    public interactionControllerFind(projectId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<InteractionResponse>>>;
+    public interactionControllerFind(projectId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<InteractionResponse>>>;
+    public interactionControllerFind(projectId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (projectId === null || projectId === undefined) {
+            throw new Error('Required parameter projectId was null or undefined when calling interactionControllerFind.');
+        }
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (projectId !== undefined && projectId !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>projectId, 'projectId');
         }
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/json'
             ];
             httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -170,8 +233,9 @@ export class InteractionService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<any>(`${this.configuration.basePath}/api/interaction/${encodeURIComponent(String(id))}`,
+        return this.httpClient.get<Array<InteractionResponse>>(`${this.configuration.basePath}/api/interaction`,
             {
+                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
@@ -195,6 +259,13 @@ export class InteractionService {
         }
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
@@ -226,27 +297,38 @@ export class InteractionService {
 
     /**
      * @param id 
-     * @param updateInteractionDto 
+     * @param file 
+     * @param projectId 
+     * @param stakeholder 
+     * @param communicationDate 
+     * @param communicationDetails 
+     * @param revisionCount 
+     * @param filename 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public interactionControllerUpdate(id: number, updateInteractionDto: UpdateInteractionDto, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public interactionControllerUpdate(id: number, updateInteractionDto: UpdateInteractionDto, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public interactionControllerUpdate(id: number, updateInteractionDto: UpdateInteractionDto, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public interactionControllerUpdate(id: number, updateInteractionDto: UpdateInteractionDto, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<InteractionResponse>;
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<InteractionResponse>>;
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<InteractionResponse>>;
+    public interactionControllerUpdate(id: number, file?: Blob, projectId?: number, stakeholder?: string, communicationDate?: string, communicationDetails?: string, revisionCount?: number, filename?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling interactionControllerUpdate.');
         }
-        if (updateInteractionDto === null || updateInteractionDto === undefined) {
-            throw new Error('Required parameter updateInteractionDto was null or undefined when calling interactionControllerUpdate.');
-        }
 
         let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
 
         let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/json'
             ];
             httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -254,14 +336,45 @@ export class InteractionService {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
-
         // to determine the Content-Type header
         const consumes: string[] = [
-            'application/json'
+            'multipart/form-data'
         ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
+
+        const canConsumeForm = this.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any; };
+        let useForm = false;
+        let convertFormParamsToString = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        // see https://stackoverflow.com/questions/4007969/application-x-www-form-urlencoded-or-multipart-form-data
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new HttpParams({encoder: this.encoder});
+        }
+
+        if (file !== undefined) {
+            formParams = formParams.append('file', <any>file) as any || formParams;
+        }
+        if (projectId !== undefined) {
+            formParams = formParams.append('projectId', <any>projectId) as any || formParams;
+        }
+        if (stakeholder !== undefined) {
+            formParams = formParams.append('stakeholder', <any>stakeholder) as any || formParams;
+        }
+        if (communicationDate !== undefined) {
+            formParams = formParams.append('communicationDate', <any>communicationDate) as any || formParams;
+        }
+        if (communicationDetails !== undefined) {
+            formParams = formParams.append('communicationDetails', <any>communicationDetails) as any || formParams;
+        }
+        if (revisionCount !== undefined) {
+            formParams = formParams.append('revisionCount', <any>revisionCount) as any || formParams;
+        }
+        if (filename !== undefined) {
+            formParams = formParams.append('filename', <any>filename) as any || formParams;
         }
 
         let responseType: 'text' | 'json' = 'json';
@@ -269,8 +382,8 @@ export class InteractionService {
             responseType = 'text';
         }
 
-        return this.httpClient.put<any>(`${this.configuration.basePath}/api/interaction/${encodeURIComponent(String(id))}`,
-            updateInteractionDto,
+        return this.httpClient.put<InteractionResponse>(`${this.configuration.basePath}/api/interaction/${encodeURIComponent(String(id))}`,
+            convertFormParamsToString ? formParams.toString() : formParams,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

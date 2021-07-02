@@ -18,10 +18,6 @@ parameters:
     displayName: Suffix
     name: SUFFIX
     value: main
-  - description: Environment corresponding to namespace (dev/test/prod).
-    displayName: Environment
-    name: ENV
-    value: dev
   - description: OpenShift Project (namespace prefix).
     displayName: Project
     name: PROJECT
@@ -57,7 +53,6 @@ parameters:
     generate: expression
     name: POSTGRESQL_PASSWORD
     required: true
-
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
@@ -115,10 +110,12 @@ objects:
     apiVersion: v1
     metadata:
       annotations:
+        as-copy-of: '${NAME}-template'
+        create-template: 'true'
       name: ${NAME}${SUFFIX}
     stringData:
       # The unqualified hostname is the name of the db service. Easier to look up in fom-api-deploy than recreate.
-      database-host: ${NAME}${SUFFIX}.${PROJECT}-${ENV}.svc.cluster.local
+      database-host: ${NAME}${SUFFIX}
       database-name: ${POSTGRESQL_DATABASE}
       database-password: ${POSTGRESQL_PASSWORD}
       database-user: ${POSTGRESQL_USER}
