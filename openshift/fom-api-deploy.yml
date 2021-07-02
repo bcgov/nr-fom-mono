@@ -183,7 +183,7 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: data-encryption-key
-                      name: ${DB_NAME}${SUFFIX}
+                      name: ${NAME}${SUFFIX}
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 # This is the application port
