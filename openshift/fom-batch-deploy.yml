@@ -85,7 +85,7 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           key: database-password
-                          name: ${DB_NAME}{SUFFIX}
+                          name: ${DB_NAME}${SUFFIX}
                     - name: DB_USERNAME 
                       valueFrom:
                         secretKeyRef:
