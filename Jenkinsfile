@@ -14,6 +14,7 @@ pipeline {
         }
       }
     }
+    /*
     stage('Approval For DLVR in Jira') {
         agent { label 'deploy' }
         when {
@@ -32,7 +33,8 @@ pipeline {
           }
         }
     }
-    stage('Deploy App Changes to DEV') {
+    */
+    stage('Deploy to DEV') {
         agent { label 'build' } // Run on jenkins slave 'build'
         when {
           expression { return env.CHANGE_TARGET == 'master';}
@@ -55,7 +57,7 @@ pipeline {
           message "Are all the RFDs to TEST Approved/Resolved, all RFDs to DLVR closed and RFC Authorized to TEST ?"
           id "Jira-TEST"
           parameters { }
-          submitter "SYSTEM"
+          // submitter "SYSTEM" // TODO: Renable when JIRA integration is working.
         }
         steps {
           script {
@@ -63,7 +65,7 @@ pipeline {
           }
         }
       }
-      stage('Deploy App Changes to TEST') {
+      stage('Deploy to TEST') {
           agent { label 'deploy' }
           when {
               // Run Stage only if Pull Request is to master branch
@@ -88,7 +90,7 @@ pipeline {
             message "Are all the RFDs to PROD Approved/Resolved, all RFDs to TEST closed and RFC Authorized to PROD ?"
             id "Jira-PROD"
             parameters { }
-            submitter "SYSTEM"
+            // submitter "SYSTEM" // TODO: Renable when JIRA integration is working.
           }
           steps {
             script {
@@ -96,7 +98,7 @@ pipeline {
             }
           }
       }
-      stage('Deploy App Changes to PROD') {
+      stage('Deploy to PROD') {
         agent { label 'deploy' }
         when {
             // Run Stage only if Pull Request is to master branch
