@@ -11,7 +11,7 @@ const MyBuilder = class extends BasicBuilder {
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-build.yml`, {
       'param':{
-        'NAME': phases[phase].name,
+        // 'NAME': phases[phase].name, // defaults to fom-api
         'SUFFIX': phases[phase].suffix,
         'TAG': phases[phase].tag,
         'GIT_REF': oc.git.branch.merge
