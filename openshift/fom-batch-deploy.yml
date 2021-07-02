@@ -22,6 +22,10 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-batch
+  - description: Name of the database component used by the batch.
+    displayName: Database Name
+    name: DB_NAME
+    value: fom-db
   - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
     displayName: Suffix
     name: SUFFIX
@@ -81,22 +85,22 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           key: database-password
-                          name: fom-db${SUFFIX}
+                          name: ${DB_NAME}{SUFFIX}
                     - name: DB_USERNAME 
                       valueFrom:
                         secretKeyRef:
                           key: database-user
-                          name: fom-db${SUFFIX}
+                          name: ${DB_NAME}${SUFFIX}
                     - name: DB_NAME
                       valueFrom:
                           secretKeyRef:
                             key: database-name
-                            name: fom-db${SUFFIX}
+                            name: ${DB_NAME}${SUFFIX}
                     - name: DB_HOST
                       valueFrom:
                           secretKeyRef:
                             key: database-host
-                            name: fom-db${SUFFIX}
+                            name: ${DB_NAME}${SUFFIX}
                     # We don't supply the data encryption key because the batch process doesn't need to interact with encrypted data.
                     # We don't supply keycloak configuration because the batch process doesn't need to interact with Keycloak.
                   resources:
@@ -114,7 +118,7 @@ objects:
     spec:
       podSelector:
         matchLabels:
-          deploymentconfig: fom-db${SUFFIX}
+          deploymentconfig: ${DB_NAME}${SUFFIX}
       ingress:
         - from:
            - podSelector:
@@ -123,5 +127,3 @@ objects:
           ports:
             - protocol: TCP
               port: 5432
-
-

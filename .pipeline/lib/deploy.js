@@ -10,19 +10,28 @@ const MyDeployer = class extends BasicDeployer{
     const objects = [];
     const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
+    // Using default component names (fom-db, fom-api, fom-batch)
+
+    // TODO: Need to evaluate ImageChangeTrigger from tools?
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-db-deploy.yml`, {
       'param':{
-        'NAME': `${phases[phase].name}-db`,
         'SUFFIX': phases[phase].suffix,
-        'PROJECT': 'a4b31c',
+        // TODO: Add more parameters for prod configuration (storage size, etc.)
       }
     }));
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-deploy.yml`, {
       'param':{
-        'NAME': `${phases[phase].name}`,
         'SUFFIX': phases[phase].suffix,
         'IMAGE_STREAM_VERSION': phases[phase].tag,
-        'HOSTNAME': `${phases[phase].name}${phases[phase].suffix}-${phases[phase].namespace}`,
+        'HOSTNAME': `${phases[phase].hostname}`,
+        // TODO: Add more parameters...
+      }
+    }));
+    // TODO: Need to change to pull from imagestream in same namespace, not from tools. 
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-batch-deploy.yml`, {
+      'param':{
+        'SUFFIX': phases[phase].suffix,
+        'IMAGE_STREAM_VERSION': phases[phase].tag,
       }
     }));
 

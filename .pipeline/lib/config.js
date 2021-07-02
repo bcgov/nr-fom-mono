@@ -26,9 +26,10 @@ module.exports = class {
       // ImageStream tag
       tag:          {build: `build-${version}-${changeId}`, dev: `dev-${version}-${changeId}`   , test: `test-${version}`           , prod: `prod-${version}`},
 
-      // OpenShift name - TODO need to think about this, as it varies from build to deploy and varies between components.
-      // We might want an imagestream name instead?
-      name:         {build: `${name}`                     , dev: `${name}`                      , test: `${name}`                   , prod: `${name}`},
+      // Same hostname needs to be used for the Admin and Public components. Also need to white-list these URLs for KeyCloak...
+      // TODO: How is that going to work in dev with different change ids.
+      hostname:     {build: `n/a`                         , dev: `fom-nrs-dev-${changeId}`      , test: `fom-nrs-test`              , prod: `fom-nrs-prod`},
+
       // TODO: Not sure what instance is used for.
       instance:     {build: `${name}-build-${changeId}`   , dev: `${name}-dev-${changeId}`      , test: `${name}-test`              , prod: `${name}-prod-${changeId}`},
     };

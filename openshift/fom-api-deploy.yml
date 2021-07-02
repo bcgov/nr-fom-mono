@@ -22,6 +22,10 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-api
+  - description: Name of the database component used by the API.
+    displayName: Database Name
+    name: DB_NAME
+    value: fom-db
   - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
     displayName: Suffix
     name: SUFFIX
@@ -159,27 +163,27 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: database-password
-                      name: ${NAME}-db${SUFFIX}
+                      name: ${DB_NAME}${SUFFIX}
                 - name: DB_USERNAME 
                   valueFrom:
                     secretKeyRef:
                       key: database-user
-                      name: ${NAME}-db${SUFFIX}
+                      name: ${DB_NAME}${SUFFIX}
                 - name: DB_NAME
                   valueFrom:
                       secretKeyRef:
                         key: database-name
-                        name: ${NAME}-db${SUFFIX}
+                        name: ${DB_NAME}${SUFFIX}
                 - name: DB_HOST
                   valueFrom:
                       secretKeyRef:
                         key: database-host
-                        name: fom-db${SUFFIX}
+                        name: ${DB_NAME}${SUFFIX}
                 - name: DATA_ENCRYPTION_KEY
                   valueFrom:
                     secretKeyRef:
                       key: data-encryption-key
-                      name: ${NAME}-db${SUFFIX}
+                      name: ${DB_NAME}${SUFFIX}
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 # This is the application port
@@ -286,7 +290,7 @@ objects:
     spec:
       podSelector:
         matchLabels:
-          deploymentconfig: ${NAME}-db${SUFFIX}
+          deploymentconfig: ${DB_NAME}${SUFFIX}
       ingress:
         - from:
             - podSelector:
