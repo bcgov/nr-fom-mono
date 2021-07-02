@@ -13,7 +13,7 @@ export class Interaction extends ApiBaseEntity<Interaction> {
   @Column()
   stakeholder: string;
 
-  @Column({ name: 'communication_date'})
+  @Column({ name: 'communication_date', type: 'date'})
   communicationDate: string; // timestamp
 
   @Column({ name: 'communication_details'})
