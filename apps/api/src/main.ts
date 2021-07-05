@@ -94,18 +94,23 @@ async function bootstrap():Promise<INestApplication> {
   return app;
 }
 
+async function runTestDataMigrations(app: INestApplication) {
+  if (process.env.DB_TESTDATA  == "true") {
+    const logger = app.get(Logger);
+    logger.log("Running DB Test Data Migrations...");
+    // Need different name from default connection that is already active.
+    // We don't change ormConfigTest's actual definition because when run via 'npm run' needs to use default connection.
+    ormConfigTest['name'] = 'test-migration'; 
+    await dbmigrate(ormConfigTest as ConnectionOptions);
+  }
+}
+
 async function postStartup(app: INestApplication) {
   try {
     const logger = app.get(Logger);
     logger.log("Starting postStartup...");
 
-    if (process.env.DB_TESTDATA  == "true") {
-      logger.log("Running DB Test Data Migrations...");
-      // Need different name from default connection that is already active.
-      // We don't change ormConfigTest's actual definition because when run via 'npm run' needs to use default connection.
-      ormConfigTest['name'] = 'test-migration'; 
-      await dbmigrate(ormConfigTest as ConnectionOptions);
-    }
+    await runTestDataMigrations(app);
 
     // Preload cache for public summary default data.
     logger.log("Starting public summary cache pre-load...");
@@ -143,9 +148,27 @@ async function runBatch() {
   }  
 }
 
+async function standaloneRunTestDataMigrations() {
+  try {
+    const app = await createApp();
+    const logger = app.get(Logger);
+    logger.log("Done startup.");
+    await runTestDataMigrations(app);
+
+  } catch (error) {
+    console.log('Error during test data migration: ' + JSON.stringify(error));
+    process.exit(1);
+  }
+}
+
+
 if (process.argv.length > 2 && '-batch' == process.argv[2]) {
   console.log("Running batch process at " + new Date().toISOString() + " ...");
   runBatch();
+} else if (process.argv.length > 2 && '-testdata' == process.argv[2]) {
+  // Due to long delays running test migrations during normal startup, this provides a way to run them out-of-band, via an OpenShift batch job.
+  console.log("Running test data migrations at " + new Date().toISOString() + " ...");
+  standaloneRunTestDataMigrations();
 } else {
   startApi();
 }

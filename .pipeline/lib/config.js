@@ -28,14 +28,17 @@ module.exports = class {
 
       // Same hostname needs to be used for the Admin and Public components. Also need to white-list these URLs for KeyCloak...
       // TODO: How is that going to work in dev with different change ids.
-      hostname:         {build: `n/a`                         , dev: `fom-nrs-dev-${changeId}`      , test: `fom-nrs-test`              , prod: `fom-nrs-prod`},
+      // TODO: Plan is to use path-based routes including changeId. For now, just using single dev route, which means can only deploy a single branch.
+      // An alternative would be to suffix with version.
 
-      testDataEnabled:  {build: 'n/a'                         , dev: 'false'                         , test: 'true'                      , prod: 'false'},
+      hostname:         {build: `n/a` , dev: `fom-nrs-dev.apps.silver.devops.gov.bc.ca` , test: `fom-nrs-test.apps.silver.devops.gov.bc.ca` , prod: `fom-nrs-prod.apps.silver.devops.gov.bc.ca`},
+
+      testDataEnabled:  {build: 'n/a'                         , dev: 'false'                        , test: 'true'                      , prod: 'false'},
       // Consider having only 1 replica with test data enabled as populating the large volume test data can impact startup when there are multiple replicas.
       apiReplicaCount:  {build: 'n/a'                         , dev: '1'                            , test: '2'                         , prod: '3'},
       // TODO: Need to get test/prod hostnames whitelisted in Keycloak, and need to get dev enabled most likely.
       keycloakEnabled:  {build: 'n/a'                         , dev: 'false'                        , test: 'true'                      , prod: 'true'},
-      keycloakUrl:      {build: 'n/a'                         , dev: 'https://dev.oidc.gov.bc.ca/auth'  , test: 'true'                      , prod: 'true'},
+      keycloakUrl:      {build: 'n/a'                         , dev: 'https://dev.oidc.gov.bc.ca/auth'  , test: 'https://test.oidc.gov.bc.ca/auth' , prod: 'https://oidc.gov.bc.ca/auth'},
     };
 
     const phases = {};

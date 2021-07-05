@@ -21,9 +21,6 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
-    // TODO: Have an error...
-    // Error: command: oc --namespace=a4b31c-dev apply -f - --output=name
-    // stderr:The Route "fom-api-dev-86" is invalid: spec.host: Invalid value: "fom-nrs-dev-86": field is immutable    
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
@@ -36,7 +33,7 @@ const MyDeployer = class extends BasicDeployer{
         // TODO: Add more parameters...
       }
     }));
-    // TODO: Need to change to pull from imagestream in same namespace, not from tools. 
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-batch-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
