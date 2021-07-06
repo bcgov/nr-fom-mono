@@ -22,8 +22,9 @@ const MyDeployer = class extends BasicDeployer{
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-deploy.yml`, {
+      // TODO: Need to clarify use of version vs tag.
       'param':{
-        'ENV': config.phase,
+        'ENV': config.env,
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_VERSION': config.tag,
         'HOSTNAME': config.hostname,

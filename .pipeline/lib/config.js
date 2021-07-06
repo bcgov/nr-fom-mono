@@ -13,18 +13,21 @@ module.exports = class {
     const environments = ['dev', 'test', 'prod']
     const namespacePrefix = 'a4b31c'
     const changeId = options.pr //aka pull-request
+    const buildNumber = options.build // Jenkins build number
     const version = '1.0'
-    const name = 'fom-api'
+    const fullVersion = version + '.PR' + options.pr + '.B' + buildNumber;
   
     const propertiesByPhase = {
       phase:            {build: 'build'                       , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
-      changeId:         {build: changeId                      , dev: changeId                       , test: changeId                    , prod: changeId},
+      env:              {build: 'n/a'                         , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
       namespace:        {build: `${namespacePrefix}-tools`    , dev: `${namespacePrefix}-dev`       , test: `${namespacePrefix}-test`   , prod: `${namespacePrefix}-prod`},
 
       // Suffix added to OpenShift resource names.
       suffix:           {build: `-build-${changeId}`          , dev: `-dev-${changeId}`             , test: `-test`                     , prod: `-prod`  },
-      // ImageStream tag
-      tag:              {build: `build-${version}-${changeId}`, dev: `dev-${version}-${changeId}`   , test: `test-${version}`           , prod: `prod-${version}`},
+      // tag:              {build: fullVersion                   , dev: fullVersion                    , test: fullVersion                 , prod: fullVersion},
+      tag:              {all: fullVersion},
+      // ImageStream tag - TODO Need to understand why don't use full version consistent across environments.
+      oldTag:           {build: `build-${version}-${changeId}`, dev: `dev-${version}-${changeId}`   , test: `test-${version}`           , prod: `prod-${version}`},
 
       // Same hostname needs to be used for the Admin and Public components. Also need to white-list these URLs for KeyCloak...
       // TODO: How is that going to work in dev with different change ids.
@@ -48,7 +51,7 @@ module.exports = class {
       const property = propertiesByPhase[properyName];
       Object.keys(property).forEach((phaseName) => {
         phases[phaseName] = phases[phaseName] || {};
-        phases[phaseName][properyName] = property[phaseName];
+        phases[phaseName][properyName] = property[phaseName] || property['all'];
       });
     });
     return { phases, options, environments};
