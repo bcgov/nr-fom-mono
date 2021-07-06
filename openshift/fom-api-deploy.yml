@@ -14,10 +14,6 @@ parameters:
     displayName: Environment
     name: ENV
     value: dev
-  - description: OpenShift Project (namespace prefix).
-    displayName: Project
-    name: PROJECT
-    value: a4b31c
   - description: Name of the application component being deployed.
     displayName: Name
     name: NAME
@@ -63,7 +59,7 @@ parameters:
     name: REPLICA_COUNT
     required: false
     value: '2'
-  - description: DNS Hostname for the public route. For dev should default to nr-fom-${NAME}${SUFFIX} where SUFFIX includes the environment (dev). Note - can't use other parameters in default value.
+  - description: DNS Hostname for the public route. 
     displayName: DNS Hostname
     name: HOSTNAME
     required: true
@@ -71,7 +67,6 @@ parameters:
     displayName: API Image Version
     name: IMAGE_STREAM_VERSION
     required: true
-    value: main
   - description: Specify 'true' to populate test data (run test migrations) at startup.
     displayName: Database Test Data
     name: DB_TESTDATA
@@ -89,6 +84,10 @@ parameters:
     name: DATA_ENCRYPTION_KEY
     from: "[a-zA-Z0-9]{16}"
     generate: expression
+  - description: SMTP Server Hostname for sending emails
+    displayName: SMTP Server
+    name: SMTP_SERVER
+    value: 'apps.smtp.gov.bc.ca'
 
 objects:
   - kind: ImageStream
@@ -104,8 +103,9 @@ objects:
     apiVersion: v1
     data: 
       hostname: ${HOSTNAME}
-      # Store this in config map to allow it to be changed.
+      # Store settings in config map to allow them to be changed.
       keycloak-url: ${KEYCLOAK_URL}
+      smtp-server: ${SMTP_SERVER}
     metadata:
       name: ${NAME}${SUFFIX}
 
@@ -184,6 +184,8 @@ objects:
                     secretKeyRef:
                       key: data-encryption-key
                       name: ${NAME}${SUFFIX}
+                - name: ENV
+                  value: '${ENV}'
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 # This is the application port
@@ -195,6 +197,11 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       key: keycloak-url
+                      name: ${NAME}${SUFFIX}
+                - name: SMTP_SERVER
+                  valueFrom:
+                    configMapKeyRef:
+                      key: smtp-server
                       name: ${NAME}${SUFFIX}
               resources:
                 requests:

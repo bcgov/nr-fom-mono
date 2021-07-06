@@ -23,14 +23,15 @@ const MyDeployer = class extends BasicDeployer{
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-deploy.yml`, {
       'param':{
+        'ENV': config.phase,
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_VERSION': config.tag,
-        'HOSTNAME': `${config.hostname}`,
-        'DB_TESTDATA': `${config.testDataEnabled}`,
-        'REPLICA_COUNT': `${config.apiReplicaCount}`,
-        'KEYCLOAK_ENABLED': `${config.keycloakEnabled}`,
-        'KEYCLOAK_URL': `${config.keycloakUrl}`,
-        // TODO: Add more parameters...
+        'HOSTNAME': config.hostname,
+        'DB_TESTDATA': config.testDataEnabled,
+        'REPLICA_COUNT': config.apiReplicaCount,
+        'KEYCLOAK_ENABLED': config.keycloakEnabled,
+        'KEYCLOAK_URL': config.keycloakUrl,
+        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
     }));
 
