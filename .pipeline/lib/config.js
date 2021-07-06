@@ -13,19 +13,25 @@ module.exports = class {
     const environments = ['dev', 'test', 'prod']
     const namespacePrefix = 'a4b31c'
     const changeId = options.pr //aka pull-request
-    const buildNumber = options.build // Jenkins build number
     const version = '1.0'
-    const fullVersion = version + '.PR' + options.pr + '.B' + buildNumber;
-  
+    const fullVersion = version + '.PR' + options.pr;
+    const name = 'fom-api'
+
+    // The following properties are required by nrdk for each phase: changeId, namespace, name, tag, instance
     const propertiesByPhase = {
+      name:             {default: `${name}`},  // Needed by nrdk directly.
+      changeId:         {default: changeId },  // Needed by nrdk directly.
       phase:            {build: 'build'                       , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
       env:              {build: 'n/a'                         , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
       namespace:        {build: `${namespacePrefix}-tools`    , dev: `${namespacePrefix}-dev`       , test: `${namespacePrefix}-test`   , prod: `${namespacePrefix}-prod`},
 
+      // TODO: How does instance compare to tag?
+      instance:         {build: `${name}-build-${changeId}`   , dev: `${name}-dev-${changeId}`      , test: `${name}-test-${changeId}`  , prod: `${name}-prod-${changeId}`}, // Needed by nrdk.
+
       // Suffix added to OpenShift resource names.
       suffix:           {build: `-build-${changeId}`          , dev: `-dev-${changeId}`             , test: `-test`                     , prod: `-prod`  },
       // tag:              {build: fullVersion                   , dev: fullVersion                    , test: fullVersion                 , prod: fullVersion},
-      tag:              {all: fullVersion},
+      tag:              {default: fullVersion}, // Needed by nrdk directly.
       // ImageStream tag - TODO Need to understand why don't use full version consistent across environments.
       oldTag:           {build: `build-${version}-${changeId}`, dev: `dev-${version}-${changeId}`   , test: `test-${version}`           , prod: `prod-${version}`},
 
@@ -51,7 +57,7 @@ module.exports = class {
       const property = propertiesByPhase[properyName];
       Object.keys(property).forEach((phaseName) => {
         phases[phaseName] = phases[phaseName] || {};
-        phases[phaseName][properyName] = property[phaseName] || property['all'];
+        phases[phaseName][properyName] = property[phaseName] || property['default'];
       });
     });
     return { phases, options, environments};
