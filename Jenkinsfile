@@ -43,7 +43,7 @@ pipeline {
           script {
             // Use Pipeline-cli node project to deploy the wiof-build image to Dev Stage
             echo "Deploying to DEV ..."
-            sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --build=${BUILD_NUMBER} --env=dev --no-rfc-validation"
+            sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=dev --no-rfc-validation"
           }
         }
     }
@@ -76,7 +76,7 @@ pipeline {
             script {
               // Use Pipeline-cli node project to deploy the wiof-build image to Test Stage
               echo "Deploying to Test ..."
-              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --build=${BUILD_NUMBER} --env=test --no-rfc-validation"
+              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=test --no-rfc-validation"
             }
           }
       }
@@ -109,7 +109,7 @@ pipeline {
             script {
               // Use Pipeline-cli node project to deploy the wiof-build image to Prod Stage
               echo "Deploying to Prod ..."
-              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --build=${BUILD_NUMBER} --env=prod --no-rfc-validation"
+              sh "npx @bcgov/nrdk deploy --pr=${CHANGE_ID} --env=prod --no-rfc-validation"
             }
         }
       }
