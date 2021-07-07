@@ -17,7 +17,7 @@ module.exports = class {
     const fullVersion = version + '.PR' + options.pr + '.B' + process.env['BUILD_NUMBER'];
     const appName = 'fom'
 
-    console.log('*** ENV ***\n' + JSON.stringify(process.env));
+    // console.log('*** ENV ***\n' + JSON.stringify(process.env));
 
     // Properties can be defined per phase, or defaulted using key 'default'.
     // The following properties are required by nrdk for each phase: changeId, namespace, name, tag, instance
@@ -73,7 +73,7 @@ module.exports = class {
       });
     });
 
-    console.log('*** phase dev changeId \n' + phases['dev'].changeId);
+    // console.log('*** phase dev changeId \n' + phases['dev'].changeId);
     return { phases, options, environments};
   }
 }
