@@ -118,7 +118,7 @@ export class InteractionController {
         request.body['communicationDetails'],
         // Note, the generated api-client has little issue; it uses 'FormData' to append a file, but did not provide third
         // argument for 'filename'. To still use generated api-client, 'filename' could be found from extra formData property.
-        file.originalname?.includes(".")? file.originalname: request.body['filename'],
+        file?.originalname?.includes(".")? file.originalname: request.body['filename'],
         file? file.buffer: request.body['file']['buffer'],
       );
 
@@ -160,7 +160,7 @@ export class InteractionController {
         request.body['stakeholder'],
         reqDate,
         request.body['communicationDetails'],
-        file.originalname?.includes(".")? file.originalname: request.body['filename'],
+        file?.originalname?.includes(".")? file.originalname: request.body['filename'],
         file? file.buffer: request.body['file']['buffer'],
         id,
         await new ParseIntPipe().transform(request.body['revisionCount'], null)
