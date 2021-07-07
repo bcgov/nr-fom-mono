@@ -96,8 +96,7 @@ objects:
     spec:
       lookupPolicy:
         local: false
-    # TODO: Not used anymore.
-    # ConfigMap - Hostname - for lookup by Admin/Public
+    # ConfigMap - 
   - kind: ConfigMap
     apiVersion: v1
     data: 
@@ -113,6 +112,8 @@ objects:
     apiVersion: v1
     metadata:
       annotations:
+        as-copy-of: '${NAME}-template'
+        create-template: 'true'
       name: ${NAME}${SUFFIX}
     stringData:
       data-encryption-key: ${DATA_ENCRYPTION_KEY}
@@ -137,7 +138,7 @@ objects:
           maxSurge: 25%
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
-      triggers:
+      triggers: 
         - type: ImageChange
           imageChangeParams:
             automatic: true

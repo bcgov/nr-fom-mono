@@ -93,11 +93,7 @@ objects:
         -- create extension pg_stat_statements;
         -- create extension pgaudit;
         -- create extension plr;
-        -- create extension postgis;
-        -- create extension postgis_topology;
         -- create extension fuzzystrmatch;
-        -- create extension postgis_tiger_geocoder;
-        -- create user app;
         -- create user "PG_USER" with password 'PG_PASSWORD';
         -- alter user app password 'POSTGRESQL_PASSWORD'; // values are NOT automatically replaced by secrets. Would need to likely use a script.
         -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
@@ -242,7 +238,7 @@ objects:
             - name: db-initconfig
               configMap:
                 name: ${NAME}${SUFFIX}
-      triggers:
+      triggers: 
         - imageChangeParams:
             automatic: true
             containerNames:

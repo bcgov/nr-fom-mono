@@ -28,34 +28,32 @@ module.exports = class {
       namespace:        {build: `${namespacePrefix}-tools`    , dev: `${namespacePrefix}-dev`       , test: `${namespacePrefix}-test`   , prod: `${namespacePrefix}-prod`},
       // Pipeline phase, also used as environment name by nrdk & fom
       phase:            {build: 'build'                       , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
-      // Used by nrdk/pipeline-cli as unique environment id. (TODO: This doesn't make sense to me)
+      // Used by nrdk/pipeline-cli as unique environment id. (TODO: This doesn't make sense to me, not true for test/prod.)
       changeId:         {default: changeId },  
       // Used by nrdk/pipeline-cli as app label / selector for OpenShift resources
       instance:         {build: `${appName}-build-${changeId}`   , dev: `${appName}-dev-${changeId}`      , test: `${appName}-test-${changeId}`  , prod: `${appName}-prod-${changeId}`}, 
-      // tag:              {build: fullVersion                   , dev: fullVersion                    , test: fullVersion                 , prod: fullVersion},
       // Used by nrdk/pipeline-cli to tag image streams, used by fom to reference image stream version
       tag:              {default: fullVersion}, 
-      // ImageStream tag - TODO Need to understand why don't use full version consistent across environments.
+      // ImageStream tag - TODO Need to understand why don't use full version consistent across environments, and why not include build number.
       oldTag:           {build: `build-${version}-${changeId}`, dev: `dev-${version}-${changeId}`   , test: `test-${version}`           , prod: `prod-${version}`},
 
       // Remaining properties are FOM-specific
 
-      // Suffix added to OpenShift resource names in fom deployment templates.
+      // Suffix added to OpenShift resource names in fom build/deployment templates.
       suffix:           {build: `-build-${changeId}`          , dev: `-dev-${changeId}`             , test: `-test`                     , prod: `-prod`  },
 
-      // Same hostname needs to be used for the Admin and Public components. Also need to white-list these URLs for KeyCloak...
-      // TODO: How is that going to work in dev with different change ids.
-      // TODO: Plan is to use path-based routes including changeId. For now, just using single dev route, which means can only deploy a single branch.
-      // An alternative would be to suffix with version.
+      // Currently use single hostname for dev deployments instead of adding changeId (pull request #).
+      // This means only one pull request can be active in dev at any one time - which we pick the pull request from release branch to master.
+      // TODO: Add changeId to URL path to support multiple dev instances.
+      hostname:         {dev: `fom-nrs-dev.apps.silver.devops.gov.bc.ca`, test: `fom-nrs-test.apps.silver.devops.gov.bc.ca`, prod: `fom-nrs-prod.apps.silver.devops.gov.bc.ca`},
 
-      hostname:         {build: `n/a` , dev: `fom-nrs-dev.apps.silver.devops.gov.bc.ca` , test: `fom-nrs-test.apps.silver.devops.gov.bc.ca` , prod: `fom-nrs-prod.apps.silver.devops.gov.bc.ca`},
-
+      // Note that having test data enabled with multiple replicas can cause issues when populating the large volume test data. 
       testDataEnabled:  {default: 'false', dev: 'true', test: 'true' },
-      // Consider having only 1 replica with test data enabled as populating the large volume test data can impact startup when there are multiple replicas.
-      apiReplicaCount:  {build: 'n/a'                         , dev: '1'                            , test: '2'                         , prod: '3'},
-      // TODO: Need to get test/prod hostnames whitelisted in Keycloak, and need to get dev enabled most likely.
-      keycloakEnabled:  {default: 'true', dev: 'false' },
-      keycloakUrl:      {build: 'n/a'                         , dev: 'https://dev.oidc.gov.bc.ca/auth'  , test: 'https://test.oidc.gov.bc.ca/auth' , prod: 'https://oidc.gov.bc.ca/auth'},
+
+      apiReplicaCount:  {dev: '1', test: '3', prod: '3'},
+
+      keycloakEnabled:  {default: 'true' },
+      keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://test.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},
     };
 
     // Pivot configuration table, so that `phase name` becomes a top-level property
@@ -69,7 +67,7 @@ module.exports = class {
     Object.keys(propertiesByPhase).forEach((properyName) => {
       const property = propertiesByPhase[properyName];
       phaseNames.forEach((phaseName) => {
-        phases[phaseName][properyName] = property[phaseName] || property['default'];
+        phases[phaseName][properyName] = property[phaseName] || property['default'] || 'n/a';
       });
     });
 
