@@ -14,11 +14,12 @@ module.exports = class {
     const namespacePrefix = 'a4b31c'
     const changeId = options.pr //aka pull-request
     const version = '1.0'
-    const fullVersion = version + '.PR' + options.pr;
+    const fullVersion = version + '.PR' + options.pr + '.B' + process.env['BUILD_NUMBER'];
     const appName = 'fom'
 
     console.log('*** ENV ***\n' + JSON.stringify(process.env));
 
+    // Properties can be defined per phase, or defaulted using key 'default'.
     // The following properties are required by nrdk for each phase: changeId, namespace, name, tag, instance
     const propertiesByPhase = {
       // Application name
@@ -57,16 +58,22 @@ module.exports = class {
       keycloakUrl:      {build: 'n/a'                         , dev: 'https://dev.oidc.gov.bc.ca/auth'  , test: 'https://test.oidc.gov.bc.ca/auth' , prod: 'https://oidc.gov.bc.ca/auth'},
     };
 
-    const phases = {};
     // Pivot configuration table, so that `phase name` becomes a top-level property
     // { namespace: { build: '-tools',  dev: '-dev'}}   ->  { build: { namespace: '-tools' }, dev: { namespace: '-dev' } }
+    const phases = {};
+    const phaseNames = Object.keys(propertiesByPhase.phase);
+    phaseNames.forEach((phaseName) => {
+      phases[phaseName] = {};
+    });
+
     Object.keys(propertiesByPhase).forEach((properyName) => {
       const property = propertiesByPhase[properyName];
-      Object.keys(property).forEach((phaseName) => {
-        phases[phaseName] = phases[phaseName] || {};
+      phaseNames.forEach((phaseName) => {
         phases[phaseName][properyName] = property[phaseName] || property['default'];
       });
     });
+
+    console.log('*** phase dev changeId \n' + phases[dev].changeId);
     return { phases, options, environments};
   }
 }

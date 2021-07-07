@@ -5,7 +5,6 @@ labels:
   template: fom-db-deploy
   # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
   suffix: fom${SUFFIX}
-  app: fom
   app-component: ${NAME}
 metadata:
   name: fom-db-deploy
