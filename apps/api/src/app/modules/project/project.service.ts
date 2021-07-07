@@ -424,35 +424,37 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       const today = dayjs().startOf('day');
 
       // Query for projects with workflowState = PUBLISHED and COMMENT_OPEN_DATE equal to or before today: update to have workflow state = COMMENT_OPEN
-      const currentPublishedFomIds = await this.findFomIds(WorkflowStateEnum.PUBLISHED, dayjs(today).format(this.DATE_FORMAT));
+      const currentPublishedFomIds = await this.findFomIds(WorkflowStateEnum.PUBLISHED, dayjs(today).format(this.DATE_FORMAT), false);
       await this.updateProjectsState(WorkflowStateEnum.COMMENT_OPEN, currentPublishedFomIds);
 
-      // Query for projects with workflowState = COMMENT_OPEN and COMMENT_CLOSED_DATE equal to or before today:  update to have workflow state = COMMENT_CLOSED
-      const currentCommentOpenFomIds = await this.findFomIds(WorkflowStateEnum.COMMENT_OPEN, dayjs(today).format(this.DATE_FORMAT));
+      // Query for projects with workflowState = COMMENT_OPEN and 'COMMENT_CLOSED_DATE' equal to or before today:  update to have workflow state = COMMENT_CLOSED
+      const currentCommentOpenFomIds = await this.findFomIds(WorkflowStateEnum.COMMENT_OPEN, dayjs(today).format(this.DATE_FORMAT), true);
       await this.updateProjectsState(WorkflowStateEnum.COMMENT_CLOSED, currentCommentOpenFomIds);
 
       // Query for projects with workflowState = FINALIZED and COMMENT_OPEN_DATE more than 3 years ago (need to check regarding exact business rule): update to have workflow state = EXPIRED
       const past = today.add(-3, 'year');
-      const currentFinalizedFomIds = await this.findFomIds(WorkflowStateEnum.FINALIZED, past.format(this.DATE_FORMAT));
+      const currentFinalizedFomIds = await this.findFomIds(WorkflowStateEnum.FINALIZED, past.format(this.DATE_FORMAT), false);
       await this.updateProjectsState(WorkflowStateEnum.EXPIRED, currentFinalizedFomIds);
 
       this.logger.info("Completed batch process for date-based workflow state changes...");
   }
   
   /**
-   * Find FOM Ids by 'workflowStateCode' and 'commentingOpenDate' equal or before the 'date' passed for search.
+   * Find FOM Ids by 'workflowStateCode' and 'commentingOpenDate'/'commenting_closed_date' equal or before the 'date' passed for search.
    * @param workflowStateCode 
    * @param date a date string as 'YYYY-MM-DD' for query.
+   * @param forCommentCloseDate indicates the 'date' is for 'commenting_closed_date' or 'commenting_open_date'
    * @returns array of FOM Ids or empty
    */
-  private async findFomIds(workflowStateCode: WorkflowStateEnum, date: string): Promise<number[]> {
-    this.logger.info(`Find FOM with workflowState ${workflowStateCode} and date equal or before: ${date}`);
+  private async findFomIds(workflowStateCode: WorkflowStateEnum, date: string, forCommentCloseDate: boolean): Promise<number[]> {
+    this.logger.info(`Find FOM with workflowState ${workflowStateCode} and ${forCommentCloseDate? 'commenting_closed_date'
+                      : 'commenting_open_date'} equal or before: ${date}`);
     const queryResults = await this
             .repository
             .createQueryBuilder()
             .select('project_id')
             .where('workflow_state_code = :workflowStateCode', {workflowStateCode: workflowStateCode})
-            .andWhere('commenting_open_date <= :date', {date: date})
+            .andWhere( !forCommentCloseDate? 'commenting_open_date <= :date' : 'commenting_closed_date <= :date', {date: date})
             .orderBy('project_id')
             .getRawMany();
     if (queryResults && queryResults.length > 0) {
@@ -475,11 +477,16 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     this.logger.info(`Updating FOM for ${projectIds} to ${workflowStateCode}`);
     const updatedCounts = (await this.repository
-              .createQueryBuilder()
-              .update(Project)
-              .set({workflowStateCode: workflowStateCode})
-              .where('project_id IN (:...ids)', {ids: projectIds})
-              .execute()).affected;
+            .createQueryBuilder()
+            .update(Project)
+            .set({
+              workflowStateCode: workflowStateCode,
+              updateUser: 'system',
+              updateTimestamp: new Date(),
+              revisionCount: () => "revision_count + 1"
+            })
+            .where('project_id IN (:...ids)', {ids: projectIds})
+            .execute()).affected;
     this.logger.info(`${updatedCounts} FOM(s) for ${projectIds} were updated to ${workflowStateCode}`);
   }
 
