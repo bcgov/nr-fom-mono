@@ -54,6 +54,7 @@ export class ProjectFindCriteria {
 
 @Injectable()
 export class ProjectService extends DataService<Project, Repository<Project>, ProjectResponse> { 
+  readonly DATE_FORMAT = 'YYYY-MM-DD';
 
   constructor(
     @InjectRepository(Project)
@@ -155,10 +156,10 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   convertEntity(entity: Project): ProjectResponse {
     const response = new ProjectResponse();
     if (entity.commentingClosedDate) {
-      response.commentingClosedDate = dayjs(entity.commentingClosedDate).format('YYYY-MM-DD');
+      response.commentingClosedDate = dayjs(entity.commentingClosedDate).format(this.DATE_FORMAT);
     }
     if (entity.commentingOpenDate) {
-      response.commentingOpenDate = dayjs(entity.commentingOpenDate).format('YYYY-MM-DD');
+      response.commentingOpenDate = dayjs(entity.commentingOpenDate).format(this.DATE_FORMAT);
     }
     response.createTimestamp = entity.createTimestamp.toISOString();
     response.description = entity.description;
@@ -336,7 +337,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     // validating PUBLISHED transitioning
     if (WorkflowStateEnum.PUBLISHED === stateTransition) {
       // Required COMMENTING_OPEN_DATE
-      if (isNil(entity.commentingOpenDate) || !dayjs(entity.commentingOpenDate, 'YYYY-MM-DD').isValid()) {
+      if (isNil(entity.commentingOpenDate) || !dayjs(entity.commentingOpenDate, this.DATE_FORMAT).isValid()) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         Missing COMMENTING_OPEN_DATE.`);
       }
@@ -344,7 +345,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       // Required COMMENTING_OPEN_DATE: must be at least one day after publish is pushed
       const publishDate = dayjs().startOf('day');
       const commentingOpenDate = dayjs(entity.commentingOpenDate).startOf('day');
-      let dayDiff = commentingOpenDate.diff(publishDate, "day");
+      const dayDiff = commentingOpenDate.diff(publishDate, "day");
       if (dayDiff < 1) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         COMMENTING_OPEN_DATE: must be at least one day after publish is pushed.`);
@@ -420,13 +421,66 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       // We query for projects with dates not only equal but also before the current date in case the batch process happens to not run one day, the subsequent day's 
       // execution will set everything to the proper state.
 
-      // Query for projects with workflowState = PUBLISHED and COMMENT_OPEN_DATE equal to or before today: update to have workflow state = COMMENT_OPEN
-      // Query for projects with workflowState = COMMENT_OPEN and COMMENT_CLOSED_DATE equal to or before today:  update to have workflow state = COMMENT_CLOSED
-      // Query for projects with workflowState = FINALIZED and COMMENT_OPEN_DATE more than 3 years ago (need to check regarding exact business rule): update to have workflow state = EXPIRED
+      const today = dayjs().startOf('day');
 
-      // TODO: Implement.
+      // Query for projects with workflowState = PUBLISHED and COMMENT_OPEN_DATE equal to or before today: update to have workflow state = COMMENT_OPEN
+      const currentPublishedFomIds = await this.findFomIds(WorkflowStateEnum.PUBLISHED, dayjs(today).format(this.DATE_FORMAT));
+      await this.updateProjectsState(WorkflowStateEnum.COMMENT_OPEN, currentPublishedFomIds);
+
+      // Query for projects with workflowState = COMMENT_OPEN and COMMENT_CLOSED_DATE equal to or before today:  update to have workflow state = COMMENT_CLOSED
+      const currentCommentOpenFomIds = await this.findFomIds(WorkflowStateEnum.COMMENT_OPEN, dayjs(today).format(this.DATE_FORMAT));
+      await this.updateProjectsState(WorkflowStateEnum.COMMENT_CLOSED, currentCommentOpenFomIds);
+
+      // Query for projects with workflowState = FINALIZED and COMMENT_OPEN_DATE more than 3 years ago (need to check regarding exact business rule): update to have workflow state = EXPIRED
+      const past = today.add(-3, 'year');
+      const currentFinalizedFomIds = await this.findFomIds(WorkflowStateEnum.FINALIZED, past.format(this.DATE_FORMAT));
+      await this.updateProjectsState(WorkflowStateEnum.EXPIRED, currentFinalizedFomIds);
 
       this.logger.info("Completed batch process for date-based workflow state changes...");
+  }
+  
+  /**
+   * Find FOM Ids by 'workflowStateCode' and 'commentingOpenDate' equal or before the 'date' passed for search.
+   * @param workflowStateCode 
+   * @param date a date string as 'YYYY-MM-DD' for query.
+   * @returns array of FOM Ids or empty
+   */
+  private async findFomIds(workflowStateCode: WorkflowStateEnum, date: string): Promise<number[]> {
+    this.logger.info(`Find FOM with workflowState ${workflowStateCode} and date equal or before: ${date}`);
+    const queryResults = await this
+            .repository
+            .createQueryBuilder()
+            .select('project_id')
+            .where('workflow_state_code = :workflowStateCode', {workflowStateCode: workflowStateCode})
+            .andWhere('commenting_open_date <= :date', {date: date})
+            .orderBy('project_id')
+            .getRawMany();
+    if (queryResults && queryResults.length > 0) {
+      this.logger.info(`${queryResults.length} found.`);
+      return queryResults.map(result => result['project_id']);
+    }
+    this.logger.info(`No result found.`);
+    return [];
+  }
+
+  /**
+   * Update FOM for 'projectIds' to 'workflowStateCode'
+   * @param workflowStateCode 
+   * @param projectIds
+   */
+  private async updateProjectsState(workflowStateCode: WorkflowStateEnum, projectIds: number[]): Promise<void> {
+    if (!projectIds || projectIds.length == 0) {
+      return;
+    }
+
+    this.logger.info(`Updating FOM for ${projectIds} to ${workflowStateCode}`);
+    const updatedCounts = (await this.repository
+              .createQueryBuilder()
+              .update(Project)
+              .set({workflowStateCode: workflowStateCode})
+              .where('project_id IN (:...ids)', {ids: projectIds})
+              .execute()).affected;
+    this.logger.info(`${updatedCounts} FOM(s) for ${projectIds} were updated to ${workflowStateCode}`);
   }
 
 }
