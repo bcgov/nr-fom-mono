@@ -73,7 +73,7 @@ module.exports = class {
       });
     });
 
-    console.log('*** phase dev changeId \n' + phases[dev].changeId);
+    console.log('*** phase dev changeId \n' + phases['dev'].changeId);
     return { phases, options, environments};
   }
 }
