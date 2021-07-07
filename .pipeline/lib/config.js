@@ -15,25 +15,32 @@ module.exports = class {
     const changeId = options.pr //aka pull-request
     const version = '1.0'
     const fullVersion = version + '.PR' + options.pr;
-    const name = 'fom-api'
+    const appName = 'fom'
+
+    console.log('*** ENV ***\n' + JSON.stringify(process.env));
 
     // The following properties are required by nrdk for each phase: changeId, namespace, name, tag, instance
     const propertiesByPhase = {
-      name:             {default: `${name}`},  // Needed by nrdk directly.
-      changeId:         {default: changeId },  // Needed by nrdk directly.
-      phase:            {build: 'build'                       , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
-      env:              {build: 'n/a'                         , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
+      // Application name
+      name:             {default: `${appName}`},  // Needed by nrdk directly.
+      // OpenShift namespace
       namespace:        {build: `${namespacePrefix}-tools`    , dev: `${namespacePrefix}-dev`       , test: `${namespacePrefix}-test`   , prod: `${namespacePrefix}-prod`},
-
-      // TODO: How does instance compare to tag?
-      instance:         {build: `${name}-build-${changeId}`   , dev: `${name}-dev-${changeId}`      , test: `${name}-test-${changeId}`  , prod: `${name}-prod-${changeId}`}, // Needed by nrdk.
-
-      // Suffix added to OpenShift resource names.
-      suffix:           {build: `-build-${changeId}`          , dev: `-dev-${changeId}`             , test: `-test`                     , prod: `-prod`  },
+      // Pipeline phase, also used as environment name by nrdk & fom
+      phase:            {build: 'build'                       , dev: 'dev'                          , test: 'test'                      , prod: 'prod'},
+      // Used by nrdk/pipeline-cli as unique environment id. (TODO: This doesn't make sense to me)
+      changeId:         {default: changeId },  
+      // Used by nrdk/pipeline-cli as app label / selector for OpenShift resources
+      instance:         {build: `${appName}-build-${changeId}`   , dev: `${appName}-dev-${changeId}`      , test: `${appName}-test-${changeId}`  , prod: `${appName}-prod-${changeId}`}, 
       // tag:              {build: fullVersion                   , dev: fullVersion                    , test: fullVersion                 , prod: fullVersion},
-      tag:              {default: fullVersion}, // Needed by nrdk directly.
+      // Used by nrdk/pipeline-cli to tag image streams, used by fom to reference image stream version
+      tag:              {default: fullVersion}, 
       // ImageStream tag - TODO Need to understand why don't use full version consistent across environments.
       oldTag:           {build: `build-${version}-${changeId}`, dev: `dev-${version}-${changeId}`   , test: `test-${version}`           , prod: `prod-${version}`},
+
+      // Remaining properties are FOM-specific
+
+      // Suffix added to OpenShift resource names in fom deployment templates.
+      suffix:           {build: `-build-${changeId}`          , dev: `-dev-${changeId}`             , test: `-test`                     , prod: `-prod`  },
 
       // Same hostname needs to be used for the Admin and Public components. Also need to white-list these URLs for KeyCloak...
       // TODO: How is that going to work in dev with different change ids.
@@ -42,11 +49,11 @@ module.exports = class {
 
       hostname:         {build: `n/a` , dev: `fom-nrs-dev.apps.silver.devops.gov.bc.ca` , test: `fom-nrs-test.apps.silver.devops.gov.bc.ca` , prod: `fom-nrs-prod.apps.silver.devops.gov.bc.ca`},
 
-      testDataEnabled:  {build: 'n/a'                         , dev: 'false'                        , test: 'true'                      , prod: 'false'},
+      testDataEnabled:  {default: 'false', dev: 'true', test: 'true' },
       // Consider having only 1 replica with test data enabled as populating the large volume test data can impact startup when there are multiple replicas.
       apiReplicaCount:  {build: 'n/a'                         , dev: '1'                            , test: '2'                         , prod: '3'},
       // TODO: Need to get test/prod hostnames whitelisted in Keycloak, and need to get dev enabled most likely.
-      keycloakEnabled:  {build: 'n/a'                         , dev: 'false'                        , test: 'true'                      , prod: 'true'},
+      keycloakEnabled:  {default: 'true', dev: 'false' },
       keycloakUrl:      {build: 'n/a'                         , dev: 'https://dev.oidc.gov.bc.ca/auth'  , test: 'https://test.oidc.gov.bc.ca/auth' , prod: 'https://oidc.gov.bc.ca/auth'},
     };
 
