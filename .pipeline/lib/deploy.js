@@ -13,7 +13,7 @@ const MyDeployer = class extends BasicDeployer{
 
     // Using default component names (fom-db, fom-api, fom-batch)
 
-    // TODO: Need to evaluate ImageChangeTrigger from tools?
+    // TODO: Need to evaluate ImageChangeTrigger from tools?  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-db-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
@@ -22,7 +22,6 @@ const MyDeployer = class extends BasicDeployer{
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-deploy.yml`, {
-      // TODO: Need to clarify use of version vs tag.
       'param':{
         'ENV': config.phase,
         'SUFFIX': config.suffix,

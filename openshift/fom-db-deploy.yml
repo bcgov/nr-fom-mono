@@ -60,7 +60,7 @@ parameters:
   - description: Storage class for PVCs.
     displayName: Storage class for PVCs.
     name: STORAGE_CLASS
-    value: netapp-file-standard
+    value: netapp-block-standard
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -142,7 +142,7 @@ objects:
         requests:
           storage: ${VOLUME_CAPACITY}
       storageClassName: ${STORAGE_CLASS}
-    # DeploymentConfig - DB
+    # DeploymentConfig - DB 
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
