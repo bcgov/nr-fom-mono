@@ -13,7 +13,8 @@ export class MailService {
     const isTest = (env == 'test');
     const districtEmail = project.district.email; // production
     const testEnvTo = 'FLNR.AdminServicesCariboo@gov.bc.ca'; // test
-    const fomViewLink = `https://${process.env.HOSTNAME || 'localhost:4300'}/admin/a/${project.id}`;
+    const host = process.env.HOSTNAME? `https://${process.env.HOSTNAME}`: 'http://localhost:4200';
+    const fomViewLink = `${host}/admin/a/${project.id}`;
 
     const to = isProd? districtEmail: (isTest? testEnvTo: 'basil.vandegriend@cgi.com');
     const from = '"FOMDoNotReply" <Do-Not-Reply@gov.bc.ca'; // override default from;
