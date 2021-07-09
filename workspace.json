@@ -27,13 +27,14 @@
             "{options.outputPath}"
           ],
           "options": {
-            "outputPath": "dist/apps/api",
+            "outputPath": "dist/apps/api/src",
             "main": "apps/api/src/main.ts",
             "tsConfig": "apps/api/tsconfig.app.json",
             "assets": [
               "apps/api/src/assets",
               "apps/api/src/migrations/main",
-              "apps/api/src/migrations/test"
+              "apps/api/src/migrations/test",
+              "apps/api/src/core/mail/templates"
             ],
             "packageJson": "apps/api/package.json",
             "showCircularDependencies": false
