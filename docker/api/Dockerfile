@@ -20,7 +20,7 @@ RUN npm ci
 # Copy local code to the container image.
 COPY . .
 
-RUN npm run build
+RUN npm run build:api
 
 FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim AS run
 

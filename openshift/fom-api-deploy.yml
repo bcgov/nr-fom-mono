@@ -203,6 +203,11 @@ objects:
                     configMapKeyRef:
                       key: smtp-server
                       name: ${NAME}${SUFFIX}
+                - name: HOSTNAME
+                  valueFrom:
+                    configMapKeyRef:
+                      key: hostname
+                      name: ${NAME}${SUFFIX}
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}
