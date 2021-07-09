@@ -16,6 +16,7 @@ import { SubmissionTypeCodeEnum } from '../submission/submission-type-code.entit
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { PublicCommentService } from '../public-comment/public-comment.service';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
+import { MailService } from 'apps/api/src/core/mail/mail.service';
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -63,7 +64,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     private districtService: DistrictService,
     private forestClientService: ForestClientService,
     private attachmentService: AttachmentService,
-    private publicCommentService: PublicCommentService
+    private publicCommentService: PublicCommentService,
+    private mailService: MailService
   ) {
     super(repository, new Project(), logger);
   }
@@ -184,7 +186,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
 
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
-
     this.logger.debug('Find public summaries criteria: %o', findCriteria);
 
     const cacheKey = 'PublicSummary-' + findCriteria.getCacheKey();
@@ -292,13 +293,22 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       throw new InternalServerErrorException("Error updating object");
     }
 
-    const updatedEntity = await this.findEntityForUpdate(projectId);
+    const updatedEntity = await this.findEntityWithCommonRelations(projectId);
     this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
 
-    // TODO notify emails should be sent to district for FINALIZED FOM
+    if (request.workflowStateCode == WorkflowStateEnum.FINALIZED) {
+      try {
+        this.logger.info(`FOM ${updatedEntity.id} is finalized. Sending notification email to district ${updatedEntity.district.name}`);
+        await this.mailService.sendDistrictNotification(updatedEntity);
+        this.logger.info('FOM finalized notification mail Sent!');
+      }
+      catch (error) {
+        this.logger.error('Problem sending notification email: %O', error);
+        console.error(error)
+      }
+    }
 
     return this.convertEntity(updatedEntity);
-
   }
   
   /**
