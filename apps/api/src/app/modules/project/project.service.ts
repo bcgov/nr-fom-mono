@@ -303,8 +303,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         this.logger.info('FOM finalized notification mail Sent!');
       }
       catch (error) {
-        this.logger.error('Problem sending notification email: %O', error);
-        console.error(error)
+        this.logger.error(`Problem sending notification email: ${error}`);
+        throw new InternalServerErrorException('Problem sending FOM finalized notification email.');
       }
     }
 

@@ -1,7 +1,6 @@
 
 export async function getMailConfig(): Promise<any> {
     if (process.env.SMTP_SERVER) {
-        console.log("Using 'process.env.SMTP_SERVER': ", process.env.SMTP_SERVER);
         return process.env.SMTP_SERVER;
     }
     else {
@@ -16,7 +15,6 @@ export async function getMailConfig(): Promise<any> {
               pass: "844353993e632a"
             }
         }
-        console.log("Using fake SMTP service: ", localService);
         return localService;
     }
 }
