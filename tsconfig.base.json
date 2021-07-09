@@ -18,7 +18,9 @@
       "@core": ["apps/api/src/core"],
       "@controllers": ["apps/api/src/core/controllers"],
       "@entities": ["apps/api/src/core/entities"],
-      "@api-modules/*": ["apps/api/src/app/modules/*"]
+      "@api-modules/*": ["apps/api/src/app/modules/*"],
+      "@api-client": ["libs/client/typescript-ng"],
+      "@public-core/*": ["apps/public/src/core/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

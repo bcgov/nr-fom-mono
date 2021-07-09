@@ -47,6 +47,9 @@ module.exports = class {
       // TODO: Add changeId to URL path to support multiple dev instances.
       hostname:         {dev: `fom-nrs-dev.apps.silver.devops.gov.bc.ca`, test: `fom-nrs-test.apps.silver.devops.gov.bc.ca`, prod: `fom-nrs.apps.silver.devops.gov.bc.ca`},
 
+      // TODO: Need to figure out if keeping internal hostnames or only vanity hostnames...
+      vanityHostname:   {dev: `fom-dev.nrs.gov.bc.ca`, test: `fom-test.nrs.gov.bc.ca`, prod: `fom.nrs.gov.bc.ca`},
+
       // Note that having test data enabled with multiple replicas can cause issues when populating the large volume test data. 
       testDataEnabled:  {default: 'false', dev: 'true', test: 'true' },
 

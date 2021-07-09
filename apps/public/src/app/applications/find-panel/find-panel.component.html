@@ -1,0 +1,75 @@
+<div class="flex-panel">
+  <div class="flex-panel__header">
+    <h3 class="title">Find FOM</h3>
+  </div>
+
+  <div class="flex-panel__scroll">
+    <div class="find-form">
+      <div class="form-group">
+        <label class="control-label">FOM Holder Name (or portion)</label>
+        <input id="forestClientNameInput" type="text"
+               class="form-control limit-width-1"
+               maxlength="40"
+          (keydown.arrowup)="$event.preventDefault()"
+          (keydown.arrowdown)="$event.preventDefault()"
+          (keyup.enter)="applyAllFilters()"
+          (mousewheel)="$event.preventDefault()"
+          [(ngModel)]="forestClientNameFilter.filter.value" />
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Posted As Of</label>
+        <div class="date-range">
+          <div class="date-range__input">
+            <label class="sr-only">Start Date</label>
+            <div style="width: 15rem">
+              <app-date-input class="gtm-filter-published-from"
+                [(date)]="postedOnAfterFilter.filter.value"
+                [minDate]="minDate"
+                [maxDate]="maxDate">
+              </app-date-input>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label">Commenting Status</label>
+        <div class="select-badge-group" *ngIf="commentStatusFilters">
+          <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters">
+            <input id="{{filter.queryParam}}" type="checkbox" name="{{filter.queryParam}}" 
+                   [checked]="filter.value" (click)="toggleFilter(filter)"/>
+            <label for="{{filter.queryParam}}">{{filter.displayString}}</label>
+          </div>
+        </div>
+      </div>
+
+      <br/>
+      <div class="form-btns">
+        <button class="btn btn-primary gtm-apply-filters find-btn-lg-device" type="button" title="Apply filters"
+          [disabled]="loading"
+          (click)="applyAllFilters()">
+          Find
+          <i class="spinner-border" [hidden]="!loading"></i>
+        </button>
+        <button class="btn btn-primary gtm-apply-filters find-btn-sm-device" type="button" title="Apply filters"
+          [disabled]="loading"
+          (click)="applyAllFiltersMobile()">
+          Find
+          <i class="spinner-border" [hidden]="!loading"></i>
+        </button>
+        <button class="btn btn-light" type="button" title="Clear filters"
+          [disabled]="loading"
+          (click)="clear()">
+          Clear
+        </button>
+      </div>
+    </div>
+    <section>
+      <h3>What is a FOM Holder Name?</h3>
+      <p>A FOM Holder Name is the name of the company performing the activity on the land base in British Columbia.<br>
+        Enter all or part of the company name and the search will be performed based on whatever you enter.</p>
+    </section>
+
+  </div>
+</div>

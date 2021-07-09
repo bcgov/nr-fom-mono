@@ -263,6 +263,8 @@ objects:
     apiVersion: v1
     metadata:
       name: ${NAME}${SUFFIX}
+      labels:
+        certbot-managed: "true"
       annotations: 
         haproxy.router.openshift.io/rate-limit-connections: "true"
         # Number of HTTP requests that a client IP can make in a 3-second period

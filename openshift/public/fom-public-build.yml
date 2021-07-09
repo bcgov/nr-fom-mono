@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: fom-public-build
+  app: fom
+  app-component: ${NAME}
+  app.kubernetes.io/part-of: fom
+metadata:
+  name: fom-public-build
+parameters:
+  - description: Name of the application component
+    displayName: Name
+    name: NAME
+    value: fom-public
+  - description: Tag (e.g. release/build)
+    displayName: Tag
+    name: TAG
+    value: demo
+  - description: Git Source Reference (branch/tag/ref )
+    displayName: Git Ref
+    name: GIT_REF
+    value: master
+  - description: Webhook secret key.
+    displayName: Webhook secret key
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+    name: WEBHOOK_SECRET_KEY
+    required: true
+
+objects:
+  ### ImageStream - scoped to entire application component, not to tag. Do not delete/recreate as this leads to loss of previously stored images
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
+  ### SECRET - webhook - scoped to entire application component, not to tag. Do not delete/recreate as this changes the secret.
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      annotations:
+      name: ${NAME}-webhook
+    stringData:
+      WebHookSecretKey: ${WEBHOOK_SECRET_KEY}
+  ### BuildConfig
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${TAG}
+      labels:
+        tag: "${TAG}"
+    spec:
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}:${TAG}
+      resources:
+        limits:
+          cpu: '2'
+          memory: 8Gi
+      successfulBuildsHistoryLimit: 5
+      failedBuildsHistoryLimit: 5
+      strategy:
+        type: Docker
+        dockerStrategy:
+          dockerfilePath: Dockerfile
+      postCommit: {}
+      source:
+        type: Git
+        git:
+          uri: 'https://github.com/bcgov/nr-fom-public'
+          ref: ${GIT_REF}
+        contextDir: /
+      runPolicy: SerialLatestOnly
+      triggers:
+        - type: ImageChange
+          imageChange:
+          from:
+            kind: ImageStreamTag
+            name: "node:14-slim"
+        - type: GitHub
+          github:
+            secretReference:
+              name: ${NAME}-webhook
+        - type: ConfigChange

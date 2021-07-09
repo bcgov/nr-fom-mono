@@ -9,7 +9,7 @@ const MyBuilder = class extends BasicBuilder {
     let objects = [];
     const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-build.yml`, {
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-build.yml`, {
       'param':{
         // 'NAME': phases[phase].name, // defaults to fom-api
         'SUFFIX': phases[phase].suffix,

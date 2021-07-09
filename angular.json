@@ -171,15 +171,33 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/public",
+            "baseHref": "/public/",
+            "outputPath": "dist/public",
             "index": "apps/public/src/index.html",
             "main": "apps/public/src/main.ts",
             "polyfills": "apps/public/src/polyfills.ts",
             "tsConfig": "apps/public/tsconfig.app.json",
             "aot": true,
-            "assets": ["apps/public/src/favicon.ico", "apps/public/src/assets"],
-            "styles": ["apps/public/src/styles.scss"],
-            "scripts": []
+            "assets": [
+              "apps/public/src/favicon.ico", 
+              "apps/public/src/assets"
+            ],
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/leaflet.markercluster/dist/MarkerCluster.css",
+              "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
+              "apps/public/src/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/popper.js/dist/umd/popper.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js",
+              "node_modules/moment/min/moment.min.js",
+              "node_modules/leaflet/dist/leaflet.js",
+              "node_modules/leaflet.markercluster/dist/leaflet.markercluster.js",
+              "apps/public/src/assets/js/utils.js"
+            ]
           },
           "configurations": {
             "production": {
@@ -214,7 +232,9 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "public:build"
+            "baseHref": "/public/",
+            "browserTarget": "public:build",
+            "port": 4300
           },
           "configurations": {
             "production": {

@@ -1,0 +1,37 @@
+<header class="app-header" id="header"
+  [ngClass]="{'app-header--flex': (router.url.startsWith('/projects'))}">
+  <nav class="navbar navbar-expand-md justify-content-between">
+    <a class="navbar-brand" title="Forest Operations Map" routerLink="/home/true" style="margin-right: 0;">
+      <span class="navbar-brand__title">Forest Operations Map</span>
+    </a>
+    <span class="navbar-environment" *ngIf="api.env !== 'prod'">{{api.env}}</span>
+    <button class="navbar-toggler" type="button" title="Toggle Main Navigation"
+      aria-controls="navbarNav" 
+      aria-expanded="false" 
+      aria-label="Toggle navigation"
+      data-toggle="collapse"
+      data-target="#navbarNav">
+      <i class="material-icons">menu</i>
+      <span>MENU</span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" title="Find FOM Applications in British Columbia" routerLink="/home/false">
+            <span>All FOMs</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" title="About Us" routerLink="/about">
+            <span>About</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" title="Contact Us" routerLink="/contact">
+            <span>Contact Us</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>

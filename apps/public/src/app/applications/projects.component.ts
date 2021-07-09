@@ -1,0 +1,357 @@
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
+import { MatSnackBarRef, SimpleSnackBar, MatSnackBar } from '@angular/material/snack-bar';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { Router, UrlTree } from '@angular/router';
+
+import { Observable, Subject, Subscription} from 'rxjs';
+import * as operators from 'rxjs/operators';
+import * as _ from 'lodash';
+
+import { AppMapComponent } from './app-map/app-map.component';
+import { FindPanelComponent } from './find-panel/find-panel.component';
+import { DetailsPanelComponent } from './details-panel/details-panel.component';
+import { SplashModalComponent } from './splash-modal/splash-modal.component';
+import { UrlService } from '@public-core/services/url.service';
+import { Panel } from './utils/panel.enum';
+import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
+
+/**
+ * All supported filters.
+ *
+ * @export
+ * @interface IFiltersType
+ */
+ export interface IFiltersType {
+  // Find panel
+  fcName?: string; // forestClientName
+
+  // Explore panel
+  cmtStatus?: string[]; // workflowState
+  pdOnAfter?: Date;
+}
+
+/**
+ * Object emitted by child panel on update.
+ *
+ * @export
+ * @interface IUpdateEvent
+ */
+export interface IUpdateEvent {
+  // filters (See IFiltersType)
+  filters?: IFiltersType;
+
+  // True if the search was manually initiated (button click), false if it is emitting as part of component initiation.
+  search?: boolean;
+
+  // True if the map view should be reset
+  resetMap?: boolean;
+
+  // True if the panel should be collapsed
+  hidePanel?: boolean;
+}
+
+const emptyFilters: IFiltersType = {
+  // Find panel
+  fcName: null,
+
+  // Explore panel
+  cmtStatus: [],
+  pdOnAfter: null
+};
+
+/**
+ * Main public site component.
+ *
+ * @export
+ * @class ProjectsComponent
+ * @implements {OnInit}
+ * @implements {AfterViewInit}
+ * @implements {OnDestroy}
+ */
+@Component({
+  selector: 'app-projects',
+  templateUrl: './projects.component.html',
+  styleUrls: ['./projects.component.scss']
+})
+export class ProjectsComponent implements OnInit, OnDestroy {
+  @ViewChild('appmap', { static: false }) appmap: AppMapComponent;
+  @ViewChild('findPanel', { static: false }) findPanel: FindPanelComponent;
+  @ViewChild('detailsPanel', { static: false }) detailsPanel: DetailsPanelComponent;
+
+  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  private splashModal: NgbModalRef = null;
+  private snackbarRef: MatSnackBarRef<SimpleSnackBar> = null;
+
+  // necessary to allow referencing the enum in the html
+  public Panel = Panel;
+
+  // indicates which side panel should be shown
+  public activePanel: Panel;
+  public loading = false;
+  public urlTree: UrlTree;
+  public observablesSub: Subscription = null;
+  public coordinates: string = null;
+  public filters: IFiltersType = emptyFilters;
+  public projectsSummary: Array<ProjectPublicSummaryResponse>;
+  public projectsSummary$: Observable<Array<ProjectPublicSummaryResponse>>;
+  public totalNumber: number;
+
+  constructor(
+    public snackbar: MatSnackBar,
+    private modalService: NgbModal,
+    private router: Router,
+    private projectService: ProjectService,
+    public urlService: UrlService
+  ) {
+    // watch for URL param changes
+    this.urlService.onNavEnd$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe(event => {
+      this.urlTree = this.router.parseUrl(event.url);
+
+      if (this.urlTree) {
+        switch (this.urlTree.fragment) {
+          case 'splash':
+            this.displaySplashModal();
+            break;
+          case Panel.find:
+            this.closeSplashModal();
+            this.activePanel = Panel.find;
+            break;
+          case Panel.Explore:
+            this.closeSplashModal();
+            this.activePanel = Panel.Explore;
+            break;
+          case Panel.details:
+            this.closeSplashModal();
+            this.activePanel = Panel.details;
+            break;
+          default:
+            this.closeSplashModal();
+            break;
+        }
+      }
+    });
+  }
+
+  /**
+   * On component inits.
+   *
+   * @memberof ProjectsComponent
+   */
+  ngOnInit() {
+    this.loading = true;
+    this.projectService.projectControllerFindPublicSummary().subscribe((results) => {
+      this.loading = false;
+      this.projectsSummary = results;
+      this.totalNumber = results.length;
+    },
+    (error) => {
+      console.error(error);
+      this.loading = false;
+    },
+    () => this.loading = false);
+  }
+
+  /**
+   * Shows the splash modal.
+   *
+   * @memberof ProjectsComponent
+   */
+  public displaySplashModal(): void {
+    this.splashModal = this.modalService.open(SplashModalComponent, {
+      backdrop: 'static',
+      windowClass: 'splash-modal'
+    });
+
+    this.splashModal.result.then(() => {
+      this.splashModal.dismiss();
+    });
+  }
+
+  /**
+   * Closes the splash modal if its open.
+   *
+   * @memberof ProjectsComponent
+   */
+  public closeSplashModal(): void {
+    if (this.splashModal) {
+      this.splashModal.close();
+    }
+  }
+
+  /**
+   * Removes any url fragment.
+   *
+   * @memberof ProjectsComponent
+   */
+  public closeSidePanel() {
+    if (this.activePanel) {
+      this.activePanel = null;
+      this.urlService.setFragment(null);
+    }
+  }
+
+  /**
+   * Show snackbar
+   *
+   * Note: use debounce to delay snackbar opening so we can cancel it preemptively if loading takes less than 500ms
+   *
+   * @memberof ProjectsComponent
+   */
+  public showSnackbar = _.debounce(() => {
+    this.snackbarRef = this.snackbar.open('Loading applications ...');
+  }, 500);
+
+  /**
+   * Hides the snackbar.
+   *
+   * @memberof ProjectsComponent
+   */
+  public hideSnackbar() {
+    // cancel any pending open
+    this.showSnackbar.cancel();
+
+    // if snackbar is showing, dismiss it
+    // NB: use debounce to delay snackbar dismissal so it is visible for at least 500ms
+    _.debounce(() => {
+      if (this.snackbarRef) {
+        this.snackbarRef.dismiss();
+        this.snackbarRef = null;
+      }
+    }, 500)();
+  }
+
+  fetchProjects(filters: IFiltersType) {
+    this.loading = true;
+    if (!filters) {
+      // TODO: This seems to cause errors in the console sometimes. Perhaps error handling is lacking...
+      this.projectService
+      .projectControllerFindPublicSummary()
+      .subscribe((results) => {
+        this.projectsSummary = results;
+        this.totalNumber = results.length;
+        this.loading = false;
+      },
+      () => this.loading = false,
+      () => this.loading = false);
+    }
+    else {
+      const commentStatusNotSelected = !filters.cmtStatus || filters.cmtStatus.length == 0;
+      // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
+      // This is the behaviour in old applications.
+      this.projectService
+          .projectControllerFindPublicSummary(
+            commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
+            commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
+            filters.fcName, filters.pdOnAfter?.toISOString().substr(0, 10))
+          .subscribe((results) => {
+            this.projectsSummary = results;
+            this.totalNumber = results.length;
+            this.loading = false;
+          },
+          () => this.loading = false,
+          () => this.loading = false);
+    }
+  }
+
+  /**
+   * Event handler called when Find panel emits an update.
+   *
+   * @param {IUpdateEvent} updateEvent
+   * @memberof ProjectsComponent
+   */
+  public handleFindUpdate(updateEvent: IUpdateEvent) {
+    this.filters = { ...emptyFilters, ...updateEvent.filters };
+
+    if (updateEvent.search) {
+      // clear the other panels filters/data
+
+      this.detailsPanel.clearAllFilters();
+      this.detailsPanel.saveQueryParameters();
+
+      if (this.appmap) {
+        this.appmap.unhighlightApplications();
+      }
+    }
+
+    this.fetchProjects(this.filters);
+
+    if (updateEvent.resetMap) {
+      this.appmap.resetView(false);
+    }
+
+    if (updateEvent.hidePanel) {
+      this.closeSidePanel();
+    }
+  }
+
+  /**
+   * Event handler called when map component view has changed.
+   *
+   * @memberof ProjectsComponent
+   */
+  public updateCoordinates(): void {
+    // this.getApplications(false); // total number is not affected
+  }
+
+  /**
+   * Toggles active panel and its corresponding url fragment.
+   *
+   * @param {Panel} panel panel/fragment to toggle
+   * @memberof ProjectsComponent
+   */
+  public togglePanel(panel: Panel) {
+    if (this.urlTree.fragment === panel) {
+      this.activePanel = null;
+      this.urlService.setFragment(null);
+    } else {
+      this.activePanel = panel;
+      this.urlService.setFragment(panel);
+    }
+  }
+
+  /**
+   * Clears all child component filters and re-fetches FOMs.
+   *
+   * @memberof ProjectsComponent
+   */
+  public clearFilters() {
+    this.findPanel.clearAllFilters();
+    this.findPanel.saveQueryParameters();
+
+    this.filters = emptyFilters;
+
+    this.fetchProjects(null);
+  }
+
+  /**
+   * Returns true if at least 1 filter is selected/populated, false otherwise.
+   *
+   * @returns {boolean}
+   * @memberof ProjectsComponent
+   */
+  public areFiltersSet(): boolean {
+    return (
+      !!this.filters.fcName || 
+      !_.isEmpty(this.filters.cmtStatus) ||
+      !!this.filters.pdOnAfter
+    );
+  }
+
+  /**
+   * On component destroy.
+   *
+   * @memberof ProjectsComponent
+   */
+  ngOnDestroy() {
+    if (this.splashModal) {
+      this.splashModal.dismiss();
+    }
+
+    if (this.snackbarRef) {
+      this.hideSnackbar();
+    }
+    
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+}

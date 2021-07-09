@@ -1,0 +1,17 @@
+export * from './attachment.service';
+import { AttachmentService } from './attachment.service';
+export * from './auth.service';
+import { AuthService } from './auth.service';
+export * from './district.service';
+import { DistrictService } from './district.service';
+export * from './forestClient.service';
+import { ForestClientService } from './forestClient.service';
+export * from './project.service';
+import { ProjectService } from './project.service';
+export * from './publicComment.service';
+import { PublicCommentService } from './publicComment.service';
+export * from './spatialFeature.service';
+import { SpatialFeatureService } from './spatialFeature.service';
+export * from './submission.service';
+import { SubmissionService } from './submission.service';
+export const APIS = [AttachmentService, AuthService, DistrictService, ForestClientService, ProjectService, PublicCommentService, SpatialFeatureService, SubmissionService];

@@ -14,14 +14,14 @@ const MyDeployer = class extends BasicDeployer{
     // Using default component names (fom-db, fom-api, fom-batch)
 
     // TODO: Need to evaluate ImageChangeTrigger from tools?  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-db-deploy.yml`, {
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-db-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
         // TODO: Add more parameters for prod configuration (storage size, etc.)
       }
     }));
 
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-api-deploy.yml`, {
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
         'ENV': config.phase,
         'SUFFIX': config.suffix,
@@ -35,7 +35,7 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/fom-batch-deploy.yml`, {
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-batch-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_VERSION': config.tag,
