@@ -1,4 +1,4 @@
-@import "~assets/styles/base/base.scss";
+@import "../../../assets/styles/base/base.scss";
 
 .flex-panel__scroll {
   padding: 0;
@@ -93,32 +93,32 @@ section {
 }
 
 .commenting-open {
-  background-image: url("~assets/images/baseline-insert_comment-24px.svg");
+  background-image: url("../../../assets/images/baseline-insert_comment-24px.svg");
 }
 
 .commenting-closed {
-  background-image: url("~assets/images/baseline-cancel-24px.svg");
+  background-image: url("../../../assets/images/baseline-cancel-24px.svg");
 }
 
 .under-review,
 .proposed {
-  background-image: url("~assets/images/baseline-access_time-24px.svg");
+  background-image: url("../../../assets/images/baseline-access_time-24px.svg");
 }
 
 .amendment,
 .review-complete,
 .unknown {
-  background-image: url("~assets/images/outline-info-24px.svg");
+  background-image: url("../../../assets/images/outline-info-24px.svg");
 }
 
 .approved,
 .finalized {
-  background-image: url("~assets/images/baseline-check-24px.svg");
+  background-image: url("../../../assets/images/baseline-check-24px.svg");
 }
 
 .abandoned,
 .not-approved {
-  background-image: url("~assets/images/baseline-cancel-24px.svg");
+  background-image: url("../../../assets/images/baseline-cancel-24px.svg");
 }
 
 // Meta

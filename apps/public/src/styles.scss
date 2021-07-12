@@ -5,19 +5,19 @@
 //@import "~mygovbc-bootstrap-theme/dist/mygovbc-bootstrap-theme.min.css";
 
 // Base
-@import "~apps/public/src/assets/styles/base/base.scss";
+@import "assets/styles/base/base";
 
 // Helpers
-@import "~assets/styles/base/helpers.scss";
+@import "assets/styles/base/helpers";
 
 // Layout
-@import "assets/styles/layout/layout.scss";
+@import "assets/styles/layout/layout";
 
 // Typography
-@import "~assets/styles/base/typography.scss";
+@import "assets/styles/base/typography";
 
 // Material Icons
-@import "~assets/styles/base/material-icons.scss";
+@import "assets/styles/base/material-icons";
 
 // Material Snackbar
 @import "~@angular/material/prebuilt-themes/indigo-pink.css"; // see https://material.angular.io/guide/theming
