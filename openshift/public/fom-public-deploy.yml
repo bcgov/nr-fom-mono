@@ -187,6 +187,8 @@ objects:
     apiVersion: v1
     metadata:
       name: ${NAME}${SUFFIX}
+      labels:
+        certbot-managed: "true"
     spec:
       host: ${HOSTNAME}
       path: /public

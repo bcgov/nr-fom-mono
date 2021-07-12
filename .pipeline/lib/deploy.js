@@ -42,6 +42,18 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-public-deploy.yml`, {
+      'param':{
+        'ENV': config.phase,
+        'SUFFIX': config.suffix,
+        'IMAGE_STREAM_VERSION': config.tag,
+        'HOSTNAME': config.hostname,
+        'REPLICA_COUNT': config.apiReplicaCount,
+        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+      }
+    }));
+
+
     return objects;
   }
 }
