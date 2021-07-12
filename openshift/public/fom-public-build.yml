@@ -42,7 +42,7 @@ objects:
     apiVersion: v1
     metadata:
       annotations:
-      name: ${NAME}-webhook
+      name: ${NAME}${SUFFIX}-webhook
     stringData:
       WebHookSecretKey: ${WEBHOOK_SECRET_KEY}
   ### BuildConfig
