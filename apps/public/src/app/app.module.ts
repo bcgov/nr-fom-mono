@@ -29,7 +29,7 @@ import { FooterComponent } from './footer/footer.component';
 import { ApiService } from '../core/services/api';
 import { UrlService } from '../core/services/url.service';
 
-import { ApiModule, Configuration } from '../core/api'; // TODO: Switch to libs/client directory.
+import { ApiModule, Configuration } from '@api-client'; 
 import { ErrorInterceptor } from '../core/interceptors/http-error.interceptor';
 
 // In index.html we load a javascript file with environment-specific settings,
