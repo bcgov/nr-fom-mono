@@ -17,6 +17,16 @@ const MyBuilder = class extends BasicBuilder {
         'GIT_REF': oc.git.branch.merge
       }
     }));
+
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-build.yml`, {
+      'param':{
+        // 'NAME': phases[phase].name, // defaults to fom-public
+        'SUFFIX': phases[phase].suffix,
+        'TAG': phases[phase].tag,
+        'GIT_REF': oc.git.branch.merge
+      }
+    }));
+
     return objects
   }
 }

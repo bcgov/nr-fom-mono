@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Template
 labels:
   template: fom-public-build
-  app: fom
   app-component: ${NAME}
   app.kubernetes.io/part-of: fom
 metadata:
@@ -12,6 +11,8 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-public
+  - name: SUFFIX
+    value: ''
   - description: Tag (e.g. release/build)
     displayName: Tag
     name: TAG
@@ -48,9 +49,9 @@ objects:
   - kind: BuildConfig
     apiVersion: v1
     metadata:
-      name: ${NAME}-${TAG}
+      name: ${NAME}${SUFFIX}
       labels:
-        tag: "${TAG}"
+        tag: ${TAG}
     spec:
       nodeSelector: null
       output:
@@ -66,16 +67,16 @@ objects:
       strategy:
         type: Docker
         dockerStrategy:
-          dockerfilePath: Dockerfile
+          dockerfilePath: docker/public/Dockerfile
       postCommit: {}
       source:
         type: Git
         git:
-          uri: 'https://github.com/bcgov/nr-fom-public'
+          uri: 'https://github.com/bcgov/nr-fom-api'
           ref: ${GIT_REF}
         contextDir: /
       runPolicy: SerialLatestOnly
-      triggers:
+      triggers: # Disabled by nrdk/pipeline-cli, kept if ever want to run outside the nrdk pipeline.
         - type: ImageChange
           imageChange:
           from:
