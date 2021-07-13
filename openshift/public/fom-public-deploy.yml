@@ -70,6 +70,13 @@ parameters:
     value: main
   
 objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: false
     # ConfigMap - Environment-Specific Settings
   - kind: ConfigMap
     apiVersion: v1
@@ -109,7 +116,6 @@ objects:
               - app
             from:
               kind: ImageStreamTag
-              namespace: ${PROJECT}-tools
               name: ${NAME}:${IMAGE_STREAM_VERSION}
         - type: ConfigChange
       template:
