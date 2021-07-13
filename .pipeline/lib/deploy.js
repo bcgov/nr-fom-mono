@@ -42,7 +42,7 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-public-deploy.yml`, {
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-deploy.yml`, {
       'param':{
         'ENV': config.phase,
         'SUFFIX': config.suffix,
