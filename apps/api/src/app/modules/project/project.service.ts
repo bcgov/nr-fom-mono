@@ -486,15 +486,21 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
 
     this.logger.info(`Updating FOM for ${projectIds} to ${workflowStateCode}`);
+    const updateFields = 
+      {
+        workflowStateCode: workflowStateCode,
+        updateUser: 'system',
+        updateTimestamp: new Date(),
+        revisionCount: () => "revision_count + 1"
+      }
+
+    if (workflowStateCode === WorkflowStateEnum.COMMENT_OPEN) {
+      updateFields['commentingClosedDate']= () => `commenting_open_date + integer '30'`; // default to commenting_open_date + 30
+    }
     const updatedCounts = (await this.repository
             .createQueryBuilder()
             .update(Project)
-            .set({
-              workflowStateCode: workflowStateCode,
-              updateUser: 'system',
-              updateTimestamp: new Date(),
-              revisionCount: () => "revision_count + 1"
-            })
+            .set(updateFields)
             .where('project_id IN (:...ids)', {ids: projectIds})
             .execute()).affected;
     this.logger.info(`${updatedCounts} FOM(s) for ${projectIds} were updated to ${workflowStateCode}`);
