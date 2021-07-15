@@ -13,7 +13,7 @@ import { DetailsPanelComponent } from './details-panel/details-panel.component';
 import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { UrlService } from '@public-core/services/url.service';
 import { Panel } from './utils/panel.enum';
-import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
+import { ProjectPublicSummaryResponse, ProjectService, WorkflowStateEnum } from '@api-client';
 
 /**
  * All supported filters.
@@ -22,10 +22,7 @@ import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
  * @interface IFiltersType
  */
  export interface IFiltersType {
-  // Find panel
   fcName?: string; // forestClientName
-
-  // Explore panel
   cmtStatus?: string[]; // workflowState
   pdOnAfter?: Date;
 }
@@ -51,10 +48,7 @@ export interface IUpdateEvent {
 }
 
 const emptyFilters: IFiltersType = {
-  // Find panel
   fcName: null,
-
-  // Explore panel
   cmtStatus: [],
   pdOnAfter: null
 };
@@ -138,17 +132,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   ngOnInit() {
-    this.loading = true;
-    this.projectService.projectControllerFindPublicSummary().subscribe((results) => {
-      this.loading = false;
-      this.projectsSummary = results;
-      this.totalNumber = results.length;
-    },
-    (error) => {
-      console.error(error);
-      this.loading = false;
-    },
-    () => this.loading = false);
+
+    // default to fetch publicSummary for COMMENT_OPEN
+    this.fetchProjects({
+      fcName: null,
+      cmtStatus: [WorkflowStateEnum.CommentOpen],
+      pdOnAfter: null
+    });
   }
 
   /**
@@ -222,35 +212,21 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   fetchProjects(filters: IFiltersType) {
     this.loading = true;
-    if (!filters) {
-      // TODO: This seems to cause errors in the console sometimes. Perhaps error handling is lacking...
-      this.projectService
-      .projectControllerFindPublicSummary()
-      .subscribe((results) => {
-        this.projectsSummary = results;
-        this.totalNumber = results.length;
-        this.loading = false;
-      },
-      () => this.loading = false,
-      () => this.loading = false);
-    }
-    else {
-      const commentStatusNotSelected = !filters.cmtStatus || filters.cmtStatus.length == 0;
-      // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
-      // This is the behaviour in old applications.
-      this.projectService
-          .projectControllerFindPublicSummary(
-            commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
-            commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
-            filters.fcName, filters.pdOnAfter?.toISOString().substr(0, 10))
-          .subscribe((results) => {
-            this.projectsSummary = results;
-            this.totalNumber = results.length;
-            this.loading = false;
-          },
-          () => this.loading = false,
-          () => this.loading = false);
-    }
+    const commentStatusNotSelected = !filters.cmtStatus || filters.cmtStatus.length == 0;
+    // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
+    // This is the behaviour in old applications.
+    this.projectService
+        .projectControllerFindPublicSummary(
+          commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
+          commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
+          filters.fcName, filters.pdOnAfter?.toISOString().substr(0, 10))
+        .subscribe((results) => {
+          this.projectsSummary = results;
+          this.totalNumber = results.length;
+          this.loading = false;
+        },
+        () => this.loading = false,
+        () => this.loading = false);
   }
 
   /**

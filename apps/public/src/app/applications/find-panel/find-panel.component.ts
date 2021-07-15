@@ -41,6 +41,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+
     this.urlSvc.onNavEnd$
         .pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
@@ -68,7 +69,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
               { queryParam: workflowStateCodes.COMMENT_OPEN.code, 
                 displayString: workflowStateCodes.COMMENT_OPEN.description, value: true },
               { queryParam: workflowStateCodes.COMMENT_CLOSED.code, 
-                displayString: workflowStateCodes.COMMENT_CLOSED.description, value: true }
+                displayString: workflowStateCodes.COMMENT_CLOSED.description, value: false }
             ]
           });  
     });
@@ -129,7 +130,8 @@ export class FindPanelComponent implements OnDestroy, OnInit {
     const commentStatusQueryParams = (this.urlSvc.getQueryParam(this.commentStatusFilters.queryParamsKey) || '').split(DELIMITER.PIPE);
     const csParamsNotPresent = !commentStatusQueryParams || commentStatusQueryParams.length == 0 || commentStatusQueryParams[0] == '';
     this.commentStatusFilters.filters.forEach(filter => {
-      filter.value = csParamsNotPresent? true: commentStatusQueryParams.includes(filter.queryParam);
+      filter.value = filter.queryParam == 'COMMENT_OPEN'? (csParamsNotPresent? true: commentStatusQueryParams.includes(filter.queryParam)) 
+                                                        : (csParamsNotPresent? false: commentStatusQueryParams.includes(filter.queryParam)) 
     });
   }
 
@@ -156,7 +158,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    */
   public applyAllFilters() {
     this.saveQueryParameters();
-    this.emitUpdate({ search: true, resetMap: false, hidePanel: false });
+    this.emitUpdate({ search: true, resetMap: false, hidePanel: true });
   }
 
   /**
@@ -208,7 +210,10 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    */
   public clearAllFilters() {
     this.forestClientNameFilter.reset();
-    this.commentStatusFilters.reset();
+    this.commentStatusFilters.filters.forEach((filter) => {
+      if (filter.queryParam == 'COMMENT_OPEN') filter.value = true;
+      if (filter.queryParam == 'COMMENT_CLOSED') filter.value = false;
+    });
     this.postedOnAfterFilter.reset();
   }
   /**
