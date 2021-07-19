@@ -60,15 +60,23 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/apps/admin",
+            "baseHref": "/admin/",
+            "outputPath": "dist/admin",
             "index": "apps/admin/src/index.html",
             "main": "apps/admin/src/main.ts",
             "polyfills": "apps/admin/src/polyfills.ts",
             "tsConfig": "apps/admin/tsconfig.app.json",
             "aot": true,
             "assets": ["apps/admin/src/favicon.ico", "apps/admin/src/assets"],
-            "styles": ["apps/admin/src/styles.scss"],
-            "scripts": []
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
+              "node_modules/leaflet/dist/leaflet.css",
+              "apps/admin/src/styles.scss"],
+            "scripts": [
+              "node_modules/moment/min/moment.min.js",
+              "node_modules/keycloak-js/dist/keycloak.min.js"
+            ]
           },
           "configurations": {
             "production": {

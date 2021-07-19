@@ -1,0 +1,75 @@
+
+  <!-- Note, This component is showing feature shape information either as table (normal screen) or as list (small devices)-->
+  <!-- Do no remove the div 'id' as it is a selector for media query -->
+  <!-- Feature details as table (normal screen) -->
+  <div id="si-featureTable">
+    <mat-table [dataSource]="projectSpatialDetail" >
+      <!--- Note that these columns can be defined in any order.
+            The actual rendered columns are set as a property on the row definition" -->
+      <ng-container matColumnDef="shape_id">
+        <mat-header-cell *matHeaderCellDef> <strong>ID</strong> </mat-header-cell>
+        <mat-cell *matCellDef="let feature"> {{feature.featureId}} </mat-cell>
+      </ng-container>
+    
+      <ng-container matColumnDef="type">
+        <mat-header-cell *matHeaderCellDef> <strong>Shape</strong> </mat-header-cell>
+        <mat-cell *matCellDef="let feature"> {{getFomSpatialTypeDesc(feature.featureType)}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> <strong>Name</strong> </mat-header-cell>
+        <mat-cell *matCellDef="let feature"> {{feature.name}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="submission_type">
+        <mat-header-cell *matHeaderCellDef> <strong>Submission</strong> </mat-header-cell>
+        <mat-cell *matCellDef="let feature"> {{feature.submissionType.description}} </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="area_length">
+        <mat-header-cell *matHeaderCellDef> 
+          <strong>Size</strong> 
+        </mat-header-cell>
+        <mat-cell *matCellDef="let feature"> 
+          {{ feature['geometry'].type === 'Polygon'? 
+              (feature.plannedAreaHa? (feature.plannedAreaHa | number) + ' ha' : ''): 
+              (feature.plannedLengthKm? (feature.plannedLengthKm | number) + ' km' : '')
+          }} 
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+  </div>
+
+  <!-- Feature details as list (small devices) -->
+  <div id="sifeatureList">
+    <ul class="shapefile-list">
+      <li class="shapefile-list__item" *ngFor="let feature of projectSpatialDetail">
+        <label class="shapefile-list__id">Shape ID: {{feature.featureId}}</label>
+        <ul class="meta-container">
+          <li>
+            <div class="key">Type:</div>
+            <div class="value">{{getFomSpatialTypeDesc(feature.featureType)}}</div>
+          </li>
+          <li>
+            <div class="key">Name:</div>
+            <div class="value">{{feature.name}}</div>
+          </li>
+          <li>
+            <div class="key">Submission Type:</div>
+            <div class="value">{{feature.submissionType.description}}</div>
+          </li>
+          <li *ngIf="feature['geometry']['type'] === 'Polygon'">
+            <div class="key">Area (ha):</div>
+            <div class="value">{{feature.plannedAreaHa | number }} {{feature.plannedAreaHa? ' ha' : ''}}</div>
+          </li>           
+          <li *ngIf="feature['geometry']['type'] === 'LineString'">
+            <div class="key">Length (km):</div>
+            <div class="value">{{feature.plannedLengthKm | number }} {{feature.plannedLengthKm? ' km' : ''}}</div>
+          </li>     
+        </ul>
+      </li>
+    </ul>
+  </div>

@@ -1,0 +1,110 @@
+@import "../../../assets/styles/base/base.scss";
+
+:host {
+  @include flex-box();
+  @include flex-direction(column);
+  @include flex(1 1 auto);
+
+  overflow:hidden;
+}
+
+.breadcrumb-container {
+  letter-spacing: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+
+  i {
+    display: inline;
+    vertical-align: middle;
+    line-height: inherit;
+  }
+
+  a:hover {
+    text-decoration: none;
+  }
+}
+
+.top-container {
+  padding-right: 0;
+}
+
+.summary-container {
+
+    margin: 0 auto;
+    padding-top: 1.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 3rem;
+    padding-left: 1.5rem;
+    background: #fff;
+    box-shadow: 0.02rem 0 0.2rem rgba(#000, 0.15);
+
+    h4 {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    div {
+        margin-bottom: 1rem;
+    }
+
+    .nv-list {
+        border-bottom: 1px dotted #ccc;
+      
+        li {
+          @include flex-box();
+      
+          padding: 0.5rem 0;
+          border-top: 1px dotted #ccc;
+          background: #fff;
+        }
+      
+        span.name {
+          @include flex(0 0 12rem);
+          margin: 0;
+        }
+      
+        span.value {
+          @include flex(1 1 auto);
+        }
+    }
+
+    .project-relations {
+        margin-top: 1em;
+    }
+}
+
+.table-cards  {
+  thead th {
+    width: 20%; 
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+}
+
+.material-icons {
+  vertical-align: middle;
+}
+
+@media print {
+  :host ::ng-deep {
+    .bottom-container {
+      overflow: visible;
+      page-break-after: always;
+    }
+
+    .project-info {
+      overflow: visible;
+    }
+
+    button {
+        display: none;
+    }
+
+    #sifeatureList {
+      display: none;
+    }
+
+    a {
+      display: none;
+    }
+  }
+}

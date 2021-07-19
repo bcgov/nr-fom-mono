@@ -1,0 +1,22 @@
+
+:host {
+    width: 100%;
+    overflow-x: hidden;
+
+    .file-row {
+        padding-left: 5px;
+
+        .cancel-icon {
+            color: red;
+        }
+
+        .file-icon {
+            color: black;
+        }
+
+        .file-name-span {
+            text-align: left !important;
+            padding-left: 8px;
+        }
+    }
+}
