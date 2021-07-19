@@ -1,0 +1,59 @@
+<div class="container comments-header">
+  <div class="row">
+    <h4 class="col-md-4">Stakeholder Engagements</h4>
+    <div class="col-md-4" style="padding: 0">
+      <button class="btn btn-primary btn-sm" (click)="accordion.openAll()">Expand</button>
+      <button class="btn btn-light btn-sm" (click)="accordion.closeAll()">Collapse</button>
+    </div>
+  </div>
+</div>
+<mat-accordion multi>
+    <mat-expansion-panel hideToggle [disabled]="requestError">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Stockholder Engagements
+        </mat-panel-title>
+        <mat-panel-description>
+          <span [ngStyle]="requestError && {'color': 'red'}">
+            {{requestError? 'Request encountered error. Please try later.': ''}}
+          </span>
+        </mat-panel-description>
+        <mat-icon matBadge="{{interactions?.length}}" matBadgePosition="above before" 
+                matBadgeColor="accent" matBadgeSize="small">reply</mat-icon>
+      </mat-expansion-panel-header>
+      <mat-card *ngFor="let interaction of interactions">
+        <ng-container [ngTemplateOutlet]="comment_fields_template"
+                      [ngTemplateOutletContext]="{ interaction: interaction }">
+        </ng-container>
+      </mat-card>
+    </mat-expansion-panel>                                           
+  </mat-accordion>
+  
+  
+  <!-- Comment item display template -->
+  <ng-template #comment_fields_template let-interaction="interaction">
+    <div class="row">
+      <div class="col-md-2 bold">Stakeholder: </div>
+      <div class="col-md-4">{{interaction?.stakeholder || 'Anonymous'}}</div>
+      <div class="col-md-2 bold">Engagement Date: </div>
+      <div class="col-md-4">{{interaction?.communicationDate | date:'mediumDate'}}</div>
+    </div>
+  
+    <div class="row">
+      <div class="col-md-2 bold">Description: </div>
+      <div class="col-md-10" [innerHTML]="interaction?.communicationDetails | newlines"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2 bold">Attachment: </div>
+      <div class="col-md-10">
+        <a id="attachment-link"
+          [href]="getAttachmentUrl(interaction?.attachmentId)" 
+          [title]="interaction?.fileName || ''" 
+          target="_blank" rel="noopener">
+          {{interaction?.fileName}}
+        </a>
+      </div>
+    </div>  
+    <hr>
+  </ng-template>

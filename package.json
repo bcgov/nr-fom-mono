@@ -73,7 +73,11 @@
     "@ng-bootstrap/ng-bootstrap": "^9.1.0",
     "@nrwl/angular": "^11.2.12",
     "@rxweb/reactive-form-validators": "^2.1.2",
+    "@fortawesome/angular-fontawesome": "^0.8.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "bootstrap": "^4.5.0",
+    "ngx-bootstrap": "^6.2.0",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
     "dayjs": "^1.10.4",
@@ -103,7 +107,12 @@
     "tsutils": "^3.21.0",
     "typeorm": "^0.2.32",
     "typeorm-naming-strategies": "^2.0.0",
-    "zone.js": "^0.10.3"
+    "zone.js": "^0.10.3",
+    "file-saver": "^2.0.5",
+    "ngx-dropzone": "^3.0.0",
+    "ngx-print": "^1.2.1",
+    "keycloak-js": "^12.0.4",
+    "@auth0/angular-jwt": "^5.0.2"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "0.1102.14",

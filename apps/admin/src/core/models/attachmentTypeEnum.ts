@@ -1,0 +1,7 @@
+
+
+export enum AttachmentTypeEnum {
+  PUBLIC_NOTICE = 'PUBLIC_NOTICE',
+  INTERACTION = 'INTERACTION',
+  SUPPORTING_DOC = 'SUPPORTING_DOC',
+}

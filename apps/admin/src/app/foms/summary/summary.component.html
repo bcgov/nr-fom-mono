@@ -1,0 +1,160 @@
+<!-- <div> -->
+  <div class="top-container">
+    <div class="container" style="padding-top: 18px; padding-bottom: 18px;">
+      <div class="breadcrumb-container">
+        <a [routerLink]="['/a', projectId]">
+          <em class="material-icons md-20">arrow_back </em> Back to FOM Details</a>
+      </div>
+      <div class="title-container">
+        <div class="title-container__title">
+          <h1>Summary for FOM ID: {{project?.id}}</h1>
+        </div>
+        <div class="title-container__actions">
+          <div class="btn-container">
+            <button class="btn btn-light" type="button" title="Print Summary"
+                ngxPrint
+                printSectionId="app-body"
+                [useExistingCss]="true">
+              Print
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-container">
+    <div class="container">
+      <section class="summary-container">
+        <section class="project-info">
+          <div>
+            <h4>Name</h4>
+            {{project?.name | titlecase}}
+          </div>
+
+          <div>
+            <h4>Description</h4>
+            {{project?.description}}
+          </div>
+
+          <div>
+            <h4>Details</h4>
+            <ul class="nv-list">
+              <li>
+                <span class="name">FSP ID:</span>
+                <span class="value">
+                  {{project?.fspId}}
+                </span>
+              </li>
+              <li>
+                <span class="name">FOM Holder:</span>
+                <span class="value">
+                  {{project?.forestClient?.name}}
+                </span>
+              </li>
+              <li>
+                <span class="name">District:</span>
+                <span class="value">
+                  {{project?.district?.name}}
+                </span>
+              </li>
+              <li>
+                <span class="name">FOM Status:</span>
+                <span class="value">
+                  {{project?.workflowState? project.workflowState.description : 'Unknown'}}
+                </span>
+              </li>
+              <li>
+                <span class="name">Commenting Open Date:</span>
+                <span class="value">
+                  {{project?.commentingOpenDate}}
+                </span>
+              </li>
+              <li>
+                <span class="name">Commenting Closed Date:</span>
+                <span class="value">
+                  {{project?.commentingClosedDate}}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h4>Geographic Shape Information</h4>
+          <app-details-map
+            [projectSpatialDetail]="spatialDetail">
+          </app-details-map>
+
+          <app-shape-info
+            [spatialDetail]="spatialDetail">
+          </app-shape-info>
+        </section>
+
+        <section class="project-relations">
+          <section>
+            <div>
+              <app-comments-summary
+                [publicCommentDetails]="publicComments"
+                [requestError]="publicCommentsReqError">
+              </app-comments-summary>
+            </div>
+          </section>
+
+          <section>
+            <!-- <div>
+              <h4>Stakeholder Engagements</h4>
+            </div> -->
+            <div>
+              <app-interactions-summary
+                [interactionDetails]="interactions"
+                [requestError]="interactionsReqError">
+              </app-interactions-summary>
+            </div>
+          </section>
+        </section>
+
+        <section>
+          <h4>Attachments</h4>
+          <div *ngIf="attachments?.length > 0; else noAttachment">
+            <table id="table-card" class="table-cards">
+              <thead>
+                <tr>
+                  <th id="dateUploaded" style="width: 10%;">Date Uploaded</th>
+                  <th id="fileName">File Name</th>
+                  <th id="type" style="width: 10%;">Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let attachment of attachments">
+                  <td>
+                    <span>{{attachment.createTimestamp | date: 'medium'}}</span>
+                  </td>
+                  <td data-label="File Name">
+                    <a id="attachment-link"
+                      [href]="getAttachmentUrl(attachment.id)"
+                      [title]="attachment.fileName || ''"
+                      target="_blank" rel="noopener">
+                      {{attachment.fileName}}
+                    </a>
+                  </td>
+                  <td data-label="Type">
+                    <span>{{attachment.attachmentType.description}}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #noAttachment>
+            <div>
+              {{ attachmentsReqError? 'Request encountered error. Please try later.': 'No Attachment' }}.
+            </div>
+          </ng-template>
+        </section>
+
+      </section>
+    </div>
+  </div>
+<!-- </div> -->

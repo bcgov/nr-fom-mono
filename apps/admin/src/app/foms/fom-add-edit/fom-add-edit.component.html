@@ -1,0 +1,266 @@
+<div class="top-container" *ngIf="fg">
+  <div class="container">
+    <div class="title-container">
+      <div class="title-container__title">
+        <h1 class="text-muted">{{isCreate ? 'Add New' : 'Edit'}} FOM</h1>
+      </div>
+      <div class="title-container__actions">
+        <button
+          class="btn btn-light"
+          type="button"
+          title="Cancel changes"
+          (click)="cancelChanges()"
+        >
+          Cancel
+        </button>
+        <button *ngIf="isCreate; else saveButton"
+          class="btn btn-primary ml-1"
+          type="button"
+          title="Create FOM"
+          (click)="submit()"
+          [disabled]="!fg.isModified"
+        >{{ isLoading ? "Submitting" : "Submit" }}
+          <em class="spinner rotating" [hidden]="!stateSvc.loading"></em>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-container" *ngIf="fg">
+
+  <div class="container">
+
+    <form class="mb-3" [formGroup]="fg">
+      <div class="row">
+        <legend>Application Details</legend>
+      </div>
+
+      <div class="form-row" >
+          <div class="form-group col-md-2" *ngIf="!this.isCreate">
+            <label>ID</label>
+            <input
+              type="text"
+              class="form-control"
+              id="id"
+              name="name"
+              disabled
+              [value]="originalProjectResponse.id"
+            />
+          </div>
+          <div class="form-group col-md">
+            <label>Commenting Open Date</label>
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="YYYY-MM-DD"
+                bsDatepicker
+                #openDate="bsDatepicker"
+                id="commentingOpenDate"
+                name="commentingOpenDate"
+                formControlName="commentingOpenDate"
+                [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+                containerClass: 'theme-dark-blue', showWeekNumbers: false }"
+                [appFormControl]="fg.get('commentingOpenDate')"
+              />
+              <div class="input-group-append">
+                <button class="btn btn-icon"  type="button" tabindex="-1" (click)="openDate.show()"
+                        [attr.aria-expanded]="openDate.isOpen">
+                  <em class="material-icons">date_range</em>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md">
+            <label>Commenting Closed Date</label>
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="YYYY-MM-DD"
+                bsDatepicker
+                #closedDate="bsDatepicker"
+                id="commentingClosedDate"
+                name="commentingClosedDate"
+                formControlName="commentingClosedDate"
+                (bsValueChange)="validateClosedDate($event)"
+                [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+                containerClass: 'theme-dark-blue', showWeekNumbers: false  }"
+                [appFormControl]="fg.get('commentingClosedDate')"
+              />
+              <div class="input-group-append">
+                <button class="btn btn-icon"  type="button" tabindex="-1" (click)="closedDate.show()"
+                        [attr.aria-expanded]="closedDate.isOpen">
+                  <em class="material-icons">date_range</em>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+
+          <div class="col-md-2">
+            <label for="fsp-id" style="white-space: nowrap;"
+            >FSP ID</label>
+            <input
+              type="number"
+              class="form-control"
+              id="fsp-id"
+              name="fsp-id"
+              formControlName="fspId"
+              [appFormControl]="fg.get('fspId')"
+            />
+          </div>
+          <div class="col">
+            <label for="fsp-id" style="white-space: nowrap;">District</label>
+            <select class="sort-comments form-control" [ngClass]="{'is-invalid': !districtIdSelect && isSubmitSaveClicked}" (change)="changeDistrictId($event)" id="district-list">
+              <option *ngIf="this.isCreate || !districtIdSelect">  </option>
+              <option  [value]="district.id" *ngFor="let district of districts" [selected]="district.id === districtIdSelect" [innerHTML]=" district.name "> </option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col">
+            <label>FOM Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="name"
+              name="name"
+              formControlName="name"
+              [appFormControl]="fg.get('name')"
+            />
+          </div>
+          <div class="form-group col">
+            <label>FOM Holder</label>
+            <select *ngIf="this.isCreate" class="sort-comments form-control" [ngClass]="{'is-invalid': !forestClientSelect && isSubmitSaveClicked}" (change)="changeForestClientId($event)" id="forestClient-list">
+              <option *ngIf="this.isCreate">  </option>
+              <option  [value]="client.id" *ngFor="let client of forestClients" [selected]="client.id === forestClientSelect" [innerHTML]=" client.name"> </option>
+            </select>
+            <input *ngIf="!this.isCreate"
+                   type="text"
+              class="form-control"
+              id="forestId"
+              name="forestName"
+              disabled
+              [value]="originalProjectResponse.forestClient.name"
+            />
+         </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md">
+            <label>Description</label>
+            <textarea (keyup)="changeDescription($event)"
+              class="form-control" [ngClass]="{'is-invalid': !descriptionValue && isSubmitSaveClicked && !isCreate}"
+              rows="3"
+              id="description"
+              name="description"
+              formControlName="description"
+              [appFormControl]="fg.get('description')"
+            >
+            </textarea>
+          </div>
+        </div>
+      <section *ngIf="!this.isCreate && isCreateAttachmentAllowed()">
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <strong>Initial Public Notice</strong>
+          </div>
+          <div class="form-group col-md-6">
+              <strong>Attachment</strong>
+          </div>
+        </div>
+          <div class="form-row">
+            <div class="form-group col-md-4" >
+              <app-upload-box [multipleFiles]="false" [files]="initialPublicDocument"
+                              [isBlob]="true"
+                              [fileTypes]="fileTypesParentInitial"
+                              (fileUploaded)="addNewFileInitialPublic($event)"
+                              (outputFileContent)="getContentFileFromUpload($event)"
+              ></app-upload-box>
+              <div class="fileTypes"> <em>png, jpeg, jpg, tif, pdf </em></div>
+            </div>
+            <div class="form-group col-md-8">
+              <div class="doc-list row"
+                   *ngFor="let attachment of attachmentsInitialNotice">
+                  <a class="doc-list__item"
+                     [href]="attachmentResolverSvc.getAttachmentUrl(attachment.id)"
+                     [title]="attachment.fileName || ''"
+                     target="_blank" rel="noopener">
+                    <div class="cell doc-list__item-icon">
+                      <em class="material-icons">
+                        insert_drive_file
+                      </em>
+                    </div>
+                    <div class="cell doc-list__item-name">{{attachment.fileName}} &nbsp;</div>
+                    <div style="text-align: right;margin-right: 5px;">({{attachment.attachmentType.description}})</div>
+                  </a>
+              </div>
+            </div>
+          </div>
+
+        <hr>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <strong>FOM Supporting Documents</strong>
+          </div>
+          <div class="form-group col-md-6">
+            <strong>Attachments</strong>
+          </div>
+        </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <app-upload-box [multipleFiles]="false" [files]="supportingDocuments"
+                              [isBlob]="true"
+                              [fileTypes]="fileTypesParentSupporting"
+                              (fileUploaded)="addNewFileSupporting($event)"
+                              (outputFileContent)="getContentFileSupportingDoc($event)">
+              </app-upload-box>
+              <div class="fileTypes"> <em>png, jpeg, jpg, tif, pdf, txt, csv, doc, docx, xls, xlsx </em></div>
+            </div>
+            <div class="form-group col-md-8">
+              <div class="doc-list row"
+                 *ngFor="let attachment of attachments">
+                <a class="doc-list__item"
+                 [href]="attachmentResolverSvc.getAttachmentUrl(attachment.id)"
+                 [title]="attachment.fileName || ''"
+                 target="_blank" rel="noopener">
+                <div class="cell doc-list__item-icon">
+                  <em class="material-icons">
+                    insert_drive_file
+                  </em>
+                </div>
+                <div class="cell doc-list__item-name">{{attachment.fileName}}</div>
+                <div style="text-align: right;margin-right: 5px;">({{attachment.attachmentType.description}})</div>
+                </a>
+                <span *ngIf="isDeleteAttachmentAllowed(attachment)" class="vert-pipe">&nbsp;</span>
+                <button *ngIf="isDeleteAttachmentAllowed(attachment)" class="btn btn-icon row doc-list__item" title="Delete this attachment"
+                      (click)="deleteAttachment(attachment.id)"
+                      [disabled]="isDeleting">
+                  <em class="material-icons">
+                    delete
+                  </em>
+                </button>
+            </div>
+          </div>
+
+      </div>
+      </section>
+    </form>
+  </div>
+</div>
+
+<ng-template #saveButton>
+  <button
+          class="btn btn-primary ml-1"
+          type="button"
+          title="Save your changes"
+          (click)="saveApplication()"
+          [disabled]="isPublishState"
+  >{{ isLoading ? "Saving" : "Save" }}
+    <em class="spinner rotating" [hidden]="!stateSvc.loading"></em>
+  </button>
+
+</ng-template>

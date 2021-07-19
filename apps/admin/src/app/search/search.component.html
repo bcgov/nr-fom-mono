@@ -1,0 +1,172 @@
+<form #searchForm="ngForm" (ngSubmit)="onSubmit()">
+  <div class="top-container" style="overflow-y: hidden;">
+    <div class="container">
+      <div class="title-container">
+        <div class="title-container__title">
+          <h1 class="text-muted">Search FOMs</h1>
+        </div>
+        <div class="title-container__actions">
+          <button type="button" title="Clear search filters"
+            class="btn btn-light"
+            (click)="clearQueryParameters()"
+            [disabled]="searching">
+            Clear
+          </button>
+          <button type="submit" class="filter-btn-search btn btn-primary"
+                  [disabled]="searching" title="Search for FOMs">
+                  Search
+            <em class="spinner-border" [hidden]="!searching"></em>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-container scroll">
+    <div class="container" style="background: #f7f8fa; padding-bottom: 0;">
+      <div class="form-row">
+        <div class="form-group col-md-1">
+          <label for="fspIdInput" style="white-space: nowrap;">
+                FSP ID
+          </label>
+          <input id="fspIdInput" name="fFspId" type="number"
+                min="0" step="1"
+                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, 9);"
+                class="form-control"
+                style="font-size: 14px;"
+                [(ngModel)]="fFspId"
+                [disabled]="searching" autofocus/>
+        </div>
+
+        <div class="form-group col-md-3">
+          <label for="FOMHolderInput" style="white-space: nowrap;">
+            FOM Holder Name (or portion)
+          </label>
+          <input id="FOMHolderInput" type="text"
+                class="form-control filter-input"
+                style="font-size: 14px;"
+                name="fHolder"
+                [(ngModel)]="fHolder"
+                [disabled]="searching" autofocus/>
+        </div>
+
+        <div class="form-group col-md-2">
+          <label for="fStatus" style="white-space: nowrap;">
+            Status
+          </label>
+          <select id="fStatus" name="fStatus"
+                  class="form-control"
+                  [disabled]="searching"
+                  [(ngModel)]="fStatus">
+            <option [value]="undefined"></option> <!-- Note, for 'string' type use "undefined" so it can pre-selected -->
+            <option *ngFor="let status of statusCodes"
+                    [value]="status.code"
+                    [selected]="status.code === fStatus">
+                    {{status.description}}</option>
+          </select>
+        </div>
+
+        <div class="form-group col-md-3">
+          <label for="fStatus" style="white-space: nowrap;">
+            Natural Resource District
+          </label>
+          <select id="fDistrict" name="fDistrict"
+                  class="form-control filter-select"
+                  title="Filter by District"
+                  [disabled]="searching"
+                  [(ngModel)]="fDistrict">
+            <option [value]="null" selected></option> <!-- Note, for 'number' type use "null" so it can pre-selected -->
+            <option *ngFor="let district of districts"
+                    [value]="district.id"
+                    [selected]="district.id === fDistrict">
+                    {{district.name}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div>
+        <h2 *ngIf="searched && !searching && count == 0">
+          <strong>No results found.</strong>
+        </h2>
+        <h2 *ngIf="!searching && count > 0">
+          <strong>{{count}} result<span *ngIf="count != 1">s</span> found.</strong>
+        </h2>
+        <table class="table" *ngIf="count > 0">
+          <thead>
+          <tr>
+            <th id="fomId" class="disp">FOM ID</th>
+            <th id="fomName" class="client">FOM Name</th>
+            <th id="fspId" class="disp">FSP ID</th>
+            <th id="fomHolder" class="client">FOM Holder Name</th>
+            <th id="district" class="client">District</th>
+            <th id="fomStatus" class="status">FOM Status</th>
+            <th id="commentClosed" class="client">Commenting Closed Date</th>
+            <th id="actions" class="actions"></th>
+          </tr>
+          </thead>
+          <ng-template ngFor let-project [ngForOf]="projects">
+            <tr class="app-details">
+              <td class="disp">
+                <strong>{{project.id }}</strong>
+              </td>
+              <td
+                [innerHTML]="project.name ? (project.name | titlecase) : '<em>No FOM name on this File</em>'">
+              </td>
+              <td>
+                {{project.fspId}}
+              </td>
+              <td
+                [innerHTML]="project.forestClient ? (project.forestClient.name | titlecase) : ''">
+              </td>
+              <td>
+                {{project.district?.name}}
+              </td>
+              <td>
+                {{project.workflowState? project.workflowState.description : 'Unknown'}}
+              </td>
+              <td>
+                {{project.commentingClosedDate | date:'mediumDate'}}
+              </td>
+
+              <td class="actions">
+                <div ngbDropdown placement="bottom-right">
+                  <button ngbDropdownToggle class="btn btn-sm btn-outline-primary" type="button">
+                    Actions
+                  </button>
+                  <div ngbDropdownMenu>
+                    <button class="dropdown-item" type="button" [routerLink]="['/a', project.id]">
+                      <em class="material-icons">insert_drive_file</em>
+                      View FOM
+                    </button>
+                    <button class="dropdown-item" type="button" [routerLink]="['/a', project.id, 'edit']"
+                      [hidden]="!canEditFOM(project)">
+                      <em class="material-icons">edit</em>
+                      Edit FOM
+                    </button>
+                    <button class="dropdown-item" type="button" [routerLink]="['/a', project.id, 'upload']"
+                    [hidden]="!canViewSubmission(project)">
+                      <em class="material-icons">public</em>
+                      GeoSpatial Submissions
+                    </button>
+                    <button class="dropdown-item" type="button" [routerLink]="['/comments', project.id]"
+                      [hidden]="!canAccessComments(project)">
+                      <em class="material-icons">mode_comment</em>
+                      Review Comments
+                    </button>
+                    <button class="dropdown-item" type="button" [routerLink]="['/a', project.id, 'summary']">
+                      <em class="material-icons">subject</em>
+                      Summary Report
+                    </button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</form>
