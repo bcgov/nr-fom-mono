@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { UrlService } from '@public-core/services/url.service';
 
 export enum SplashModalResult {
   Dismissed,
@@ -17,12 +18,13 @@ export class SplashModalComponent {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private urlSvc: UrlService,    
     public activeModal: NgbActiveModal // also used in template
   ) {}
 
   public dismiss() {
     this.activeModal.close(SplashModalResult.Dismissed);
-    this.router.navigate([], { relativeTo: this.activatedRoute, replaceUrl: true });
+    this.urlSvc.setFragment(null);
   }
 
   public explore() {
