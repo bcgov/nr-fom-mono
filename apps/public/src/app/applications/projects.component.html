@@ -5,13 +5,13 @@
     <ul>
       <li class="side-nav-item" [ngClass]="{'active': activePanel === Panel.find}">
         <button class="btn" (click)="togglePanel(Panel.find)">
-          <i class="material-icons">search</i>
+          <em class="material-icons">search</em>
           <div>Find</div>
         </button>
       </li>
       <li class="side-nav-item" [ngClass]="{'active': activePanel === Panel.details}">
         <button class="btn" (click)="togglePanel(Panel.details)">
-          <i class="material-icons">info</i>
+          <em class="material-icons">info</em>
           <div>Details</div>
         </button>
       </li>
@@ -20,7 +20,7 @@
 
   <div class="side-panel">
     <button class="close-btn btn btn-icon" (click)="closeSidePanel()">
-      <i class="material-icons">close</i>
+      <em class="material-icons">close</em>
     </button>
     <app-find-panel #findPanel
       (update)="handleFindUpdate($event)"
