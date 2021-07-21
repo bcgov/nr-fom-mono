@@ -37,7 +37,7 @@ objects:
     spec:
       lookupPolicy:
         local: false
-  ### SECRET - webhook - scoped to entire application component, not to tag. Do not delete/recreate as this changes the secret.
+  ### SECRET - webhook 
   - kind: Secret
     apiVersion: v1
     metadata:
@@ -84,5 +84,5 @@ objects:
         - type: GitHub
           github:
             secretReference:
-              name: ${NAME}-webhook
+              name: ${NAME}${SUFFIX}-webhook
         - type: ConfigChange
