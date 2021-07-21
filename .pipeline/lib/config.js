@@ -55,7 +55,8 @@ module.exports = class {
       publicReplicaCount:  {default: '3', dev: '2' },
 
       keycloakEnabled:  {default: 'true' },
-      keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://test.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},
+      keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://dev.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},
+      // TODO: Change test keycloak back to 'https://test.oidc.gov.bc.ca/auth' once set up.
     };
 
     // Pivot configuration table, so that `phase name` becomes a top-level property
