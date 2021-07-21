@@ -16,14 +16,14 @@
 <ul class="doc-list" *ngIf="showList && files.length > 0">
   <li class="doc-list__item" *ngFor="let f of files">
     <div class="cell doc-list__item-icon">
-      <i class="material-icons">insert_drive_file</i>
+      <em class="material-icons">insert_drive_file</em>
     </div>
     <div class="cell doc-list__item-name" [title]="f.displayName || ''">
       {{f.name}}
     </div>
     <div class="cell doc-list__item-actions">
       <button class="btn btn-icon" type="button" title="Remove this file" (click)="removeFile(f)">
-        <i class="material-icons">delete</i>
+        <em class="material-icons">delete</em>
       </button>
     </div>
   </li>
@@ -32,6 +32,6 @@
 <div *ngIf="errors.length > 0" class="errors-list">
   <ul>
     <li *ngFor="let err of errors">
-      <i class="material-icons">error</i>&nbsp;{{err}}</li>
+      <em class="material-icons">error</em>&nbsp;{{err}}</li>
   </ul>
 </div>

@@ -11,9 +11,9 @@
   <div class="modal-header">
     <h4 class="modal-title">Submit a Comment</h4>
     <button class="btn btn-icon close-btn gtm-submit-comment_cancel-pg1" type="button" aria-label="Close" (click)="dismiss('dismissed page1')">
-      <i class="material-icons">
+      <em class="material-icons">
         close
-      </i>
+      </em>
     </button>
   </div>
 
@@ -45,60 +45,58 @@
   <div class="modal-header">
     <h4 class="modal-title">Enter your contact information <em>(optional)</em></h4>
     <button class="btn btn-icon close-btn gtm-submit-comment-cancel-pg2" type="button" aria-label="Close" (click)="dismiss('dismissed page2')">
-      <i class="material-icons">
+      <em class="material-icons">
         close
-      </i>
+      </em>
     </button>
   </div>
   <div class="modal-body">
     <div class="contact-prompt">Providing contact information allows us to follow-up with you if we have questions or need more clarity on your comment.</div>
-    <fieldset>
-        <div class="form-group">
-          <label class="control-label" for="contactName">Name</label>
-          <div class="form-control-container">
-            <input id="contactName" name="contactName" 
-              class="form-control" type="text" 
-              placeholder="Enter your full name" maxlength="50"
-              [ngClass]="{'has-success': !contactName.errors?.minlength && (!contactName.dirty || contactName.touched)}"
-              [(ngModel)]="publicComment.name"
-              #contactName="ngModel" />
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="control-label" for="location">Location</label>
-          <input id="location" name="location" 
-            class="form-control" type="text" 
-            placeholder="e.g. city, town, etc." maxlength="50"
-            [(ngModel)]="publicComment.location"
-            #location="ngModel" />
-        </div>
-        <div class="form-group">
-          <label class="control-label" for="email">Email</label>
-          <input id="email" name="email"
-            class="form-control" type="email" 
-            placeholder="e.g. email@example.com"
-            [ngClass]="{'is-invalid': (email.invalid)}"
-            [(ngModel)]="publicComment.email"
-            #email="ngModel"
-            pattern="^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" />
-          <div class="invalid-feedback" *ngIf="email.invalid && (email.dirty || email.touched)">
-            Enter a valid email address (e.g. email@example.com)
-          </div>
-        </div>
-        <div class="form-group">
-          <label class="control-label" for="phone">Phone</label>
-          <input id="phone" name="phone"
-            class="form-control" type="tel" 
-            placeholder="e.g. 123-456-7890"
-            [ngClass]="{'is-invalid': (phone.invalid)}"
-            [(ngModel)]="publicComment.phoneNumber"
-            #phone="ngModel"
-            pattern="^(?:\+?1[-. ]?)?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$" />
-          <div class="invalid-feedback" *ngIf="phone.invalid && (phone.dirty || phone.touched)">
-            <div *ngIf="phone.invalid">Enter a valid phone number (e.g. 123-456-7890 or 123.456.7890)</div>
-          </div>
-        </div>
-    </fieldset>
+    <div class="form-group">
+      <label class="control-label" for="contactName">Name</label>
+      <div class="form-control-container">
+        <input id="contactName" name="contactName" 
+          class="form-control" type="text" 
+          placeholder="Enter your full name" maxlength="50"
+          [ngClass]="{'has-success': !contactName.errors?.minlength && (!contactName.dirty || contactName.touched)}"
+          [(ngModel)]="publicComment.name"
+          #contactName="ngModel" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="location">Location</label>
+      <input id="location" name="location" 
+        class="form-control" type="text" 
+        placeholder="e.g. city, town, etc." maxlength="50"
+        [(ngModel)]="publicComment.location"
+        #location="ngModel" />
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="email">Email</label>
+      <input id="email" name="email"
+        class="form-control" type="email" 
+        placeholder="e.g. email@example.com"
+        [ngClass]="{'is-invalid': (email.invalid)}"
+        [(ngModel)]="publicComment.email"
+        #email="ngModel"
+        pattern="^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$" />
+      <div class="invalid-feedback" *ngIf="email.invalid && (email.dirty || email.touched)">
+        Enter a valid email address (e.g. email@example.com)
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="phone">Phone</label>
+      <input id="phone" name="phone"
+        class="form-control" type="tel" 
+        placeholder="e.g. 123-456-7890"
+        [ngClass]="{'is-invalid': (phone.invalid)}"
+        [(ngModel)]="publicComment.phoneNumber"
+        #phone="ngModel"
+        pattern="^(?:\+?1[-. ]?)?\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$" />
+      <div class="invalid-feedback" *ngIf="phone.invalid && (phone.dirty || phone.touched)">
+        <div *ngIf="phone.invalid">Enter a valid phone number (e.g. 123-456-7890 or 123.456.7890)</div>
+      </div>
+    </div>
   </div>
   <div class="modal-footer form-btns">
     <button class="btn btn-light" type="button" (click)="p2_back()">Back</button>
@@ -111,38 +109,35 @@
   <div class="modal-header">
     <h4 class="modal-title">Enter your comment <em>(required)</em></h4>
     <button class="btn btn-icon close-btn gtm-submit-comment-cancel-pg3" type="button" aria-label="Close" (click)="dismiss('dismissed page3')">
-      <i class="material-icons">
+      <em class="material-icons">
         close
-      </i>
+      </em>
     </button>
   </div>
 
   <div class="modal-body">
-    <fieldset>
-      <div class="form-group">
-        <label class="control-label" for="comment">Commenting On<span style="font-weight: 400;"> (Choose the aspect of this FOM that your comment applies to)</span></label>
-        <div>
-          <mat-form-field [style.width.px]=327>
-            <!-- <mat-label>Commenting Scope</mat-label> -->
-            <mat-select [(ngModel)]="selectedScope" name="commentScope">
-              <mat-option *ngFor="let opt of commentScopeOpts" [value]="opt">
-                <small>{{opt.desc}} {{opt.scopeId}} {{opt.name}}</small>
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <br/>
-        </div>
+    <div class="form-group">
+      <label class="control-label" for="comment">Commenting On<span style="font-weight: 400;"> (Choose the aspect of this FOM that your comment applies to)</span></label>
+      <div>
+        <mat-form-field [style.width.px]=327>
+          <mat-select [(ngModel)]="selectedScope" name="commentScope">
+            <mat-option *ngFor="let opt of commentScopeOpts" [value]="opt">
+              <small>{{opt.desc}} {{opt.scopeId}} {{opt.name}}</small>
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <br/>
       </div>
-      <div class="form-group">
-        <label class="control-label" for="comment">Your Comment</label>
-        <textarea id="comment" name="comment"
-          class="your-comment form-control" rows="8" 
-          required aria-required="true"
-          [(ngModel)]="publicComment.feedback"
-          #comment2="ngModel">
-        </textarea>
-      </div>
-    </fieldset>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="comment">Your Comment</label>
+      <textarea id="comment" name="comment"
+        class="your-comment form-control" rows="8" 
+        required aria-required="true"
+        [(ngModel)]="publicComment.feedback"
+        #comment2="ngModel">
+      </textarea>
+    </div>
   </div>
   <div class="modal-footer form-btns">
     <button class="btn btn-light" type="button"(click)="p3_back()">Back</button>
@@ -156,9 +151,9 @@
 <div class="thank-you-content" *ngIf="this.currentPage === 4">
   <div class="modal-header">
     <button class="btn btn-icon close-btn gtm-submit-comment-cancel-pg4" type="button" aria-label="Close" (click)="dismiss('dismissed page4')">
-      <i class="material-icons">
+      <em class="material-icons">
         close
-      </i>
+      </em>
     </button>
   </div>
   <div class="modal-body">
