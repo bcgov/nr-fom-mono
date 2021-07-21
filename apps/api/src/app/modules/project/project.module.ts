@@ -14,6 +14,7 @@ import { WorkflowStateCode } from './workflow-state-code.entity';
 import { ProjectAuthService } from './project-auth.service';
 import { AttachmentModule } from '@api-modules/attachment/attachment.module';
 import { PublicCommentModule } from '../public-comment/public-comment.module';
+import { MailModule } from 'apps/api/src/core/mail/mail.module';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { PublicCommentModule } from '../public-comment/public-comment.module';
     ForestClientModule,
     SecurityModule,
     AttachmentModule,
-    PublicCommentModule
+    PublicCommentModule,
+    MailModule
   ],
   controllers: [ProjectController, WorkflowStateCodeController],
   providers: [ProjectService, ProjectAuthService, WorkflowStateCodeService],
