@@ -11,22 +11,28 @@ const MyDeployer = class extends BasicDeployer{
     const objects = [];
     const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
-    // Using default component names (fom-db, fom-api, fom-batch)
+    // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public)
+
+    // Parameters common across all components.
+    const defaultParams = {
+      'ENV': config.phase,
+      'SUFFIX': config.suffix,
+      'IMAGE_STREAM_VERSION': config.tag,
+      'HOSTNAME': config.hostname,
+    }
+
 
     // TODO: Need to evaluate ImageChangeTrigger from tools?  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-db-deploy.yml`, {
       'param':{
-        'SUFFIX': config.suffix,
+        ...defaultParams
         // TODO: Add more parameters for prod configuration (storage size, etc.)
       }
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
-        'ENV': config.phase,
-        'SUFFIX': config.suffix,
-        'IMAGE_STREAM_VERSION': config.tag,
-        'HOSTNAME': config.hostname,
+        ...defaultParams,
         'DB_TESTDATA': config.testDataEnabled,
         'REPLICA_COUNT': config.apiReplicaCount,
         'KEYCLOAK_ENABLED': config.keycloakEnabled,
@@ -37,18 +43,22 @@ const MyDeployer = class extends BasicDeployer{
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-batch-deploy.yml`, {
       'param':{
-        'SUFFIX': config.suffix,
-        'IMAGE_STREAM_VERSION': config.tag,
+        ...defaultParams
       }
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-deploy.yml`, {
       'param':{
-        'ENV': config.phase,
-        'SUFFIX': config.suffix,
-        'IMAGE_STREAM_VERSION': config.tag,
-        'HOSTNAME': config.hostname,
-        'REPLICA_COUNT': config.apiReplicaCount,
+        ...defaultParams,
+        'REPLICA_COUNT': config.publicReplicaCount, 
+        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+      }
+    }));
+
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/admin/fom-admin-deploy.yml`, {
+      'param':{
+        ...defaultParams,
+        'REPLICA_COUNT': config.adminReplicaCount, 
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
     }));

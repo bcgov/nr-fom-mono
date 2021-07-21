@@ -59,7 +59,7 @@ parameters:
     name: REPLICA_COUNT
     required: false
     value: '2'
-  - description: DNS Hostname for the public route. For dev should default to nr-fom-${NAME}${SUFFIX}. (But can't use other parameters in default value.)
+  - description: DNS Hostname for the public route. 
     displayName: DNS Hostname
     name: HOSTNAME
     required: true
