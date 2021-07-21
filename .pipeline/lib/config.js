@@ -51,6 +51,8 @@ module.exports = class {
       testDataEnabled:  {default: 'false', dev: 'true', test: 'true' },
 
       apiReplicaCount:  {dev: '1', test: '3', prod: '3'},
+      adminReplicaCount:  {default: '3', dev: '2' },
+      publicReplicaCount:  {default: '3', dev: '2' },
 
       keycloakEnabled:  {default: 'true' },
       keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://test.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},

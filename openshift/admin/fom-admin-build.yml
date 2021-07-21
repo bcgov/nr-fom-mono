@@ -1,22 +1,27 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: fom-public-build
+  template: fom-admin-build
+  app: fom
   app-component: ${NAME}
   app.kubernetes.io/part-of: fom
 metadata:
-  name: fom-public-build
+  name: fom-admin-build
 parameters:
   - description: Name of the application component
     displayName: Name
     name: NAME
-    value: fom-public
+    value: fom-admin
   - name: SUFFIX
     value: ''
   - description: Tag (e.g. release/build)
     displayName: Tag
     name: TAG
     value: demo
+  - description: OpenShift Project (namespace prefix).
+    displayName: Project
+    name: PROJECT
+    value: a4b31c
   - description: Git Source Reference (branch/tag/ref )
     displayName: Git Ref
     name: GIT_REF
@@ -67,7 +72,7 @@ objects:
       strategy:
         type: Docker
         dockerStrategy:
-          dockerfilePath: docker/public/Dockerfile
+          dockerfilePath: docker/admin/Dockerfile
       postCommit: {}
       source:
         type: Git

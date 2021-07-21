@@ -1,14 +1,14 @@
 apiVersion: v1
 kind: Template
 labels:
-  template: fom-public-deploy
+  template: fom-admin-deploy
   app: fom
   app-component: ${NAME}
   # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
   suffix: fom${SUFFIX}
   app.kubernetes.io/part-of: fom
 metadata:
-  name: fom-public-deploy
+  name: fom-admin-deploy
 parameters:
   - description: Environment corresponding to namespace (dev/test/prod).
     displayName: Environment
@@ -21,7 +21,7 @@ parameters:
   - description: Name of the application component being deployed.
     displayName: Name
     name: NAME
-    value: fom-public
+    value: fom-admin
   - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
     displayName: Suffix
     name: SUFFIX
@@ -29,7 +29,7 @@ parameters:
   - description: Port number
     displayName: Port number
     name: PORT
-    value: '4300'
+    value: '4200'
   - description: Service port name (referenced by route).
     displayName: Service port name
     name: SERVICE_PORT_NAME
@@ -38,17 +38,17 @@ parameters:
     displayName: CPU resource request
     name: REQUEST_CPU
     required: false
-    value: 50m
+    value: 25m
   - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
     displayName: Memory resource request
     name: REQUEST_MEMORY
     required: false
-    value: 50Mi
+    value: 30Mi
   - description: Limit for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource limit
     name: LIMIT_CPU
     required: false
-    value: 200m
+    value: 100m
   - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
     displayName: Memory resource limit
     name: LIMIT_MEMORY
@@ -85,13 +85,11 @@ objects:
         window.localStorage.setItem('fom_environment_name', '${ENV}');
     metadata:
       name: ${NAME}${SUFFIX}
-
   ### DeploymentConfig
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
     metadata:
       name: ${NAME}${SUFFIX}
-    labels:
     spec:
       replicas: ${{REPLICA_COUNT}}
       revisionHistoryLimit: 10
@@ -116,6 +114,7 @@ objects:
               - app
             from:
               kind: ImageStreamTag
+              namespace: ${PROJECT}-tools
               name: ${NAME}:${IMAGE_STREAM_VERSION}
         - type: ConfigChange
       template:
@@ -127,7 +126,7 @@ objects:
           containers:
             - name: app
               # Supply a space to image:, will use settings in ImageChange trigger.
-              image: " "
+              image: " " 
               env:
                 - name: FOM_ENV
                   value: ${ENV}
@@ -142,7 +141,7 @@ objects:
                   memory: ${LIMIT_MEMORY}
               livenessProbe:
                 httpGet:
-                  path: /
+                  path: /admin
                   port: ${{PORT}}
                   scheme: HTTP
                 timeoutSeconds: 1
@@ -151,7 +150,7 @@ objects:
                 failureThreshold: 3
               readinessProbe:
                 httpGet:
-                  path: /
+                  path: /admin
                   port: ${{PORT}}
                   scheme: HTTP
                 timeoutSeconds: 1
@@ -162,7 +161,7 @@ objects:
               terminationMessagePolicy: File
               imagePullPolicy: Always
               volumeMounts:
-                - mountPath: /app/nr-fom-public/dist/assets/env
+                - mountPath: /app/nr-fom-admin/dist/admin/assets/env
                   name: env-config
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
@@ -193,11 +192,9 @@ objects:
     apiVersion: v1
     metadata:
       name: ${NAME}${SUFFIX}
-      labels:
-        certbot-managed: "true"
     spec:
       host: ${HOSTNAME}
-      path: /public
+      path: /admin
       to:
         kind: Service
         name: ${NAME}${SUFFIX}
