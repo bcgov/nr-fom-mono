@@ -79,7 +79,6 @@ objects:
         git:
           uri: 'https://github.com/bcgov/nr-fom-admin'
           ref: ${GIT_REF}
-        contextDir: /
       runPolicy: SerialLatestOnly
       triggers: # Disabled by nrdk/pipeline-cli, kept if ever want to run outside the nrdk pipeline.
         - type: ImageChange
