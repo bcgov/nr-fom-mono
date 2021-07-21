@@ -71,6 +71,6 @@ export class PublicComment extends ApiBaseEntity<PublicComment> {
   scopeRoadSectionId: number;
 
   @ManyToOne(() => RoadSection)
-  @JoinColumn({ name: 'scope_cut_block_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'scope_road_section_id', referencedColumnName: 'id' })
   roadSection: RoadSection;
 }

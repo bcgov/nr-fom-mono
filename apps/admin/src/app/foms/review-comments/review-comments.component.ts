@@ -104,7 +104,7 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
         }
         return comment.commentScope.code === scope.commentScopeCode &&
                 ((comment.scopeCutBlockId && comment.scopeCutBlockId == scope.scopeId) ||
-                (comment.scopeRoadSectionId && comment.scopeCutBlockId == scope.scopeId));
+                (comment.scopeRoadSectionId && comment.scopeRoadSectionId == scope.scopeId));
       });
       return fPublicComments;
     });
