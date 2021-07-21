@@ -9,26 +9,16 @@ labels:
 metadata:
   name: fom-batch-deploy
 parameters:
-  - description: Environment corresponding to namespace (dev/test/prod).
-    displayName: Environment
-    name: ENV
-    value: dev
-  - description: OpenShift Project (namespace prefix).
-    displayName: Project
-    name: PROJECT
-    value: a4b31c
-  - description: Name of the application component being deployed.
-    displayName: Name
-    name: NAME
-    value: fom-batch
-  - description: Name of the database component used by the batch.
-    displayName: Database Name
-    name: DB_NAME
-    value: fom-db
-  - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
+  # Mandatory parameters to be supplied.
+  - description: API Image Version to use
+    displayName: API Image Version
+    name: IMAGE_STREAM_VERSION
+    required: true
+  - description: Suffix specifying the release/build/environment. Can be blank (for production). 
     displayName: Suffix
     name: SUFFIX
-    value: -main-dev
+    required: true
+  # Optional parameters with defaults
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -49,10 +39,15 @@ parameters:
     name: LIMIT_MEMORY
     required: false
     value: 1Gi
-  - description: API Image Version to use
-    displayName: API Image Version
-    name: IMAGE_STREAM_VERSION
-    required: true
+  # Hardcoded parameters, no need to pass in or change.
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-batch
+  - description: Name of the database component used by the batch.
+    displayName: Database Name
+    name: DB_NAME
+    value: fom-db
 objects:
   - kind: CronJob
     apiVersion: batch/v1beta1

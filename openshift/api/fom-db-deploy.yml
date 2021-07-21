@@ -9,14 +9,42 @@ labels:
 metadata:
   name: fom-db-deploy
 parameters:
+  # Mandatory parameters
+  - description: Suffix specifying the release/build/environment. Can be blank (for production). 
+    displayName: Suffix
+    name: SUFFIX
+    required: true
+  # Optional parameters with defaults
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: 1Gi
+  - description: Request for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource request
+    name: REQUEST_CPU
+    required: false
+    value: 100m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 512Mi
+  - description: Limit for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource limit
+    name: LIMIT_CPU
+    required: false
+    value: 200m
+  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource limit
+    name: LIMIT_MEMORY
+    required: false
+    value: 1Gi
+  # Hardcoded parameters - no need to change.
   - description: Name of the application component being deployed.
     displayName: Name
     name: NAME
     value: fom-db
-  - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
-    displayName: Suffix
-    name: SUFFIX
-    value: main
   - description: OpenShift Project (namespace prefix).
     displayName: Project
     name: PROJECT
@@ -52,35 +80,10 @@ parameters:
     generate: expression
     name: POSTGRESQL_PASSWORD
     required: true
-  - description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Volume Capacity
-    name: VOLUME_CAPACITY
-    required: true
-    value: 1Gi
   - description: Storage class for PVCs.
     displayName: Storage class for PVCs.
     name: STORAGE_CLASS
     value: netapp-block-standard
-  - description: Request for CPU resources measured in cpu units, e.g. 200m
-    displayName: CPU resource request
-    name: REQUEST_CPU
-    required: false
-    value: 100m
-  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
-    displayName: Memory resource request
-    name: REQUEST_MEMORY
-    required: false
-    value: 512Mi
-  - description: Limit for CPU resources measured in cpu units, e.g. 200m
-    displayName: CPU resource limit
-    name: LIMIT_CPU
-    required: false
-    value: 200m
-  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
-    displayName: Memory resource limit
-    name: LIMIT_MEMORY
-    required: false
-    value: 1Gi
 objects:
     # ConfigMap - Setup Data
   - kind: ConfigMap

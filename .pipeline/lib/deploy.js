@@ -13,43 +13,45 @@ const MyDeployer = class extends BasicDeployer{
 
     // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public)
 
-    // Parameters common across all components.
-    const defaultParams = {
-      'ENV': config.phase,
-      'SUFFIX': config.suffix,
-      'IMAGE_STREAM_VERSION': config.tag,
-      'HOSTNAME': config.hostname,
-    }
-
-
     // TODO: Need to evaluate ImageChangeTrigger from tools?  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-db-deploy.yml`, {
       'param':{
-        ...defaultParams
+        'SUFFIX': config.suffix,
         // TODO: Add more parameters for prod configuration (storage size, etc.)
       }
     }));
 
+    // Parameters common across application components.
+    const appParams = {
+      'SUFFIX': config.suffix,
+      'IMAGE_STREAM_VERSION': config.tag,
+      'ENV': config.phase,
+      'HOSTNAME': config.hostname,
+    }
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
-        ...defaultParams,
-        'DB_TESTDATA': config.testDataEnabled,
-        'REPLICA_COUNT': config.apiReplicaCount,
-        'KEYCLOAK_ENABLED': config.keycloakEnabled,
+        ...appParams,
         'KEYCLOAK_URL': config.keycloakUrl,
+        'REPLICA_COUNT': config.apiReplicaCount,
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+        // Test-related parameters
+        'DB_TESTDATA': config.testDataEnabled,
+        'KEYCLOAK_ENABLED': config.keycloakEnabled,
       }
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-batch-deploy.yml`, {
       'param':{
-        ...defaultParams
+        'SUFFIX': config.suffix,
+        'IMAGE_STREAM_VERSION': config.tag,
+        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-deploy.yml`, {
       'param':{
-        ...defaultParams,
+        ...appParams,
         'REPLICA_COUNT': config.publicReplicaCount, 
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
@@ -57,12 +59,11 @@ const MyDeployer = class extends BasicDeployer{
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/admin/fom-admin-deploy.yml`, {
       'param':{
-        ...defaultParams,
+        ...appParams,
         'REPLICA_COUNT': config.adminReplicaCount, 
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
     }));
-
 
     return objects;
   }
