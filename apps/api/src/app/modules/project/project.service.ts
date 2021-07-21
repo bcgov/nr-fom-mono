@@ -88,8 +88,9 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     // When commenting open, can change closed date but can't make it shorter.
 
     if (user.isMinistry && !user.isForestClient) {
+      // TODO: I believe ministry user is no longer allowed to make edits - confirm with Anne-Marie.
+      // return false;
       // As ministry user can only update when commenting open, and only to change the commenting closed date.
-      // TODO: Confirm that only commenting closed date is changing.
       return WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode;
     }
 
