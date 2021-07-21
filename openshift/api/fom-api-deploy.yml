@@ -9,30 +9,30 @@ labels:
 metadata:
   name: fom-api-deploy
 parameters:
+  # Mandatory parameters
+  - description: Suffix specifying the release/build/environment. Can be blank (for production).
+    displayName: Suffix
+    name: SUFFIX
+    required: true
   - description: Environment corresponding to namespace (dev/test/prod).
     displayName: Environment
     name: ENV
     value: dev
-  - description: Name of the application component being deployed.
-    displayName: Name
-    name: NAME
-    value: fom-api
-  - description: Name of the database component used by the API.
-    displayName: Database Name
-    name: DB_NAME
-    value: fom-db
-  - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
-    displayName: Suffix
-    name: SUFFIX
-    value: -main-dev
-  - description: Port number
-    displayName: Port number
-    name: PORT
-    value: '3333'
-  - description: Service port name (referenced by route).
-    displayName: Service port name
-    name: SERVICE_PORT_NAME
-    value: http
+    required: true
+  - description: DNS Hostname for the public route. 
+    displayName: DNS Hostname
+    name: HOSTNAME
+    required: true
+  - description: API Image Version to use
+    displayName: API Image Version
+    name: IMAGE_STREAM_VERSION
+    required: true
+  - description: URL of Keycloak Server to use for authentication.
+    displayName: Keycloak Server URL
+    name: KEYCLOAK_URL
+    value: 'https://dev.oidc.gov.bc.ca/auth'
+    required: true
+  # Optional parmaetrs with defaults
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -58,26 +58,32 @@ parameters:
     name: REPLICA_COUNT
     required: false
     value: '2'
-  - description: DNS Hostname for the public route. 
-    displayName: DNS Hostname
-    name: HOSTNAME
-    required: true
-  - description: API Image Version to use
-    displayName: API Image Version
-    name: IMAGE_STREAM_VERSION
-    required: true
+  # Testing-related parameters, defaulted to production settings.
   - description: Specify 'true' to populate test data (run test migrations) at startup.
     displayName: Database Test Data
     name: DB_TESTDATA
     value: 'false'
-  - description: URL of Keycloak Server to use for authentication.
-    displayName: Keycloak Server URL
-    name: KEYCLOAK_URL
-    value: 'https://dev.oidc.gov.bc.ca/auth'
   - description: Whether use of Keycloak is enabled. 
     displayName: Keycloak Enabled
     name: KEYCLOAK_ENABLED
     value: 'true'
+  # Hardcoded parameters - no need to change
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-api
+  - description: Name of the database component used by the API.
+    displayName: Database Name
+    name: DB_NAME
+    value: fom-db
+  - description: Port number
+    displayName: Port number
+    name: PORT
+    value: '3333'
+  - description: Service port name (referenced by route).
+    displayName: Service port name
+    name: SERVICE_PORT_NAME
+    value: http
   - description: Secret key for data encryption within database
     displayName: Data encryption key
     name: DATA_ENCRYPTION_KEY

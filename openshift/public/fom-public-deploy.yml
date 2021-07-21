@@ -10,30 +10,25 @@ labels:
 metadata:
   name: fom-public-deploy
 parameters:
+  # Mandatory parameters
+  - description: Suffix specifying the release/build/environment. Can be blank (for production).
+    displayName: Suffix
+    name: SUFFIX
+    required: true
   - description: Environment corresponding to namespace (dev/test/prod).
     displayName: Environment
     name: ENV
     value: dev
-  - description: OpenShift Project (namespace prefix).
-    displayName: Project
-    name: PROJECT
-    value: a4b31c
-  - description: Name of the application component being deployed.
-    displayName: Name
-    name: NAME
-    value: fom-public
-  - description: Suffix specifying the release/build/environment. Can be blank. Example '-working-dev'
-    displayName: Suffix
-    name: SUFFIX
-    value: -main-dev
-  - description: Port number
-    displayName: Port number
-    name: PORT
-    value: '4300'
-  - description: Service port name (referenced by route).
-    displayName: Service port name
-    name: SERVICE_PORT_NAME
-    value: http
+    required: true
+  - description: DNS Hostname for the public route. 
+    displayName: DNS Hostname
+    name: HOSTNAME
+    required: true
+  - description: API Image Version to use
+    displayName: API Image Version
+    name: IMAGE_STREAM_VERSION
+    required: true
+  # Optional parameters with defaults
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -59,15 +54,19 @@ parameters:
     name: REPLICA_COUNT
     required: false
     value: '2'
-  - description: DNS Hostname for the public route. 
-    displayName: DNS Hostname
-    name: HOSTNAME
-    required: true
-  - description: API Image Version to use
-    displayName: API Image Version
-    name: IMAGE_STREAM_VERSION
-    required: true
-    value: main
+  # Hardcoded parameters - no need to change
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-public
+  - description: Port number
+    displayName: Port number
+    name: PORT
+    value: '4300'
+  - description: Service port name (referenced by route).
+    displayName: Service port name
+    name: SERVICE_PORT_NAME
+    value: http
   
 objects:
   - kind: ImageStream
