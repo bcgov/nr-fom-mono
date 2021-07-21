@@ -85,9 +85,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
 
     // TODO: Enforce rules around changing commenting open/closed dates?
-    // WHen commenting open or later, can't change commenting open date
-    // When commenting open, can change closed date. Forest client can't make it shorter
-    // When after commenting open, cannot change closed date.
+    // When commenting open, can change closed date but can't make it shorter.
 
     if (user.isMinistry && !user.isForestClient) {
       // As ministry user can only update when commenting open, and only to change the commenting closed date.
