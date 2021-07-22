@@ -9,7 +9,7 @@ FOM projects (proposals for logging, essentially) are submitted to FOM and made 
 
 Technology Stack: Angular, Node.js, PostgresSQL with PostGIS running in OCP v4
 
-This repo is for the Node.js API backend.
+This is a monorepo that includes the API backend and the two Angular front-ends.
 
 ## Third-Party Products/Libraries used and the licenses they are covered by
 
