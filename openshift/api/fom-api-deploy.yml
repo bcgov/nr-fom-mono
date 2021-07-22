@@ -89,10 +89,10 @@ parameters:
     name: DATA_ENCRYPTION_KEY
     from: "[a-zA-Z0-9]{16}"
     generate: expression
-  - description: SMTP Server Hostname for sending emails
-    displayName: SMTP Server
-    name: SMTP_SERVER
-    value: 'apps.smtp.gov.bc.ca'
+  - description: SMTP Server URL for sending emails
+    displayName: SMTP Server URL
+    name: SMTP_SERVER_URL
+    value: 'smtp://apps.smtp.gov.bc.ca/?port=25&ignoreTLS=true&secure=false'
 
 objects:
   - kind: ImageStream
@@ -109,7 +109,7 @@ objects:
       hostname: ${HOSTNAME}
       # Store settings in config map to allow them to be changed.
       keycloak-url: ${KEYCLOAK_URL}
-      smtp-server: ${SMTP_SERVER}
+      smtp-server-url: ${SMTP_SERVER_URL}
     metadata:
       name: ${NAME}${SUFFIX}
 
@@ -207,7 +207,7 @@ objects:
                 - name: SMTP_SERVER
                   valueFrom:
                     configMapKeyRef:
-                      key: smtp-server
+                      key: smtp-server-url
                       name: ${NAME}${SUFFIX}
                 - name: HOSTNAME
                   valueFrom:
