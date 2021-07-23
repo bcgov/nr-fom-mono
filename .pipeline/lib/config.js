@@ -62,7 +62,8 @@ module.exports = class {
       // TODO: Change test keycloak back to 'https://test.oidc.gov.bc.ca/auth' once set up.
       keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://dev.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},
 
-      objectStorageUrl: {default: 'https://nrs.objectstore.gov.bc.ca'},
+      // The object storage API needs the hostname without the https:// prefix
+      objectStorageUrl: {default: 'nrs.objectstore.gov.bc.ca'},
     };
 
     // Pivot configuration table, so that `phase name` becomes a top-level property
