@@ -13,10 +13,11 @@ import { DetailsPanelComponent } from './details-panel/details-panel.component';
 import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { UrlService } from '@public-core/services/url.service';
 import { Panel } from './utils/panel.enum';
-import { ProjectPublicSummaryResponse, ProjectService, WorkflowStateEnum } from '@api-client';
-import { IMultiFilterFields, MultiFilter } from './utils/filter';
-import { FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
+import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
+import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { AppUtils } from '@public-core/utils/constants/appUtils';
+import { takeUntil } from 'rxjs/operators';
 
 /**
  * All supported filters.
@@ -37,8 +38,6 @@ import { AppUtils } from '@public-core/utils/constants/appUtils';
  * @interface IUpdateEvent
  */
 export interface IUpdateEvent {
-  // filters (See IFiltersType)
-  filters?: IFiltersType;
 
   // True if the search was manually initiated (button click), false if it is emitting as part of component initiation.
   search?: boolean;
@@ -92,6 +91,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public projectsSummary: Array<ProjectPublicSummaryResponse>;
   public projectsSummary$: Observable<Array<ProjectPublicSummaryResponse>>;
   public totalNumber: number;
+  private fomFilters: Map<string, IFilter | IMultiFilter>;
   public commentStatusFilters: MultiFilter<boolean>;
   
   constructor(
@@ -132,21 +132,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * On component inits.
-   *
    * @memberof ProjectsComponent
    */
   ngOnInit() {
-
-    this.filtersSvc.filters$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
-      this.commentStatusFilters = AppUtils.copy(filters.get(FOM_FILTER_NAME.COMMENT_STATUS)) as MultiFilter<boolean>;
-    })
-
-    // default to fetch publicSummary for COMMENT_OPEN
-    this.fetchProjects({
-      fcName: null,
-      cmtStatus: [WorkflowStateEnum.CommentOpen],
-      pdOnAfter: null
+    this.filtersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
+      this.fomFilters = filters;
+      this.commentStatusFilters = AppUtils.copy(this.fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)) as MultiFilter<boolean>;
+      this.fetchFOMs(this.fomFilters);
     });
   }
 
@@ -219,24 +211,47 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     }, 500)();
   }
 
-  fetchProjects(filters: IFiltersType) {
+  fetchFOMs(fomFilters: Map<string, IFilter | IMultiFilter>) {
+    const commentStatusFilters = fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
+    const commentOpenParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0].value;
+    const commentClosedParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_CLOSED)[0].value;
+    const forestClientNameParam = (fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>).filter.value;
+    const openedOnOrAfterParam = (fomFilters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>).filter.value?.toISOString().substr(0, 10);
+
     this.loading = true;
-    const commentStatusNotSelected = !filters || !filters.cmtStatus || filters.cmtStatus.length == 0;
-    // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
-    // This is the behaviour in old applications.
     this.projectService
-        .projectControllerFindPublicSummary(
-          commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
-          commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
-          filters?.fcName, filters?.pdOnAfter?.toISOString().substr(0, 10))
-        .subscribe((results) => {
-          this.projectsSummary = results;
-          this.totalNumber = results.length;
-          this.loading = false;
-        },
-        () => this.loading = false,
-        () => this.loading = false);
+    .projectControllerFindPublicSummary(
+      commentOpenParam.toString(), 
+      commentClosedParam.toString(), 
+      forestClientNameParam, 
+      openedOnOrAfterParam)
+    .subscribe((results) => {
+      this.projectsSummary = results;
+      this.totalNumber = results.length;
+      this.loading = false;
+    },
+    () => this.loading = false,
+    () => this.loading = false);
   }
+
+  // fetchProjects(filters: IFiltersType) {
+  //   this.loading = true;
+  //   const commentStatusNotSelected = !filters || !filters.cmtStatus || filters.cmtStatus.length == 0;
+  //   // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
+  //   // This is the behaviour in old applications.
+  //   this.projectService
+  //       .projectControllerFindPublicSummary(
+  //         commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
+  //         commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
+  //         filters?.fcName, filters?.pdOnAfter?.toISOString().substr(0, 10))
+  //       .subscribe((results) => {
+  //         this.projectsSummary = results;
+  //         this.totalNumber = results.length;
+  //         this.loading = false;
+  //       },
+  //       () => this.loading = false,
+  //       () => this.loading = false);
+  // }
 
   /**
    * Event handler called when Find panel emits an update.
@@ -245,20 +260,20 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   public handleFindUpdate(updateEvent: IUpdateEvent) {
-    this.filters = { ...emptyFilters, ...updateEvent.filters };
+    // this.filters = { ...emptyFilters, ...updateEvent.filters };
 
     if (updateEvent.search) {
       // clear the other panels filters/data
 
       this.detailsPanel.clearAllFilters();
-      this.detailsPanel.saveQueryParameters();
+      // this.detailsPanel.saveQueryParameters();
 
       if (this.appmap) {
         this.appmap.unhighlightApplications();
       }
     }
 
-    this.fetchProjects(this.filters);
+    // this.fetchProjects(this.filters);
 
     if (updateEvent.resetMap) {
       this.appmap.resetView(false);
@@ -300,12 +315,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   public clearFilters() {
+    //TODO: probably no need for this method anymore
+
     this.findPanel.clearAllFilters();
-    this.findPanel.saveQueryParameters();
+    // this.findPanel.saveQueryParameters();
 
     this.filters = emptyFilters;
 
-    this.fetchProjects(null);
+    // this.fetchProjects(null);
   }
 
   /**
@@ -323,6 +340,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   public toggleFilter(filter: IMultiFilterFields<boolean>) {
+    if (this.loading) return;
     filter.value = !filter.value;
     this.filtersSvc.updateFilterSelection(FOM_FILTER_NAME.COMMENT_STATUS, this.commentStatusFilters);
   }

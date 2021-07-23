@@ -9,12 +9,17 @@ export enum FOM_FILTER_NAME {
   COMMENT_STATUS = 'cmtStatus'
 }
 
+export const COMMENT_STATUS_FILTER_PARAMS = {
+  COMMENT_OPEN: 'COMMENT_OPEN',
+  COMMENT_CLOSED: 'COMMENT_CLOSED'
+}
+
 /*
   This const serve as default filters
   Note!! When getting this object, use copy of it 
         to prevent property value being overwritten from other components.
   The object for the properties are based on Interface from filter.ts.
-  (However, that inteface definition is kind of strange, may need to refactor later.)
+  (However, that inteface definition is kind of strange, may need to review/refactor later.)
 */
 export const DEFAULT_FOM_FILTERS = {
   fcNameFilter: { filter: {queryParam: FOM_FILTER_NAME.FOREST_CLIENT_NAME, value: null }},
@@ -22,9 +27,9 @@ export const DEFAULT_FOM_FILTERS = {
   commentStatusFilters: {
     queryParamsKey: FOM_FILTER_NAME.COMMENT_STATUS,
     filters: [
-      { queryParam: 'COMMENT_OPEN', 
+      { queryParam: COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN, 
         displayString: 'Commenting Open', value: true },
-      { queryParam: 'COMMENT_CLOSED', 
+      { queryParam: COMMENT_STATUS_FILTER_PARAMS.COMMENT_CLOSED, 
         displayString: 'Commenting Closed', value: false } // default value
     ]
   }
@@ -74,7 +79,7 @@ export class FOMFiltersService {
     this._filters$.next(nextFilters);
   }
 
-  clearFilter() {
+  clearFilters() {
     this._filters$.next(this._getDefaultFilters());
   }
 

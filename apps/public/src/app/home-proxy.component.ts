@@ -15,7 +15,7 @@ export class HomeProxyComponent {
   constructor(private router: Router, private route: ActivatedRoute) {
     const showSplashModal = this.route.snapshot.paramMap.get('showSplashModal');
     if (showSplashModal === 'true') {
-      this.router.navigate(['/projects'], {queryParams: {cmtStatus: 'COMMENT_OPEN'}, fragment: 'splash' }); //  default filter on COMMENT_OPEN
+      this.router.navigate(['/projects'], {fragment: 'splash' });
     } else {
       this.router.navigate(['/projects']);
     }

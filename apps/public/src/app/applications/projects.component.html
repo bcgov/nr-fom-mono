@@ -43,10 +43,14 @@
       <span class="app-results__clear">
         <div class="form-group">
         <div class="select-badge-group" *ngIf="commentStatusFilters">
-          <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters">
+          <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters"
+              [ngStyle]="loading && {'display': 'none'}">
             <input type="checkbox" id="{{filter.queryParam}}" name="{{filter.queryParam}}" 
-                  [checked]="filter.value" (click)="toggleFilter(filter)">
-            <label for="{{filter.queryParam}}" (click)="toggleFilter(filter)">{{filter.displayString}}</label>
+                  [checked]="filter.value" 
+                  (click)="toggleFilter(filter)"
+                  [disabled]="loading">
+            <label for="{{filter.queryParam}}" 
+                    (click)="toggleFilter(filter)">{{filter.displayString}}</label>
           </div>
         </div>
         </div>
