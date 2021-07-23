@@ -15,7 +15,7 @@ import { UrlService } from '@public-core/services/url.service';
 import { Panel } from './utils/panel.enum';
 import { ProjectPublicSummaryResponse, ProjectService, WorkflowStateEnum } from '@api-client';
 import { IMultiFilterFields, MultiFilter } from './utils/filter';
-import { FOMFiltersService, FILTER_FIELD_ENUM } from '@public-core/services/fomFilters.service';
+import { FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { AppUtils } from '@public-core/utils/constants/appUtils';
 
 /**
@@ -139,8 +139,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   ngOnInit() {
 
     this.filtersSvc.filters$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
-      this.commentStatusFilters = AppUtils.copy(filters.get(
-                                  FILTER_FIELD_ENUM.commentStatusFilters.queryParamsKey)) as MultiFilter<boolean>;
+      this.commentStatusFilters = AppUtils.copy(filters.get(FOM_FILTER_NAME.COMMENT_STATUS)) as MultiFilter<boolean>;
     })
 
     // default to fetch publicSummary for COMMENT_OPEN
@@ -325,7 +324,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   public toggleFilter(filter: IMultiFilterFields<boolean>) {
     filter.value = !filter.value;
-    this.filtersSvc.updateFilterSelection(FILTER_FIELD_ENUM.commentStatusFilters.queryParamsKey, this.commentStatusFilters);
+    this.filtersSvc.updateFilterSelection(FOM_FILTER_NAME.COMMENT_STATUS, this.commentStatusFilters);
   }
   
   /**
