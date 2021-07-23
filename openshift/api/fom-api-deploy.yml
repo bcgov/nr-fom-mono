@@ -32,6 +32,10 @@ parameters:
     name: KEYCLOAK_URL
     value: 'https://dev.oidc.gov.bc.ca/auth'
     required: true
+  - description: URL of Object Storage Service.
+    displayName: Object Storage URL
+    name: OBJECT_STORAGE_URL
+    required: true
   # Optional parmaetrs with defaults
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
@@ -110,6 +114,7 @@ objects:
       # Store settings in config map to allow them to be changed.
       keycloak-url: ${KEYCLOAK_URL}
       smtp-server-url: ${SMTP_SERVER_URL}
+      object-storage-url: ${OBJECT_STORAGE_URL}
     metadata:
       name: ${NAME}${SUFFIX}
 
@@ -199,6 +204,11 @@ objects:
                   value: '${PORT}'
                 - name: KEYCLOAK_ENABLED
                   value: ${KEYCLOAK_ENABLED}
+                - name: OBJECT_STORAGE_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: object-storage-url
+                      name: ${NAME}${SUFFIX}
                 - name: KEYCLOAK_URL
                   valueFrom:
                     configMapKeyRef:
@@ -214,6 +224,21 @@ objects:
                     configMapKeyRef:
                       key: hostname
                       name: ${NAME}${SUFFIX}
+                - name: OBJECT_STORAGE_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      key: bucket
+                      name: fom-object-storage-${ENV}
+                - name: OBJECT_STORAGE_ACCESS_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: access_id
+                      name: fom-object-storage-${ENV}
+                - name: OBJECT_STORAGE_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: secret
+                      name: fom-object-storage-${ENV}
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}

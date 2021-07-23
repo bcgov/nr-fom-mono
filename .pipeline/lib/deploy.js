@@ -32,6 +32,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
         ...appParams,
+        'OBJECT_STORAGE_URL': config.objectStorageUrl,
         'KEYCLOAK_URL': config.keycloakUrl,
         'REPLICA_COUNT': config.apiReplicaCount,
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
