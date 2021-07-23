@@ -9,6 +9,9 @@ import { AttachmentCreateRequest, AttachmentFileResponse, AttachmentResponse } f
 import { User } from 'apps/api/src/core/security/user';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
+import { minioClient } from 'apps/api/src/minio';
+import { bucket } from 'apps/api/src/minio';
+import { Stream } from 'node:stream';
 
 @Injectable()
 export class AttachmentService extends DataService<Attachment, Repository<Attachment>, AttachmentResponse> {
@@ -52,7 +55,37 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
       }
     }
 
-    return super.create(request, user);
+    // Starting changes for Object Store
+    const contentFile: Buffer = request.fileContents;
+
+    request.fileContents = Buffer.from('hello world', 'utf8');
+    const created = super.create(request, user);
+    const primaryKey = (await created).id;
+
+    request.fileContents = contentFile;
+    this.uploadFileObjectStore(request, primaryKey);
+
+    return created;
+  }
+
+  uploadFileObjectStore(request: AttachmentCreateRequest, primaryKey: number){
+
+    minioClient.putObject(bucket, request.projectId + '/' + primaryKey + '/' + request.fileName, request.fileContents, function(error, etag) {
+      if(error) {
+          return console.log(error);
+      }
+    });
+    this.generatingPreSignedURL(request, primaryKey);
+  }
+
+  generatingPreSignedURL(request: AttachmentCreateRequest, primaryKey: number){
+
+    // presigned url for 'getObject' method.
+    // expires in a day.
+    minioClient.presignedUrl('GET', bucket, request.projectId + '/' + primaryKey + '/' + request.fileName, 24*60*60, function(err, presignedUrl) {
+     if (err) return console.log(err)
+      console.log('##########################', presignedUrl)
+    })
   }
 
   async isCreateAuthorized(dto: AttachmentCreateRequest, user?: User): Promise<boolean> {
@@ -134,10 +167,53 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
     const attachmentResponse = this.convertEntity(entity);
     const attachmentFileResponse = { ...attachmentResponse} as AttachmentFileResponse;
-    attachmentFileResponse.fileContents = Buffer.from(entity.fileContents);
-    
+
+    const objectName = attachmentFileResponse.projectId + '/' +
+    attachmentFileResponse.id + '/' +
+    attachmentFileResponse.fileName;
+
+    console.log('---------------fileName: ', objectName); 
+
+    const dataStream  = await this.getObjectStream(bucket, objectName );
+    const finalBuffer = await this.stream2buffer(dataStream);
+
+    attachmentFileResponse.fileContents = finalBuffer;
+
     return attachmentFileResponse;
+
   }
+
+
+  async getObjectStream(bucket: string, objectName: string): Promise<Stream>{
+
+    return minioClient.getObject(bucket, objectName);
+  }
+
+
+  async getFileBuffer(bucket: string, objectName: string): Promise<Buffer>{
+
+// -------------------------------------------------------------
+    let size = 0;
+    const result = await minioClient.getObject(bucket, objectName);
+    console.log('result from getFileBuffer: -----------: ', result);
+    // return result.client._tlsOptions.session;
+     return result.socket._tlsOptions.session;
+//-------------------------------------------------------------
+
+  }
+
+  async stream2buffer(stream: Stream): Promise<Buffer> {
+
+    return new Promise < Buffer > ((resolve, reject) => {
+        
+        const _buf = Array < any > ();
+
+        stream.on("data", chunk => _buf.push(chunk));
+        stream.on("end", () => resolve(Buffer.concat(_buf)));
+        stream.on("error", err => reject(`error converting stream - ${err}`));
+
+    });
+} 
 
   /* This function only returns attachments of the following types:
   * - PUBLIC NOTICE
