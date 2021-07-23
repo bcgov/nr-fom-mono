@@ -40,7 +40,7 @@ module.exports = class {
       // Remaining properties are FOM-specific
 
       // TODO: Not yet in use. This means that only one pull request can be deployed in dev at any one time.
-      // URL prefix added to uniquely identify the instance in development. Not used in test/prod where there is a single application instance.
+      // URL prefix added to uniquely identify the application instance in development. Not used in test/prod where there is a single application instance.
       // This is used instead of varying the hostname because Keycloak whitelisting via allowed origins can't handle wildcard hostnames, but can handle wildcard URLs under one hostname.
       instanceUrlPrefix: {default: '', dev: `${changeId}` },
 

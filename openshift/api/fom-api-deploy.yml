@@ -37,6 +37,10 @@ parameters:
     name: OBJECT_STORAGE_URL
     required: true
   # Optional parmaetrs with defaults
+  - description: Unique identifier for the application instance in an environment to use as a URL prefix to support having multiple on-demand app instances.
+    displayName: Application Instance URL Prefix
+    name: INSTANCE_URL_PREFIX
+    value: ''
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -204,6 +208,8 @@ objects:
                   value: '${PORT}'
                 - name: KEYCLOAK_ENABLED
                   value: ${KEYCLOAK_ENABLED}
+                - name: INSTANCE_URL_PREFIX
+                  value: ${INSTANCE_URL_PREFIX}
                 - name: OBJECT_STORAGE_URL
                   valueFrom:
                     configMapKeyRef:
