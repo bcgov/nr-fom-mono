@@ -8,6 +8,7 @@ export const minioClient =  new Minio.Client({
 });
 
 export const bucket = process.env.OBJECT_STORAGE_BUCKET;
+export const INSTANCE_URL_PREFIX = process.env.INSTANCE_URL_PREFIX;
 
 // export const minioClient =  new Minio.Client({
 //   endPoint: 'nrs.objectstore.gov.bc.ca',

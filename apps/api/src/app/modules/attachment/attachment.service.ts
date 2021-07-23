@@ -50,6 +50,8 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
           throw new ForbiddenException();
         }
         await this.repository.delete(founds[0].id);
+        const objectName = this.createObjectUrl(founds[0].projectId, founds[0].id, founds[0].fileName);
+        await this.deleteObject(bucket, objectName);
 
         // Now that the public notice is deleted, we can proceed with the regular creation.
       }
@@ -63,31 +65,19 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const primaryKey = (await created).id;
 
     request.fileContents = contentFile;
-    this.uploadFileObjectStore(request, primaryKey);
+    this.uploadFileObjectStorage(request, primaryKey);
 
     return created;
   }
 
-  uploadFileObjectStore(request: AttachmentCreateRequest, primaryKey: number){
+  uploadFileObjectStorage(request: AttachmentCreateRequest, primaryKey: number){
 
     minioClient.putObject(bucket, request.projectId + '/' + primaryKey + '/' + request.fileName, request.fileContents, function(error, etag) {
       if(error) {
           return console.log(error);
       }
     });
-    this.generatingPreSignedURL(request, primaryKey);
   }
-
-  generatingPreSignedURL(request: AttachmentCreateRequest, primaryKey: number){
-
-    // presigned url for 'getObject' method.
-    // expires in a day.
-    minioClient.presignedUrl('GET', bucket, request.projectId + '/' + primaryKey + '/' + request.fileName, 24*60*60, function(err, presignedUrl) {
-     if (err) return console.log(err)
-      console.log('##########################', presignedUrl)
-    })
-  }
-
   async isCreateAuthorized(dto: AttachmentCreateRequest, user?: User): Promise<boolean> {
     if (dto.attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
       return this.projectAuthService.isForestClientUserAllowedStateAccess(dto.projectId, 
@@ -168,19 +158,23 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const attachmentResponse = this.convertEntity(entity);
     const attachmentFileResponse = { ...attachmentResponse} as AttachmentFileResponse;
 
-    const objectName = attachmentFileResponse.projectId + '/' +
-    attachmentFileResponse.id + '/' +
-    attachmentFileResponse.fileName;
+    //Creating the objectName for the Object Storage
+    const objectName = this.createObjectUrl(attachmentFileResponse.projectId,attachmentFileResponse.id, attachmentFileResponse.fileName )
 
-    console.log('---------------fileName: ', objectName); 
-
+    //Reading the object from Object Storage
     const dataStream  = await this.getObjectStream(bucket, objectName );
+
+    //Reading the content of the object from Object Storage
     const finalBuffer = await this.stream2buffer(dataStream);
 
     attachmentFileResponse.fileContents = finalBuffer;
 
     return attachmentFileResponse;
 
+  }
+
+  createObjectUrl(projectId: number, attachmentId: number, fileName: string): string {
+    return projectId + '/' + attachmentId + '/' + fileName;
   }
 
 
@@ -190,16 +184,18 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
 
-  async getFileBuffer(bucket: string, objectName: string): Promise<Buffer>{
+  async deleteObject(bucket: string, objectName: string): Promise<boolean>{
+    
+    return new Promise((resolve, _reject) => {
 
-// -------------------------------------------------------------
-    let size = 0;
-    const result = await minioClient.getObject(bucket, objectName);
-    console.log('result from getFileBuffer: -----------: ', result);
-    // return result.client._tlsOptions.session;
-     return result.socket._tlsOptions.session;
-//-------------------------------------------------------------
-
+      return minioClient.removeObject(bucket, objectName, function (err: any) {
+        if (err) {
+          console.error("Unable to remove object: ", err);
+          return resolve(false);
+        }
+      return resolve(true);
+    });
+  });
   }
 
   async stream2buffer(stream: Stream): Promise<Buffer> {
