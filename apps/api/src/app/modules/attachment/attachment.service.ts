@@ -72,7 +72,9 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
   uploadFileObjectStorage(request: AttachmentCreateRequest, primaryKey: number){
 
-    minioClient.putObject(bucket, request.projectId + '/' + primaryKey + '/' + request.fileName, request.fileContents, function(error, etag) {
+    const objectName = this.createObjectUrl(request.projectId, primaryKey, request.fileName);
+
+    minioClient.putObject(bucket, objectName, request.fileContents, function(error, etag) {
       if(error) {
           return console.log(error);
       }
@@ -159,7 +161,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const attachmentFileResponse = { ...attachmentResponse} as AttachmentFileResponse;
 
     //Creating the objectName for the Object Storage
-    const objectName = this.createObjectUrl(attachmentFileResponse.projectId,attachmentFileResponse.id, attachmentFileResponse.fileName )
+    const objectName = this.createObjectUrl(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName )
 
     //Reading the object from Object Storage
     const dataStream  = await this.getObjectStream(bucket, objectName );
@@ -174,6 +176,10 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   createObjectUrl(projectId: number, attachmentId: number, fileName: string): string {
+    if(process.env.INSTANCE_URL_PREFIX) {
+        return process.env.INSTANCE_URL_PREFIX + '/' +
+        projectId + '/' + attachmentId + '/' + fileName;
+    }
     return projectId + '/' + attachmentId + '/' + fileName;
   }
 
