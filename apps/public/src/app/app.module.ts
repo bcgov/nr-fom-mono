@@ -31,6 +31,7 @@ import { UrlService } from '../core/services/url.service';
 
 import { ApiModule, Configuration } from '@api-client'; 
 import { ErrorInterceptor } from '../core/interceptors/http-error.interceptor';
+import { FOMFiltersService } from '@public-core/services/fomFilters.service';
 
 // In index.html we load a javascript file with environment-specific settings,
 // populated from mounted ConfigMap in OpenShift. This file sets window.localStorage settings
@@ -84,6 +85,7 @@ const apiConfig = new Configuration({
   providers: [
     ApiService,
     UrlService,
+    FOMFiltersService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,

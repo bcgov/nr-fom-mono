@@ -39,6 +39,19 @@
         <span *ngIf="!loading && totalNumber == 0">No Results Found</span>
         <span *ngIf="!loading && totalNumber> 0"><strong>{{totalNumber}}</strong> {{totalNumber !== 1 ? 'FOMs' : 'FOM'}} Found</span>
       </span>
+
+      <span class="app-results__clear">
+        <div class="form-group">
+        <div class="select-badge-group" *ngIf="commentStatusFilters">
+          <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters">
+            <input type="checkbox" id="{{filter.queryParam}}" name="{{filter.queryParam}}" 
+                  [checked]="filter.value" (click)="toggleFilter(filter)">
+            <label for="{{filter.queryParam}}" (click)="toggleFilter(filter)">{{filter.displayString}}</label>
+          </div>
+        </div>
+        </div>
+      </span>
+
       <span class="app-results__clear" *ngIf="areFiltersSet()">
         <button class="clear-btn btn btn-sm btn-link"
           [disabled]="loading" 

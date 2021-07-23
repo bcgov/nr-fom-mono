@@ -8,8 +8,9 @@ import { Panel } from '../utils/panel.enum';
 import { IFiltersType, IUpdateEvent } from '../projects.component';
 import * as _ from 'lodash';
 import { ProjectService, WorkflowStateCode } from '@api-client';
-import { DELIMITER } from '@public-core/utils/constants/constantUtils';
+import { AppUtils, DELIMITER } from '@public-core/utils/constants/appUtils';
 import * as moment from 'moment';
+import { FOMFiltersService } from '@public-core/services/fomFilters.service';
 
 /**
  * Find side panel.
@@ -37,7 +38,8 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   readonly maxDate = moment().toDate(); // today
 
   constructor(public urlSvc: UrlService,
-              private projectSvc: ProjectService) {
+              private projectSvc: ProjectService,
+              private filtersSvc: FOMFiltersService) {
   }
 
   ngOnInit(): void {
@@ -102,9 +104,9 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    * @param {IMultiFilterFields} filter
    * @memberof ExplorePanelComponent
    */
-     public toggleFilter(filter: IMultiFilterFields<boolean>) {
-      filter.value = !filter.value;
-    }
+  public toggleFilter(filter: IMultiFilterFields<boolean>) {
+    filter.value = !filter.value;
+  }
 
   /**
    * Emit the current selected filters to the parent, if the filters have changed since the last time emit was called.
@@ -157,6 +159,12 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    * @memberof FindPanelComponent
    */
   public applyAllFilters() {
+    const updatedFilters = new Map();
+    updatedFilters.set(this.forestClientNameFilter.filter.queryParam, AppUtils.copy(this.forestClientNameFilter));
+    updatedFilters.set(this.postedOnAfterFilter.filter.queryParam, AppUtils.copy(this.postedOnAfterFilter));
+    updatedFilters.set(this.commentStatusFilters.queryParamsKey, AppUtils.copy(this.commentStatusFilters));
+    this.filtersSvc.updateFiltersSelection(updatedFilters);
+    
     this.saveQueryParameters();
     this.emitUpdate({ search: true, resetMap: false, hidePanel: true });
   }

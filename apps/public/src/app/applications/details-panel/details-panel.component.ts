@@ -11,7 +11,7 @@ import { AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
         SpatialFeaturePublicResponse, SpatialFeatureService, SpatialObjectCodeEnum, 
         WorkflowStateCode } from '@api-client';
 import * as _ from 'lodash';
-import { SpatialTypeMap } from '@public-core/utils/constants/constantUtils';
+import { SpatialTypeMap } from '@public-core/utils/constants/appUtils';
 
 /**
  * Details side panel.

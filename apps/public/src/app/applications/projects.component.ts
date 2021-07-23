@@ -14,6 +14,9 @@ import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { UrlService } from '@public-core/services/url.service';
 import { Panel } from './utils/panel.enum';
 import { ProjectPublicSummaryResponse, ProjectService, WorkflowStateEnum } from '@api-client';
+import { IMultiFilterFields, MultiFilter } from './utils/filter';
+import { FOMFiltersService, FILTER_FIELD_ENUM } from '@public-core/services/fomFilters.service';
+import { AppUtils } from '@public-core/utils/constants/appUtils';
 
 /**
  * All supported filters.
@@ -89,13 +92,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public projectsSummary: Array<ProjectPublicSummaryResponse>;
   public projectsSummary$: Observable<Array<ProjectPublicSummaryResponse>>;
   public totalNumber: number;
-
+  public commentStatusFilters: MultiFilter<boolean>;
+  
   constructor(
     public snackbar: MatSnackBar,
     private modalService: NgbModal,
     private router: Router,
     private projectService: ProjectService,
-    public urlService: UrlService
+    public urlService: UrlService,
+    private filtersSvc: FOMFiltersService
   ) {
     // watch for URL param changes
     this.urlService.onNavEnd$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe(event => {
@@ -132,6 +137,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   ngOnInit() {
+
+    this.filtersSvc.filters$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
+      this.commentStatusFilters = AppUtils.copy(filters.get(
+                                  FILTER_FIELD_ENUM.commentStatusFilters.queryParamsKey)) as MultiFilter<boolean>;
+    })
 
     // default to fetch publicSummary for COMMENT_OPEN
     this.fetchProjects({
@@ -212,14 +222,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   fetchProjects(filters: IFiltersType) {
     this.loading = true;
-    const commentStatusNotSelected = !filters.cmtStatus || filters.cmtStatus.length == 0;
+    const commentStatusNotSelected = !filters || !filters.cmtStatus || filters.cmtStatus.length == 0;
     // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
     // This is the behaviour in old applications.
     this.projectService
         .projectControllerFindPublicSummary(
           commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
           commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
-          filters.fcName, filters.pdOnAfter?.toISOString().substr(0, 10))
+          filters?.fcName, filters?.pdOnAfter?.toISOString().substr(0, 10))
         .subscribe((results) => {
           this.projectsSummary = results;
           this.totalNumber = results.length;
@@ -313,6 +323,11 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     );
   }
 
+  public toggleFilter(filter: IMultiFilterFields<boolean>) {
+    filter.value = !filter.value;
+    this.filtersSvc.updateFilterSelection(FILTER_FIELD_ENUM.commentStatusFilters.queryParamsKey, this.commentStatusFilters);
+  }
+  
   /**
    * On component destroy.
    *
