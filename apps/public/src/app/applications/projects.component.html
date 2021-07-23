@@ -56,7 +56,7 @@
         </div>
       </span>
 
-      <span class="app-results__clear">
+      <span class="app-results__clear" [ngStyle]="loading && {'display': 'none'}">
         <button class="clear-btn btn btn-sm btn-link"
           [disabled]="loading" 
           (click)="clearFilters();">Clear Filters</button>
@@ -64,8 +64,7 @@
     </div>
     <app-map class="app-map" *ngIf="projectsSummary" #appmap
       [loading]="loading"
-      [projectsSummary]="projectsSummary"
-      (updateCoordinates)="updateCoordinates()">
+      [projectsSummary]="projectsSummary">
     </app-map>
   </div>
 

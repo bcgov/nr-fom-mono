@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AppUtils } from '@public-core/utils/constants/appUtils';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Filter, IFilter, IMultiFilter, MultiFilter } from '../../app/applications/utils/filter';
+import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from '../../app/applications/utils/filter';
 
 export enum FOM_FILTER_NAME {
   FOREST_CLIENT_NAME = 'fcName',
@@ -50,6 +50,7 @@ export class FOMFiltersService {
   }
 
   updateFiltersSelection(newFilters: Map<string, IFilter|IMultiFilter>) {
+    this._resetCommentStatusFilter(newFilters);
     this._filters$.next(newFilters);
   }
 
@@ -76,6 +77,7 @@ export class FOMFiltersService {
         nextFilters.set(currentFilterName, AppUtils.copy(currentFilter));
       }
     });
+    this._resetCommentStatusFilter(nextFilters);
     this._filters$.next(nextFilters);
   }
 
@@ -93,4 +95,15 @@ export class FOMFiltersService {
     defaultFilters.set(FOM_FILTER_NAME.COMMENT_STATUS, commentStatusFilters);
     return defaultFilters;
   }
+
+  // This reset Comment Status filter to default if both COMMENT_OPEN/COMMENT_CLOSED are false;
+  _resetCommentStatusFilter(filters: Map<string, IFilter | IMultiFilter>) {
+    const commentStatusFilters = filters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
+    const commentOpen = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0];
+    const commentClosed = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_CLOSED)[0];
+    if (!commentOpen.value && !commentClosed.value) {
+      commentOpen.value = true;
+    }
+  }
 }
+

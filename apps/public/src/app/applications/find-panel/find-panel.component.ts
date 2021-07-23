@@ -10,7 +10,7 @@ import * as _ from 'lodash';
 import { WorkflowStateCode } from '@api-client';
 import { AppUtils, DELIMITER } from '@public-core/utils/constants/appUtils';
 import * as moment from 'moment';
-import { FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 
 /**
  * Find side panel.
@@ -78,6 +78,15 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    */
   public toggleFilter(filter: IMultiFilterFields<boolean>) {
     filter.value = !filter.value;
+  }
+
+  // checking if Comment Status filter both COMMENT_OPEN/COMMENT_CLOSED are false. If it is, default to COMMENT_OPEN.
+  public verifyStatus() {
+    const commentOpen = this.commentStatusFilters.filters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0];
+    const commentClosed = this.commentStatusFilters.filters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_CLOSED)[0];
+    if (!commentOpen.value && !commentClosed.value) {
+      commentOpen.value = true;
+    }
   }
 
   /**
