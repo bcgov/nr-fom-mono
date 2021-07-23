@@ -5,7 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { UrlService } from '@public-core/services/url.service';
 import { Filter, FilterUtils, IMultiFilterFields, MultiFilter } from '../utils/filter';
 import { Panel } from '../utils/panel.enum';
-import { IFiltersType, IUpdateEvent } from '../projects.component';
+import { IUpdateEvent } from '../projects.component';
 import * as _ from 'lodash';
 import { WorkflowStateCode } from '@api-client';
 import { AppUtils, DELIMITER } from '@public-core/utils/constants/appUtils';
@@ -107,22 +107,6 @@ export class FindPanelComponent implements OnDestroy, OnInit {
       filter.value = filter.queryParam == 'COMMENT_OPEN'? (csParamsNotPresent? true: commentStatusQueryParams.includes(filter.queryParam)) 
                                                         : (csParamsNotPresent? false: commentStatusQueryParams.includes(filter.queryParam)) 
     });
-  }
-
-  /**
-   * Parses the local filters into the type expected by the parent.
-   *
-   * @returns {IFiltersType}
-   * @memberof FindPanelComponent
-   */
-  public getFilters(): IFiltersType {
-    return { fcName: this.forestClientNameFilter.filter.value,
-             cmtStatus: this.commentStatusFilters.getQueryParamsArray(),
-             pdOnAfter: this.postedOnAfterFilter.filter.value
-             ? moment(this.postedOnAfterFilter.filter.value)
-                 .startOf('day')
-                 .toDate()
-             : null};
   }
 
   /**

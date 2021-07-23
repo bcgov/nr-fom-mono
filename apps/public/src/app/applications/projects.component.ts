@@ -20,18 +20,6 @@ import { AppUtils } from '@public-core/utils/constants/appUtils';
 import { takeUntil } from 'rxjs/operators';
 
 /**
- * All supported filters.
- *
- * @export
- * @interface IFiltersType
- */
- export interface IFiltersType {
-  fcName?: string; // forestClientName
-  cmtStatus?: string[]; // workflowState
-  pdOnAfter?: Date;
-}
-
-/**
  * Object emitted by child panel on update.
  *
  * @export
@@ -48,12 +36,6 @@ export interface IUpdateEvent {
   // True if the panel should be collapsed
   hidePanel?: boolean;
 }
-
-const emptyFilters: IFiltersType = {
-  fcName: null,
-  cmtStatus: [],
-  pdOnAfter: null
-};
 
 /**
  * Main public site component.
@@ -87,7 +69,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public urlTree: UrlTree;
   public observablesSub: Subscription = null;
   public coordinates: string = null;
-  public filters: IFiltersType = emptyFilters;
   public projectsSummary: Array<ProjectPublicSummaryResponse>;
   public projectsSummary$: Observable<Array<ProjectPublicSummaryResponse>>;
   public totalNumber: number;
@@ -100,7 +81,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     private router: Router,
     private projectService: ProjectService,
     public urlService: UrlService,
-    private filtersSvc: FOMFiltersService
+    private fomFiltersSvc: FOMFiltersService
   ) {
     // watch for URL param changes
     this.urlService.onNavEnd$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe(event => {
@@ -135,7 +116,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   ngOnInit() {
-    this.filtersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
+    this.fomFiltersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
       this.fomFilters = filters;
       this.commentStatusFilters = AppUtils.copy(this.fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)) as MultiFilter<boolean>;
       this.fetchFOMs(this.fomFilters);
@@ -220,38 +201,20 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
     this.loading = true;
     this.projectService
-    .projectControllerFindPublicSummary(
-      commentOpenParam.toString(), 
-      commentClosedParam.toString(), 
-      forestClientNameParam, 
-      openedOnOrAfterParam)
-    .subscribe((results) => {
-      this.projectsSummary = results;
-      this.totalNumber = results.length;
-      this.loading = false;
-    },
-    () => this.loading = false,
-    () => this.loading = false);
+        .projectControllerFindPublicSummary(
+          commentOpenParam.toString(), 
+          commentClosedParam.toString(), 
+          forestClientNameParam, 
+          openedOnOrAfterParam)
+        .subscribe((results) => {
+          this.projectsSummary = results;
+          this.totalNumber = results.length;
+          this.loading = false;
+          },
+          () => this.loading = false,
+          () => this.loading = false
+        );
   }
-
-  // fetchProjects(filters: IFiltersType) {
-  //   this.loading = true;
-  //   const commentStatusNotSelected = !filters || !filters.cmtStatus || filters.cmtStatus.length == 0;
-  //   // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
-  //   // This is the behaviour in old applications.
-  //   this.projectService
-  //       .projectControllerFindPublicSummary(
-  //         commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
-  //         commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
-  //         filters?.fcName, filters?.pdOnAfter?.toISOString().substr(0, 10))
-  //       .subscribe((results) => {
-  //         this.projectsSummary = results;
-  //         this.totalNumber = results.length;
-  //         this.loading = false;
-  //       },
-  //       () => this.loading = false,
-  //       () => this.loading = false);
-  // }
 
   /**
    * Event handler called when Find panel emits an update.
@@ -260,20 +223,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   public handleFindUpdate(updateEvent: IUpdateEvent) {
-    // this.filters = { ...emptyFilters, ...updateEvent.filters };
 
     if (updateEvent.search) {
-      // clear the other panels filters/data
-
       this.detailsPanel.clearAllFilters();
-      // this.detailsPanel.saveQueryParameters();
 
       if (this.appmap) {
         this.appmap.unhighlightApplications();
       }
     }
-
-    // this.fetchProjects(this.filters);
 
     if (updateEvent.resetMap) {
       this.appmap.resetView(false);
@@ -282,15 +239,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (updateEvent.hidePanel) {
       this.closeSidePanel();
     }
-  }
-
-  /**
-   * Event handler called when map component view has changed.
-   *
-   * @memberof ProjectsComponent
-   */
-  public updateCoordinates(): void {
-    // this.getApplications(false); // total number is not affected
   }
 
   /**
@@ -315,34 +263,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   public clearFilters() {
-    //TODO: probably no need for this method anymore
-
-    this.findPanel.clearAllFilters();
-    // this.findPanel.saveQueryParameters();
-
-    this.filters = emptyFilters;
-
-    // this.fetchProjects(null);
-  }
-
-  /**
-   * Returns true if at least 1 filter is selected/populated, false otherwise.
-   *
-   * @returns {boolean}
-   * @memberof ProjectsComponent
-   */
-  public areFiltersSet(): boolean {
-    return (
-      !!this.filters.fcName || 
-      !_.isEmpty(this.filters.cmtStatus) ||
-      !!this.filters.pdOnAfter
-    );
+    this.fomFiltersSvc.clearFilters();
   }
 
   public toggleFilter(filter: IMultiFilterFields<boolean>) {
     if (this.loading) return;
     filter.value = !filter.value;
-    this.filtersSvc.updateFilterSelection(FOM_FILTER_NAME.COMMENT_STATUS, this.commentStatusFilters);
+    this.fomFiltersSvc.updateFilterSelection(FOM_FILTER_NAME.COMMENT_STATUS, this.commentStatusFilters);
   }
   
   /**
