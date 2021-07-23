@@ -161,7 +161,7 @@ objects:
               terminationMessagePolicy: File
               imagePullPolicy: Always
               volumeMounts:
-                - mountPath: /app/nr-fom-public/dist/assets/env
+                - mountPath: /app/nr-fom-public/dist/public/assets/env
                   name: env-config
           restartPolicy: Always
           terminationGracePeriodSeconds: 30
