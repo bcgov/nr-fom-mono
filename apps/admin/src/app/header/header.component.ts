@@ -3,7 +3,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Router} from '@angular/router';
 import {KeycloakService} from '../../core/services/keycloak.service';
 import {User} from '../../core/services/user';
-import { ConfigService } from '../../core/services/config.service';
+import { ConfigService } from '@utility/services/config.service';
 
 @Component({
   selector: 'app-header',

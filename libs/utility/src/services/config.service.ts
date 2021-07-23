@@ -4,9 +4,6 @@ export function retrieveApiBasePath():string {
   const { hostname } = window.location;
   if (hostname == 'localhost') {
     return 'http://localhost:3333';
-  } else if (hostname.includes('nr-fom-admin') && hostname.includes('devops.gov.bc.ca')) {
-    // TODO: This is the old hostname format, to be removed.
-    return 'https://' + hostname.replace('fom-admin', 'fom-api');
   } else {
     // Using single URL for both Admin & API
     return 'https://' + hostname;
@@ -16,7 +13,7 @@ export function retrieveApiBasePath():string {
 @Injectable()
 export class ConfigService {
 
-  private environmentDisplay:string;
+  private environmentDisplay?:string;
 
   private apiBasePath:string;
 
@@ -28,7 +25,7 @@ export class ConfigService {
     const envName = window.localStorage.getItem('fom_environment_name');
     this.environmentDisplay = (envName == undefined || envName.length == 0) ? 'local' : envName;
     if (this.environmentDisplay == 'prod') {
-      this.environmentDisplay = null;
+      this.environmentDisplay = undefined;
     }
 
     this.apiBasePath = retrieveApiBasePath();
@@ -36,11 +33,16 @@ export class ConfigService {
   }
 
   // Return the environment to display to users, will be null for production.
-  getEnvironmentDisplay(): string {
+  getEnvironmentDisplay(): string | undefined {
     return this.environmentDisplay;
   }
 
   getApiBasePath(): string {
     return this.apiBasePath;
   }
+
+  getAttachmentUrl(id: number): string {
+    return id ? this.apiBasePath + '/api/attachment/file/' + id : '';
+  }
+
 }

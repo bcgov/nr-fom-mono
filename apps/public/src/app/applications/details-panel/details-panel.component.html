@@ -91,7 +91,7 @@
         <div class="doc-list" style="width: 25rem;">
           <a class="doc-list__item"
             *ngFor="let attachment of attachments"
-            [href]="api.getAttachmentUrl(attachment.id)" 
+            [href]="configService.getAttachmentUrl(attachment.id)" 
             [title]="attachment.fileName || ''" 
             target="_blank" rel="noopener">
             <div class="cell doc-list__item-icon">
