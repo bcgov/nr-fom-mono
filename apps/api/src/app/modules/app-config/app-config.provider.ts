@@ -25,4 +25,13 @@ export class AppConfigService {
   get isDev() {
     return this.env === 'development';
   }
+
+  getGlobalPrefix() {
+    const instanceUrlPrefix = process.env.INSTANCE_URL_PREFIX;
+    if (instanceUrlPrefix && instanceUrlPrefix.length > 0) {
+      return instanceUrlPrefix + '/api';
+    } else {
+      return 'api';
+    }
+  }
 }
