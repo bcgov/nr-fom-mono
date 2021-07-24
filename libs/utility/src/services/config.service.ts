@@ -5,8 +5,8 @@ export function retrieveApiBasePath():string {
   if (hostname == 'localhost') {
     return 'http://localhost:3333';
   } else {
-    // Using single URL for both Admin & API
-    return 'https://' + hostname;
+    const apiBasePath = window.localStorage.getItem('fom_api_base_url') as string;
+    return apiBasePath;
   }
 }
 
@@ -32,7 +32,7 @@ export class ConfigService {
     console.log("Using API " + this.apiBasePath);
   }
 
-  // Return the environment to display to users, will be null for production.
+  // Return the environment to display to users, will be undefined for production.
   getEnvironmentDisplay(): string | undefined {
     return this.environmentDisplay;
   }

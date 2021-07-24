@@ -29,6 +29,11 @@ const MyDeployer = class extends BasicDeployer{
       'HOSTNAME': config.hostname,
     }
 
+    let apiBaseUrl = "https://" + config.hostname;
+    // if (config.instanceUrlPrefix != null && config.instanceUrlPrefix.length() > 0) {
+    //   apiBaseUrl = apiBaseUrl + '/' + config.instanceUrlPrefix;
+    // }
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
         ...appParams,
@@ -54,6 +59,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-deploy.yml`, {
       'param':{
         ...appParams,
+        'API_BASE_URL': apiBaseUrl,
         'REPLICA_COUNT': config.publicReplicaCount, 
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
@@ -62,6 +68,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/admin/fom-admin-deploy.yml`, {
       'param':{
         ...appParams,
+        'API_BASE_URL': apiBaseUrl,
         'REPLICA_COUNT': config.adminReplicaCount, 
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
