@@ -83,7 +83,7 @@ async function bootstrap():Promise<INestApplication> {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  const port = appConfig.get('port') || 3333;
+  const port = appConfig.getPort();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(appConfig.getGlobalPrefix(), app, document);
 

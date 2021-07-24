@@ -29,14 +29,16 @@ const MyDeployer = class extends BasicDeployer{
       'HOSTNAME': config.hostname,
     }
 
-    let apiBaseUrl = "https://" + config.hostname;
-    // if (config.instanceUrlPrefix != null && config.instanceUrlPrefix.length() > 0) {
-    //   apiBaseUrl = apiBaseUrl + '/' + config.instanceUrlPrefix;
+    let apiBasePath = '/api';
+    // if (config.instanceUrlPrefix && config.instanceUrlPrefix.length > 0) {
+    //   apiBasePath = '/' + config.instanceUrlPrefix + apiBasePath;
     // }
+    const apiBaseUrl = "https://" + config.hostname + apiBasePath;
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
         ...appParams,
+        'API_BASE_PATH': apiBasePath,
         'INSTANCE_URL_PREFIX': config.instanceUrlPrefix,
         'OBJECT_STORAGE_URL': config.objectStorageUrl,
         'KEYCLOAK_URL': config.keycloakUrl,

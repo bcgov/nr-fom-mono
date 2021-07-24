@@ -41,6 +41,10 @@ parameters:
     displayName: Application Instance URL Prefix
     name: INSTANCE_URL_PREFIX
     value: ''
+  - description: Base path defining the URL that the API component REST API is available at.
+    displayName: API Base Path
+    name: API_BASE_PATH
+    value: '/api'
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -255,7 +259,7 @@ objects:
               # Have longer delay at startup to allow for database migrations to take place.
               startupProbe:
                 httpGet:
-                  path: /api
+                  path: /health-check
                   port: ${{PORT}}
                   scheme: HTTP
                 initialDelaySeconds: 30
@@ -266,7 +270,7 @@ objects:
               # Don't need a liveness probe because node is executed as the root (only) process in the container, if it crashes the container will get restarted.
               readinessProbe:
                 httpGet:
-                  path: /api
+                  path: /health-check
                   port: ${{PORT}}
                   scheme: HTTP
                 timeoutSeconds: 15
@@ -311,7 +315,7 @@ objects:
         haproxy.router.openshift.io/timeout: "120s"
     spec:
       host: ${HOSTNAME}
-      path: /api
+      path: ${API_BASE_PATH}
       to:
         kind: Service
         name: ${NAME}${SUFFIX}
