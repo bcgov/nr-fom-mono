@@ -129,7 +129,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    */
   public clear() {
     this.clearAllFilters();
-    this.emitUpdate({ search: true, resetMap: true, hidePanel: false });
+    this.emitUpdate({ search: true, resetMap: true, hidePanel: true });
   }
 
   /**
