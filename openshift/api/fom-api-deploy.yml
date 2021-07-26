@@ -109,7 +109,8 @@ objects:
       name: ${NAME}
     spec:
       lookupPolicy:
-        local: false
+        # Set to true to allow local image name resolution, without having to specify the internal OpenShift image registry and port.
+        local: true
     # ConfigMap - 
   - kind: ConfigMap
     apiVersion: v1

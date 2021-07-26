@@ -79,7 +79,7 @@ objects:
       name: ${NAME}
     spec:
       lookupPolicy:
-        local: false
+        local: true
     # ConfigMap - Environment-Specific Settings
   - kind: ConfigMap
     apiVersion: v1
