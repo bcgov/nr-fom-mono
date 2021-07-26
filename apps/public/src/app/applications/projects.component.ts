@@ -72,7 +72,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public projectsSummary: Array<ProjectPublicSummaryResponse>;
   public projectsSummary$: Observable<Array<ProjectPublicSummaryResponse>>;
   public totalNumber: number;
-  private fomFilters: Map<string, IFilter | IMultiFilter>;
   public commentStatusFilters: MultiFilter<boolean>;
   
   constructor(
@@ -117,9 +116,8 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    */
   ngOnInit() {
     this.fomFiltersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
-      this.fomFilters = filters;
-      this.commentStatusFilters = AppUtils.copy(this.fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)) as MultiFilter<boolean>;
-      this.fetchFOMs(this.fomFilters);
+      this.fetchFOMs(filters);
+      this.commentStatusFilters = AppUtils.copy(filters.get(FOM_FILTER_NAME.COMMENT_STATUS)) as MultiFilter<boolean>;
     });
   }
 
@@ -193,10 +191,10 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   fetchFOMs(fomFilters: Map<string, IFilter | IMultiFilter>) {
+    const forestClientNameParam = (fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>).filter.value;
     const commentStatusFilters = fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
     const commentOpenParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0].value;
     const commentClosedParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_CLOSED)[0].value;
-    const forestClientNameParam = (fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>).filter.value;
     const openedOnOrAfterParam = (fomFilters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>).filter.value?.toISOString().substr(0, 10);
 
     this.loading = true;

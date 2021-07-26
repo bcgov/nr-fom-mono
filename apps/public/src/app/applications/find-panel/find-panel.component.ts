@@ -3,12 +3,12 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { UrlService } from '@public-core/services/url.service';
-import { Filter, FilterUtils, IMultiFilterFields, MultiFilter } from '../utils/filter';
+import { Filter, FilterUtils, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from '../utils/filter';
 import { Panel } from '../utils/panel.enum';
 import { IUpdateEvent } from '../projects.component';
 import * as _ from 'lodash';
 import { WorkflowStateCode } from '@api-client';
-import { AppUtils, DELIMITER } from '@public-core/utils/constants/appUtils';
+import { DELIMITER } from '@public-core/utils/constants/appUtils';
 import * as moment from 'moment';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 
@@ -31,6 +31,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   public filterHash: string;
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   public workflowState: _.Dictionary<WorkflowStateCode>;
+  private fomFilters: Map<string, IFilter | IMultiFilter>;
   public forestClientNameFilter = new Filter<string>({ filter: { queryParam: 'fcName', value: null }});
   public commentStatusFilters: MultiFilter<boolean>; // For 'Commenting Open' or 'Commenting Closed'.
   public postedOnAfterFilter = new Filter<Date>({ filter: { queryParam: 'pdOnAfter', value: null } });
@@ -43,9 +44,10 @@ export class FindPanelComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.fomFiltersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
-      this.forestClientNameFilter = filters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>;
-      this.commentStatusFilters = filters.get(FOM_FILTER_NAME.COMMENT_STATUS) as MultiFilter<boolean>;
-      this.postedOnAfterFilter = filters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>;
+      this.fomFilters = filters;
+      this.forestClientNameFilter = this.fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>;
+      this.commentStatusFilters = this.fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS) as MultiFilter<boolean>;
+      this.postedOnAfterFilter = this.fomFilters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>;
     })
   }
 
@@ -124,12 +126,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    * @memberof FindPanelComponent
    */
   public applyAllFilters() {
-    const updatedFilters = new Map();
-    updatedFilters.set(this.forestClientNameFilter.filter.queryParam, AppUtils.copy(this.forestClientNameFilter));
-    updatedFilters.set(this.postedOnAfterFilter.filter.queryParam, AppUtils.copy(this.postedOnAfterFilter));
-    updatedFilters.set(this.commentStatusFilters.queryParamsKey, AppUtils.copy(this.commentStatusFilters));
-    this.fomFiltersSvc.updateFiltersSelection(updatedFilters);
-    
+    this.fomFiltersSvc.updateFiltersSelection(this.fomFilters);
     this.emitUpdate({ search: true, resetMap: false, hidePanel: true });
   }
 
@@ -139,12 +136,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    * @memberof ExplorePanelComponent
    */
   public applyAllFiltersMobile() {
-    const updatedFilters = new Map();
-    updatedFilters.set(this.forestClientNameFilter.filter.queryParam, AppUtils.copy(this.forestClientNameFilter));
-    updatedFilters.set(this.postedOnAfterFilter.filter.queryParam, AppUtils.copy(this.postedOnAfterFilter));
-    updatedFilters.set(this.commentStatusFilters.queryParamsKey, AppUtils.copy(this.commentStatusFilters));
-    this.fomFiltersSvc.updateFiltersSelection(updatedFilters);
-
+    this.fomFiltersSvc.updateFiltersSelection(this.fomFilters);
     this.emitUpdate({ search: true, resetMap: false, hidePanel: true });
   }
 

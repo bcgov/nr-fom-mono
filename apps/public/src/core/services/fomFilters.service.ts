@@ -71,10 +71,10 @@ export class FOMFiltersService {
       }
 
       if (currentFilterName === filterName) {
-        nextFilters.set(filterName, AppUtils.copy(filterToUpdate));
+        nextFilters.set(currentFilterName, filterToUpdate);
       }
       else {
-        nextFilters.set(currentFilterName, AppUtils.copy(currentFilter));
+        nextFilters.set(currentFilterName, currentFilter);
       }
     });
     this._resetCommentStatusFilter(nextFilters);
@@ -96,7 +96,10 @@ export class FOMFiltersService {
     return defaultFilters;
   }
 
-  // This reset Comment Status filter to default if both COMMENT_OPEN/COMMENT_CLOSED are false;
+  /**
+   * This reset Comment Status filter to default if both COMMENT_OPEN/COMMENT_CLOSED are false;
+   * @param filters 
+   */
   _resetCommentStatusFilter(filters: Map<string, IFilter | IMultiFilter>) {
     const commentStatusFilters = filters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
     const commentOpen = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0];
