@@ -36,7 +36,7 @@ const MyDeployer = class extends BasicDeployer{
     // Example: https://fom-nrs-dev.apps.silver.devops.gov.bc.ca/86/api
     // API Base URL = https://${HOSTNAME}/[${INSTANCE_URL_PREFIX}] (without /api component prefix)
 
-    let apiBaseUrl = '"https://" + config.hostname';
+    let apiBaseUrl = "https://" + config.hostname;
     if (config.instanceUrlPrefix && config.instanceUrlPrefix.length > 0) {
       apiBaseUrl = apiBaseUrl + config.instanceUrlPrefix;
     }
