@@ -116,7 +116,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.fomFiltersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
       this.fetchFOMs(filters);
-      this.commentStatusFilters = AppUtils.copy(filters.get(FOM_FILTER_NAME.COMMENT_STATUS)) as MultiFilter<boolean>;
+      this.commentStatusFilters = filters.get(FOM_FILTER_NAME.COMMENT_STATUS) as MultiFilter<boolean>;
     });
   }
 

@@ -45,11 +45,11 @@
         <div class="select-badge-group" *ngIf="commentStatusFilters">
           <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters"
               [ngStyle]="loading && {'display': 'none'}">
-            <input type="checkbox" id="{{filter.queryParam}}" name="{{filter.queryParam}}" 
+            <input type="checkbox" id="project-{{filter.queryParam}}" name="{{filter.queryParam}}" 
                   [checked]="filter.value" 
                   (click)="toggleFilter(filter)"
                   [disabled]="loading">
-            <label for="{{filter.queryParam}}" 
+            <label for="project-{{filter.queryParam}}" 
                     (click)="toggleFilter(filter)">{{filter.displayString}}</label>
           </div>
         </div>
