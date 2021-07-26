@@ -33,7 +33,7 @@ export class AppConfigService {
   getGlobalPrefix() {
     const instanceUrlPrefix = process.env.INSTANCE_URL_PREFIX;
     if (instanceUrlPrefix && instanceUrlPrefix.length > 0) {
-      return instanceUrlPrefix + '/api';
+      return instanceUrlPrefix.substring(1) + '/api'; // Remove leading slash '/'.
     } else {
       return 'api';
     }

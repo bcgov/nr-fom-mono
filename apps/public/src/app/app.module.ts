@@ -28,6 +28,7 @@ import { FooterComponent } from './footer/footer.component';
 import { UrlService } from '../core/services/url.service';
 import { ApiModule, Configuration } from '@api-client'; 
 import { ErrorInterceptor } from '../core/interceptors/http-error.interceptor';
+import { FOMFiltersService } from '@public-core/services/fomFilters.service';
 import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
 
 const apiConfig = new Configuration({
@@ -64,6 +65,7 @@ const apiConfig = new Configuration({
   providers: [
     ConfigService,
     UrlService,
+    FOMFiltersService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,

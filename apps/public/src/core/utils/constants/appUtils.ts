@@ -23,11 +23,11 @@ export const SpatialTypeMap = new Map<SpatialObjectCodeEnum, object>([
 ]);
 
 /**
- * Util methods for fetching codes and their various pieces of related information.
- *
- * @export
- * @class ConstantUtils
+ * @class AppUtils
  */
-export class ConstantUtils {
- 
+export class AppUtils {
+  static copy(obj: any) {
+    // deep object copy
+    return JSON.parse(JSON.stringify(obj));
+  } 
 }

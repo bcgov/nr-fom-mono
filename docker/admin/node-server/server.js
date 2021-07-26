@@ -19,7 +19,7 @@ app.use(helmet({
       frameSrc: ["'self'", "https://*.gov.bc.ca"], // gov.bc.ca is for keycloak.
       connectSrc: ["'self'", "https://*.gov.bc.ca"],  // Add "*" if testing locally, will also need to bypass CORS in the API. 
       formAction: ["'self'"],
-      imgSrc: ["self", "https://server.arcgisonline.com data:", "https://services.arcgisonline.com data:", "https://maps.gov.bc.ca"]
+      imgSrc: ["'self'", "https://server.arcgisonline.com data:", "https://services.arcgisonline.com data:", "https://maps.gov.bc.ca"]
     },
   },
   }));

@@ -39,7 +39,24 @@
         <span *ngIf="!loading && totalNumber == 0">No Results Found</span>
         <span *ngIf="!loading && totalNumber> 0"><strong>{{totalNumber}}</strong> {{totalNumber !== 1 ? 'FOMs' : 'FOM'}} Found</span>
       </span>
-      <span class="app-results__clear" *ngIf="areFiltersSet()">
+
+      <span class="app-results__clear">
+        <div class="form-group">
+        <div class="select-badge-group" *ngIf="commentStatusFilters">
+          <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters"
+              [ngStyle]="loading && {'display': 'none'}">
+            <input type="checkbox" id="project-{{filter.queryParam}}" name="{{filter.queryParam}}" 
+                  [checked]="filter.value" 
+                  (click)="toggleFilter(filter)"
+                  [disabled]="loading">
+            <label for="project-{{filter.queryParam}}" 
+                    (click)="toggleFilter(filter)">{{filter.displayString}}</label>
+          </div>
+        </div>
+        </div>
+      </span>
+
+      <span class="app-results__clear" [ngStyle]="loading && {'display': 'none'}">
         <button class="clear-btn btn btn-sm btn-link"
           [disabled]="loading" 
           (click)="clearFilters();">Clear Filters</button>
@@ -47,8 +64,7 @@
     </div>
     <app-map class="app-map" *ngIf="projectsSummary" #appmap
       [loading]="loading"
-      [projectsSummary]="projectsSummary"
-      (updateCoordinates)="updateCoordinates()">
+      [projectsSummary]="projectsSummary">
     </app-map>
   </div>
 

@@ -37,14 +37,10 @@ parameters:
     name: OBJECT_STORAGE_URL
     required: true
   # Optional parmaetrs with defaults
-  - description: Unique identifier for the application instance in an environment to use as a URL prefix to support having multiple on-demand app instances.
+  - description: Unique identifier for the application instance in an environment to use as a URL prefix to support having multiple on-demand app instances. Value of '' or '/<prefix>'.
     displayName: Application Instance URL Prefix
     name: INSTANCE_URL_PREFIX
     value: ''
-  - description: Base path defining the URL that the API component REST API is available at.
-    displayName: API Base Path
-    name: API_BASE_PATH
-    value: '/api'
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -315,7 +311,7 @@ objects:
         haproxy.router.openshift.io/timeout: "120s"
     spec:
       host: ${HOSTNAME}
-      path: ${API_BASE_PATH}
+      path: ${INSTANCE_URL_PREFIX}/api
       to:
         kind: Service
         name: ${NAME}${SUFFIX}

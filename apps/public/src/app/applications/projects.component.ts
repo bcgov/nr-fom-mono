@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { MatSnackBarRef, SimpleSnackBar, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Router, UrlTree } from '@angular/router';
 
@@ -13,19 +13,11 @@ import { DetailsPanelComponent } from './details-panel/details-panel.component';
 import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { UrlService } from '@public-core/services/url.service';
 import { Panel } from './utils/panel.enum';
-import { ProjectPublicSummaryResponse, ProjectService, WorkflowStateEnum } from '@api-client';
-
-/**
- * All supported filters.
- *
- * @export
- * @interface IFiltersType
- */
- export interface IFiltersType {
-  fcName?: string; // forestClientName
-  cmtStatus?: string[]; // workflowState
-  pdOnAfter?: Date;
-}
+import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
+import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
+import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { AppUtils } from '@public-core/utils/constants/appUtils';
+import { takeUntil } from 'rxjs/operators';
 
 /**
  * Object emitted by child panel on update.
@@ -34,8 +26,6 @@ import { ProjectPublicSummaryResponse, ProjectService, WorkflowStateEnum } from 
  * @interface IUpdateEvent
  */
 export interface IUpdateEvent {
-  // filters (See IFiltersType)
-  filters?: IFiltersType;
 
   // True if the search was manually initiated (button click), false if it is emitting as part of component initiation.
   search?: boolean;
@@ -46,12 +36,6 @@ export interface IUpdateEvent {
   // True if the panel should be collapsed
   hidePanel?: boolean;
 }
-
-const emptyFilters: IFiltersType = {
-  fcName: null,
-  cmtStatus: [],
-  pdOnAfter: null
-};
 
 /**
  * Main public site component.
@@ -74,7 +58,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   private splashModal: NgbModalRef = null;
-  private snackbarRef: MatSnackBarRef<SimpleSnackBar> = null;
 
   // necessary to allow referencing the enum in the html
   public Panel = Panel;
@@ -85,17 +68,18 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public urlTree: UrlTree;
   public observablesSub: Subscription = null;
   public coordinates: string = null;
-  public filters: IFiltersType = emptyFilters;
   public projectsSummary: Array<ProjectPublicSummaryResponse>;
   public projectsSummary$: Observable<Array<ProjectPublicSummaryResponse>>;
   public totalNumber: number;
-
+  public commentStatusFilters: MultiFilter<boolean>;
+  
   constructor(
     public snackbar: MatSnackBar,
     private modalService: NgbModal,
     private router: Router,
     private projectService: ProjectService,
-    public urlService: UrlService
+    public urlService: UrlService,
+    private fomFiltersSvc: FOMFiltersService
   ) {
     // watch for URL param changes
     this.urlService.onNavEnd$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe(event => {
@@ -127,17 +111,12 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * On component inits.
-   *
    * @memberof ProjectsComponent
    */
   ngOnInit() {
-
-    // default to fetch publicSummary for COMMENT_OPEN
-    this.fetchProjects({
-      fcName: null,
-      cmtStatus: [WorkflowStateEnum.CommentOpen],
-      pdOnAfter: null
+    this.fomFiltersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
+      this.fetchFOMs(filters);
+      this.commentStatusFilters = filters.get(FOM_FILTER_NAME.COMMENT_STATUS) as MultiFilter<boolean>;
     });
   }
 
@@ -180,53 +159,28 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Show snackbar
-   *
-   * Note: use debounce to delay snackbar opening so we can cancel it preemptively if loading takes less than 500ms
-   *
-   * @memberof ProjectsComponent
-   */
-  public showSnackbar = _.debounce(() => {
-    this.snackbarRef = this.snackbar.open('Loading applications ...');
-  }, 500);
+  fetchFOMs(fomFilters: Map<string, IFilter | IMultiFilter>) {
+    const forestClientNameParam = (fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>).filter.value;
+    const commentStatusFilters = fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
+    const commentOpenParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0].value;
+    const commentClosedParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_CLOSED)[0].value;
+    const openedOnOrAfterParam = (fomFilters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>).filter.value?.toISOString().substr(0, 10);
 
-  /**
-   * Hides the snackbar.
-   *
-   * @memberof ProjectsComponent
-   */
-  public hideSnackbar() {
-    // cancel any pending open
-    this.showSnackbar.cancel();
-
-    // if snackbar is showing, dismiss it
-    // NB: use debounce to delay snackbar dismissal so it is visible for at least 500ms
-    _.debounce(() => {
-      if (this.snackbarRef) {
-        this.snackbarRef.dismiss();
-        this.snackbarRef = null;
-      }
-    }, 500)();
-  }
-
-  fetchProjects(filters: IFiltersType) {
     this.loading = true;
-    const commentStatusNotSelected = !filters.cmtStatus || filters.cmtStatus.length == 0;
-    // If both 'Commenting Open'/'Commenting Closed' not selected from user, set back to issue default 'true' values.
-    // This is the behaviour in old applications.
     this.projectService
         .projectControllerFindPublicSummary(
-          commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_OPEN').toString(), 
-          commentStatusNotSelected? 'true': _.includes(filters.cmtStatus,'COMMENT_CLOSED').toString(), 
-          filters.fcName, filters.pdOnAfter?.toISOString().substr(0, 10))
+          commentOpenParam.toString(), 
+          commentClosedParam.toString(), 
+          forestClientNameParam, 
+          openedOnOrAfterParam)
         .subscribe((results) => {
           this.projectsSummary = results;
           this.totalNumber = results.length;
           this.loading = false;
-        },
-        () => this.loading = false,
-        () => this.loading = false);
+          },
+          () => this.loading = false,
+          () => this.loading = false
+        );
   }
 
   /**
@@ -236,20 +190,14 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   public handleFindUpdate(updateEvent: IUpdateEvent) {
-    this.filters = { ...emptyFilters, ...updateEvent.filters };
 
     if (updateEvent.search) {
-      // clear the other panels filters/data
-
       this.detailsPanel.clearAllFilters();
-      this.detailsPanel.saveQueryParameters();
 
       if (this.appmap) {
         this.appmap.unhighlightApplications();
       }
     }
-
-    this.fetchProjects(this.filters);
 
     if (updateEvent.resetMap) {
       this.appmap.resetView(false);
@@ -258,15 +206,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     if (updateEvent.hidePanel) {
       this.closeSidePanel();
     }
-  }
-
-  /**
-   * Event handler called when map component view has changed.
-   *
-   * @memberof ProjectsComponent
-   */
-  public updateCoordinates(): void {
-    // this.getApplications(false); // total number is not affected
   }
 
   /**
@@ -291,28 +230,15 @@ export class ProjectsComponent implements OnInit, OnDestroy {
    * @memberof ProjectsComponent
    */
   public clearFilters() {
-    this.findPanel.clearAllFilters();
-    this.findPanel.saveQueryParameters();
-
-    this.filters = emptyFilters;
-
-    this.fetchProjects(null);
+    this.fomFiltersSvc.clearFilters();
   }
 
-  /**
-   * Returns true if at least 1 filter is selected/populated, false otherwise.
-   *
-   * @returns {boolean}
-   * @memberof ProjectsComponent
-   */
-  public areFiltersSet(): boolean {
-    return (
-      !!this.filters.fcName || 
-      !_.isEmpty(this.filters.cmtStatus) ||
-      !!this.filters.pdOnAfter
-    );
+  public toggleFilter(filter: IMultiFilterFields<boolean>) {
+    if (this.loading) return;
+    filter.value = !filter.value;
+    this.fomFiltersSvc.updateFilterSelection(FOM_FILTER_NAME.COMMENT_STATUS, this.commentStatusFilters);
   }
-
+  
   /**
    * On component destroy.
    *
@@ -323,10 +249,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.splashModal.dismiss();
     }
 
-    if (this.snackbarRef) {
-      this.hideSnackbar();
-    }
-    
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }

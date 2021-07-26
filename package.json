@@ -60,6 +60,7 @@
     "@angular/platform-browser": "^11.2.14",
     "@angular/platform-browser-dynamic": "^11.2.14",
     "@angular/router": "^11.2.14",
+    "@angular/localize": "^11.0.0",
     "@nestjs-modules/mailer": "^1.6.0",
     "@nestjs/common": "^7.6.15",
     "@nestjs/config": "^0.6.3",
