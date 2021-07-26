@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
 import { InteractionResponse } from '@api-client';
-import { ConfigService } from '../../../../core/services/config.service';
+import { ConfigService } from '@utility/services/config.service';
 
 @Component({
   selector: 'app-interactions-summary',
@@ -28,6 +28,6 @@ export class InteractionsSummaryComponent implements OnInit {
   }
 
   getAttachmentUrl(id: number): string {
-    return id ? this.configSvc.getApiBasePath()+ '/api/attachment/file/' + id : '';
+    return this.configSvc.getAttachmentUrl(id);
   }
 }

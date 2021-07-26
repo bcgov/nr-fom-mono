@@ -14,7 +14,7 @@ export interface AppConfigService extends ReturnType<typeof configuration> {}
 export class AppConfigService {
   constructor(private configService: ConfigService) {}
 
-  get(key: keyof typeof configuration) {
+  get(key: string) {
     return this.configService.get('app.' + key);
   }
 
@@ -24,5 +24,18 @@ export class AppConfigService {
 
   get isDev() {
     return this.env === 'development';
+  }
+
+  getPort() {
+    return this.get('port') || 3333;
+  }
+
+  getGlobalPrefix() {
+    const instanceUrlPrefix = process.env.INSTANCE_URL_PREFIX;
+    if (instanceUrlPrefix && instanceUrlPrefix.length > 0) {
+      return instanceUrlPrefix + '/api';
+    } else {
+      return 'api';
+    }
   }
 }

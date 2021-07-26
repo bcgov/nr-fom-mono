@@ -10,6 +10,7 @@ import * as ormConfigTest from './migrations/ormconfig-migration-test';
 import { ProjectController } from './app/modules/project/project.controller';
 import helmet = require('helmet');
 import { ProjectService } from '@api-modules/project/project.service';
+import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -42,8 +43,8 @@ async function bootstrap():Promise<INestApplication> {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
   }));
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  const appConfig:AppConfigService = app.get('AppConfigService');
+  app.setGlobalPrefix(appConfig.getGlobalPrefix());
 
   if (process.env.BYPASS_CORS) {
     // For local development only, leave env var undefined within OpenShift deployments.
@@ -82,13 +83,12 @@ async function bootstrap():Promise<INestApplication> {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  const appConfig = app.get('AppConfigService');
-  const port = appConfig.get('port') || 3333;
+  const port = appConfig.getPort();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup(appConfig.getGlobalPrefix(), app, document);
 
   await app.listen(port, () => {
-    app.get(Logger).log('Listening at http://localhost:' + port + '/' + globalPrefix);
+    app.get(Logger).log('Listening at http://localhost:' + port + '/' + appConfig.getGlobalPrefix());
   });
 
   return app;
@@ -114,7 +114,8 @@ async function postStartup(app: INestApplication) {
 
     // Preload cache for public summary default data.
     logger.log("Starting public summary cache pre-load...");
-    await app.get(ProjectController).findPublicSummary();
+    await app.get(ProjectController).findPublicSummary('true', 'false'); // Comment Open Only (the default)
+    await app.get(ProjectController).findPublicSummary(); // Comment Open & Closed (high volume and slow)
 
     logger.log("Done postStartup.");
   } catch (error) {

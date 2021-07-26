@@ -1,1 +1,0 @@
-window.localStorage.setItem('fom_environment_name', 'local');

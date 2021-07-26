@@ -29,9 +29,16 @@ const MyDeployer = class extends BasicDeployer{
       'HOSTNAME': config.hostname,
     }
 
+    let apiBasePath = '/api';
+    // if (config.instanceUrlPrefix && config.instanceUrlPrefix.length > 0) {
+    //   apiBasePath = '/' + config.instanceUrlPrefix + apiBasePath;
+    // }
+    const apiBaseUrl = "https://" + config.hostname + apiBasePath;
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
         ...appParams,
+        'API_BASE_PATH': apiBasePath,
         'INSTANCE_URL_PREFIX': config.instanceUrlPrefix,
         'OBJECT_STORAGE_URL': config.objectStorageUrl,
         'KEYCLOAK_URL': config.keycloakUrl,
@@ -54,6 +61,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-deploy.yml`, {
       'param':{
         ...appParams,
+        'API_BASE_URL': apiBaseUrl,
         'REPLICA_COUNT': config.publicReplicaCount, 
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
@@ -62,6 +70,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/admin/fom-admin-deploy.yml`, {
       'param':{
         ...appParams,
+        'API_BASE_URL': apiBaseUrl,
         'REPLICA_COUNT': config.adminReplicaCount, 
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
