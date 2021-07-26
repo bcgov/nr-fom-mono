@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { MatSnackBarRef, SimpleSnackBar, MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Router, UrlTree } from '@angular/router';
 
@@ -58,7 +58,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   private splashModal: NgbModalRef = null;
-  private snackbarRef: MatSnackBarRef<SimpleSnackBar> = null;
 
   // necessary to allow referencing the enum in the html
   public Panel = Panel;
@@ -160,36 +159,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Show snackbar
-   *
-   * Note: use debounce to delay snackbar opening so we can cancel it preemptively if loading takes less than 500ms
-   *
-   * @memberof ProjectsComponent
-   */
-  public showSnackbar = _.debounce(() => {
-    this.snackbarRef = this.snackbar.open('Loading applications ...');
-  }, 500);
-
-  /**
-   * Hides the snackbar.
-   *
-   * @memberof ProjectsComponent
-   */
-  public hideSnackbar() {
-    // cancel any pending open
-    this.showSnackbar.cancel();
-
-    // if snackbar is showing, dismiss it
-    // NB: use debounce to delay snackbar dismissal so it is visible for at least 500ms
-    _.debounce(() => {
-      if (this.snackbarRef) {
-        this.snackbarRef.dismiss();
-        this.snackbarRef = null;
-      }
-    }, 500)();
-  }
-
   fetchFOMs(fomFilters: Map<string, IFilter | IMultiFilter>) {
     const forestClientNameParam = (fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>).filter.value;
     const commentStatusFilters = fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
@@ -280,10 +249,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.splashModal.dismiss();
     }
 
-    if (this.snackbarRef) {
-      this.hideSnackbar();
-    }
-    
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
   }
