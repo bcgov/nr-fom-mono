@@ -1,4 +1,4 @@
-import { DELIMITER } from '@public-core/utils/constants/constantUtils';
+import { DELIMITER } from '@public-core/utils/constants/appUtils';
 import * as hash from 'object-hash';
 
 /**

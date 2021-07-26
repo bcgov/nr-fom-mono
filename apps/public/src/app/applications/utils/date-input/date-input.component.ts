@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from
 import { NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
-  selector: 'app-date-input',
+  selector: 'fom-date-input',
   templateUrl: './date-input.component.html',
   styleUrls: ['./date-input.component.scss']
 })

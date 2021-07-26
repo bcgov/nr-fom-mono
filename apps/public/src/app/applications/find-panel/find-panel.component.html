@@ -23,11 +23,11 @@
           <div class="date-range__input">
             <label class="sr-only">Start Date</label>
             <div style="width: 15rem">
-              <app-date-input class="gtm-filter-published-from"
+              <fom-date-input class="gtm-filter-published-from"
                 [(date)]="postedOnAfterFilter.filter.value"
                 [minDate]="minDate"
                 [maxDate]="maxDate">
-              </app-date-input>
+              </fom-date-input>
             </div>
           </div>
         </div>
@@ -37,9 +37,11 @@
         <label class="control-label">Commenting Status</label>
         <div class="select-badge-group" *ngIf="commentStatusFilters">
           <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters">
-            <input id="{{filter.queryParam}}" type="checkbox" name="{{filter.queryParam}}" 
-                   [checked]="filter.value" (click)="toggleFilter(filter)"/>
-            <label for="{{filter.queryParam}}">{{filter.displayString}}</label>
+            <input id="find-{{filter.queryParam}}" type="checkbox" name="{{filter.queryParam}}" 
+                   [checked]="filter.value" 
+                   (click)="toggleFilter(filter)"
+                   (change)="verifyStatus()"/>
+            <label for="find-{{filter.queryParam}}">{{filter.displayString}}</label>
           </div>
         </div>
       </div>
