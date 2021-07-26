@@ -271,15 +271,17 @@ module.exports = class testdata1616434875304 {
         ;
 
         insert into app_fom.attachment(attachment_id, project_id, attachment_type_code, file_name, create_user) values
-        (10, 1, 'SUPPORTING_DOC', 'file1.txt', 'testdata')
-        , (20, 2, 'PUBLIC_NOTICE', 'notice.txt', 'testdata')
-        , (40, 4, 'PUBLIC_NOTICE', 'notice.txt', 'testdata')
-        , (41, 4, 'SUPPORTING_DOC', 'doc1.txt', 'testdata')
-        , (42, 4, 'SUPPORTING_DOC', 'doc2.txt', 'testdata')
-        , (43, 4, 'INTERACTION', 'interaction1.txt', 'testdata')
-        , (44, 4, 'INTERACTION', 'interaction2.txt', 'testdata')
+        (10, 1, 'SUPPORTING_DOC', 'contents-not-stored-file1.txt', 'testdata')
+        , (20, 2, 'PUBLIC_NOTICE', 'contents-not-stored-notice.txt', 'testdata')
+        , (40, 4, 'PUBLIC_NOTICE', 'contents-not-stored-notice.txt', 'testdata')
+        , (41, 4, 'SUPPORTING_DOC', 'contents-not-stored-doc1.txt', 'testdata')
+        , (42, 4, 'SUPPORTING_DOC', 'contents-not-stored-doc2.txt', 'testdata')
+        , (43, 4, 'INTERACTION', 'contents-not-stored-interaction1.txt', 'testdata')
+        , (44, 4, 'INTERACTION', 'contents-not-stored-interaction2.txt', 'testdata')
         ;
-        
+
+        -- Currently we don't populate the attachment file contents in the object storage.
+
         -- app_fom.interaction - inserts
         INSERT INTO app_fom.interaction(
             interaction_id, project_id, attachment_id, stakeholder, communication_date, communication_details, revision_count, create_user) VALUES
