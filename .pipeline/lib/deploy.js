@@ -30,9 +30,9 @@ const MyDeployer = class extends BasicDeployer{
     }
 
     let apiBasePath = '/api';
-    // if (config.instanceUrlPrefix && config.instanceUrlPrefix.length > 0) {
-    //   apiBasePath = '/' + config.instanceUrlPrefix + apiBasePath;
-    // }
+    if (config.instanceUrlPrefix && config.instanceUrlPrefix.length > 0) {
+      apiBasePath = '/' + config.instanceUrlPrefix + apiBasePath;
+    }
     const apiBaseUrl = "https://" + config.hostname + apiBasePath;
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
