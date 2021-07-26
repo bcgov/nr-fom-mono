@@ -10,7 +10,6 @@ import { User } from 'apps/api/src/core/security/user';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
 import { minioClient } from 'apps/api/src/minio';
-import { bucket } from 'apps/api/src/minio';
 import { Stream } from 'node:stream';
 
 @Injectable()
@@ -51,20 +50,15 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
         }
         await this.repository.delete(founds[0].id);
         const objectName = this.createObjectUrl(founds[0].projectId, founds[0].id, founds[0].fileName);
-        await this.deleteObject(bucket, objectName);
+        await this.deleteObject(process.env.OBJECT_STORAGE_BUCKET, objectName);
 
         // Now that the public notice is deleted, we can proceed with the regular creation.
       }
     }
 
     // Starting changes for Object Store
-    const contentFile: Buffer = request.fileContents;
-
-    request.fileContents = Buffer.from('hello world', 'utf8');
     const created = super.create(request, user);
     const primaryKey = (await created).id;
-
-    request.fileContents = contentFile;
     this.uploadFileObjectStorage(request, primaryKey);
 
     return created;
@@ -74,7 +68,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
     const objectName = this.createObjectUrl(request.projectId, primaryKey, request.fileName);
 
-    minioClient.putObject(bucket, objectName, request.fileContents, function(error, etag) {
+    minioClient.putObject(process.env.OBJECT_STORAGE_BUCKET, objectName, request.fileContents, function(error, etag) {
       if(error) {
           return console.log(error);
       }
@@ -147,7 +141,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
     // Works, but fileContents being treated as a Buffer...
     const entity:Attachment = await this.repository.findOne(id, this.addCommonRelationsToFindOptions(
-      { select: [ 'id', 'projectId', 'fileContents', 'fileName', 'attachmentType' ] }));
+      { select: [ 'id', 'projectId', 'fileName', 'attachmentType' ] }));
 
     if (!entity) {
       throw new BadRequestException("No entity for the specified id.");
@@ -164,7 +158,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const objectName = this.createObjectUrl(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName )
 
     //Reading the object from Object Storage
-    const dataStream  = await this.getObjectStream(bucket, objectName );
+    const dataStream  = await this.getObjectStream(process.env.OBJECT_STORAGE_BUCKET, objectName );
 
     //Reading the content of the object from Object Storage
     const finalBuffer = await this.stream2buffer(dataStream);
@@ -176,7 +170,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   createObjectUrl(projectId: number, attachmentId: number, fileName: string): string {
-    if(process.env.INSTANCE_URL_PREFIX) {
+    if(process.env.INSTANCE_URL_PREFIX && process.env.INSTANCE_URL_PREFIX.length > 0) {
         return process.env.INSTANCE_URL_PREFIX + '/' +
         projectId + '/' + attachmentId + '/' + fileName;
     }

@@ -270,14 +270,14 @@ module.exports = class testdata1616434875304 {
         , (199, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata', 'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         ;
 
-        insert into app_fom.attachment(attachment_id, project_id, attachment_type_code, file_name, file_contents, create_user) values
-        (10, 1, 'SUPPORTING_DOC', 'file1.txt', 'file contents', 'testdata')
-        , (20, 2, 'PUBLIC_NOTICE', 'notice.txt', 'file contents here', 'testdata')
-        , (40, 4, 'PUBLIC_NOTICE', 'notice.txt', 'file contents here', 'testdata')
-        , (41, 4, 'SUPPORTING_DOC', 'doc1.txt', 'file contents here', 'testdata')
-        , (42, 4, 'SUPPORTING_DOC', 'doc2.txt', 'file contents here', 'testdata')
-        , (43, 4, 'INTERACTION', 'interaction1.txt', 'file contents here', 'testdata')
-        , (44, 4, 'INTERACTION', 'interaction2.txt', 'file contents here', 'testdata')
+        insert into app_fom.attachment(attachment_id, project_id, attachment_type_code, file_name, create_user) values
+        (10, 1, 'SUPPORTING_DOC', 'file1.txt', 'testdata')
+        , (20, 2, 'PUBLIC_NOTICE', 'notice.txt', 'testdata')
+        , (40, 4, 'PUBLIC_NOTICE', 'notice.txt', 'testdata')
+        , (41, 4, 'SUPPORTING_DOC', 'doc1.txt', 'testdata')
+        , (42, 4, 'SUPPORTING_DOC', 'doc2.txt', 'testdata')
+        , (43, 4, 'INTERACTION', 'interaction1.txt', 'testdata')
+        , (44, 4, 'INTERACTION', 'interaction2.txt', 'testdata')
         ;
         
         -- app_fom.interaction - inserts
