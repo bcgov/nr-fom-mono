@@ -8,7 +8,6 @@ import { Panel } from '../utils/panel.enum';
 import { IUpdateEvent } from '../projects.component';
 import * as _ from 'lodash';
 import { WorkflowStateCode } from '@api-client';
-import { DELIMITER } from '@public-core/utils/constants/appUtils';
 import * as moment from 'moment';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 
@@ -103,24 +102,6 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   }
 
   /**
-   * Gets any query parameters from the URL and updates the local filters accordingly.
-   *
-   * @memberof FindPanelComponent
-   */
-  public loadQueryParameters(): void {
-    this.forestClientNameFilter.filter.value = this.urlSvc.getQueryParam(
-      this.forestClientNameFilter.filter.queryParam
-    );
-
-    const commentStatusQueryParams = (this.urlSvc.getQueryParam(this.commentStatusFilters.queryParamsKey) || '').split(DELIMITER.PIPE);
-    const csParamsNotPresent = !commentStatusQueryParams || commentStatusQueryParams.length == 0 || commentStatusQueryParams[0] == '';
-    this.commentStatusFilters.filters.forEach(filter => {
-      filter.value = filter.queryParam == 'COMMENT_OPEN'? (csParamsNotPresent? true: commentStatusQueryParams.includes(filter.queryParam)) 
-                                                        : (csParamsNotPresent? false: commentStatusQueryParams.includes(filter.queryParam)) 
-    });
-  }
-
-  /**
    * Saves the currently selected filters to the url and emits them to the parent.
    *
    * @memberof FindPanelComponent
@@ -138,26 +119,6 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   public applyAllFiltersMobile() {
     this.fomFiltersSvc.updateFiltersSelection(this.fomFilters);
     this.emitUpdate({ search: true, resetMap: false, hidePanel: true });
-  }
-
-  /**
-   * Save the currently selected filters to the url.
-   *
-   * @memberof FindPanelComponent
-   */
-  public saveQueryParameters() {
-    this.urlSvc.setQueryParam(
-      this.forestClientNameFilter.filter.queryParam,
-      this.forestClientNameFilter.filter.value
-    );
-
-    this.urlSvc.setQueryParam(this.commentStatusFilters.queryParamsKey, 
-                              this.commentStatusFilters.getQueryParamsString());
-    
-    this.urlSvc.setQueryParam(
-      this.postedOnAfterFilter.filter.queryParam,
-      this.postedOnAfterFilter.filter.value && moment(this.postedOnAfterFilter.filter.value).format('YYYY-MM-DD')
-    );
   }
 
   /**
