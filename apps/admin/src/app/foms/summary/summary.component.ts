@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AttachmentResponse, AttachmentService, InteractionResponse, InteractionService, 
         ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService, 
         SpatialFeaturePublicResponse, SpatialFeatureService } from '@api-client';
-import { ConfigService } from '../../../core/services/config.service';
+import { ConfigService } from '@utility/services/config.service';
 import * as _ from 'lodash';
 
 @Component({
@@ -107,7 +107,7 @@ export class SummaryComponent implements OnInit {
   }
 
   getAttachmentUrl(id: number): string {
-    return id ? this.configSvc.getApiBasePath()+ '/api/attachment/file/' + id : '';
+    return this.configSvc.getAttachmentUrl(id);
   }
 
 }

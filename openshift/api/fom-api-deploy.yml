@@ -32,7 +32,19 @@ parameters:
     name: KEYCLOAK_URL
     value: 'https://dev.oidc.gov.bc.ca/auth'
     required: true
+  - description: URL of Object Storage Service.
+    displayName: Object Storage URL
+    name: OBJECT_STORAGE_URL
+    required: true
   # Optional parmaetrs with defaults
+  - description: Unique identifier for the application instance in an environment to use as a URL prefix to support having multiple on-demand app instances.
+    displayName: Application Instance URL Prefix
+    name: INSTANCE_URL_PREFIX
+    value: ''
+  - description: Base path defining the URL that the API component REST API is available at.
+    displayName: API Base Path
+    name: API_BASE_PATH
+    value: '/api'
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -110,6 +122,7 @@ objects:
       # Store settings in config map to allow them to be changed.
       keycloak-url: ${KEYCLOAK_URL}
       smtp-server-url: ${SMTP_SERVER_URL}
+      object-storage-url: ${OBJECT_STORAGE_URL}
     metadata:
       name: ${NAME}${SUFFIX}
 
@@ -199,6 +212,13 @@ objects:
                   value: '${PORT}'
                 - name: KEYCLOAK_ENABLED
                   value: ${KEYCLOAK_ENABLED}
+                - name: INSTANCE_URL_PREFIX
+                  value: ${INSTANCE_URL_PREFIX}
+                - name: OBJECT_STORAGE_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: object-storage-url
+                      name: ${NAME}${SUFFIX}
                 - name: KEYCLOAK_URL
                   valueFrom:
                     configMapKeyRef:
@@ -214,6 +234,21 @@ objects:
                     configMapKeyRef:
                       key: hostname
                       name: ${NAME}${SUFFIX}
+                - name: OBJECT_STORAGE_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      key: bucket
+                      name: fom-object-storage-${ENV}
+                - name: OBJECT_STORAGE_ACCESS_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: access_id
+                      name: fom-object-storage-${ENV}
+                - name: OBJECT_STORAGE_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: secret
+                      name: fom-object-storage-${ENV}
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}
@@ -224,7 +259,7 @@ objects:
               # Have longer delay at startup to allow for database migrations to take place.
               startupProbe:
                 httpGet:
-                  path: /api
+                  path: /health-check
                   port: ${{PORT}}
                   scheme: HTTP
                 initialDelaySeconds: 30
@@ -235,7 +270,7 @@ objects:
               # Don't need a liveness probe because node is executed as the root (only) process in the container, if it crashes the container will get restarted.
               readinessProbe:
                 httpGet:
-                  path: /api
+                  path: /health-check
                   port: ${{PORT}}
                   scheme: HTTP
                 timeoutSeconds: 15
@@ -280,7 +315,7 @@ objects:
         haproxy.router.openshift.io/timeout: "120s"
     spec:
       host: ${HOSTNAME}
-      path: /api
+      path: ${API_BASE_PATH}
       to:
         kind: Service
         name: ${NAME}${SUFFIX}

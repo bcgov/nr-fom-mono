@@ -4,7 +4,8 @@
     <a class="navbar-brand" title="Forest Operations Map" routerLink="/home/true" style="margin-right: 0;">
       <span class="navbar-brand__title">Forest Operations Map</span>
     </a>
-    <span class="navbar-environment" *ngIf="api.env !== 'prod'">{{api.env}}</span>
+    <span class="navbar-environment" *ngIf="environmentDisplay">{{environmentDisplay}}</span>
+
     <button class="navbar-toggler" type="button" title="Toggle Main Navigation"
       aria-controls="navbarNav" 
       aria-expanded="false" 

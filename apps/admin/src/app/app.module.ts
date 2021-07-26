@@ -21,7 +21,8 @@ import {FooterComponent} from './footer/footer.component';
 import {CanDeactivateGuard} from '../core/services/can-deactivate-guard.service';
 import {KeycloakService} from '../core/services/keycloak.service';
 
-import {ConfigService, retrieveApiBasePath} from '../core/services/config.service';
+import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
+
 import {TokenInterceptor} from '../core/utils/token-interceptor';
 import {NotAuthorizedComponent} from './not-authorized/not-authorized.component';
 import {ApiModule, Configuration} from '@api-client';
@@ -29,8 +30,6 @@ import {ErrorInterceptor} from '../core/interceptors/http-error.interceptor';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {RxReactiveFormsModule} from '@rxweb/reactive-form-validators';
-// import {LeafletModule} from '@asymmetrik/ngx-leaflet';
-import {throwError} from 'rxjs';
 
 export function kcFactory(keycloakService: KeycloakService) {
   return () => keycloakService.init();

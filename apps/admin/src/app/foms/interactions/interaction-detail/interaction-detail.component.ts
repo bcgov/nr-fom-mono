@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { AttachmentResponse, AttachmentService, InteractionResponse } from '@api-client';
-import { ConfigService } from '../../../../core/services/config.service';
+import { ConfigService } from '@utility/services/config.service';
 import { InteractionDetailForm } from './interaction-detail.form';
 
 @Component({
@@ -68,7 +68,7 @@ export class InteractionDetailComponent implements OnInit {
   }
 
   getAttachmentUrl(id: number): string {
-    return id ? this.configSvc.getApiBasePath()+ '/api/attachment/file/' + id : '';
+    return this.configSvc.getAttachmentUrl(id);
   }
 
   isValid(controlName: string): boolean {

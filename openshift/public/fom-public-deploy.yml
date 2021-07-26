@@ -28,6 +28,10 @@ parameters:
     displayName: API Image Version
     name: IMAGE_STREAM_VERSION
     required: true
+  - description: Base URL for API component
+    displayName: API Base URL
+    name: API_BASE_URL
+    required: true
   # Optional parameters with defaults
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
@@ -80,8 +84,9 @@ objects:
   - kind: ConfigMap
     apiVersion: v1
     data:
-      environmentName.js: |-
+      env.js: |-
         window.localStorage.setItem('fom_environment_name', '${ENV}');
+        window.localStorage.setItem('fom_api_base_url', '${API_BASE_URL}');
     metadata:
       name: ${NAME}${SUFFIX}
 
@@ -161,7 +166,7 @@ objects:
               terminationMessagePolicy: File
               imagePullPolicy: Always
               volumeMounts:
-                - mountPath: /app/nr-fom-public/dist/assets/env
+                - mountPath: /app/nr-fom-public/dist/public/assets/env
                   name: env-config
           restartPolicy: Always
           terminationGracePeriodSeconds: 30

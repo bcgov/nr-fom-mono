@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { User } from './user';
 import * as _ from 'lodash';
 import { JwtHelperService } from "@auth0/angular-jwt";
-import { ConfigService } from './config.service';
+import { ConfigService } from '@utility/services/config.service';
 import { HttpClient } from "@angular/common/http";
 import { getFakeUser } from './mock-user';
 
