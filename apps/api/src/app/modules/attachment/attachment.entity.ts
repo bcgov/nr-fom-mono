@@ -17,7 +17,6 @@ export class Attachment extends ApiBaseEntity<Attachment> {
 
   // Might seem weird to use a string rather than an int array or buffer, but the latter two didn't work by default, 
   // and all sorts of binary files worked using string
-  @Column({ name: 'file_contents', select: false}) // By default don't return file contents.
   fileContents: string;  
 
   @ManyToOne(() => Project, { eager: true })
