@@ -59,6 +59,7 @@ const MyDeployer = class extends BasicDeployer{
       'param':{
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_VERSION': config.tag,
+        'ENV': config.phase,
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
     }));

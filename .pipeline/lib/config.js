@@ -77,7 +77,7 @@ module.exports = class {
     Object.keys(propertiesByPhase).forEach((properyName) => {
       const property = propertiesByPhase[properyName];
       phaseNames.forEach((phaseName) => {
-        phases[phaseName][properyName] = property[phaseName] || property['default'] || 'n/a';
+        phases[phaseName][properyName] = property[phaseName] || property['default'] || '';
       });
     });
 
