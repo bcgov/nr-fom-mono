@@ -5,8 +5,8 @@
   "scripts": {
     "start:api": "nest start --path apps/api/tsconfig.json --watch",
     "start:batch": "nest start --path apps/api/tsconfig.json -- -batch",
-    "start:public": "nx run public:serve --port=4200",
-    "start:admin": "nx run admin:serve --port=4300",
+    "start:public": "nx run public:serve --port=4300",
+    "start:admin": "nx run admin:serve --port=4200",
     "build:api": "nx run api:build",
     "build:public": "nx run public:build",
     "build:admin": "nx run admin:build",
