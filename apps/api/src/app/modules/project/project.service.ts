@@ -361,6 +361,20 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         COMMENTING_OPEN_DATE: must be at least one day after publish is pushed.`);
       }
 
+      // Required: COMMENTING_CLOSED_DATE
+      if (isNil(entity.commentingClosedDate) || !dayjs(entity.commentingClosedDate, this.DATE_FORMAT).isValid()) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Missing COMMENTING_CLOSED_DATE.`);
+      }
+
+      // Required: COMMENTING_CLOSED_DATE at least 30 days after commenting open
+      const commentingClosedDate = dayjs(entity.commentingClosedDate).startOf('day');
+      const openClosedDatesDiff = commentingClosedDate.diff(commentingOpenDate, "day");
+      if (openClosedDatesDiff < 30) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        COMMENTING_CLOSED_DATE: must be at least 30 days after COMMENTING_OPEN_DATE.`);
+      }
+
       // Required proposed submission
       const submissions = entity.submissions;
       if (!submissions || submissions.length == 0) {

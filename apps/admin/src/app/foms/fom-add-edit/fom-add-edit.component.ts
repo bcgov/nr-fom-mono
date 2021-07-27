@@ -121,9 +121,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.route.url.pipe(takeUntil(this.ngUnsubscribe), switchMap(url => {
         this.state = url[1].path === 'create' ? 'create' : 'edit';
-        return this.isCreate ? of(new FomAddEditForm()) : this.projectSvc.projectControllerFindOne(this.route.snapshot.params.appId);
+        return this.isCreate ? of({}) : this.projectSvc.projectControllerFindOne(this.route.snapshot.params.appId);
       }
     )).subscribe((data: ProjectResponse) => {
+
       if (!this.isCreate) {
         this.originalProjectResponse = data as ProjectResponse;
         if (data.district) {
@@ -149,15 +150,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       const form = new FomAddEditForm(data);
       this.fg = <RxFormGroup>this.formBuilder.formGroup(form);
 
-      // Converting commentingOpenDate date to 'yyyy-MM-dd'
-      let datePipe = this.datePipe.transform(this.fg.value.commentingOpenDate,'yyyy-MM-dd');
-      this.fg.get('commentingOpenDate').setValue(datePipe);
-      // Converting commentingClosedDate date to 'yyyy-MM-dd'
-      datePipe = this.datePipe.transform(this.fg.value.commentingClosedDate,'yyyy-MM-dd');
-      this.fg.get('commentingClosedDate').setValue(datePipe);
+      this.initializeFormFields(this.fg, this.user, this.originalProjectResponse);
 
-      this.fg.get('district').setValue(this.districtIdSelect);
-        if(data.description) {
+      if(data.description) {
         this.descriptionValue = data.description;
       }
 
@@ -285,7 +280,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isSubmitSaveClicked = true;
     if(!this.descriptionValue){
       this.fg.get('description').setErrors({incorrect: true})
-      console.log('saving desc: ', this.descriptionValue)
     }
     this.validate();
     const {id, forestClient, workflowState, ...rest} = this.originalProjectResponse;
@@ -422,5 +416,25 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.attachmentResolverSvc.isDeleteAttachmentAllowed(this.originalProjectResponse.workflowState.code, attachment);
   }
 
+  /**
+   * Additional setup for form control.
+   */
+  private initializeFormFields(fg: RxFormGroup, user: User, project: ProjectResponse) {
+    const workflowStateCode = project?.workflowState.code;
 
+    // Converting commentingOpenDate date to 'yyyy-MM-dd'
+    let datePipe = this.datePipe.transform(fg.value.commentingOpenDate,'yyyy-MM-dd');
+    fg.get('commentingOpenDate').setValue(datePipe);
+
+    // Commenting open can only be edited before publish.
+    if (workflowStateCode && WorkflowStateEnum.Initial != workflowStateCode) {
+      fg.get('commentingOpenDate').disable();
+    }
+
+    // Converting commentingClosedDate date to 'yyyy-MM-dd'
+    datePipe = this.datePipe.transform(fg.value.commentingClosedDate,'yyyy-MM-dd');
+    fg.get('commentingClosedDate').setValue(datePipe);
+
+    fg.get('district').setValue(project?.district.id);
+  }
 }
