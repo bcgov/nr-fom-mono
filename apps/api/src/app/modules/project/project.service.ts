@@ -153,6 +153,32 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return result.map(project => this.convertEntity(project));
   }
 
+
+  async delete(projectId: number, user?: User): Promise<void> {
+
+    try {
+      const attachments = await this.attachmentService.findByProjectIdNoInteraction(projectId, user);
+
+      //Deleting files from Object Storage
+      for(const attachmentResponse of attachments ) {
+
+        //TODO - Just leaving this here for now. It might be needed for deleting Interactions' attachments.....
+        // const attachmentFileResponse = await this.attachmentService.findFileDatabase(attachmentResponse.id, user);
+
+        //Creating the objectName for the Object Storage
+        const objectName = this.attachmentService.createObjectUrl(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName )
+
+        await this.attachmentService.deleteObject(process.env.OBJECT_STORAGE_BUCKET, objectName);
+      }
+
+      const deleted = super.delete(projectId, user);
+      return  deleted;
+
+    }catch(error){
+      throw new Error('Something went wrong when deleting the FOM');
+    }
+  }
+
   convertEntity(entity: Project): ProjectResponse {
     const response = new ProjectResponse();
     if (entity.commentingClosedDate) {
