@@ -32,7 +32,15 @@ parameters:
     name: KEYCLOAK_URL
     value: 'https://dev.oidc.gov.bc.ca/auth'
     required: true
+  - description: URL of Object Storage Service.
+    displayName: Object Storage URL
+    name: OBJECT_STORAGE_URL
+    required: true
   # Optional parmaetrs with defaults
+  - description: Unique identifier for the application instance in an environment to use as a URL prefix to support having multiple on-demand app instances. Value of '' or '/<prefix>'.
+    displayName: Application Instance URL Prefix
+    name: INSTANCE_URL_PREFIX
+    value: ''
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -89,10 +97,10 @@ parameters:
     name: DATA_ENCRYPTION_KEY
     from: "[a-zA-Z0-9]{16}"
     generate: expression
-  - description: SMTP Server Hostname for sending emails
-    displayName: SMTP Server
-    name: SMTP_SERVER
-    value: 'apps.smtp.gov.bc.ca'
+  - description: SMTP Server URL for sending emails
+    displayName: SMTP Server URL
+    name: SMTP_SERVER_URL
+    value: 'smtp://apps.smtp.gov.bc.ca/?port=25&ignoreTLS=true&secure=false'
 
 objects:
   - kind: ImageStream
@@ -101,7 +109,8 @@ objects:
       name: ${NAME}
     spec:
       lookupPolicy:
-        local: false
+        # Set to true to allow local image name resolution, without having to specify the internal OpenShift image registry and port.
+        local: true
     # ConfigMap - 
   - kind: ConfigMap
     apiVersion: v1
@@ -109,7 +118,8 @@ objects:
       hostname: ${HOSTNAME}
       # Store settings in config map to allow them to be changed.
       keycloak-url: ${KEYCLOAK_URL}
-      smtp-server: ${SMTP_SERVER}
+      smtp-server-url: ${SMTP_SERVER_URL}
+      object-storage-url: ${OBJECT_STORAGE_URL}
     metadata:
       name: ${NAME}${SUFFIX}
 
@@ -199,6 +209,13 @@ objects:
                   value: '${PORT}'
                 - name: KEYCLOAK_ENABLED
                   value: ${KEYCLOAK_ENABLED}
+                - name: INSTANCE_URL_PREFIX
+                  value: ${INSTANCE_URL_PREFIX}
+                - name: OBJECT_STORAGE_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: object-storage-url
+                      name: ${NAME}${SUFFIX}
                 - name: KEYCLOAK_URL
                   valueFrom:
                     configMapKeyRef:
@@ -207,13 +224,28 @@ objects:
                 - name: SMTP_SERVER
                   valueFrom:
                     configMapKeyRef:
-                      key: smtp-server
+                      key: smtp-server-url
                       name: ${NAME}${SUFFIX}
                 - name: HOSTNAME
                   valueFrom:
                     configMapKeyRef:
                       key: hostname
                       name: ${NAME}${SUFFIX}
+                - name: OBJECT_STORAGE_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      key: bucket
+                      name: fom-object-storage-${ENV}
+                - name: OBJECT_STORAGE_ACCESS_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: access_id
+                      name: fom-object-storage-${ENV}
+                - name: OBJECT_STORAGE_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: secret
+                      name: fom-object-storage-${ENV}
               resources:
                 requests:
                   cpu: ${REQUEST_CPU}
@@ -224,7 +256,7 @@ objects:
               # Have longer delay at startup to allow for database migrations to take place.
               startupProbe:
                 httpGet:
-                  path: /api
+                  path: /health-check
                   port: ${{PORT}}
                   scheme: HTTP
                 initialDelaySeconds: 30
@@ -235,7 +267,7 @@ objects:
               # Don't need a liveness probe because node is executed as the root (only) process in the container, if it crashes the container will get restarted.
               readinessProbe:
                 httpGet:
-                  path: /api
+                  path: /health-check
                   port: ${{PORT}}
                   scheme: HTTP
                 timeoutSeconds: 15
@@ -280,7 +312,7 @@ objects:
         haproxy.router.openshift.io/timeout: "120s"
     spec:
       host: ${HOSTNAME}
-      path: /api
+      path: ${INSTANCE_URL_PREFIX}/api
       to:
         kind: Service
         name: ${NAME}${SUFFIX}

@@ -25,7 +25,7 @@ module.exports = class testdata1616434875304 {
         , (2, 'Fake name 2 a bit longer', 'Initial with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'INITIAL', '2021-03-03', null, 'testdata')
         , (3, 'Fake name 3 with lots of comments', 'Commenting open with submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 43, 1012, 'COMMENT_OPEN', '2021-04-01', '2022-04-01', 'testdata')
         , (4, 'Fake name 4 with lots of attachments & name 50 chars', 'Commenting closed with only proposed submission project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1016, 'COMMENT_CLOSED', '2021-02-01', '2021-03-01', 'testdata')
-        , (5, 'Fake name 5', 'Commenting closed with proposed + final submissions project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1016, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
+        , (5, 'Fake name 5', 'Commenting closed with proposed + final submissions project. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 56, 1012, 'COMMENT_CLOSED', '2021-03-01', '2021-03-31', 'testdata')
         , (6, 'Fake name 6', 'Finalized project with identical proposed/final shapes. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 46, 1021, 'FINALIZED', '2021-01-01', '2021-01-31', 'testdata')
         , (7, 'Fake name 7', 'Published project with proposed submission. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 46, 1021, 'PUBLISHED', '2022-04-01', '2022-05-01', 'testdata')
         , (8, 'Fake name 8', 'Expired project with proposed+final submissions. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt. ', 10, 18, 1026, 'EXPIRED', '2019-12-01', '2019-12-31', 'testdata')
@@ -270,16 +270,18 @@ module.exports = class testdata1616434875304 {
         , (199, 3, 'OVERALL', null, null, null, null, null, null, null, 'testdata', 'Anonymous feedback from someone. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.')
         ;
 
-        insert into app_fom.attachment(attachment_id, project_id, attachment_type_code, file_name, file_contents, create_user) values
-        (10, 1, 'SUPPORTING_DOC', 'file1.txt', 'file contents', 'testdata')
-        , (20, 2, 'PUBLIC_NOTICE', 'notice.txt', 'file contents here', 'testdata')
-        , (40, 4, 'PUBLIC_NOTICE', 'notice.txt', 'file contents here', 'testdata')
-        , (41, 4, 'SUPPORTING_DOC', 'doc1.txt', 'file contents here', 'testdata')
-        , (42, 4, 'SUPPORTING_DOC', 'doc2.txt', 'file contents here', 'testdata')
-        , (43, 4, 'INTERACTION', 'interaction1.txt', 'file contents here', 'testdata')
-        , (44, 4, 'INTERACTION', 'interaction2.txt', 'file contents here', 'testdata')
+        insert into app_fom.attachment(attachment_id, project_id, attachment_type_code, file_name, create_user) values
+        (10, 1, 'SUPPORTING_DOC', 'contents-not-stored-file1.txt', 'testdata')
+        , (20, 2, 'PUBLIC_NOTICE', 'contents-not-stored-notice.txt', 'testdata')
+        , (40, 4, 'PUBLIC_NOTICE', 'contents-not-stored-notice.txt', 'testdata')
+        , (41, 4, 'SUPPORTING_DOC', 'contents-not-stored-doc1.txt', 'testdata')
+        , (42, 4, 'SUPPORTING_DOC', 'contents-not-stored-doc2.txt', 'testdata')
+        , (43, 4, 'INTERACTION', 'contents-not-stored-interaction1.txt', 'testdata')
+        , (44, 4, 'INTERACTION', 'contents-not-stored-interaction2.txt', 'testdata')
         ;
-        
+
+        -- Currently we don't populate the attachment file contents in the object storage.
+
         -- app_fom.interaction - inserts
         INSERT INTO app_fom.interaction(
             interaction_id, project_id, attachment_id, stakeholder, communication_date, communication_details, revision_count, create_user) VALUES

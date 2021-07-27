@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiService } from '@public-core/services/api';
+import { ConfigService } from '@utility/services/config.service';
 
 @Component({
   selector: 'app-header',
@@ -8,5 +8,9 @@ import { ApiService } from '@public-core/services/api';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent {
-  constructor(public api: ApiService, public router: Router) {}
+  environmentDisplay: string;
+
+  constructor(private configService: ConfigService, public router: Router) {
+    this.environmentDisplay = configService.getEnvironmentDisplay();
+  }
 }

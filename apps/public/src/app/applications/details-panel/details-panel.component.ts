@@ -4,14 +4,14 @@ import { forkJoin, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 
 import { CommentModalComponent } from '../../comment-modal/comment-modal.component';
-import { ApiService } from '@public-core/services/api';
 import { UrlService } from '@public-core/services/url.service';
 import { Filter } from '../utils/filter';
 import { AttachmentResponse, AttachmentService, ProjectResponse, ProjectService, 
         SpatialFeaturePublicResponse, SpatialFeatureService, SpatialObjectCodeEnum, 
         WorkflowStateCode } from '@api-client';
 import * as _ from 'lodash';
-import { SpatialTypeMap } from '@public-core/utils/constants/constantUtils';
+import { SpatialTypeMap } from '@public-core/utils/constants/appUtils';
+import { ConfigService } from '@utility/services/config.service';
 
 /**
  * Details side panel.
@@ -39,7 +39,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
 
   constructor(
     public modalService: NgbModal,
-    public api: ApiService, // used in template
+    public configService: ConfigService, // used in template
     public urlService: UrlService,
     private projectService: ProjectService,
     private spatialFeatureService: SpatialFeatureService,

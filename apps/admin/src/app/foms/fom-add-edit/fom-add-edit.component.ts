@@ -78,10 +78,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.stateSvc.loading;
   }
 
-  // Access to XMLHttpRequest at 'localhost:3333/api/project' from origin 'http://localhost:4200' has been blocked by
-  // CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, chrome-extension,
-  // chrome-untrusted, https.
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,

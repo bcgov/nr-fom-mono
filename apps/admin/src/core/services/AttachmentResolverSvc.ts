@@ -1,11 +1,10 @@
+import {Injectable} from "@angular/core";
 import {
   AttachmentService,
   AttachmentResponse,
   WorkflowStateEnum,
-
 } from '@api-client';
-import {ConfigService} from "./config.service";
-import {Injectable} from "@angular/core";
+import {ConfigService} from "@utility/services/config.service";
 import {AttachmentTypeEnum} from "../models/attachmentTypeEnum";
 
 @Injectable({
@@ -28,7 +27,7 @@ export class AttachmentResolverSvc {
   }
 
   getAttachmentUrl(id: number): string {
-    return id ? this.configSvc.getApiBasePath()+ '/api/attachment/file/' + id : '';
+    return this.configSvc.getAttachmentUrl(id);
   }
 
   /*

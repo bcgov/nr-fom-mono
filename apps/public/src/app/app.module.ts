@@ -5,7 +5,6 @@ import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
-// import { LeafletModule } from '@asymmetrik/ngx-leaflet'; // TODO: Not needed?
 
 // modules
 import { SharedModule } from './shared.module';
@@ -26,31 +25,14 @@ import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
 
 // services
-import { ApiService } from '../core/services/api';
 import { UrlService } from '../core/services/url.service';
-
 import { ApiModule, Configuration } from '@api-client'; 
 import { ErrorInterceptor } from '../core/interceptors/http-error.interceptor';
-
-// In index.html we load a javascript file with environment-specific settings,
-// populated from mounted ConfigMap in OpenShift. This file sets window.localStorage settings
-// Locally, this will be empty and local defaults will be used.
-
-const envName = window.localStorage.getItem('fom_environment_name');
-// @ts-ignore
-const env = (envName == undefined || envName.length == 0) ? 'local' : envName;
-let apiBasePath;
-
-const { hostname } = window.location;
-if (hostname == 'localhost') {
-  apiBasePath = 'http://localhost:3333';
-} else {
-  // Scenario for single vanity URL
-  apiBasePath = 'https://' + hostname;
-}
+import { FOMFiltersService } from '@public-core/services/fomFilters.service';
+import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
 
 const apiConfig = new Configuration({
-  basePath: apiBasePath
+  basePath: retrieveApiBasePath()
 });
 
 @NgModule({
@@ -66,7 +48,6 @@ const apiConfig = new Configuration({
     ProjectsModule,
     AppRoutingModule,
     RxReactiveFormsModule,
-    // LeafletModule,
     MatSelectModule,
     MatFormFieldModule
   ],
@@ -82,8 +63,9 @@ const apiConfig = new Configuration({
     FooterComponent
   ],
   providers: [
-    ApiService,
+    ConfigService,
     UrlService,
+    FOMFiltersService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,

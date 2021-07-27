@@ -447,9 +447,7 @@ create table if not exists app_fom.attachment
 attachment_id serial not null primary key ,  
 project_id integer not null references app_fom.project(project_id) on delete cascade,  
 attachment_type_code varchar not null references app_fom.attachment_type_code(code),  
-file_name varchar not null  ,  
-file_contents bytea not null  , 
-
+file_name varchar not null  , 
 revision_count integer not null default 1 ,
 create_timestamp timestamptz not null default now() ,  
 create_user varchar not null ,  
@@ -466,7 +464,6 @@ comment on column app_fom.attachment.attachment_id is 'Primary key ';
 comment on column app_fom.attachment.project_id is 'Parent project ';
 comment on column app_fom.attachment.attachment_type_code is 'Specifies whether this attachment is for an interaction or for a public notice. ';
 comment on column app_fom.attachment.file_name is 'Name of the file. ';
-comment on column app_fom.attachment.file_contents is 'Binary contents of the file. In PostgresSQL hex format ';
 
 comment on column app_fom.attachment.create_timestamp is 'Time of creation of the record.';
 comment on column app_fom.attachment.create_user is 'The user id who created the record. For citizens creating comments, a common hardcoded user id will be used.';

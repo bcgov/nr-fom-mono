@@ -383,7 +383,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         Final Submission is required.`);
       }
       const final = submissions.filter(s => s.submissionTypeCode == SubmissionTypeCodeEnum.FINAL);
-      if (!final) {
+      if (!final || final.length == 0) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         Final Submission is required.`);
       }
