@@ -15,7 +15,7 @@
         </div>
         <div class="btn-container">
           <button class="btn btn-primary ml-1" type="button" title="Publish FOM"
-                  [disabled]="!verifyPublishingReady()"
+                  [disabled]="isPublishing"
                   [hidden]="!canViewPublishing()"
                   (click)="publishFOM()">
             <em class="spinner rotating" [hidden]="!isPublishing"></em>
