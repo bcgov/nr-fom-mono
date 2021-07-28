@@ -32,7 +32,6 @@ export class TokenInterceptor implements HttpInterceptor {
    * @memberof TokenInterceptor
    */
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
-
     if (!this.auth.initialized) {
       return next.handle(request);
     }
@@ -42,12 +41,14 @@ export class TokenInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(
       catchError(error => {
         if (error.status === 403) {
+          console.log("Caught 403, refreshing token");
           return this.refreshToken().pipe(
             switchMap(() => {
               request = this.addAuthHeader(request);
               return next.handle(request);
             }),
             catchError(err => {
+              console.log("Caught error after refresh, rethowing.");
               return throwError(err);
             })
           );
