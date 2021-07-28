@@ -71,14 +71,15 @@ const apiConfig = new Configuration({
       deps: [KeycloakService],
       multi: true
     },
+    // Order of these interceptors is critical - token interceptor must be last, after error interceptor.
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
+      useClass: ErrorInterceptor,
       multi: true
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: ErrorInterceptor,
+      useClass: TokenInterceptor,
       multi: true
     },
     ConfigService,

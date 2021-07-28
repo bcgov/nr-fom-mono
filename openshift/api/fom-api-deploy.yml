@@ -36,7 +36,7 @@ parameters:
     displayName: Object Storage URL
     name: OBJECT_STORAGE_URL
     required: true
-  # Optional parmaetrs with defaults
+  # Optional parameters with defaults
   - description: Unique identifier for the application instance in an environment to use as a URL prefix to support having multiple on-demand app instances. Value of '' or '/<prefix>'.
     displayName: Application Instance URL Prefix
     name: INSTANCE_URL_PREFIX

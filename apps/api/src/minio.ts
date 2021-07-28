@@ -1,8 +1,8 @@
 var Minio = require('minio')
 
-// Create the environment variables locally
+// Default URL if not defined to avoid startup errors in unit tests, batch, etc.
 export const minioClient =  new Minio.Client({
-    endPoint:  process.env.OBJECT_STORAGE_URL,
+    endPoint:  process.env.OBJECT_STORAGE_URL || 'nrs.objectstore.gov.bc.ca',
     accessKey: process.env.OBJECT_STORAGE_ACCESS_ID,
     secretKey: process.env.OBJECT_STORAGE_SECRET
 });

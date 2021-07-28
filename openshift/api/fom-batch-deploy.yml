@@ -18,6 +18,11 @@ parameters:
     displayName: Suffix
     name: SUFFIX
     required: true
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+    required: true
   # Optional parameters with defaults
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
@@ -94,6 +99,26 @@ objects:
                           secretKeyRef:
                             key: database-host
                             name: ${DB_NAME}${SUFFIX}
+                    - name: OBJECT_STORAGE_URL
+                      valueFrom:
+                        configMapKeyRef:
+                          key: object-storage-url
+                          name: fom-api${SUFFIX}
+                    - name: OBJECT_STORAGE_BUCKET
+                      valueFrom:
+                        secretKeyRef:
+                          key: bucket
+                          name: fom-object-storage-${ENV}
+                    - name: OBJECT_STORAGE_ACCESS_ID
+                      valueFrom:
+                        secretKeyRef:
+                          key: access_id
+                          name: fom-object-storage-${ENV}
+                    - name: OBJECT_STORAGE_SECRET
+                      valueFrom:
+                        secretKeyRef:
+                          key: secret
+                          name: fom-object-storage-${ENV}
                     # We don't supply the data encryption key because the batch process doesn't need to interact with encrypted data.
                     # We don't supply keycloak configuration because the batch process doesn't need to interact with Keycloak.
                   resources:

@@ -67,10 +67,11 @@ export class KeycloakService {
 
       // Try to get refresh tokens in the background
       this.keycloakAuth.onTokenExpired = () => {
+        console.log('KC token expired, refreshing...');
         this.keycloakAuth
           .updateToken()
           .then(refreshed => {
-            console.log('KC refreshed token?:', refreshed);
+            console.log('KC token refreshed?: ' + refreshed);
           })
           .catch(err => {
             console.log('KC refresh error:', err);
@@ -147,13 +148,15 @@ export class KeycloakService {
   refreshToken(): Observable<any> {
     return new Observable(observer => {
       this.keycloakAuth
-        .updateToken(30)
-        .success(refreshed => {
+        // if token expiries within X seconds refresh. -1 means always refresh. Wasn't working with value of 30, so changed to -1. This should be safe
+        // because this is only called by tokenInterceptor when getting a 403 from the backend.
+        .updateToken(-1) 
+        .then(refreshed => {
           console.log('KC refreshed token?:', refreshed);
           observer.next();
           observer.complete();
         })
-        .error(err => {
+        .catch(err => {
           console.log('KC refresh error:', err);
           observer.error();
         });
