@@ -24,7 +24,7 @@ function CreateApiStack {
     Write-Output "Create API stack for suffix $Suffix and env $Env ..."
 
     Write-Output "Creating database..."
-    oc process -f fom-db-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix | oc create -n a4b31c-$Env -f -
+    oc process -f ../db/fom-db-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix | oc create -n a4b31c-$Env -f -
 
     Write-Output "Delay creation of API to allow time for database to be created and start up..."
     Start-Sleep -s 60

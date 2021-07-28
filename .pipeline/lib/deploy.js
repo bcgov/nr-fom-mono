@@ -14,9 +14,10 @@ const MyDeployer = class extends BasicDeployer{
     // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public)
 
     // TODO: Need to evaluate ImageChangeTrigger from tools?  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-db-deploy.yml`, {
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
+        'IMAGE_STREAM_VERSION': config.tag,
         // TODO: Add more parameters for prod configuration (storage size, etc.)
       }
     }));

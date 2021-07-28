@@ -14,6 +14,10 @@ parameters:
     displayName: Suffix
     name: SUFFIX
     required: true
+  - description: Version of PostgreSQL image to be used.
+    displayName: Version of PostgreSQL Image
+    name: IMAGE_STREAM_VERSION
+    required: true
   # Optional parameters with defaults
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Volume Capacity
@@ -45,21 +49,6 @@ parameters:
     displayName: Name
     name: NAME
     value: fom-db
-  - description: OpenShift Project (namespace prefix).
-    displayName: Project
-    name: PROJECT
-    value: a4b31c
-  - description: The OpenShift ImageStream name.
-    displayName: IMAGE_STREAM_NAME
-    name: IMAGE_STREAM_NAME
-    value: postgis
-  - description: Version of PostgreSQL image to be used.
-    displayName: Version of PostgreSQL Image
-    name: IMAGE_STREAM_VERSION
-    required: true
-    # Cannot use alpine version because only debian supports running as any user under openshift as per https://registry.hub.docker.com/_/postgres/
-    value: 13-3.1
-
   - description: Name of the PostgreSQL database accessed.
     displayName: PostgreSQL Database Name
     name: POSTGRESQL_DATABASE
@@ -85,11 +74,19 @@ parameters:
     name: STORAGE_CLASS
     value: netapp-block-standard
 objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        # Set to true to allow local image name resolution, without having to specify the internal OpenShift image registry and port.
+        local: true
     # ConfigMap - Setup Data
   - kind: ConfigMap
     apiVersion: v1
     data:
-      # This is experimental, not yet used.
+      # This is experimental, not yet used. Better to move into the Dockerfile.
       setup.sql: |-
         -- SET application_name="container_setup";
         -- \c fom
@@ -228,8 +225,6 @@ objects:
                   name: db-data
                 - mountPath: /var/run/postgresql
                   name: db-run
-                - mountPath: /docker-entrypoint-initdb.d
-                  name: db-initconfig
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
@@ -238,18 +233,13 @@ objects:
                 claimName: ${NAME}${SUFFIX}
             - name: db-run
               emptyDir: {}
-            - name: db-initconfig
-              configMap:
-                name: ${NAME}${SUFFIX}
       triggers: 
-        - imageChangeParams:
+        - type: ImageChange
+          imageChangeParams:
             automatic: true
             containerNames:
               - postgresql
             from:
               kind: ImageStreamTag
-              namespace: ${PROJECT}-tools
-              name: ${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}
-            lastTriggeredImage: ""
-          type: ImageChange
+              name: ${NAME}:${IMAGE_STREAM_VERSION}
         - type: ConfigChange

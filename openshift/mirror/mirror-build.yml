@@ -33,11 +33,11 @@ objects:
     name: ${OCP_IMAGE_NAME}
   spec:
     lookupPolicy:
-      local: false
+      local: true
 - apiVersion: v1
   kind: ImageStreamTag
   lookupPolicy:
-    local: false
+    local: true
   metadata:
     name: ${OCP_IMAGE_NAME}:${IMAGE_VERSION}
   tag:

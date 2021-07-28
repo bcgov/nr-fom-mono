@@ -36,7 +36,7 @@ objects:
       name: ${NAME}
     spec:
       lookupPolicy:
-        local: false
+        local: true
   ### SECRET - webhook - scoped to entire application component, not to tag. Do not delete/recreate as this changes the secret.
   - kind: Secret
     apiVersion: v1

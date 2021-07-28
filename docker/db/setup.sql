@@ -1,0 +1,12 @@
+--  Sample setup script, not currently used
+-- Install into /docker-entrypoint-initdb.d
+        -- SET application_name="container_setup";
+        -- \c fom
+        -- create extension pg_stat_statements;
+        -- create extension pgaudit;
+        -- create extension plr;
+        -- create extension fuzzystrmatch;
+        -- create user "PG_USER" with password 'PG_PASSWORD';
+        -- alter user app password 'POSTGRESQL_PASSWORD'; // values are NOT automatically replaced by secrets. Would need to likely use a script.
+        -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
+        -- ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
