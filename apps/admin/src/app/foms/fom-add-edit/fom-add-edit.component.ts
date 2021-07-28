@@ -348,28 +348,25 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  /*
-  * Closed Date cannot be shortened if FOM status is in 'Commenting Open", unless
-  * the user is Ministry.
+ /*
+  * Closed Date cannot be shortened (30 days after Comment Opening Date) 
+  * if FOM status is in 'Commenting Open".
   */
   validateClosedDate(value: Date): void {
-    if ( this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen
-      && !this.user.isMinistry) {
-      let date = value.toISOString();
-      let result = moment(date)
-        .diff(moment(this.originalProjectResponse.commentingClosedDate), 'days');
-      if (result < 0 ) {
-        this.modalSvc.openDialog({
-          data: {
-            message: 'Closed Date cannot be shortened when FOM is in "Commenting Open" state',
-            title: '',
-            width: '340px',
-            height: '200px',
-            buttons: {confirm: {text: 'OK'}}
-          }
-        })
-        this.fg.get('commentingClosedDate').setValue(this.originalProjectResponse.commentingClosedDate);
-      }
+    if (value == undefined) return;
+
+    const defaultClosedDate = moment(this.originalProjectResponse.commentingOpenDate).add(30, 'd');
+    const diff = moment(value.toISOString()).diff(defaultClosedDate, 'days');
+    if (diff < 0 ) {
+      this.modalSvc.openDialog({
+        data: {
+          message: `Commenting Closed Date cannot be shortened then ${defaultClosedDate.format('YYYY-MM-DD')}`,
+          title: '',
+          width: '340px',
+          height: '200px',
+          buttons: {confirm: {text: 'OK'}}
+        }
+      })
     }
   }
 
@@ -423,17 +420,22 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     const workflowStateCode = project?.workflowState.code;
 
     // Converting commentingOpenDate date to 'yyyy-MM-dd'
+    const commentingOpenDateField = fg.get('commentingOpenDate');
     let datePipe = this.datePipe.transform(fg.value.commentingOpenDate,'yyyy-MM-dd');
-    fg.get('commentingOpenDate').setValue(datePipe);
+    commentingOpenDateField.setValue(datePipe);
 
     // Commenting open can only be edited before publish.
     if (workflowStateCode && WorkflowStateEnum.Initial != workflowStateCode) {
-      fg.get('commentingOpenDate').disable();
+      commentingOpenDateField.disable();
     }
 
     // Converting commentingClosedDate date to 'yyyy-MM-dd'
+    const commentingClosedDateField = fg.get('commentingClosedDate');
     datePipe = this.datePipe.transform(fg.value.commentingClosedDate,'yyyy-MM-dd');
-    fg.get('commentingClosedDate').setValue(datePipe);
+    commentingClosedDateField.setValue(datePipe);
+    if (user.isMinistry && !user.isForestClient) {
+      commentingClosedDateField.disable();
+    }
 
     fg.get('district').setValue(project?.district.id);
   }

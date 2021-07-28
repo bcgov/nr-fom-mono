@@ -110,7 +110,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     // When commenting open, can change closed date but can't make it shorter.
     if (WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode) {
-      if (dayjs(dto.commentingClosedDate).startOf('day').isBefore(dayjs(entity.commentingClosedDate).startOf('day'))) {
+      if (dayjs(dto.commentingClosedDate).startOf('day').isBefore(
+          dayjs(entity.commentingOpenDate).startOf('day').add(30, 'day'))) {
         this.logger.error(`Not allowed to make commenting closed date shorter.`);
         return false;
       }
