@@ -23,6 +23,13 @@ const MyBuilder = class extends BasicBuilder {
       }
     }));
 
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-build.yml`, {
+      'param':{
+        'OUTPUT_IMAGE_TAG': phases[phase].tag,
+        'BASE_IMAGE_FOR_BUILD': `fom-db:${phases[phase].tag}`
+      }
+    }));
+
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-build.yml`, {
       'param':{
