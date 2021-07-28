@@ -157,7 +157,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async delete(projectId: number, user?: User): Promise<void> {
 
     try {
-      const attachments = await this.attachmentService.findByProjectIdNoInteraction(projectId, user);
+      const attachments = await this.attachmentService.findAllAttachments(projectId, user);
 
       //Deleting files from Object Storage
       for(const attachmentResponse of attachments ) {
@@ -175,7 +175,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return  deleted;
 
     }catch(error){
-      throw new Error('Something went wrong when deleting the FOM');
+      console.log('Error: ', error);
+      throw error;
     }
   }
 

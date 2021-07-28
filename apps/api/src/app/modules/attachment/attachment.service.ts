@@ -257,6 +257,36 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     return records.map(attachment => this.convertEntity(attachment));
   }
 
+    /* This function returns all attachments types:
+    * - PUBLIC NOTICE
+    * - SUPPORTING_DOC
+    * - INTERACTION
+    * 
+    * This is needed when deleting the FOM.
+    */
+    async findAllAttachments(projectId: number, user?: User): Promise<AttachmentResponse[]> {
+      const criteria = { where: { projectId: projectId } };
+  
+      if (user && !user.isMinistry) {
+        // Don't check workflow states for viewing the comments.
+        if (! await this.projectAuthService.isForestClientUserAccess(projectId, user)) {
+          throw new ForbiddenException();
+        }
+      }
+      
+      const query = this.repository.createQueryBuilder("a")
+        .leftJoinAndSelect("a.attachmentType", "attachmentType")
+        .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
+        .addOrderBy('a.attachment_id', 'DESC') // Newest first
+        ;
+  
+        query.andWhere('a.attachment_type_code IN (:...attachmentTypeCodes)', { attachmentTypeCodes: [AttachmentTypeEnum.PUBLIC_NOTICE, 
+          AttachmentTypeEnum.SUPPORTING_DOC, AttachmentTypeEnum.INTERACTION] });
+  
+      const records:Attachment[] = await query.getMany();
+      return records.map(attachment => this.convertEntity(attachment));
+    }
+
   async findByProjectIdAndAttachmentTypes(projectId: number, attachmentTypeCodes: AttachmentTypeEnum[]): Promise<Attachment[]> {
     const query = this.repository.createQueryBuilder("a")
       .leftJoinAndSelect("a.attachmentType", "attachmentType")
