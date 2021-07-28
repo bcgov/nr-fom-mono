@@ -352,7 +352,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   * if FOM status is in 'Commenting Open".
   */
   validateClosedDate(value: Date): void {
-    if (value == undefined) return;
+    if (!value) return;
 
     const commentingOpenDateField = this.fg.get('commentingOpenDate');
     const defaultClosedDate = moment(commentingOpenDateField.value).add(30, 'd');
@@ -378,10 +378,17 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  toggleClosedDate(value: Date): void {
+  toggleClosedDate(newCommentingOpenDate: Date): void {
     const commentingClosedDateField = this.fg.get('commentingClosedDate');
     // Only enable commenting_closed_date when commenting_open_date is present.
-    value? commentingClosedDateField.enable() : commentingClosedDateField.disable();
+    if (newCommentingOpenDate) {
+      commentingClosedDateField.enable();
+      this.validateClosedDate(commentingClosedDateField.value? moment(commentingClosedDateField.value).toDate(): null);
+    }
+    else {
+      commentingClosedDateField.disable();
+      commentingClosedDateField.setValue(null);
+    }
   }
 
   public isCreateAttachmentAllowed() {
