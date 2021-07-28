@@ -162,9 +162,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       //Deleting files from Object Storage
       for(const attachmentResponse of attachments ) {
 
-        //TODO - Just leaving this here for now. It might be needed for deleting Interactions' attachments.....
-        // const attachmentFileResponse = await this.attachmentService.findFileDatabase(attachmentResponse.id, user);
-
         //Creating the objectName for the Object Storage
         const objectName = this.attachmentService.createObjectUrl(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName )
 
