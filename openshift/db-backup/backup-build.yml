@@ -1,4 +1,5 @@
 # Copied from https://github.com/BCDevOps/backup-container/blob/master/openshift/templates/backup/backup-build.yaml
+# Removed contextDir
 kind: Template
 apiVersion: v1
 metadata:
@@ -25,7 +26,6 @@ objects:
         git:
           uri: ${GIT_REPO_URL}
           ref: ${GIT_REF}
-        contextDir: ${SOURCE_CONTEXT_DIR}
       strategy:
         type: Docker
         dockerStrategy:
