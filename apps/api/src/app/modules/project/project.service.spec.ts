@@ -57,10 +57,10 @@ describe('ProjectService', () => {
     it ('public user cannot update', async () => {
       expect(await service.isUpdateAuthorized(request, entity, null)).toBe(false);
     });
-    it ('ministry user can update when commenting open', async () => {
+    it ('ministry user cannot update when commenting open', async () => {
       user.isMinistry = true;
       entity.workflowStateCode = WorkflowStateEnum.COMMENT_OPEN;
-      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(true);
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(false);
     });
     it ('ministry user cannot update when commenting closed', async () => {
       user.isMinistry = true;
