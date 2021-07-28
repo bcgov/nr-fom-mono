@@ -84,20 +84,48 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return false;
     }
 
-    // TODO: Enforce rules around changing commenting open/closed dates?
-    // When commenting open, can change closed date but can't make it shorter.
-
     if (user.isMinistry && !user.isForestClient) {
-      // As ministry user can only update when commenting open, and only to change the commenting closed date.
-      // TODO: Confirm that only commenting closed date is changing.
-      return WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode;
+      this.logger.debug(`Ministry user cannot edit FOM.`);
+      return false;
     }
 
     if (!user.isForestClient || !user.isAuthorizedForClientId(entity.forestClientId)) {
       return false;
     }
+
     // Workflow states that forest client user is allowed to edit in. 
-    return [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED].includes(entity.workflowStateCode as WorkflowStateEnum);
+    if (![WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED]
+        .includes(entity.workflowStateCode as WorkflowStateEnum)) {
+      this.logger.debug(`Not allowed to edit FOM in state other than INITIAL, COMMENT_OPEN and COMMENT_CLOSED.`);
+      return false;
+    }
+
+    // Cannot change commenting open date once state is commenting open (or later).
+    if (WorkflowStateEnum.INITIAL !== entity.workflowStateCode) {
+      if (entity.commentingOpenDate !== dto.commentingOpenDate) {
+        this.logger.debug(`Cannot change commenting open date once state is ${entity.workflowStateCode}.`);
+        return false;
+      }
+    }
+
+    // When commenting open, can change closed date but can't make it shorter.
+    if (WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode) {
+      if (dayjs(dto.commentingClosedDate).startOf('day').isBefore(
+          dayjs(entity.commentingOpenDate).startOf('day').add(30, 'day'))) {
+        this.logger.debug(`Not allowed to make commenting closed date shorter.`);
+        return false;
+      }
+    }
+
+    // Cannot change commenting closed date when state is COMMENT_CLOSED.
+    if (WorkflowStateEnum.COMMENT_CLOSED == entity.workflowStateCode) {
+      if (entity.commentingClosedDate !== dto.commentingClosedDate) {
+        this.logger.debug(`Cannot change commenting closed date for state ${entity.workflowStateCode}.`);
+        return false;
+      }
+    }
+
+    return true;
   }
 
   async isDeleteAuthorized(entity: Project, user?: User): Promise<boolean> {
@@ -381,6 +409,20 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       if (dayDiff < 1) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
         COMMENTING_OPEN_DATE: must be at least one day after publish is pushed.`);
+      }
+
+      // Required: COMMENTING_CLOSED_DATE
+      if (isNil(entity.commentingClosedDate) || !dayjs(entity.commentingClosedDate, this.DATE_FORMAT).isValid()) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        Missing COMMENTING_CLOSED_DATE.`);
+      }
+
+      // Required: COMMENTING_CLOSED_DATE at least 30 days after commenting open
+      const commentingClosedDate = dayjs(entity.commentingClosedDate).startOf('day');
+      const openClosedDatesDiff = commentingClosedDate.diff(commentingOpenDate, "day");
+      if (openClosedDatesDiff < 30) {
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        COMMENTING_CLOSED_DATE: must be at least 30 days after COMMENTING_OPEN_DATE.`);
       }
 
       // Required proposed submission

@@ -80,8 +80,6 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         console.log('Error: ', error);
       });
     });
-
-    this.verifyPublishingReady();
   }
 
   ngOnDestroy() {
@@ -189,7 +187,51 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   public async publishFOM(){
+    const ready = this.validatePublishReady();
+    if (ready) {
+      this.workflowStateChangeRequest.workflowStateCode = WorkflowStateEnum.Published;
+      this.workflowStateChangeRequest.revisionCount = this.project.revisionCount;
+
+      this.isPublishing = true;
+      const result = await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).pipe(tap(obs => console.log(obs))).toPromise()
+      this.isPublishing = false;
+      const {id} = result;
+      if (!id) {
+      }
+      this.onSuccess()
+    }
+  }
+
+  private validatePublishReady() {
+    let ready = true;
+    if (moment(this.project.commentingClosedDate).diff(moment(this.project.commentingOpenDate), 'days') < 30) {
+      ready = false;
+      this.modalSvc.openDialog({
+        data: {
+          message: 'Comment End Date must be at least 30 days after Comment Start Date when "Publish" is pushed.',
+          title: '',
+          width: '340px',
+          height: '200px',
+          buttons: {confirm: {text: 'OK'}}
+        }
+      });
+    }
+
+    if (!this.spatialDetail || this.spatialDetail.length == 0) {
+      ready = false;
+      this.modalSvc.openDialog({
+        data: {
+          message: 'Proposed FOM spatial file should be uploaded before "Publish" is pushed.',
+          title: '',
+          width: '340px',
+          height: '200px',
+          buttons: {confirm: {text: 'OK'}}
+        }
+      });
+    }
+
     if(moment(this.project.commentingOpenDate).diff(moment(this.today), 'days') < 1){
+      ready = false;
       this.modalSvc.openDialog({
         data: {
           message: 'Comment Start Date must be at least one day after "Publish" is pushed.',
@@ -198,20 +240,10 @@ export class FomDetailComponent implements OnInit, OnDestroy {
           height: '200px',
           buttons: {confirm: {text: 'OK'}}
         }
-      })
-    }else {
-      this.workflowStateChangeRequest.workflowStateCode = WorkflowStateEnum.Published;
-      this.workflowStateChangeRequest.revisionCount = this.project.revisionCount;
-
-      const result = await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).pipe(tap(obs => console.log(obs))).toPromise()
-      const {id} = result;
-      if (!id) {
-      }
-      this.onSuccess()
+      });
     }
-
+    return ready;
   }
-
 
   /**
     INITIAL: holder can withdraw.
@@ -254,17 +286,9 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       || this.project.workflowState.code === WorkflowStateEnum.CommentClosed);
   }
 
-  public verifyPublishingReady(){
-    return this.project.commentingOpenDate && this.spatialDetail
-      && this.spatialDetail.length > 0
-      && this.project.workflowState.code === WorkflowStateEnum.Initial;
-
-  }
-
   public canViewPublishing(): boolean {
     return this.user.isAuthorizedForClientId(this.project.forestClient.id)
       && this.project.workflowState.code === WorkflowStateEnum.Initial;
-
   }
 
   public canAccessInteractions(): boolean {
