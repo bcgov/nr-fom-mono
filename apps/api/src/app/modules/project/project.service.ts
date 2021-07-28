@@ -85,7 +85,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
 
     if (user.isMinistry && !user.isForestClient) {
-      this.logger.error(`Ministry user cannot edit FOM.`);
+      this.logger.debug(`Ministry user cannot edit FOM.`);
       return false;
     }
 
@@ -96,14 +96,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     // Workflow states that forest client user is allowed to edit in. 
     if (![WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED]
         .includes(entity.workflowStateCode as WorkflowStateEnum)) {
-      this.logger.error(`Not allowed to edit FOM in state other than INITIAL, COMMENT_OPEN and COMMENT_CLOSED.`);
+      this.logger.debug(`Not allowed to edit FOM in state other than INITIAL, COMMENT_OPEN and COMMENT_CLOSED.`);
       return false;
     }
 
     // Cannot change commenting open date once state is commenting open (or later).
     if (WorkflowStateEnum.INITIAL !== entity.workflowStateCode) {
       if (entity.commentingOpenDate !== dto.commentingOpenDate) {
-        this.logger.error(`Cannot change commenting open date once state is ${entity.workflowStateCode}.`);
+        this.logger.debug(`Cannot change commenting open date once state is ${entity.workflowStateCode}.`);
         return false;
       }
     }
@@ -112,7 +112,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     if (WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode) {
       if (dayjs(dto.commentingClosedDate).startOf('day').isBefore(
           dayjs(entity.commentingOpenDate).startOf('day').add(30, 'day'))) {
-        this.logger.error(`Not allowed to make commenting closed date shorter.`);
+        this.logger.debug(`Not allowed to make commenting closed date shorter.`);
         return false;
       }
     }
@@ -120,7 +120,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     // Cannot change commenting closed date when state is COMMENT_CLOSED.
     if (WorkflowStateEnum.COMMENT_CLOSED == entity.workflowStateCode) {
       if (entity.commentingClosedDate !== dto.commentingClosedDate) {
-        this.logger.error(`Cannot change commenting closed date for state ${entity.workflowStateCode}.`);
+        this.logger.debug(`Cannot change commenting closed date for state ${entity.workflowStateCode}.`);
         return false;
       }
     }
