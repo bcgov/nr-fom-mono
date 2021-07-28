@@ -27,7 +27,7 @@ import {User} from "../../../core/services/user";
 import {KeycloakService} from "../../../core/services/keycloak.service";
 import {AttachmentResolverSvc} from "../../../core/services/AttachmentResolverSvc";
 
-export type ApplicationPageType = 'create' | 'edit';
+type ApplicationPageType = 'create' | 'edit';
 
 @Component({
   selector: 'app-application-add-edit',
@@ -39,7 +39,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   fg: RxFormGroup;
   state: ApplicationPageType;
   originalProjectResponse: ProjectResponse;
-
+  
   get isCreate() {
     return this.state === 'create';
   }
@@ -149,7 +149,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       }
       const form = new FomAddEditForm(data);
       this.fg = <RxFormGroup>this.formBuilder.formGroup(form);
-
       this.initializeFormFields(this.fg, this.user, this.originalProjectResponse);
 
       if(data.description) {
@@ -355,7 +354,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   validateClosedDate(value: Date): void {
     if (value == undefined) return;
 
-    const defaultClosedDate = moment(this.originalProjectResponse.commentingOpenDate).add(30, 'd');
+    const commentingOpenDateField = this.fg.get('commentingOpenDate');
+    const defaultClosedDate = moment(commentingOpenDateField.value).add(30, 'd');
     const diff = moment(value.toISOString()).diff(defaultClosedDate, 'days');
     if (diff < 0 ) {
       this.modalSvc.openDialog({
@@ -366,8 +366,22 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
           height: '200px',
           buttons: {confirm: {text: 'OK'}}
         }
-      })
+      });
+
+      if (!this.isCreate) {
+        const closeDatePipe = this.datePipe.transform(this.originalProjectResponse.commentingClosedDate,'yyyy-MM-dd');
+        this.fg.get('commentingClosedDate').setValue(closeDatePipe)
+      }
+      else {
+        this.fg.get('commentingClosedDate').setValue(null);
+      }
     }
+  }
+
+  toggleClosedDate(value: Date): void {
+    const commentingClosedDateField = this.fg.get('commentingClosedDate');
+    // Only enable commenting_closed_date when commenting_open_date is present.
+    value? commentingClosedDateField.enable() : commentingClosedDateField.disable();
   }
 
   public isCreateAttachmentAllowed() {
@@ -421,8 +435,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Converting commentingOpenDate date to 'yyyy-MM-dd'
     const commentingOpenDateField = fg.get('commentingOpenDate');
-    let datePipe = this.datePipe.transform(fg.value.commentingOpenDate,'yyyy-MM-dd');
-    commentingOpenDateField.setValue(datePipe);
+    const openDatePipe = this.datePipe.transform(fg.value.commentingOpenDate,'yyyy-MM-dd');
+    commentingOpenDateField.setValue(openDatePipe);
 
     // Commenting open can only be edited before publish.
     if (workflowStateCode && WorkflowStateEnum.Initial != workflowStateCode) {
@@ -431,9 +445,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Converting commentingClosedDate date to 'yyyy-MM-dd'
     const commentingClosedDateField = fg.get('commentingClosedDate');
-    datePipe = this.datePipe.transform(fg.value.commentingClosedDate,'yyyy-MM-dd');
-    commentingClosedDateField.setValue(datePipe);
-    if (user.isMinistry && !user.isForestClient) {
+    const closeDatePipe = this.datePipe.transform(fg.value.commentingClosedDate,'yyyy-MM-dd');
+    commentingClosedDateField.setValue(closeDatePipe);
+    if ((user.isMinistry && !user.isForestClient) || 
+        commentingOpenDateField.value == null) {
       commentingClosedDateField.disable();
     }
 
