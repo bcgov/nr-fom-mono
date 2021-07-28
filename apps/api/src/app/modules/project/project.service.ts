@@ -153,6 +153,30 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return result.map(project => this.convertEntity(project));
   }
 
+
+  async delete(projectId: number, user?: User): Promise<void> {
+
+    try {
+      const attachments = await this.attachmentService.findAllAttachments(projectId, user);
+
+      //Deleting files from Object Storage
+      for(const attachmentResponse of attachments ) {
+
+        //Creating the objectName for the Object Storage
+        const objectName = this.attachmentService.createObjectUrl(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName )
+
+        await this.attachmentService.deleteObject(process.env.OBJECT_STORAGE_BUCKET, objectName);
+      }
+
+      const deleted = super.delete(projectId, user);
+      return  deleted;
+
+    }catch(error){
+      console.log('Error: ', error);
+      throw error;
+    }
+  }
+
   convertEntity(entity: Project): ProjectResponse {
     const response = new ProjectResponse();
     if (entity.commentingClosedDate) {

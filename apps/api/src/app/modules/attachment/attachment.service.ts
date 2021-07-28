@@ -139,6 +139,24 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
   async getFileContent(id: number, user?: User): Promise<AttachmentFileResponse> {
 
+    const attachmentFileResponse = await this.findFileDatabase(id, user);
+
+    //Creating the objectName for the Object Storage
+    const objectName = this.createObjectUrl(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName )
+
+    //Reading the object from Object Storage
+    const dataStream  = await this.getObjectStream(process.env.OBJECT_STORAGE_BUCKET, objectName );
+
+    //Reading the content of the object from Object Storage
+    const finalBuffer = await this.stream2buffer(dataStream);
+
+    attachmentFileResponse.fileContents = finalBuffer;
+
+    return attachmentFileResponse;
+
+  }
+
+  async findFileDatabase(id: number, user?: User): Promise<AttachmentFileResponse> {
     // Works, but fileContents being treated as a Buffer...
     const entity:Attachment = await this.repository.findOne(id, this.addCommonRelationsToFindOptions(
       { select: [ 'id', 'projectId', 'fileName', 'attachmentType' ] }));
@@ -153,17 +171,6 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
     const attachmentResponse = this.convertEntity(entity);
     const attachmentFileResponse = { ...attachmentResponse} as AttachmentFileResponse;
-
-    //Creating the objectName for the Object Storage
-    const objectName = this.createObjectUrl(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName )
-
-    //Reading the object from Object Storage
-    const dataStream  = await this.getObjectStream(process.env.OBJECT_STORAGE_BUCKET, objectName );
-
-    //Reading the content of the object from Object Storage
-    const finalBuffer = await this.stream2buffer(dataStream);
-
-    attachmentFileResponse.fileContents = finalBuffer;
 
     return attachmentFileResponse;
 
@@ -194,8 +201,8 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
           return resolve(false);
         }
       return resolve(true);
+      });
     });
-  });
   }
 
   async stream2buffer(stream: Stream): Promise<Buffer> {
@@ -209,7 +216,20 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
         stream.on("error", err => reject(`error converting stream - ${err}`));
 
     });
-} 
+  }
+  
+  async delete(attachmentId: number, user?: User): Promise<void> {
+    const attachmentFileResponse = await this.findFileDatabase(attachmentId, user);
+    const deleted = super.delete(attachmentId, user);
+
+    //Creating the objectName for the Object Storage
+    const objectName = this.createObjectUrl(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName )
+
+    await this.deleteObject(process.env.OBJECT_STORAGE_BUCKET, objectName);
+
+    return deleted;
+
+  }
 
   /* This function only returns attachments of the following types:
   * - PUBLIC NOTICE
@@ -236,6 +256,36 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const records:Attachment[] = await query.getMany();
     return records.map(attachment => this.convertEntity(attachment));
   }
+
+    /* This function returns all attachments types:
+    * - PUBLIC NOTICE
+    * - SUPPORTING_DOC
+    * - INTERACTION
+    * 
+    * This is needed when deleting the FOM.
+    */
+    async findAllAttachments(projectId: number, user?: User): Promise<AttachmentResponse[]> {
+      const criteria = { where: { projectId: projectId } };
+  
+      if (user && !user.isMinistry) {
+        // Don't check workflow states for viewing the comments.
+        if (! await this.projectAuthService.isForestClientUserAccess(projectId, user)) {
+          throw new ForbiddenException();
+        }
+      }
+      
+      const query = this.repository.createQueryBuilder("a")
+        .leftJoinAndSelect("a.attachmentType", "attachmentType")
+        .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
+        .addOrderBy('a.attachment_id', 'DESC') // Newest first
+        ;
+  
+        query.andWhere('a.attachment_type_code IN (:...attachmentTypeCodes)', { attachmentTypeCodes: [AttachmentTypeEnum.PUBLIC_NOTICE, 
+          AttachmentTypeEnum.SUPPORTING_DOC, AttachmentTypeEnum.INTERACTION] });
+  
+      const records:Attachment[] = await query.getMany();
+      return records.map(attachment => this.convertEntity(attachment));
+    }
 
   async findByProjectIdAndAttachmentTypes(projectId: number, attachmentTypeCodes: AttachmentTypeEnum[]): Promise<Attachment[]> {
     const query = this.repository.createQueryBuilder("a")
