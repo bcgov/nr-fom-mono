@@ -61,7 +61,8 @@
                 name="commentingOpenDate"
                 formControlName="commentingOpenDate"
                 [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
-                containerClass: 'theme-dark-blue', showWeekNumbers: false }"
+                              containerClass: 'theme-dark-blue', showWeekNumbers: false }"
+                (bsValueChange)="toggleClosedDate($event)"
                 [appFormControl]="fg.get('commentingOpenDate')"
               />
               <div class="input-group-append">
