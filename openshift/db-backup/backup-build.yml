@@ -30,7 +30,7 @@ objects:
         type: Docker
         dockerStrategy:
           from:
-            kind: DockerImage
+            kind: ImageStreamTag
             name: ${BASE_IMAGE_FOR_BUILD}
           dockerfilePath: ${DOCKER_FILE_PATH}
       output:
