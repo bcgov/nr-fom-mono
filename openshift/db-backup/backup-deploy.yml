@@ -10,11 +10,6 @@ labels:
   # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
   suffix: fom${SUFFIX}
   app.kubernetes.io/part-of: fom
-      # TODO: Clean this up
-      #   name: ${NAME}
-      #   app: ${APP_NAME}
-      #   role: ${ROLE}
-      #   env: ${TAG_NAME}
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -77,16 +72,16 @@ objects:
   apiVersion: v1
   metadata:
     name: "${JOB_NAME}-config"
-    labels:
-      template: "${JOB_NAME}-config-template"
-      cronjob: "${JOB_NAME}"
+    # labels:
+    #   template: "${JOB_NAME}-config-template"
+    #   cronjob: "${JOB_NAME}"
   data:
     DATABASE_SERVICE_NAME: "${DATABASE_SERVICE_NAME}"
     DEFAULT_PORT: "${DATABASE_DEFAULT_PORT}"
     POSTGRESQL_DATABASE: "${DATABASE_NAME}"
-    # BACKUP_STRATEGY: "daily"
     BACKUP_STRATEGY: "rolling"
-    RETENTION.NUM_BACKUPS: "${NUM_BACKUPS}"
+    # BACKUP_STRATEGY: "daily"
+    # RETENTION.NUM_BACKUPS: "${NUM_BACKUPS}"
     RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
     RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
     RETENTION.MONTHLY_BACKUPS: "${MONTHLY_BACKUPS}"
@@ -118,7 +113,7 @@ objects:
           spec:
             containers:
               - name: "${JOB_NAME}-cronjob"
-                image: "${NAME}:${IMAGE_STREAM_VERSION}"
+                image: "${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
                 command:
                   - "/bin/bash"
                   - "-c"
@@ -225,129 +220,120 @@ objects:
   #     ftp-password: ${FTP_PASSWORD}
   #     ftp-url-host: ${FTP_URL_HOST}
 
-  # - kind: DeploymentConfig
-  #   apiVersion: v1
-  #   metadata:
-  #     name: ${NAME}
-  #     labels:
-  #       name: ${NAME}
-  #       app: ${APP_NAME}
-  #       role: ${ROLE}
-  #       env: ${TAG_NAME}
-  #   spec:
-  #     strategy:
-  #       type: Recreate
-  #     triggers:
-  #       - type: ConfigChange
-  #       - type: ImageChange
-  #         imageChangeParams:
-  #           automatic: true
-  #           containerNames:
-  #             - ${NAME}
-  #           from:
-  #             kind: ImageStreamTag
-  #             name: ${SOURCE_IMAGE_NAME}:${TAG_NAME}
-  #     replicas: 1
-  #     selector:
-  #       name: ${NAME}
-  #     template:
-  #       metadata:
-  #         name: ${NAME}
-  #         labels:
-  #           name: ${NAME}
-  #           app: ${APP_NAME}
-  #           role: ${ROLE}
-  #           env: ${TAG_NAME}
-  #       spec:
-  #         volumes:
-  #           - name: ${BACKUP_VOLUME_NAME}
-  #             persistentVolumeClaim:
-  #               claimName: ${BACKUP_VOLUME_NAME}
-  #           - name: ${VERIFICATION_VOLUME_NAME}
-  #             persistentVolumeClaim:
-  #               claimName: ${VERIFICATION_VOLUME_NAME}
-  #           - name: ${NAME}-config-volume
-  #             configMap:
-  #               name: ${CONFIG_MAP_NAME}
-  #               items:
-  #                 - key: ${CONFIG_FILE_NAME}
-  #                   path: ${CONFIG_FILE_NAME}
-  #         containers:
-  #           - name: ${NAME}
-  #             image: ""
-  #             ports: []
-  #             env:
-  #               - name: BACKUP_STRATEGY
-  #                 value: ${BACKUP_STRATEGY}
-  #               - name: BACKUP_DIR
-  #                 value: ${BACKUP_DIR}
-  #               - name: NUM_BACKUPS
-  #                 value: ${NUM_BACKUPS}
-  #               - name: DAILY_BACKUPS
-  #                 value: ${DAILY_BACKUPS}
-  #               - name: WEEKLY_BACKUPS
-  #                 value: ${WEEKLY_BACKUPS}
-  #               - name: MONTHLY_BACKUPS
-  #                 value: ${MONTHLY_BACKUPS}
-  #               - name: BACKUP_PERIOD
-  #                 value: ${BACKUP_PERIOD}
-  #               - name: DATABASE_SERVICE_NAME
-  #                 value: ${DATABASE_SERVICE_NAME}
-  #               - name: DATABASE_NAME
-  #                 value: ${DATABASE_NAME}
-  #               - name: MONGODB_AUTHENTICATION_DATABASE
-  #                 value: ${MONGODB_AUTHENTICATION_DATABASE}
-  #               - name: TABLE_SCHEMA
-  #                 value: ${TABLE_SCHEMA}
-  #               - name: DATABASE_USER
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${DATABASE_DEPLOYMENT_NAME}
-  #                     key: ${DATABASE_USER_KEY_NAME}
-  #               - name: DATABASE_PASSWORD
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${DATABASE_DEPLOYMENT_NAME}
-  #                     key: ${DATABASE_PASSWORD_KEY_NAME}
-  #               - name: FTP_URL
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${FTP_SECRET_KEY}
-  #                     key: ftp-url
-  #               - name: FTP_USER
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${FTP_SECRET_KEY}
-  #                     key: ftp-user
-  #               - name: FTP_PASSWORD
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${FTP_SECRET_KEY}
-  #                     key: ftp-password
-  #               - name: WEBHOOK_URL
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${NAME}
-  #                     key: webhook-url
-  #               - name: ENVIRONMENT_FRIENDLY_NAME
-  #                 value: ${ENVIRONMENT_FRIENDLY_NAME}
-  #               - name: ENVIRONMENT_NAME
-  #                 value: ${ENVIRONMENT_NAME}
-  #             resources:
-  #               requests:
-  #                 cpu: ${CPU_REQUEST}
-  #                 memory: ${MEMORY_REQUEST}
-  #               limits:
-  #                 cpu: ${CPU_LIMIT}
-  #                 memory: ${MEMORY_LIMIT}
-  #             volumeMounts:
-  #               - name: ${BACKUP_VOLUME_NAME}
-  #                 mountPath: ${BACKUP_DIR}
-  #               - name: ${VERIFICATION_VOLUME_NAME}
-  #                 mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
-  #               - name: ${NAME}-config-volume
-  #                 mountPath: ${CONFIG_MOUNT_PATH}${CONFIG_FILE_NAME}
-  #                 subPath: ${CONFIG_FILE_NAME}
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: ${NAME}${SUFFIX}
+    spec:
+      strategy:
+        type: Recreate
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}
+            from:
+              kind: ImageStreamTag
+              name: "${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
+      replicas: 1
+      selector:
+        name: ${NAME}${SUFFIX}
+      template:
+        metadata:
+          name: ${NAME}${SUFFIX}
+        spec:
+          volumes:
+            - name: ${BACKUP_VOLUME_NAME}
+              persistentVolumeClaim:
+                claimName: ${BACKUP_VOLUME_NAME}
+            - name: ${VERIFICATION_VOLUME_NAME}
+              persistentVolumeClaim:
+                claimName: ${VERIFICATION_VOLUME_NAME}
+            # TODO: Figure this out.
+            # - name: ${NAME}-config-volume
+            #   configMap:
+            #     name: ${CONFIG_MAP_NAME}
+            #     items:
+            #       - key: ${CONFIG_FILE_NAME}
+            #         path: ${CONFIG_FILE_NAME}
+          containers:
+            - name: ${NAME}
+              image: ""
+              ports: []
+              env:
+                - name: BACKUP_STRATEGY
+                  value: ${BACKUP_STRATEGY}
+                - name: BACKUP_DIR
+                  value: ${BACKUP_DIR}
+                - name: NUM_BACKUPS
+                  value: ${NUM_BACKUPS}
+                - name: DAILY_BACKUPS
+                  value: ${DAILY_BACKUPS}
+                - name: WEEKLY_BACKUPS
+                  value: ${WEEKLY_BACKUPS}
+                - name: MONTHLY_BACKUPS
+                  value: ${MONTHLY_BACKUPS}
+                - name: BACKUP_PERIOD
+                  value: ${BACKUP_PERIOD}
+                - name: DATABASE_SERVICE_NAME
+                  value: ${DATABASE_SERVICE_NAME}
+                - name: DATABASE_NAME
+                  value: ${DATABASE_NAME}
+                - name: MONGODB_AUTHENTICATION_DATABASE
+                  value: ${MONGODB_AUTHENTICATION_DATABASE}
+                - name: TABLE_SCHEMA
+                  value: ${TABLE_SCHEMA}
+                - name: DATABASE_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${DATABASE_DEPLOYMENT_NAME}
+                      key: ${DATABASE_USER_KEY_NAME}
+                - name: DATABASE_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${DATABASE_DEPLOYMENT_NAME}
+                      key: ${DATABASE_PASSWORD_KEY_NAME}
+                - name: FTP_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${FTP_SECRET_KEY}
+                      key: ftp-url
+                - name: FTP_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${FTP_SECRET_KEY}
+                      key: ftp-user
+                - name: FTP_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${FTP_SECRET_KEY}
+                      key: ftp-password
+                - name: WEBHOOK_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}
+                      key: webhook-url
+                - name: ENVIRONMENT_FRIENDLY_NAME
+                  value: ${ENVIRONMENT_FRIENDLY_NAME}
+                - name: ENVIRONMENT_NAME
+                  value: ${ENVIRONMENT_NAME}
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              volumeMounts:
+                - name: ${BACKUP_VOLUME_NAME}
+                  mountPath: ${BACKUP_DIR}
+                - name: ${VERIFICATION_VOLUME_NAME}
+                  mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
+                # - name: ${NAME}-config-volume
+                #   mountPath: ${CONFIG_MOUNT_PATH}${CONFIG_FILE_NAME}
+                #   subPath: ${CONFIG_FILE_NAME}
 
 parameters:
   # Required parameters
