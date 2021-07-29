@@ -25,6 +25,7 @@ const MyBuilder = class extends BasicBuilder {
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-build.yml`, {
       'param':{
+        'SUFFIX': phases[phase].suffix,
         'OUTPUT_IMAGE_TAG': phases[phase].tag,
         'BASE_IMAGE_FOR_BUILD': `fom-db:${phases[phase].tag}`
       }

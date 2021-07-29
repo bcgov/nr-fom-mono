@@ -83,6 +83,20 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
+      'param':{
+        'SUFFIX': config.suffix,
+        'IMAGE_STREAM_VERSION': config.tag,
+        'JOB_NAME': `backup-postgres${config.suffix}`,
+        'BACKUP_VOLUME_NAME': `backup${config.suffix}`,
+        'VERIFICATION_VOLUME_NAME': `backup-verification${config.suffix}`,
+        'DATABASE_DEPLOYMENT_NAME': `fom-db${config.suffix}`,
+
+        // TODO: Need to deal with TABLE_SCHEMA - need both public and app_fom, but this might be fixable.
+        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+      }
+    }));
+
     return objects;
   }
 }

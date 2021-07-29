@@ -1,5 +1,4 @@
-# Copied from https://github.com/BCDevOps/backup-container/blob/master/openshift/templates/backup/backup-build.yaml
-# Removed contextDir
+# Adapted from https://github.com/BCDevOps/backup-container/blob/master/openshift/templates/backup/backup-build.yaml
 kind: Template
 apiVersion: v1
 metadata:
@@ -13,7 +12,7 @@ objects:
   - kind: BuildConfig
     apiVersion: v1
     metadata:
-      name: ${NAME}
+      name: ${NAME}${SUFFIX}
       labels:
         app: ${NAME}
     spec:
@@ -44,6 +43,10 @@ parameters:
     description: The name assigned to all of the resources.  Use 'backup-{database name}' depending on your database provider
     required: true
     value: backup-postgres
+  - description: Suffix specifying the release/build/environment. Can be blank (for production). 
+    displayName: Suffix
+    name: SUFFIX
+    required: true
   - name: GIT_REPO_URL
     displayName: Git Repo URL
     description: The URL to your GIT repo.
