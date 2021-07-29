@@ -26,6 +26,7 @@ objects:
         git:
           uri: ${GIT_REPO_URL}
           ref: ${GIT_REF}
+        contextDir: docker
       strategy:
         type: Docker
         dockerStrategy:
@@ -57,7 +58,7 @@ parameters:
     displayName: Docker File
     description: The path and file of the docker file defining the build.  Choose either 'Dockerfile' for Postgres builds or 'Dockerfile_Mongo' for MongoDB builds or 'Dockerfile_MSSQL' for MSSQL builds.
     required: false
-    value: docker/Dockerfile
+    value: Dockerfile
   - name: OUTPUT_IMAGE_TAG
     displayName: Output Image Tag
     description: The tag given to the built image.
