@@ -244,6 +244,12 @@ $app-results-bg: rgba(#fff, 0.9);
   .main-panel {
     order: 2;
   }
+
+  .select-badge {
+    label {
+      font-size: 0.75rem !important; // adjust font-size on small device for status filter to look better when checked with blue round label.
+    }
+  }
 }
 
 @media (min-width: 1024px) {
