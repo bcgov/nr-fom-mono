@@ -189,11 +189,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
       //Deleting files from Object Storage
       for(const attachmentResponse of attachments ) {
-
-        //Creating the objectName for the Object Storage
-        const objectName = this.attachmentService.createObjectUrl(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName )
-
-        await this.attachmentService.deleteObject(process.env.OBJECT_STORAGE_BUCKET, objectName);
+        this.attachmentService.deleteAttachmentObject(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName) ;
       }
 
       const deleted = super.delete(projectId, user);

@@ -222,13 +222,19 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const attachmentFileResponse = await this.findFileDatabase(attachmentId, user);
     const deleted = super.delete(attachmentId, user);
 
-    //Creating the objectName for the Object Storage
-    const objectName = this.createObjectUrl(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName )
-
-    await this.deleteObject(process.env.OBJECT_STORAGE_BUCKET, objectName);
+    this.deleteAttachmentObject(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName) ;
 
     return deleted;
 
+  }
+
+  async deleteAttachmentObject(projectId: number, attachmentId: number, fileName: string) {
+
+      //Creating the objectName for the Object Storage
+      const objectName = this.createObjectUrl(projectId, attachmentId, fileName )
+
+      //Deleting the object
+      await this.deleteObject(process.env.OBJECT_STORAGE_BUCKET, objectName);
   }
 
   /* This function only returns attachments of the following types:
@@ -279,10 +285,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
         .andWhere("a.project_id = :projectId", {projectId: `${projectId}`})
         .addOrderBy('a.attachment_id', 'DESC') // Newest first
         ;
-  
-        query.andWhere('a.attachment_type_code IN (:...attachmentTypeCodes)', { attachmentTypeCodes: [AttachmentTypeEnum.PUBLIC_NOTICE, 
-          AttachmentTypeEnum.SUPPORTING_DOC, AttachmentTypeEnum.INTERACTION] });
-  
+
       const records:Attachment[] = await query.getMany();
       return records.map(attachment => this.convertEntity(attachment));
     }
