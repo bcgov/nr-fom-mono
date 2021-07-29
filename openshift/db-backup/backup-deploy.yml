@@ -19,7 +19,6 @@ objects:
       lookupPolicy:
         # Set to true to allow local image name resolution, without having to specify the internal OpenShift image registry and port.
         local: true
-
   - kind: NetworkPolicy
     apiVersion: networking.k8s.io/v1
     metadata:
@@ -43,7 +42,6 @@ objects:
           ports:
             - protocol: TCP
               port: 5432
-
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -55,7 +53,6 @@ objects:
       resources:
         requests:
           storage: ${BACKUP_VOLUME_SIZE}
-
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -67,159 +64,154 @@ objects:
       resources:
         requests:
           storage: ${VERIFICATION_VOLUME_SIZE}
-
-- kind: ConfigMap
-  apiVersion: v1
-  metadata:
-    name: "${JOB_NAME}-config"
-    # labels:
-    #   template: "${JOB_NAME}-config-template"
-    #   cronjob: "${JOB_NAME}"
-  data:
-    DATABASE_SERVICE_NAME: "${DATABASE_SERVICE_NAME}"
-    DEFAULT_PORT: "${DATABASE_DEFAULT_PORT}"
-    POSTGRESQL_DATABASE: "${DATABASE_NAME}"
-    BACKUP_STRATEGY: "rolling"
-    # BACKUP_STRATEGY: "daily"
-    # RETENTION.NUM_BACKUPS: "${NUM_BACKUPS}"
-    RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
-    RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
-    RETENTION.MONTHLY_BACKUPS: "${MONTHLY_BACKUPS}"
-
-- kind: "CronJob"
-  apiVersion: "batch/v1beta1"
-  metadata:
-    name: "${JOB_NAME}"
-    labels:
-      template: "${JOB_NAME}-cronjob"
-      cronjob: "${JOB_NAME}"
-  spec:
-    schedule: "${SCHEDULE}"
-    concurrencyPolicy: "Forbid"
-    successfulJobsHistoryLimit: "${{SUCCESS_JOBS_HISTORY_LIMIT}}"
-    failedJobsHistoryLimit: "${{FAILED_JOBS_HISTORY_LIMIT}}"
-    jobTemplate:
-      metadata:
-        labels:
-          template: "${JOB_NAME}-job"
-          cronjob: "${JOB_NAME}"
-      spec:
-        backoffLimit: ${{JOB_BACKOFF_LIMIT}}
-        template:
-          metadata:
-            labels:
-              template: "${JOB_NAME}-job"
-              cronjob: "${JOB_NAME}"
-          spec:
-            containers:
-              - name: "${JOB_NAME}-cronjob"
-                image: "${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
-                command:
-                  - "/bin/bash"
-                  - "-c"
-                  - "/backup.sh -1"
-                volumeMounts:
-                  - mountPath: "${BACKUP_DIR}"
-                    name: "backup"
-                env:
-                  - name: BACKUP_DIR
-                    value: "${BACKUP_DIR}"
-                  - name: BACKUP_STRATEGY
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: BACKUP_STRATEGY
-                  - name: NUM_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.NUM_BACKUPS
-                        optional: true
-                  - name: DAILY_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.DAILY_BACKUPS
-                        optional: true
-                  - name: WEEKLY_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.WEEKLY_BACKUPS
-                        optional: true
-                  - name: MONTHLY_BACKUPS
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: RETENTION.MONTHLY_BACKUPS
-                        optional: true
-                  - name: DATABASE_SERVICE_NAME
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: DATABASE_SERVICE_NAME
-                  - name: DEFAULT_PORT
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: DEFAULT_PORT
-                        optional: true
-                  - name: POSTGRESQL_DATABASE
-                    valueFrom:
-                      configMapKeyRef:
-                        name: "${JOB_NAME}-config"
-                        key: POSTGRESQL_DATABASE
-                  - name: DATABASE_USER
-                    valueFrom:
-                      secretKeyRef:
-                        name: "${DATABASE_DEPLOYMENT_NAME}"
-                        key: "${DATABASE_USER_KEY_NAME}"
-                  - name: DATABASE_PASSWORD
-                    valueFrom:
-                      secretKeyRef:
-                        name: "${DATABASE_DEPLOYMENT_NAME}"
-                        key: "${DATABASE_PASSWORD_KEY_NAME}"
-            volumes:
-              - name: backup
-                persistentVolumeClaim:
-                  claimName: "${JOB_PERSISTENT_STORAGE_NAME}"
-            restartPolicy: "Never"
-            terminationGracePeriodSeconds: 30
-            activeDeadlineSeconds: 1600
-            dnsPolicy: "ClusterFirst"
-            serviceAccountName: "${JOB_SERVICE_ACCOUNT}"
-            serviceAccount: "${JOB_SERVICE_ACCOUNT}"    
-
-  # - kind: Secret
-  #   apiVersion: v1
-  #   metadata:
-  #     name: ${NAME}
-  #     labels:
-  #       name: ${NAME}
-  #       app: ${APP_NAME}
-  #       role: ${ROLE}
-  #       env: ${TAG_NAME}
-  #   type: Opaque
-  #   stringData:
-  #     webhook-url: ${WEBHOOK_URL}
-  #     webhook-url-host: ${WEBHOOK_URL_HOST}
-
-  # - kind: Secret
-  #   apiVersion: v1
-  #   metadata:
-  #     name: ${FTP_SECRET_KEY}
-  #     labels:
-  #       name: ${NAME}
-  #       app: ${APP_NAME}
-  #       role: ${ROLE}
-  #       env: ${TAG_NAME}
-  #   type: Opaque
-  #   stringData:
-  #     ftp-url: ${FTP_URL}
-  #     ftp-user: ${FTP_USER}
-  #     ftp-password: ${FTP_PASSWORD}
-  #     ftp-url-host: ${FTP_URL_HOST}
-
+  - kind: ConfigMap
+    apiVersion: v1
+    metadata:
+      name: "${JOB_NAME}-config"
+      # labels:
+      #   template: "${JOB_NAME}-config-template"
+      #   cronjob: "${JOB_NAME}"
+    data:
+      DATABASE_SERVICE_NAME: "${DATABASE_SERVICE_NAME}"
+      DEFAULT_PORT: "${DATABASE_DEFAULT_PORT}"
+      POSTGRESQL_DATABASE: "${DATABASE_NAME}"
+      BACKUP_STRATEGY: "rolling"
+      # BACKUP_STRATEGY: "daily"
+      # RETENTION.NUM_BACKUPS: "${NUM_BACKUPS}"
+      RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
+      RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
+      RETENTION.MONTHLY_BACKUPS: "${MONTHLY_BACKUPS}"
+  - kind: "CronJob"
+    apiVersion: "batch/v1beta1"
+    metadata:
+      name: "${JOB_NAME}"
+      labels:
+        template: "${JOB_NAME}-cronjob"
+        cronjob: "${JOB_NAME}"
+    spec:
+      schedule: "${SCHEDULE}"
+      concurrencyPolicy: "Forbid"
+      successfulJobsHistoryLimit: "${{SUCCESS_JOBS_HISTORY_LIMIT}}"
+      failedJobsHistoryLimit: "${{FAILED_JOBS_HISTORY_LIMIT}}"
+      jobTemplate:
+        metadata:
+          labels:
+            template: "${JOB_NAME}-job"
+            cronjob: "${JOB_NAME}"
+        spec:
+          backoffLimit: ${{JOB_BACKOFF_LIMIT}}
+          template:
+            metadata:
+              labels:
+                template: "${JOB_NAME}-job"
+                cronjob: "${JOB_NAME}"
+            spec:
+              containers:
+                - name: "${JOB_NAME}-cronjob"
+                  image: "${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
+                  command:
+                    - "/bin/bash"
+                    - "-c"
+                    - "/backup.sh -1"
+                  volumeMounts:
+                    - mountPath: "${BACKUP_DIR}"
+                      name: "backup"
+                  env:
+                    - name: BACKUP_DIR
+                      value: "${BACKUP_DIR}"
+                    - name: BACKUP_STRATEGY
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: BACKUP_STRATEGY
+                    - name: NUM_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.NUM_BACKUPS
+                          optional: true
+                    - name: DAILY_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.DAILY_BACKUPS
+                          optional: true
+                    - name: WEEKLY_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.WEEKLY_BACKUPS
+                          optional: true
+                    - name: MONTHLY_BACKUPS
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: RETENTION.MONTHLY_BACKUPS
+                          optional: true
+                    - name: DATABASE_SERVICE_NAME
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: DATABASE_SERVICE_NAME
+                    - name: DEFAULT_PORT
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: DEFAULT_PORT
+                          optional: true
+                    - name: POSTGRESQL_DATABASE
+                      valueFrom:
+                        configMapKeyRef:
+                          name: "${JOB_NAME}-config"
+                          key: POSTGRESQL_DATABASE
+                    - name: DATABASE_USER
+                      valueFrom:
+                        secretKeyRef:
+                          name: "${DATABASE_DEPLOYMENT_NAME}"
+                          key: "${DATABASE_USER_KEY_NAME}"
+                    - name: DATABASE_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          name: "${DATABASE_DEPLOYMENT_NAME}"
+                          key: "${DATABASE_PASSWORD_KEY_NAME}"
+              volumes:
+                - name: backup
+                  persistentVolumeClaim:
+                    claimName: "${JOB_PERSISTENT_STORAGE_NAME}"
+              restartPolicy: "Never"
+              terminationGracePeriodSeconds: 30
+              activeDeadlineSeconds: 1600
+              dnsPolicy: "ClusterFirst"
+              serviceAccountName: "${JOB_SERVICE_ACCOUNT}"
+              serviceAccount: "${JOB_SERVICE_ACCOUNT}"    
+    # - kind: Secret
+    #   apiVersion: v1
+    #   metadata:
+    #     name: ${NAME}
+    #     labels:
+    #       name: ${NAME}
+    #       app: ${APP_NAME}
+    #       role: ${ROLE}
+    #       env: ${TAG_NAME}
+    #   type: Opaque
+    #   stringData:
+    #     webhook-url: ${WEBHOOK_URL}
+    #     webhook-url-host: ${WEBHOOK_URL_HOST}
+    # - kind: Secret
+    #   apiVersion: v1
+    #   metadata:
+    #     name: ${FTP_SECRET_KEY}
+    #     labels:
+    #       name: ${NAME}
+    #       app: ${APP_NAME}
+    #       role: ${ROLE}
+    #       env: ${TAG_NAME}
+    #   type: Opaque
+    #   stringData:
+    #     ftp-url: ${FTP_URL}
+    #     ftp-user: ${FTP_USER}
+    #     ftp-password: ${FTP_PASSWORD}
+    #     ftp-url-host: ${FTP_URL_HOST}
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
@@ -570,7 +562,7 @@ parameters:
     displayName: Environment Name (Environment Id)
     description: The name or Id of the environment.  This variable is used by the webhook integration and by the NetworkSecurityPolicies to identify the environment in which the backup notifications originate.
     required: true
-    value: ""
+    value: "n/a"
   - name: NUM_BACKUPS
     displayName: The number of backup files to be retained
     description: Used for backward compatibility only.  Ignored when using the recommended `rolling` backup strategy.  The number of backup files to be retained.  Used for the `daily` backup strategy.
