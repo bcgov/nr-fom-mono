@@ -212,6 +212,26 @@ objects:
     #     ftp-user: ${FTP_USER}
     #     ftp-password: ${FTP_PASSWORD}
     #     ftp-url-host: ${FTP_URL_HOST}
+ 
+ 
+  - kind: ConfigMap
+    apiVersion: v1
+    data:
+      backup.conf: |-
+        -- SET application_name="container_setup";
+        -- \c fom
+        -- create extension pg_stat_statements;
+        -- create extension pgaudit;
+        -- create extension plr;
+        -- create extension fuzzystrmatch;
+        -- create user "PG_USER" with password 'PG_PASSWORD';
+        -- alter user app password 'POSTGRESQL_PASSWORD'; // values are NOT automatically replaced by secrets. Would need to likely use a script.
+        -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
+        -- ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
+    metadata:
+      name: ${NAME}${SUFFIX}-config
+
+
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
@@ -245,13 +265,12 @@ objects:
             - name: ${VERIFICATION_VOLUME_NAME}
               persistentVolumeClaim:
                 claimName: ${VERIFICATION_VOLUME_NAME}
-            # TODO: Figure this out.
-            # - name: ${NAME}-config-volume
-            #   configMap:
-            #     name: ${CONFIG_MAP_NAME}
-            #     items:
-            #       - key: ${CONFIG_FILE_NAME}
-            #         path: ${CONFIG_FILE_NAME}
+            - name: ${NAME}-config-volume
+              configMap:
+                name: ${NAME}${SUFFIX}-config
+                items:
+                  - key: ${CONFIG_FILE_NAME}
+                    path: ${CONFIG_FILE_NAME}
           containers:
             - name: ${NAME}
               image: ""
@@ -325,9 +344,9 @@ objects:
                   mountPath: ${BACKUP_DIR}
                 - name: ${VERIFICATION_VOLUME_NAME}
                   mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
-                # - name: ${NAME}-config-volume
-                #   mountPath: ${CONFIG_MOUNT_PATH}${CONFIG_FILE_NAME}
-                #   subPath: ${CONFIG_FILE_NAME}
+                - name: ${NAME}-config-volume
+                  mountPath: ${CONFIG_MOUNT_PATH}${CONFIG_FILE_NAME}
+                  subPath: ${CONFIG_FILE_NAME}
 
 parameters:
   # Required parameters
@@ -365,6 +384,11 @@ parameters:
     description: The table schema for your database.  Used for Postgres backups.
     required: true
     value: public
+  - name: DATABASE_SERVICE_NAME
+    displayName: Database Service Name
+    description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database service.
+    required: false
+    value: ""
   # Optional parameters
   - name: "DAILY_BACKUPS"
     displayName: "Number of Daily Backups to Retain"
@@ -510,16 +534,11 @@ parameters:
     description: The role assigned to all of the resources.  Defaults to backup-container
     required: true
     value: backup-container
-  - name: DATABASE_SERVICE_NAME
-    displayName: Database Service Name
-    description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database service.
-    required: false
-    value: ""
   - name: DATABASE_NAME
     displayName: Database Name
     description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database.
     required: false
-    value: ""
+    value: "fom"
   - name: FTP_SECRET_KEY
     displayName: FTP Secret Key
     description: The FTP secret key is used to wire up the credentials associated to the FTP.
