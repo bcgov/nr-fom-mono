@@ -213,7 +213,6 @@ objects:
     #     ftp-password: ${FTP_PASSWORD}
     #     ftp-url-host: ${FTP_URL_HOST}
  
- 
   - kind: ConfigMap
     apiVersion: v1
     data:
@@ -229,8 +228,7 @@ objects:
         -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
         -- ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
     metadata:
-      name: ${NAME}${SUFFIX}-config
-
+      name: ${NAME}${SUFFIX}-fileconfig
 
   - kind: DeploymentConfig
     apiVersion: v1
@@ -267,7 +265,7 @@ objects:
                 claimName: ${VERIFICATION_VOLUME_NAME}
             - name: ${NAME}-config-volume
               configMap:
-                name: ${NAME}${SUFFIX}-config
+                name: ${NAME}${SUFFIX}-fileconfig
                 items:
                   - key: ${CONFIG_FILE_NAME}
                     path: ${CONFIG_FILE_NAME}
@@ -387,6 +385,11 @@ parameters:
   - name: DATABASE_SERVICE_NAME
     displayName: Database Service Name
     description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database service.
+    required: false
+    value: ""
+  - name: DATABASE_NAME
+    displayName: Database Name
+    description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database.
     required: false
     value: ""
   # Optional parameters
@@ -534,11 +537,6 @@ parameters:
     description: The role assigned to all of the resources.  Defaults to backup-container
     required: true
     value: backup-container
-  - name: DATABASE_NAME
-    displayName: Database Name
-    description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database.
-    required: false
-    value: "fom"
   - name: FTP_SECRET_KEY
     displayName: FTP Secret Key
     description: The FTP secret key is used to wire up the credentials associated to the FTP.
