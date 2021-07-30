@@ -8,6 +8,13 @@ app-root {
   flex-direction: column;
 }
 
+@media print {
+ // Ensure entire screen's content is printed, not just first page
+ app-root {
+   position:relative !important;
+ }
+}
+
 // Container
 .container {
   margin: 0 auto;
