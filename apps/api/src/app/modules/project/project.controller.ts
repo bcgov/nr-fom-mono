@@ -55,8 +55,7 @@ export class ProjectController {
         findCriteria.commentingOpenedOnOrAfter = dayjs(openedOnOrAfter).format(DATE_FORMAT);
       } 
 
-      // Logging at info level to help measure performance.
-      this.logger.info('get /project/publicSummary with criteria %o', findCriteria);
+      this.logger.debug('get /project/publicSummary with criteria %o', findCriteria);
 
       return this.service.findPublicSummaries(findCriteria);
   }

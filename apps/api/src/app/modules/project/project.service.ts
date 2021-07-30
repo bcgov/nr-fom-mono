@@ -339,7 +339,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       try {
         this.logger.info(`FOM ${updatedEntity.id} is finalized. Sending notification email to district ${updatedEntity.district.name}`);
         await this.mailService.sendDistrictNotification(updatedEntity);
-        this.logger.info('FOM finalized notification mail Sent!');
+        this.logger.debug('FOM finalized notification mail Sent!');
       }
       catch (error) {
         this.logger.error(`Problem sending notification email: ${error}`);
@@ -510,7 +510,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
    * @returns array of FOM Ids or empty
    */
   private async findFomIds(workflowStateCode: WorkflowStateEnum, date: string, forCommentCloseDate: boolean): Promise<number[]> {
-    this.logger.info(`Find FOM with workflowState ${workflowStateCode} and ${forCommentCloseDate? 'commenting_closed_date'
+    this.logger.debug(`Find FOM with workflowState ${workflowStateCode} and ${forCommentCloseDate? 'commenting_closed_date'
                       : 'commenting_open_date'} equal or before: ${date}`);
     const queryResults = await this
             .repository
@@ -521,10 +521,10 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
             .orderBy('project_id')
             .getRawMany();
     if (queryResults && queryResults.length > 0) {
-      this.logger.info(`${queryResults.length} found.`);
+      this.logger.debug(`${queryResults.length} found.`);
       return queryResults.map(result => result['project_id']);
     }
-    this.logger.info(`No result found.`);
+    this.logger.debug(`No result found.`);
     return [];
   }
 
@@ -538,7 +538,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return;
     }
 
-    this.logger.info(`Updating FOM for ${projectIds} to ${workflowStateCode}`);
+    this.logger.debug(`Updating FOM for ${projectIds} to ${workflowStateCode}`);
     const updateFields = 
       {
         workflowStateCode: workflowStateCode,
@@ -558,7 +558,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
             .set(updateFields)
             .where('project_id IN (:...ids)', {ids: projectIds})
             .execute()).affected;
-    this.logger.info(`${updatedCounts} FOM(s) for ${projectIds} were updated to ${workflowStateCode}`);
+    this.logger.debug(`${updatedCounts} FOM(s) for ${projectIds} were updated to ${workflowStateCode}`);
   }
 
 }

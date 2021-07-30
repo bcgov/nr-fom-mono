@@ -31,7 +31,7 @@ export class SpatialFeatureController {
       throw new BadRequestException('Invalid version');
     }
 
-    this.logger.info('Start get /spatial-feature/bcgw-extract'); // At info level for measuring performance during normal operations.
+    this.logger.debug('Start get /spatial-feature/bcgw-extract'); // For measuring performance.
   
     return this.spatialFeatureService.getBcgwExtract();
   }

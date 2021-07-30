@@ -20,6 +20,8 @@ export class ErrorInterceptor implements HttpInterceptor {
       finalize(() => this.stateSvc.loading = false),
       catchError((err) => {
 
+        // TODO: Handle BadRequest error and Forbidden error and provide custom messages.
+
         const error = err?.error?.message || err.statusText;
         console.error(`${request.urlWithParams} failed with error: ` + JSON.stringify(err));
 
