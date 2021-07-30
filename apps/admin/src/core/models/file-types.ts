@@ -58,8 +58,7 @@ export class FileTypeFns {
     if (['pdf'].includes(fileTypeStr)) {
       return fileMap.pdf;
     }
-    console.log('no file type set');
-
+    // Not a recognized file type so treat as text.
     return fileMap.text;
   }
 

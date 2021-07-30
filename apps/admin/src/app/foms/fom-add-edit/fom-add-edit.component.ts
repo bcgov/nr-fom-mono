@@ -348,7 +348,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         result.then( () => {
           return this.onSuccessAttachment(this.originalProjectResponse.id);
         }).catch( (error) => {
-          console.log('Error:', error);
+          console.error(error);
         })
       }
     })

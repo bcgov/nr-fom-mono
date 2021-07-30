@@ -77,7 +77,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
           //Sorting by Public Notice and Supporting Document
           this.attachments.sort((a,b) => (a.attachmentType.code < b.attachmentType.code? -1 : 1));
         }).catch((error) => {
-        console.log('Error: ', error);
+        console.error(error);
       });
     });
   }
@@ -95,7 +95,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         result.then( () => {
           return this.onSuccess();
         }).catch( (error) => {
-          console.log('Error:', error);
+          console.error(error);
         })
       }
     })

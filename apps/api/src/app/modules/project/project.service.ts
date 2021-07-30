@@ -183,22 +183,15 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
 
   async delete(projectId: number, user?: User): Promise<void> {
+    const attachments = await this.attachmentService.findAllAttachments(projectId, user);
 
-    try {
-      const attachments = await this.attachmentService.findAllAttachments(projectId, user);
-
-      //Deleting files from Object Storage
-      for(const attachmentResponse of attachments ) {
-        this.attachmentService.deleteAttachmentObject(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName) ;
-      }
-
-      const deleted = super.delete(projectId, user);
-      return  deleted;
-
-    }catch(error){
-      console.log('Error: ', error);
-      throw error;
+    //Deleting files from Object Storage
+    for(const attachmentResponse of attachments ) {
+      this.attachmentService.deleteAttachmentObject(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName) ;
     }
+
+    const deleted = super.delete(projectId, user);
+    return  deleted;
   }
 
   convertEntity(entity: Project): ProjectResponse {

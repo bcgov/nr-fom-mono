@@ -59,16 +59,10 @@ export class FileTypeFns {
     if (['pdf'].includes(fileTypeStr)) {
       return fileMap.pdf;
     }
-    console.log('no file type set');
-
+    // Not a recognized file type so treat as text.
     return fileMap.text;
   }
 
-  static IsDeleteLocked(createdDate: Date): boolean {
-    const datetimeNow = new Date(Date.now());
-    //Greater that 24 hours in milliseconds
-    return datetimeNow.getTime() - createdDate.getTime() > 86400000;
-  }
 }
 
 

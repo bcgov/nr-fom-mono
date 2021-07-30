@@ -137,25 +137,20 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.map.on(
       'zoomstart',
       () => {
-        // console.log('zoomstart');
         // this.oldZoom = this.map.getZoom();
       },
       this
     );
 
     // this.map.on('movestart', function () {
-    //   console.log('movestart');
     // }, this);
 
     // this.map.on('resize', function () {
-    //   console.log('resize');
     // }, this);
 
     // NB: moveend is called after zoomstart, movestart and resize
     // NB: fitBounds() also ends up here
     this.map.on('moveend', () => {
-      // console.log('moveend');
-
       // notify applications component of updated coordinates
       // const newZoom = this.map.getZoom();
       // const doEmit = newZoom <= this.oldZoom; // ignore zooming in
@@ -169,7 +164,6 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       // FUTURE
       // // save map state
       // if (this.isMapReady) {
-      //   console.log('...saving map state');
       //   const center = this.map.getCenter();
       //   const zoom = this.map.getZoom();
       //   this.urlService.setQueryParam('lat', center.lat.toFixed(4).toString());
