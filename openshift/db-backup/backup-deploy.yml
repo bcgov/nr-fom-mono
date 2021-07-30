@@ -177,7 +177,7 @@ objects:
               volumes:
                 - name: backup
                   persistentVolumeClaim:
-                    claimName: "${JOB_PERSISTENT_STORAGE_NAME}"
+                    claimName: ${BACKUP_VOLUME_NAME}
               restartPolicy: "Never"
               terminationGracePeriodSeconds: 30
               activeDeadlineSeconds: 1600
