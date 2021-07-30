@@ -132,11 +132,14 @@
     <div class="form-group">
       <label class="control-label" for="comment">Your Comment</label>
       <textarea id="comment" name="comment"
-        class="your-comment form-control" rows="8" 
+        class="your-comment form-control" 
+        rows="8"
+        maxlength="{{feedbackLimit}}"
         required aria-required="true"
         [(ngModel)]="publicComment.feedback"
         #comment2="ngModel">
       </textarea>
+      <small>{{feedbackLimit-publicComment.feedback?.length}} characters remaining.</small>
     </div>
   </div>
   <div class="modal-footer form-btns">
