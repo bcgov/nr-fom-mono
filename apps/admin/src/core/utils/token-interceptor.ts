@@ -1,7 +1,7 @@
 import {HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {KeycloakService} from '../services/keycloak.service';
-import {Observable, Subject, throwError} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {catchError, switchMap, tap} from 'rxjs/operators';
 
 /**
@@ -48,12 +48,14 @@ export class TokenInterceptor implements HttpInterceptor {
               return next.handle(request);
             }),
             catchError(err => {
-              console.log("Caught error after refresh, rethowing.");
-              return throwError(err);
+              // If the user really isn't authorized, every attempt will fail even after token refresh.
+              console.error("Caught error after refresh, rethowing original. New error is", err);
+              // Rethrow original forbidden error as throwning new err isn't working. A bit of a hack...
+              throw error;
             })
           );
         }
-        return throwError(error);
+        throw error;
       })
     );
   }

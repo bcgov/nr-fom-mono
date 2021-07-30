@@ -49,11 +49,11 @@ export class ModalService {
     });
   }
 
-  openErrorDialog(message?: string) {
+  openErrorDialog(message?: string, title: string = 'Error') {
     this.openDialog({
       data: {
         message: message || 'There was an error with the request, please try again.',
-        title: 'Error',
+        title: title,
         width: '340px',
         height: '200px',
         buttons: {confirm: {text: 'OK'}}
