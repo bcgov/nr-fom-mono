@@ -144,7 +144,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
                 this.attachments.push(attachmentResponse);
             }
           }).catch((error) => {
-          console.log('Error: ', error);
+          console.error(error);
         });
       }
       const form = new FomAddEditForm(data);
@@ -158,7 +158,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       this.loadForestClients().then( (result) => {
         this.forestClients = result;
       }).catch((error)=> {
-        console.log('Error: ', error)
+        console.error(error);
       });
     });
   }
@@ -177,40 +177,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   getContentFileFromUpload(fileContent: any) {
     this.publicNoticeContent = fileContent;
-    try {
-      // this.originalSubmissionRequest.jsonSpatialSubmission = JSON.parse(this.contentFile);
-      console.log('inside getContenFileParent: ', this.publicNoticeContent)
-    }catch (e) {
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Your file is broken. Please review the Geo Spatial data',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      })
-    }
-    // this.fg.get('jsonSpatialSubmission').setValue(this.originalSubmissionRequest.jsonSpatialSubmission);
   }
 
   getContentFileSupportingDoc(fileContent: any) {
     this.supportingDocContent = fileContent;
-    try {
-      // this.originalSubmissionRequest.jsonSpatialSubmission = JSON.parse(this.contentFile);
-      console.log('inside getContenFileParent: ', this.publicNoticeContent)
-    }catch (e) {
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Your file is broken. Please review the Geo Spatial data',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      })
-    }
-    // this.fg.get('jsonSpatialSubmission').setValue(this.originalSubmissionRequest.jsonSpatialSubmission);
   }
 
   ngAfterViewInit() {
@@ -238,18 +208,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!this.fg.valid) {
       this.fg.markAllAsTouched();
       this.fg.updateValueAndValidity({onlySelf: false, emitEvent: true});
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Please review the highlighted fields ',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      })
+      this.modalSvc.openWarningDialog('Please review the highlighted fields ');
     }
-
-
     return this.fg.valid;
   }
 
@@ -262,6 +222,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     projectCreate['districtId'] = this.districtIdSelect;
     projectCreate.forestClientNumber = this.fg.get('forestClient').value;
 
+    // TODO: Remove logging, handle !id scenario
     const result = await this.projectSvc.projectControllerCreate(projectCreate).pipe(tap(obs => console.log(obs))).toPromise()
     const {id} = result;
     if (!id) {
@@ -271,9 +232,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   onSuccess(id: number) {
     this.router.navigate([`a/${id}`])
-
   }
-
 
   async saveApplication() {
     this.isSubmitSaveClicked = true;
@@ -285,6 +244,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     let projectUpdateRequest = {...rest, ...this.fg.value}
     projectUpdateRequest['districtId'] = projectUpdateRequest.district;
 
+    // TODO: Remove logging, clean up error handling - why have a try catch that logs the error when there's also the display of a modal dialog.
     if (!this.fg.valid) return;
     try {
       const result = await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).pipe(tap(obs => console.log(obs))).toPromise();
@@ -312,20 +272,11 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       }
 
       if (result) {
-      // if (resultAttachment) {
         return this.onSuccess(id);
       }
-      this.modalSvc.openDialog({
-        data: {
-          message: 'There was an error with the request please try again',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      })
+      this.modalSvc.openErrorDialog();
     } catch (err) {
-      // console.log(err)
+      console.error(err);
     }
 
   }
@@ -348,7 +299,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
  /*
-  * Closed Date cannot be shortened (30 days after Comment Opening Date) 
+  * Closed Date cannot be before (30 days after Comment Opening Date) 
   * if FOM status is in 'Commenting Open".
   */
   validateClosedDate(value: Date): void {
@@ -358,15 +309,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     const defaultClosedDate = moment(commentingOpenDateField.value).add(30, 'd');
     const diff = moment(value.toISOString()).diff(defaultClosedDate, 'days');
     if (diff < 0 ) {
-      this.modalSvc.openDialog({
-        data: {
-          message: `Commenting Closed Date cannot be shortened then ${defaultClosedDate.format('YYYY-MM-DD')}`,
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      });
+      this.modalSvc.openWarningDialog(`Commenting Closed Date cannot be before ${defaultClosedDate.format('YYYY-MM-DD')}`);
 
       if (!this.isCreate) {
         const closeDatePipe = this.datePipe.transform(this.originalProjectResponse.commentingClosedDate,'yyyy-MM-dd');
@@ -398,15 +341,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public deleteAttachment(id: number) {
-    const dialogRef = this.modalSvc.openDialog({
-      data: {
-        message: `You are about to delete this attachment. Are you sure?`,
-        title: 'Delete Attachment',
-        width: '340px',
-        height: '200px',
-        buttons: {confirm: {text: 'OK'}, cancel: { text: 'cancel' }}
-      }
-    });
+    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to delete this attachment. Are you sure?`, 'Delete Attachment');
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         let result = this.attachmentResolverSvc.attachmentControllerRemove(id);

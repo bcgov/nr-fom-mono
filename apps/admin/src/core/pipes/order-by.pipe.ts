@@ -31,7 +31,7 @@ export class OrderByPipe implements PipeTransform {
         bCompare = this.coalesce(bCompare[0]);
       } else if (typeof aCompare === 'object' || typeof bCompare === 'object') {
         // put undefined values first
-        // MBL TODO: Assume name for sub-property.  Fix this to be more generic.
+        // Assume name for sub-property, which is not overly generic.
         if (aCompare.name === undefined) {
           return +args.direction;
         }

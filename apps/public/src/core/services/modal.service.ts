@@ -41,7 +41,7 @@ export class ModalService {
     this.openDialog({ data: {
       message: `Please try again later.`,
       title: `Error: FOM initialization failed.`,
-      buttons: { cancel: { text: 'Okay' } },
+      buttons: { cancel: { text: 'OK' } },
     }});
   }
 

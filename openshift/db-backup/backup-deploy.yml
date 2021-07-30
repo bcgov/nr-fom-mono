@@ -36,9 +36,6 @@ objects:
                 matchLabels:
                   app-component: ${NAME}
                   suffix: fom${SUFFIX}
-                  # TODO: Figure out best approach.
-                  # From fom-api-deploy
-                  # deploymentconfig: ${NAME}${SUFFIX}
           ports:
             - protocol: TCP
               port: 5432

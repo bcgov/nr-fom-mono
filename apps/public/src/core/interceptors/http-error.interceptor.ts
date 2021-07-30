@@ -33,9 +33,9 @@ export class ErrorInterceptor implements HttpInterceptor {
         dialogConfig.disableClose = true;
         dialogConfig.autoFocus = true;
         dialogConfig.data = {
-          message: `The request failed to process due to an error.`,
-          title: `Request Error: ${err?.error?.message || err.statusText}`,
-          buttons: { cancel: { text: 'Okay' } },
+          message: `The request failed to process due to an error. Please try again later.`,
+          title: `Error`,
+          buttons: { cancel: { text: 'OK' } },
         }
         this.modalSvc.openCustomDialog(DialogComponent, dialogConfig);
 

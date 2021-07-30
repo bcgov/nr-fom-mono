@@ -126,15 +126,7 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
     try {
       this.originalSubmissionRequest.jsonSpatialSubmission = JSON.parse(this.contentFile);
     }catch (e) {
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Your file is broken. Please review the Geo Spatial data',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      })
+      this.modalSvc.openErrorDialog('The file is not in a valid JSON format. Please fix your file and try again.');
     }
     this.fg.get('jsonSpatialSubmission').setValue(this.originalSubmissionRequest.jsonSpatialSubmission);
   }
@@ -143,21 +135,14 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
     if (!this.fg.valid) {
       this.fg.markAllAsTouched();
       this.fg.updateValueAndValidity({onlySelf: false, emitEvent: true});
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Invalid inputs',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      })
+      // TODO: This needs better text description.
+      this.modalSvc.openWarningDialog('Invalid inputs');
     }
     return this.fg.valid;
   }
 
   async submit() {
-    // TODO: We need go improve this as it's returning null
+    // TODO: We need go improve this as it's returning null (this comment left over from development, might not be valid?)
     const {projectId, submissionTypeCode, ...rest} = this.originalSubmissionRequest;
     let submissionRequest = {...rest, ...this.fg.value}
     await this.submissionSvc.submissionControllerProcessSpatialSubmission(submissionRequest as SubmissionRequest).toPromise();

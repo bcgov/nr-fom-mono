@@ -18,7 +18,7 @@ export class OrderByPipe implements PipeTransform {
       let bCompare = b[args.property] || '';
 
       if (typeof aCompare === 'object' && !(aCompare instanceof Date)) {
-        // MBL TODO: Assume name for sub-property.  Fix this to be more generic.
+        // Assume name for sub-property, which is not overly generic.
         if (aCompare.name === undefined) {
           return 0;
         }

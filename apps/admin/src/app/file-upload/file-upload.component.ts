@@ -51,9 +51,6 @@ export class FileUploadComponent {
   }
 
   public onFileChange(event: any) {
-    console.log('🚀 -------------------------------------------------------------------------------------------------');
-    console.log('🚀 ~ file: file-upload.component.ts ~ line 53 ~ FileUploadComponent ~ onFileChange ~ event', event);
-    console.log('🚀 -------------------------------------------------------------------------------------------------');
     const files = event.target.files;
     this.addFiles(files);
 
@@ -69,7 +66,6 @@ export class FileUploadComponent {
       for (let i = 0; i < files.length; i++) {
         this.files.push(files[i]);
       }
-      console.log(files);
       this.filesChange.emit(this.files);
     }
   }

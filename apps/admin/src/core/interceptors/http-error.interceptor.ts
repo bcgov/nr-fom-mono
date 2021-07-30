@@ -21,18 +21,9 @@ export class ErrorInterceptor implements HttpInterceptor {
       catchError((err) => {
 
         const error = err?.error?.message || err.statusText;
-        console.log({
-          lvl: 'ERROR',
-          mssg: `${request.urlWithParams} failed with error: ${error}`,
-        });
+        console.error(`${request.urlWithParams} failed with error: ` + JSON.stringify(err));
 
-        this.modalSvc.openDialog({
-          data: {
-            message: `The request failed to process due to an error.`,
-            title: `Error: ${err?.error?.message || err.statusText} - ${request.url}`,
-            buttons: { cancel: { text: 'Okay' } },
-          },
-        });
+        this.modalSvc.openErrorDialog(`The request failed to process due to an error. Please try again later.`);
 
         return throwError(error);
       })

@@ -11,9 +11,8 @@ const MyDeployer = class extends BasicDeployer{
     const objects = [];
     const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
-    // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public)
+    // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public, backup-postgres)
 
-    // TODO: Need to evaluate ImageChangeTrigger from tools?  oc.importImageStreams(objects, phases[phase].tag, phases.build.namespace, phases.build.tag);
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,

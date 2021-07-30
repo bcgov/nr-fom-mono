@@ -41,16 +41,6 @@ const markerIcon = L.icon({
   tooltipAnchor: [16, -28]
 });
 
-const markerIconLg = L.icon({
-  iconUrl: 'assets/images/baseline-location_on-24px.svg',
-  // Retina Icon is not needed here considering we're using an SVG. Enable if you want to change to a raster asset.
-  // iconRetinaUrl: 'assets/images/marker-icon-yellow-lg.svg',
-  iconSize: [48, 48],
-  iconAnchor: [24, 48]
-  // popupAnchor: [1, -34], // TODO: update, if needed
-  // tooltipAnchor: [16, -28] // TODO: update, if needed
-});
-
 @Component({
   selector: 'app-map',
   templateUrl: './app-map.component.html',
@@ -257,8 +247,7 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     }
   }
 
-  // when map becomes visible, draw all apps
-  // TODO: or just emit current bounds and cause a reload?
+  // when map becomes visible, draw all apps (rejected option to emit current bounds and cause a reload)
   public onMapVisible() {
     // delete any old apps
     this.markerList.forEach(marker => {

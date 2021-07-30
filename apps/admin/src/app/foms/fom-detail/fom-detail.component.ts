@@ -88,15 +88,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   public deleteAttachment(id: number) {
-    const dialogRef = this.modalSvc.openDialog({
-      data: {
-        message: `You are about to delete this attachment. Are you sure?`,
-        title: 'Delete Attachment',
-        width: '340px',
-        height: '200px',
-        buttons: {confirm: {text: 'OK'}, cancel: { text: 'cancel' }}
-      }
-    });
+    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to delete this attachment. Are you sure?`, 'Delete Attachment');
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         let result = this.attachmentResolverSvc.attachmentControllerRemove(id);
@@ -117,15 +109,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   deleteFOM() {
-    const dialogRef = this.modalSvc.openDialog({
-      data: {
-        message: `You are about to withdraw FOM ${this.project.id} - ${this.project.name}. Are you sure?`,
-        title: 'Withdraw FOM',
-        width: '340px',
-        height: '200px',
-        buttons: {confirm: {text: 'OK'}, cancel: { text: 'cancel' }}
-      }
-    });
+    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to withdraw FOM ${this.project.id} - ${this.project.name}. Are you sure?`, 'Withdraw FOM');
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         this.isDeleting = true;
@@ -145,15 +129,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   finalizeFOM() {
-    const dialogRef = this.modalSvc.openDialog({
-      data: {
-        message: `You are about to finalize FOM ${this.project.id} - ${this.project.name}. Are you sure?`,
-        title: 'Finalize FOM',
-        width: '340px',
-        height: '200px',
-        buttons: {confirm: {text: 'OK'}, cancel: { text: 'cancel' }}
-      }
-    });
+    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to finalize FOM ${this.project.id} - ${this.project.name}. Are you sure?`, 'Finalize FOM');
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         this.isFinalizing = true;
@@ -206,41 +182,17 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     let ready = true;
     if (moment(this.project.commentingClosedDate).diff(moment(this.project.commentingOpenDate), 'days') < 30) {
       ready = false;
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Comment End Date must be at least 30 days after Comment Start Date when "Publish" is pushed.',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      });
+      this.modalSvc.openWarningDialog('Comment End Date must be at least 30 days after Comment Start Date when "Publish" is pushed.');
     }
 
     if (!this.spatialDetail || this.spatialDetail.length == 0) {
       ready = false;
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Proposed FOM spatial file should be uploaded before "Publish" is pushed.',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      });
+      this.modalSvc.openWarningDialog('Proposed FOM spatial file should be uploaded before "Publish" is pushed.');
     }
 
     if(moment(this.project.commentingOpenDate).diff(moment(this.today), 'days') < 1){
       ready = false;
-      this.modalSvc.openDialog({
-        data: {
-          message: 'Comment Start Date must be at least one day after "Publish" is pushed.',
-          title: '',
-          width: '340px',
-          height: '200px',
-          buttons: {confirm: {text: 'OK'}}
-        }
-      });
+      this.modalSvc.openWarningDialog('Comment Start Date must be at least one day after "Publish" is pushed.');
     }
     return ready;
   }
