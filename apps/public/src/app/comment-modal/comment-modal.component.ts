@@ -29,6 +29,7 @@ export class CommentModalComponent implements OnInit {
   public projectSpatialDetail: SpatialFeaturePublicResponse[];
   public selectedScope: CommentScopeOpt;
   public commentScopeOpts :Array<CommentScopeOpt> = [];
+  public feedbackLimit: number = 5000;
 
   constructor(
     public activeModal: NgbActiveModal,
