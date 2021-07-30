@@ -29,6 +29,10 @@ function getLogLevel():string {
     SecurityModule,
     LoggerModule.forRoot({ pinoHttp: {
         level: getLogLevel(),
+        timestamp: () => { 
+          const time = new Date().toISOString();
+          return `,"time": ${time}`;
+        },
         formatters: {
           level: (label) => { return { level: label }; }
         }
