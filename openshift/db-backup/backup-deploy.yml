@@ -231,10 +231,12 @@ objects:
               name: "${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
       replicas: 1
       selector:
-        name: ${NAME}${SUFFIX}
+        deploymentconfig: ${NAME}${SUFFIX}
       template:
         metadata:
           name: ${NAME}${SUFFIX}
+          labels:
+            deploymentconfig: ${NAME}${SUFFIX}
         spec:
           volumes:
             - name: ${BACKUP_VOLUME_NAME}
