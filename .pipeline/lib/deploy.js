@@ -91,7 +91,8 @@ const MyDeployer = class extends BasicDeployer{
         'BACKUP_VOLUME_NAME': `backup${config.suffix}`,
         'VERIFICATION_VOLUME_NAME': `backup-verification${config.suffix}`,
         'DATABASE_DEPLOYMENT_NAME': `fom-db${config.suffix}`,
-
+        'DATABASE_SERVICE_NAME':`fom-db${config.suffix}`,
+        'DATABASE_NAME':'fom',
         // TODO: Need to deal with TABLE_SCHEMA - need both public and app_fom, but this might be fixable.
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }

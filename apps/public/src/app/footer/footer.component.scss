@@ -118,6 +118,22 @@
       }
     }
   }
+
+  .app-footer--sm {
+    font-size: 0.8rem;
+
+    .container {
+      padding: 0 1rem;
+    }
+
+    .footer-admin {
+      padding-top: 0.5rem;
+    }
+
+    ul {
+      font-size: 0.8rem;
+    }
+  }
 }
 
 .app-footer--sm {
@@ -154,20 +170,19 @@
   display: none;
 }
 
-@media (min-width: 768px) {
-  .app-footer--sm {
-    font-size: 0.8rem;
-
-    .container {
-      padding: 0 1rem;
-    }
-
-    .footer-admin {
-      padding-top: 0.5rem;
-    }
-
-    ul {
-      font-size: 0.8rem;
-    }
+/* For all elements toggle between small/large screen */
+[class*="small-screen"] {
+  display: none;
+}
+[class*="large-screen"] {
+  display: block;
+}
+@media (max-width: 1024px) {
+  [class*="small-screen"] {
+    display: block;
+  }
+  [class*="large-screen"] {
+    display: none;
   }
 }
+

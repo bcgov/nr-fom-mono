@@ -1,7 +1,7 @@
 <footer class="app-footer" id="footer"
   [ngClass]="{'app-footer--sm': (router.url.startsWith('/projects'))}">
   <div class="container">
-    <div class="footer-info row">
+    <!-- <div class="footer-info row">
       <div class="col-md-4">
         <section>
           <h4>Navigate</h4>
@@ -12,15 +12,27 @@
           </ul>
         </section>
       </div>
-    </div>
-    <div class="footer-admin clearfix">
-      <ul class="gov-links">
-        <li><a routerLink="/">Home</a></li>
-        <li><a href="http://www2.gov.bc.ca/gov/content/home/copyright" target="_blank" rel="noopener">Copyright</a></li>
-        <li><a href="http://www2.gov.bc.ca/gov/content/home/disclaimer" target="_blank" rel="noopener">Disclaimer</a></li>
-        <li><a href="http://www2.gov.bc.ca/gov/content/home/privacy" target="_blank" rel="noopener">Privacy</a></li>
-        <li><a href="http://www2.gov.bc.ca/gov/content/home/accessibility" target="_blank" rel="noopener">Accessibility</a></li>
-      </ul>
+    </div> -->
+    <div class="footer-admin clearfix row">
+      <div class="col-sm-6">
+        <ul class="gov-links">
+          <li><a routerLink="/">Home</a></li>
+          <li><a href="http://www2.gov.bc.ca/gov/content/home/copyright" target="_blank" rel="noopener">Copyright</a></li>
+          <li><a href="http://www2.gov.bc.ca/gov/content/home/disclaimer" target="_blank" rel="noopener">Disclaimer</a></li>
+          <li><a href="http://www2.gov.bc.ca/gov/content/home/privacy" target="_blank" rel="noopener">Privacy</a></li>
+          <li><a href="http://www2.gov.bc.ca/gov/content/home/accessibility" target="_blank" rel="noopener">Accessibility</a></li>
+          <li>
+            <a class="small-screen feedback-link" href="mailto:Fom.Admin@gov.bc.ca">Feedback</a>
+          </li>
+        </ul>
+      </div>
+      <div class="col-sm-6 large-screen" style="text-align: right;">
+        <ul>
+          <li>
+            Please provide any feedback or suggestions on how to improve this website to <a class="feedback-link" href="mailto:Fom.Admin@gov.bc.ca">Fom.Admin@gov.bc.ca</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </footer>
