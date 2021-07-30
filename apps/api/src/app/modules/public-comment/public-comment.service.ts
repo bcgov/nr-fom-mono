@@ -4,7 +4,7 @@ import { FindOneOptions, Repository, UpdateResult } from 'typeorm';
 import { PublicComment } from './public-comment.entity';
 import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { DeepPartial } from '@entities';
 import * as _ from "lodash";
 import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest, PublicCommentCreateRequest } from './public-comment.dto';

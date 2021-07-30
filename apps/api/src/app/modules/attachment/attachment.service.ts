@@ -6,7 +6,7 @@ import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { AttachmentCreateRequest, AttachmentFileResponse, AttachmentResponse } from './attachment.dto';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
 import { minioClient } from 'apps/api/src/minio';

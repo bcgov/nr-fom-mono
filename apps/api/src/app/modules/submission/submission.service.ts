@@ -16,7 +16,7 @@ import { RoadSection } from './road-section.entity';
 import { RetentionArea } from './retention-area.entity';
 import { ProjectResponse } from '../project/project.dto';
 import { flatDeep } from '../../../core/utils';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { ProjectAuthService } from '../project/project-auth.service';
 
 type SpatialObject = CutBlock | RoadSection | RetentionArea;

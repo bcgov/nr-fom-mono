@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { InteractionResponse, InteractionService, ProjectResponse, WorkflowStateEnum } from '@api-client';
 import { KeycloakService } from '../../../core/services/keycloak.service';
 import { ModalService } from '../../../core/services/modal.service';
-import { User } from '../../../core/services/user';
+import { User } from "@api-core/security/user";
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InteractionDetailComponent } from './interaction-detail/interaction-detail.component';

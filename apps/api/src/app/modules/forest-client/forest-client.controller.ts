@@ -6,7 +6,7 @@ import { ForestClientService } from './forest-client.service';
 import { ForestClient } from './forest-client.entity';
 import { ForestClientResponse } from './forest-client.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 
 @ApiTags('forest-client')
 @Controller('forest-client')

@@ -12,7 +12,7 @@ import {
 
 import {ProjectResponse, ProjectService, SpatialFeaturePublicResponse} from '@api-client';
 import { KeycloakService } from '../../../core/services/keycloak.service';
-import { User } from '../../../core/services/user';
+import {User} from "@api-core/security/user";
 import { ModalService } from '../../../core/services/modal.service';
 import * as moment from 'moment';
 import {AttachmentResolverSvc} from "../../../core/services/AttachmentResolverSvc";

@@ -7,7 +7,7 @@ import { ApiBaseEntity, DeepPartial } from '@entities';
 import * as dayjs from 'dayjs';
 
 import { mapToEntity } from '@core';
-import { User } from '../security/user';
+import { User } from "@api-core/security/user";
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 /**

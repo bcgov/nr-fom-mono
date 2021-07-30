@@ -23,7 +23,7 @@ import {StateService} from '../../../core/services/state.service';
 import {ModalService} from '../../../core/services/modal.service';
 import {AttachmentUploadService} from "../../../core/utils/attachmentUploadService";
 import { AttachmentTypeEnum } from "../../../core/models/attachmentTypeEnum";
-import {User} from "../../../core/services/user";
+import {User} from "@api-core/security/user";
 import {KeycloakService} from "../../../core/services/keycloak.service";
 import {AttachmentResolverSvc} from "../../../core/services/AttachmentResolverSvc";
 

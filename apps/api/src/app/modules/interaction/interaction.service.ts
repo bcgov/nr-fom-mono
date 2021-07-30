@@ -10,7 +10,7 @@ import _ = require('lodash');
 import { AttachmentService } from '../attachment/attachment.service';
 import { AttachmentCreateRequest } from '../attachment/attachment.dto';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { DataService } from 'apps/api/src/core/models/data.service';
 
 @Injectable()

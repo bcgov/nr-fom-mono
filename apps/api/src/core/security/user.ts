@@ -1,5 +1,3 @@
-// Note: This is copied into nr-fom-admin/src/core/services from nr_fom-api/apps/src/core/security
-
 // Represents a user's information extracted from Keycloak JWT.
 export class User {
     userName: string; 

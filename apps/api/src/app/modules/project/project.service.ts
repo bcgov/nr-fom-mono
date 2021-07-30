@@ -8,7 +8,7 @@ import { DataService } from 'apps/api/src/core/models/data.service';
 import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
 import { isNil } from 'lodash';

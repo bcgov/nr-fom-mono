@@ -11,7 +11,7 @@ import {StateService} from '../../../core/services/state.service';
 import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 import { map, takeUntil } from 'rxjs/operators';
 import { KeycloakService } from '../../../core/services/keycloak.service';
-import { User } from '../../../core/services/user';
+import { User } from "@api-core/security/user";
 import * as _ from 'lodash';
 import { COMMENT_SCOPE_CODE, ConstantUtils } from '../../../core/utils/constants/constantUtils';
 

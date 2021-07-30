@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 import {ProjectService, WorkflowStateEnum, ProjectResponse} from "@api-client";
 import { StateService } from '../../core/services/state.service';
 import { KeycloakService } from '../../core/services/keycloak.service';
-import { User } from '../../core/services/user'
+import { User } from "@api-core/security/user";
 import { isNil } from 'lodash';
 import { ModalService } from '../../core/services/modal.service';
 

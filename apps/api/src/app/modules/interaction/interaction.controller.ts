@@ -5,7 +5,7 @@ import { InteractionService } from './interaction.service';
 import { PinoLogger } from 'nestjs-pino';
 import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { maxFileSizeBytes } from '../attachment/attachment.controller';
 import { validate } from 'class-validator';

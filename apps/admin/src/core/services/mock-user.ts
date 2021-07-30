@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "@api-core/security/user";
 
 export function getFakeUser():User {
   const userType:string = 'AllAccess'; // NoAccess, ForestClient, Ministry, AllAccess

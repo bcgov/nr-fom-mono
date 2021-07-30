@@ -1,7 +1,7 @@
 import { mockLoggerFactory } from '../../factories/mock-logger.factory';
 import { ProjectService } from './project.service';
 import { Project } from './project.entity';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { ProjectCreateRequest, ProjectUpdateRequest } from './project.dto';
 

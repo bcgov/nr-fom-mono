@@ -6,7 +6,7 @@ import { ProjectService, ProjectFindCriteria } from './project.service';
 import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { PinoLogger } from 'nestjs-pino';
 
 

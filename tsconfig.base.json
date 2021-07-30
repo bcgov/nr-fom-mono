@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@core": ["apps/api/src/core"],
+      "@api-core/*": ["apps/api/src/core/*"],
       "@controllers": ["apps/api/src/core/controllers"],
       "@entities": ["apps/api/src/core/entities"],
       "@api-modules/*": ["apps/api/src/app/modules/*"],
