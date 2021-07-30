@@ -61,6 +61,11 @@
           [disabled]="loading" 
           (click)="clearFilters();">Clear Filters</button>
       </span>
+      <span class="app-results__clear" style="border-left: none;">
+        <!-- add this invisible span element so on mobile device for flex content it will display better 
+             and not overlapping with app-map's layer icon-->
+        &nbsp;
+      </span>
     </div>
     <app-map class="app-map" *ngIf="projectsSummary" #appmap
       [loading]="loading"
