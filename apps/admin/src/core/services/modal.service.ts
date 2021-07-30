@@ -3,46 +3,24 @@ import { MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dial
 import { Observable } from 'rxjs';
 import { ComponentType } from '@angular/cdk/portal';
 import { DialogData } from '../models/dialog';
-
-import * as R from 'remeda';
 import { DialogComponent } from '../components/dialog/dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 export const dialogTypes = ['cancel'] as const;
 
-export const ERROR_DIALOG = {
-  title: '',
-  message: 'Something went wrong with the request. Please try again.',
-  width: '340px',
-  height: '200px',
-  buttons: {
-    cancel: {
-      text: 'Close',
-    },
-  },
-};
-
 @Injectable({
   providedIn: 'root',
 })
 export class ModalService {
+
   modalOpen = false;
   dialogRefClose$: Observable<MatDialogRef<any>>;
 
-  private _errorDialog: DialogData;
-
-  get errorDialog() {
-    return this._errorDialog;
-  }
-
   constructor(public dialog: MatDialog, public snackBar: MatSnackBar) {
-    this._errorDialog = R.clone(ERROR_DIALOG);
   }
-
 
   openSnackBar( { message, button }: { message: string, button?: string; } ) {
     return this.snackBar.open( message, button ?? button, { verticalPosition: 'top', panelClass: 'snackbar'} )
-
   }
 
   /**
@@ -69,6 +47,43 @@ export class ModalService {
       data,
       width,
     });
+  }
+
+  openErrorDialog(message?: string) {
+    this.openDialog({
+      data: {
+        message: message || 'There was an error with the request, please try again.',
+        title: 'Error',
+        width: '340px',
+        height: '200px',
+        buttons: {confirm: {text: 'OK'}}
+      }
+    });
+  }
+
+  openWarningDialog(message: string) {
+    this.openDialog({
+      data: {
+        message: message,
+        title: 'Warning',
+        width: '340px',
+        height: '200px',
+        buttons: {confirm: {text: 'OK'}}
+      }
+    });
+  }
+
+  openConfirmationDialog(message: string, title: string): MatDialogRef<any> {
+    const dialogRef = this.openDialog({
+      data: {
+        message: message,
+        title: title,
+        width: '340px',
+        height: '200px',
+        buttons: {confirm: {text: 'OK'}, cancel: { text: 'Cancel' }}
+      }
+    });
+    return dialogRef;
   }
 
   updateDialogRefSubject(ref: MatDialogRef<any>): void {

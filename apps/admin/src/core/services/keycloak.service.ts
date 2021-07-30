@@ -67,14 +67,13 @@ export class KeycloakService {
 
       // Try to get refresh tokens in the background
       this.keycloakAuth.onTokenExpired = () => {
-        console.log('KC token expired, refreshing...');
         this.keycloakAuth
           .updateToken()
           .then(refreshed => {
-            console.log('KC token refreshed?: ' + refreshed);
+            console.log('Keycloak token refreshed?: ' + refreshed);
           })
           .catch(err => {
-            console.log('KC refresh error:', err);
+            console.error('Keycloak token refresh error:', err);
           });
       };
 
@@ -95,7 +94,7 @@ export class KeycloakService {
           }
         })
         .catch(err => {
-          console.log('KC error:', err);
+          console.error('Keycloak error:', err);
           reject();
         });
 
@@ -119,7 +118,7 @@ export class KeycloakService {
     }
 
     const user = User.convertJwtToUser(decodedToken);
-    console.log("User " + JSON.stringify(user)); // TODO:REMOVE
+    console.log("User " + JSON.stringify(user)); 
 
     return user;
   }
@@ -152,12 +151,12 @@ export class KeycloakService {
         // because this is only called by tokenInterceptor when getting a 403 from the backend.
         .updateToken(-1) 
         .then(refreshed => {
-          console.log('KC refreshed token?:', refreshed);
+          console.log('Keycloak token refreshed?:', refreshed);
           observer.next();
           observer.complete();
         })
         .catch(err => {
-          console.log('KC refresh error:', err);
+          console.error('Keycloak token refresh error:', err);
           observer.error();
         });
 

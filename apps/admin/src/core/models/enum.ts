@@ -11,8 +11,6 @@ export type Values<T> = ValuesWithKeys<T, keyof T>;
 export type EnumLiteralsOf<T extends object> = T[keyof T];
 export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
-// TODO: fix this generic array function
-export type ArrayValue<T, K extends readonly T[]> = K[number];
 export type Pick<T, K extends keyof T> = {
   [P in K]: T[P];
 };

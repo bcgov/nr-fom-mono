@@ -232,7 +232,7 @@ export class SubmissionService {
    */
   async prepareFomSpatialObjects(submissionId: number, spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User) 
     :Promise<SpatialObject[]> {
-    this.logger.info(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
+    this.logger.debug(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
         and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
 
     const spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
@@ -277,7 +277,7 @@ export class SubmissionService {
 
   // Update project location
   async updateProjectLocation(projectId: number, user: User) {
-    this.logger.info(`Updating project location for projectId: ${projectId}`);
+    this.logger.debug(`Updating project location for projectId: ${projectId}`);
     await getManager().query(`
       with project_geometries as (
         select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
@@ -293,7 +293,7 @@ export class SubmissionService {
         revision_count = (select revision_count+1 from app_fom.project p2 where p.project_id = p2.project_id )
       where p.project_id = $1;
     `, [projectId, user.userName]);
-    this.logger.info(`Project location updated for projectId: ${projectId}`);
+    this.logger.debug(`Project location updated for projectId: ${projectId}`);
   }
 
 }

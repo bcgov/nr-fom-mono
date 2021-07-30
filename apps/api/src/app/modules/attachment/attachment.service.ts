@@ -70,7 +70,8 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
     minioClient.putObject(process.env.OBJECT_STORAGE_BUCKET, objectName, request.fileContents, function(error, etag) {
       if(error) {
-          return console.log(error);
+        // TODO: This is on the API, so should be throwing error if putObject() fails.
+        return console.error(error);
       }
     });
   }

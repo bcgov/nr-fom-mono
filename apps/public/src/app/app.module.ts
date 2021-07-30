@@ -9,7 +9,7 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 // modules
 import { SharedModule } from './shared.module';
 import { AppRoutingModule } from './app-routing.module';
-import { ProjectsModule } from './applications/projects.module'; // TODO: Shouldn't have anything related to application?
+import { ProjectsModule } from './applications/projects.module'; 
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 

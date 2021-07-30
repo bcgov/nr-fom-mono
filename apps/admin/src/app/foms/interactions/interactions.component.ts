@@ -106,20 +106,12 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     const {id} = selectedInteraction;
     const resultPromise = this.prepareSaveRequest(id, this.projectId, saveReq, selectedInteraction);
     resultPromise
-      .then((result) => this.handelSaveSuccess(result))
-      .catch((err) => this.handelSaveError(err));
+      .then((result) => this.handleSaveSuccess(result))
+      .catch((err) => this.handleSaveError(err));
   }
 
   async deleteInteraction(selectedInteraction: InteractionResponse) {
-    const dialogRef = this.modalSvc.openDialog({
-      data: {
-        message: `You are about to delete this engagement. Are you sure?`,
-        title: 'Delete Engagement',
-        width: '340px',
-        height: '200px',
-        buttons: {confirm: {text: 'OK'}, cancel: { text: 'cancel' }}
-      }
-    });
+    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to delete this engagement. Are you sure?`, 'Delete Engagement');
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         this.loading = true;
@@ -159,7 +151,7 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     return resultPromise;
   }
 
-  private handelSaveSuccess(result: any) {
+  private handleSaveSuccess(result: any) {
     const pos = this.interactionListScrollContainer.nativeElement.scrollTop;
     this.interactionSaved$.next();
     this.selectedItem = result; // updated selected.
@@ -169,9 +161,8 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     }, 300);
   }
 
-  private handelSaveError(err: any) {
-    // disable below, let interceptor to show error for now.
-    // this.modalSvc.openDialog({data: {...ERROR_DIALOG, message: 'Failed to update', title: ''}})
+  private handleSaveError(err: any) {
+    // Let HTTP Error Interceptor show the error for now.
     console.error('Failed to save', err);
     this.loading = false;
   }

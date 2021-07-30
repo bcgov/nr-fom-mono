@@ -30,7 +30,6 @@ function CreateApiStack {
     Start-Sleep -s 60
 
     $Hostname="fom-nrs$Suffix.apps.silver.devops.gov.bc.ca"
-    # $Hostname="nr-fom-api$Suffix.apps.silver.devops.gov.bc.ca" TODO: Old format hostname.
 
     Write-Output "Creating api backend..."
     oc process -f fom-api-deploy.yml -p ENV=$Env -p SUFFIX=$Suffix -p HOSTNAME=$Hostname -p IMAGE_STREAM_VERSION=$ApiVersion -p DB_TESTDATA=$TestData -p REPLICA_COUNT=$ReplicaCount -p KEYCLOAK_ENABLED=$KeycloakEnabled | oc create -n a4b31c-$Env -f -

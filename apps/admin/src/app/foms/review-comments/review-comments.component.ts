@@ -165,7 +165,8 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
         }, 300);
 
       } else {
-        this.modalSvc.openDialog({data: {...ERROR_DIALOG, message: 'Failed to update', title: ''}})
+        // TODO: Is this needed, error interceptor should handle this?
+        this.modalSvc.openErrorDialog('Failed to update');
         this.loading = false;
       }
     } catch (err) {

@@ -150,12 +150,9 @@ export class UploadBoxComponent implements OnInit {
   onSelect(event) {
     this.files = R.concat(event.addedFiles, this.files);
     this.invalidTypeText = null;
-    console.log(this.files)
-
     if (event.addedFiles.length > 0) {
       this.fileBlobsUploaded.emit(this.files);
     } else {
-      console.log(event.rejectedFiles);
       if (event.rejectedFiles.some((r) => r.reason === 'type')) {
         this.invalidTypeText = 'The file type is not accepted';
       } else if (event.rejectedFiles.some((r) => r.reason === 'size')) {
