@@ -213,7 +213,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.fg.valid;
   }
 
-  async submit() {
+  submit() {
     this.isSubmitSaveClicked = true;
     this.validate();
     if (!this.fg.valid) return;
@@ -222,12 +222,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     projectCreate['districtId'] = this.districtIdSelect;
     projectCreate.forestClientNumber = this.fg.get('forestClient').value;
 
-    // TODO: Remove logging, handle !id scenario
-    const result = await this.projectSvc.projectControllerCreate(projectCreate).pipe(tap(obs => console.log(obs))).toPromise()
-    const {id} = result;
-    if (!id) {
-    }
-    this.onSuccess(id)
+    this.projectSvc.projectControllerCreate(projectCreate)
+        .toPromise()
+        .then(result => this.onSuccess(result.id))
+        .catch(err => console.error(err));
   }
 
   onSuccess(id: number) {
@@ -244,10 +242,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     let projectUpdateRequest = {...rest, ...this.fg.value}
     projectUpdateRequest['districtId'] = projectUpdateRequest.district;
 
-    // TODO: Remove logging, clean up error handling - why have a try catch that logs the error when there's also the display of a modal dialog.
     if (!this.fg.valid) return;
     try {
-      const result = await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).pipe(tap(obs => console.log(obs))).toPromise();
+      const result = await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).toPromise();
 
       let resultAttachment: Observable<any>;
       let file: any = null;
@@ -271,10 +268,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
             AttachmentTypeEnum.SUPPORTING_DOC).pipe(tap(obs => console.log(obs))).toPromise();
       }
 
-      if (result) {
-        return this.onSuccess(id);
-      }
-      this.modalSvc.openErrorDialog();
+      return this.onSuccess(id);
     } catch (err) {
       console.error(err);
     }
