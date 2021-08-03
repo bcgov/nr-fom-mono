@@ -102,7 +102,7 @@
 
         <div class="form-row">
 
-          <div class="col-md-2">
+          <div class="form-group col-md-2">
             <label for="fsp-id" style="white-space: nowrap;"
             >FSP ID</label>
             <input
@@ -114,7 +114,7 @@
               [appFormControl]="fg.get('fspId')"
             />
           </div>
-          <div class="col">
+          <div class="form-group col">
             <label for="fsp-id" style="white-space: nowrap;">District</label>
             <select class="sort-comments form-control" [ngClass]="{'is-invalid': !districtIdSelect && isSubmitSaveClicked}" (change)="changeDistrictId($event)" id="district-list">
               <option *ngIf="this.isCreate || !districtIdSelect">  </option>

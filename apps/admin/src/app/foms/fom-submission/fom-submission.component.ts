@@ -131,22 +131,13 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
     this.fg.get('jsonSpatialSubmission').setValue(this.originalSubmissionRequest.jsonSpatialSubmission);
   }
 
-  validate() {
-    if (!this.fg.valid) {
-      this.fg.markAllAsTouched();
-      this.fg.updateValueAndValidity({onlySelf: false, emitEvent: true});
-      // TODO: This needs better text description.
-      this.modalSvc.openWarningDialog('Invalid inputs');
-    }
-    return this.fg.valid;
-  }
-
-  async submit() {
-    // TODO: We need go improve this as it's returning null (this comment left over from development, might not be valid?)
+  submit() {
     const {projectId, submissionTypeCode, ...rest} = this.originalSubmissionRequest;
     let submissionRequest = {...rest, ...this.fg.value}
-    await this.submissionSvc.submissionControllerProcessSpatialSubmission(submissionRequest as SubmissionRequest).toPromise();
-    this.onSuccess(this.originalSubmissionRequest.projectId);
+    this.submissionSvc.submissionControllerProcessSpatialSubmission(submissionRequest as SubmissionRequest)
+        .toPromise()
+        .then(() => this.onSuccess(this.originalSubmissionRequest.projectId))
+        .catch((err) => console.error(err));
   }
 
   onSuccess(id: number) {

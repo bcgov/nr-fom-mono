@@ -29,7 +29,6 @@ import { SummaryComponent } from './summary/summary.component';
 import { MatIconModule } from '@angular/material/icon';
 import { CommentsSummaryComponent } from './summary/comments-summary/comments-summary.component';
 import { InteractionsSummaryComponent } from './summary/interactions-summary/interactions-summary.component';
-import { NgxPrintModule } from 'ngx-print';
 import {AttachmentResolverSvc} from "../../core/services/AttachmentResolverSvc";
 import { MatSelectModule } from '@angular/material/select';
 // services
@@ -52,7 +51,6 @@ import { MatSelectModule } from '@angular/material/select';
       MatCardModule,
       MatIconModule,
       MatBadgeModule,
-      NgxPrintModule,
       MatSelectModule
   ],
   declarations: [
