@@ -101,29 +101,6 @@ $doc-list-link-color: #007bff;
   }
 }
 
-// Document List Publish Actions
-.publish-actions {
-  @include flex(0 0 auto);
-
-  padding-right: 0;
-  overflow: visible;
-
-  .btn {
-    height: 2rem;
-    width: 5.5rem;
-    font-size: 0.75rem;
-
-    &.active {
-      box-shadow: none;
-    }
-
-    // TODO: remove when we the toggle buttons here to a radio group
-    &:disabled {
-      opacity: 1;
-    }
-  }
-}
-
 .doc-list.inline {
   margin: -0.2rem;
 
