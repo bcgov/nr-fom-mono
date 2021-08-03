@@ -151,26 +151,21 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
     try {
       this.loading = true;
       const result = await this.commentSvc.publicCommentControllerUpdate(id, update).toPromise();
-      if (result) {
-        // scroll position, important to get it first!!
-        const pos = this.commentListScrollContainer.nativeElement.scrollTop;
 
-        // Comment is saved successfully, so triggering service to retrieve comment list 
-        // from backend for consistent state of the list at frontend.
-        this.triggered$.next();
-        this.selectedItem = result; // updated selected.
-        this.loading = false;
-        setTimeout(() => {
-          this.onReviewItemClicked(this.selectedItem, pos);
-        }, 300);
+      // scroll position, important to get it first!!
+      const pos = this.commentListScrollContainer.nativeElement.scrollTop;
 
-      } else {
-        // TODO: Is this needed, error interceptor should handle this?
-        this.modalSvc.openErrorDialog('Failed to update');
-        this.loading = false;
-      }
+      // Comment is saved successfully, so triggering service to retrieve comment list 
+      // from backend for consistent state of the list at frontend.
+      this.triggered$.next();
+      this.selectedItem = result; // updated selected.
+      this.loading = false;
+      setTimeout(() => {
+        this.onReviewItemClicked(this.selectedItem, pos);
+      }, 300);
+
     } catch (err) {
-      console.error("Failed to update.", err)
+      console.error("Failed to save comment.", err)
       this.loading = false;
     }
   }
