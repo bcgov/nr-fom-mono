@@ -70,8 +70,6 @@ objects:
       DEFAULT_PORT: "${DATABASE_DEFAULT_PORT}"
       POSTGRESQL_DATABASE: "${DATABASE_NAME}"
       BACKUP_STRATEGY: "rolling"
-      # BACKUP_STRATEGY: "daily"
-      # RETENTION.NUM_BACKUPS: "${NUM_BACKUPS}"
       RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
       RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
       RETENTION.MONTHLY_BACKUPS: "${MONTHLY_BACKUPS}"
@@ -107,10 +105,12 @@ objects:
                   command:
                     - "/bin/bash"
                     - "-c"
-                    - "/backup.sh -1"
+                    - "/backup.sh -c && /backup.sh -1 && /backup.sh -v all"
                   volumeMounts:
-                    - mountPath: "${BACKUP_DIR}"
-                      name: "backup"
+                    - name: "backup"
+                      mountPath: "${BACKUP_DIR}"
+                    - name: ${VERIFICATION_VOLUME_NAME}
+                      mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
                   env:
                     - name: BACKUP_DIR
                       value: "${BACKUP_DIR}"
@@ -169,10 +169,16 @@ objects:
                         secretKeyRef:
                           name: "${DATABASE_DEPLOYMENT_NAME}"
                           key: "${DATABASE_PASSWORD_KEY_NAME}"
+                    # Used for verification
+                    - name: DATABASE_SERVER_TIMEOUT
+                      value: "300"
               volumes:
                 - name: backup
                   persistentVolumeClaim:
                     claimName: ${BACKUP_VOLUME_NAME}
+                - name: verification
+                  persistentVolumeClaim:
+                    claimName: ${VERIFICATION_VOLUME_NAME}
               restartPolicy: "Never"
               terminationGracePeriodSeconds: 30
               activeDeadlineSeconds: 1600
@@ -374,9 +380,9 @@ parameters:
     value: postgresql
   - name: TABLE_SCHEMA
     displayName: Table Schema
-    description: The table schema for your database.  Used for Postgres backups.
+    description: The table schema for your database.  Used for Postgres backup verification.
     required: true
-    value: public
+    value: app_fom
   - name: DATABASE_SERVICE_NAME
     displayName: Database Service Name
     description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database service.
