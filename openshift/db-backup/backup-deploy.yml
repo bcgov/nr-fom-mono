@@ -107,10 +107,10 @@ objects:
                     - "-c"
                     - "/backup.sh -c && /backup.sh -1 && /backup.sh -v all"
                   volumeMounts:
-                    - name: "backup"
+                    - name: backup
                       mountPath: "${BACKUP_DIR}"
-                    - name: ${VERIFICATION_VOLUME_NAME}
-                      mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
+                    - name: verification
+                      mountPath: "${VERIFICATION_VOLUME_MOUNT_PATH}"
                   env:
                     - name: BACKUP_DIR
                       value: "${BACKUP_DIR}"
