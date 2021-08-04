@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getConnection, getManager, Repository } from 'typeorm';
 import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
@@ -18,6 +18,7 @@ import { ProjectResponse } from '../project/project.dto';
 import { flatDeep } from '../../../core/utils';
 import { User } from "@api-core/security/user";
 import { ProjectAuthService } from '../project/project-auth.service';
+import _ = require('lodash');
 
 type SpatialObject = CutBlock | RoadSection | RetentionArea;
 
@@ -38,7 +39,6 @@ export class SubmissionService {
    */
   async processSpatialSubmission(dto: Partial<SubmissionRequest>, user: User): Promise<void> {       
     this.logger.debug(`${this.constructor.name}.create props %o`, dto);
-
     // Load the existing project to obtain the project's workflow state
     
     const project: ProjectResponse = await this.projectService.findOne(dto.projectId, user); // This invokes security authorization check which will always pass.
@@ -55,8 +55,7 @@ export class SubmissionService {
     // @see {getPermittedSubmissoinStatus} comment.
     if (!submissionTypeCode || submissionTypeCode !== dto.submissionTypeCode) {
       const errMsg = `Submission (${dto.submissionTypeCode}) is not allowed for workflow_state_code ${workflowStateCode}.`;
-      this.logger.error(errMsg);
-      throw new UnprocessableEntityException(errMsg);
+      throw new BadRequestException(errMsg);
     }
 
     // Obtain Submission(or new one) so we have the id.
@@ -153,6 +152,22 @@ export class SubmissionService {
   validateFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User): 
     SpatialObject[] {
 
+    if (!spatialObjectCode || ![SpatialObjectCodeEnum.CUT_BLOCK, SpatialObjectCodeEnum.ROAD_SECTION, SpatialObjectCodeEnum.ROAD_SECTION]
+      .includes(spatialObjectCode)) {
+        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`);
+    }
+
+    if (!jsonSpatialSubmission || _.isEmpty(jsonSpatialSubmission) || _.isEmpty(jsonSpatialSubmission.features)) {
+      throw new BadRequestException("Spatial submission is empty!")
+    }
+
+    const crs = jsonSpatialSubmission.crs;
+    if (!_.isEmpty(crs)) {
+      if (!crs.properties || !crs.properties.name || crs.properties.name != 'EPSG:3005') {
+        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: { "name": "EPSG:3005" }`);
+      }
+    }
+
     // spatial objects holder to be parsed into.
     let spatialObjs: SpatialObject[];
     const features = jsonSpatialSubmission.features;
@@ -169,7 +184,7 @@ export class SubmissionService {
       flatDeep(coordinates, d).forEach( (p: Position) => {
         if( !(bb.ix <= p[0] && p[0] <= bb.ax && bb.iy <= p[1] && p[1] <= bb.ay) ) {
           const errMsg = `Coordinate (${p}) is not within BC bounding box ${JSON.stringify(bb)}.`;
-          throw new UnprocessableEntityException(errMsg);
+          throw new BadRequestException(errMsg);
         }
       });
     };
@@ -180,14 +195,14 @@ export class SubmissionService {
           spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
         if (!properties.hasOwnProperty(REQUIRED_PROP_DEVELOPMENT_DATE)) {
           const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} missing for ${spatialObjectCode}`;
-          throw new UnprocessableEntityException(errMsg);
+          throw new BadRequestException(errMsg);
         }
         else {
           // validate date format: YYYY-MM-DD
           const developmentDate = properties[REQUIRED_PROP_DEVELOPMENT_DATE];
           if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
             const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} has wrong date format. Valid format: '${DATE_FORMAT}'`;
-            throw new UnprocessableEntityException(errMsg);
+            throw new BadRequestException(errMsg);
           }
         }
       }
@@ -196,21 +211,39 @@ export class SubmissionService {
     spatialObjs = features.map(f => {
       const geometry = f.geometry;
       const properties = f.properties;
+
+      if (!geometry || _.isEmpty(geometry)) {
+        throw new BadRequestException(`Required Feature object 'geometry' missing for ${spatialObjectCode}`);
+      }
+
+      if (!geometry.hasOwnProperty('coordinates')) {
+        throw new BadRequestException(`Required Feature object 'coordinates' missing for ${spatialObjectCode}`);
+      }
+
       let name: string;
-      if (properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
+      if (properties && properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
         name = properties[OPTIONAL_PROP_NAME];
       }
 
       validateCoordWithinBounding(geometry);
 
       if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK) {
+        if (!properties) {
+          throw new BadRequestException(`Required Feature object 'properties' missing for ${spatialObjectCode}`);
+        }
+
         // validate required properties.
         validateDevelopmentDate(properties);
         return new CutBlock({name, geometry,
           createUser: user.userName,
           plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
+
       else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
+        if (!properties) {
+          throw new BadRequestException(`Required Feature object 'properties' missing for ${spatialObjectCode}`);
+        }
+
         // validate required properties.
         validateDevelopmentDate(properties);
         return new RoadSection({name, geometry,
