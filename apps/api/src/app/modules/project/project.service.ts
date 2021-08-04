@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
@@ -272,7 +272,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     options.relations.push('submissions'); // add this extra relation for later use.
     const entity:Project = await this.findEntityWithCommonRelations(projectId, options);
     if (! entity) {
-      throw new UnprocessableEntityException("Entity not found.");
+      throw new BadRequestException("Entity not found.");
     }
 
     if (!user || !user.isForestClient || !user.isAuthorizedForClientId(entity.forestClientId)) {
@@ -281,7 +281,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     if (entity.revisionCount != request.revisionCount) {
       this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
-      throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
     }
 
     if (request.workflowStateCode == entity.workflowStateCode) {
