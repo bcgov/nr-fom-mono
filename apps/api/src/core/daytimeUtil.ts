@@ -31,6 +31,12 @@ export class DateTimeUtil {
         return dayjs.tz(dayjs().utc(), DateTimeUtil.DATE_FORMAT, timezone);
     }
 
+    /**
+     * 
+     * @param dateInput valid date input string for parsing.
+     * @param timezone valid TimeZone string e.g 'America/Vancouver'.
+     * @returns dayjs object based on 'timezone'.
+     */
     public get(dateInput: string, timezone: string) {
         if (!timezone) {
             return dayjs(dateInput);
@@ -38,6 +44,14 @@ export class DateTimeUtil {
         return dayjs(dateInput).tz(timezone);
     }
 
+    /**
+     * 
+     * @param startDateSt beginning date as string.
+     * @param endDateSt end date as string.
+     * @param timezone valid TimeZone string e.g 'America/Vancouver'.
+     * @param unit dayjs valid unit.
+     * @returns # of unit difference between two dates.
+     */
     public diff(startDateSt: string, endDateSt: string, timezone: string, unit: any) {
         const startDate = this.get(startDateSt, timezone);
         const endDate = this.get(endDateSt, timezone);
