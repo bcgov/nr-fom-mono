@@ -134,6 +134,7 @@ export class SubmissionService {
     } else {
       submission = existingSubmissions[0];
       submission.updateUser = user.userName;
+      // Saving update timestamp in UTC format is fine.
       submission.updateTimestamp = dayjs().toDate();
       submission.revisionCount += 1;
     }
