@@ -35,7 +35,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     }
 
     const fileExtension:string = request.fileName.split('.').pop();
-    if (!allowedExtensions.includes(fileExtension)) {
+    if (!allowedExtensions.includes(fileExtension.toLowerCase())) {
       throw new BadRequestException(`Attachment of ${fileExtension} extension not permitted for ${attachmentTypeCode} attachment.`);
     }
 
