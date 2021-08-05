@@ -81,7 +81,7 @@
     "bootstrap": "^4.5.0",
     "class-transformer": "^0.3.2",
     "class-validator": "^0.13.1",
-    "dayjs": "^1.10.4",
+    "dayjs": "^1.10.6",
     "dotenv": "^6.2.0",
     "express-session": "^1.17.1",
     "file-saver": "^2.0.5",
