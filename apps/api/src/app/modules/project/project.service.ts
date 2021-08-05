@@ -17,6 +17,7 @@ import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { PublicCommentService } from '../public-comment/public-comment.service';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
 import { MailService } from 'apps/api/src/core/mail/mail.service';
+import { DateTimeUtil } from '@api-core/daytimeUtil';
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -65,7 +66,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     private forestClientService: ForestClientService,
     private attachmentService: AttachmentService,
     private publicCommentService: PublicCommentService,
-    private mailService: MailService
+    private mailService: MailService,
+    private dateTimeUtil: DateTimeUtil
   ) {
     super(repository, new Project(), logger);
   }
@@ -392,9 +394,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // Required COMMENTING_OPEN_DATE: must be at least one day after publish is pushed
-      const publishDate = dayjs().startOf('day');
-      const commentingOpenDate = dayjs(entity.commentingOpenDate).startOf('day');
-      const dayDiff = commentingOpenDate.diff(publishDate, "day");
+      const dayDiff = this.dateTimeUtil.diffNow(entity.commentingOpenDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
       if (dayDiff < 1) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Commenting Open Date: must be at least one day after publish is pushed.`);
@@ -407,8 +407,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // Required: COMMENTING_CLOSED_DATE at least 30 days after commenting open
-      const commentingClosedDate = dayjs(entity.commentingClosedDate).startOf('day');
-      const openClosedDatesDiff = commentingClosedDate.diff(commentingOpenDate, "day");
+      const openClosedDatesDiff = this.dateTimeUtil.diff(entity.commentingOpenDate, entity.commentingClosedDate, 
+                                  DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
       if (openClosedDatesDiff < 30) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Commenting Closed Date: must be at least 30 days after Commenting Open Date.`);
