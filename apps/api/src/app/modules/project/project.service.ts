@@ -374,12 +374,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const districtId = entity.districtId;
 
     if (isNil(fspId) || isNaN(fspId)) {
-      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}. 
+      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}. 
             Missing FSP ID.`);
     }
 
     if (!this.isDistrictExist(districtId)) {
-      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+      throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
             Missing District.`);
     }
 
@@ -387,8 +387,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     if (WorkflowStateEnum.PUBLISHED === stateTransition) {
       // Required COMMENTING_OPEN_DATE
       if (isNil(entity.commentingOpenDate) || !dayjs(entity.commentingOpenDate, this.DATE_FORMAT).isValid()) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
-        Missing COMMENTING_OPEN_DATE.`);
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
+        Missing Commenting Open Date`);
       }
 
       // Required COMMENTING_OPEN_DATE: must be at least one day after publish is pushed
@@ -396,33 +396,33 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       const commentingOpenDate = dayjs(entity.commentingOpenDate).startOf('day');
       const dayDiff = commentingOpenDate.diff(publishDate, "day");
       if (dayDiff < 1) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
-        COMMENTING_OPEN_DATE: must be at least one day after publish is pushed.`);
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
+        Commenting Open Date: must be at least one day after publish is pushed.`);
       }
 
       // Required: COMMENTING_CLOSED_DATE
       if (isNil(entity.commentingClosedDate) || !dayjs(entity.commentingClosedDate, this.DATE_FORMAT).isValid()) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
-        Missing COMMENTING_CLOSED_DATE.`);
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
+        Missing Commenting Closed Date.`);
       }
 
       // Required: COMMENTING_CLOSED_DATE at least 30 days after commenting open
       const commentingClosedDate = dayjs(entity.commentingClosedDate).startOf('day');
       const openClosedDatesDiff = commentingClosedDate.diff(commentingOpenDate, "day");
       if (openClosedDatesDiff < 30) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
-        COMMENTING_CLOSED_DATE: must be at least 30 days after COMMENTING_OPEN_DATE.`);
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
+        Commenting Closed Date: must be at least 30 days after Commenting Open Date.`);
       }
 
       // Required proposed submission
       const submissions = entity.submissions;
       if (!submissions || submissions.length == 0) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Proposed submission is required.`);
       }
       const proposed = submissions.filter(s => s.submissionTypeCode == SubmissionTypeCodeEnum.PROPOSED);
       if (!proposed) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Proposed submission is required.`);
       }
     } // end validating PUBLISHED transitioning
@@ -432,12 +432,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       // Final Submission submitted
       const submissions = entity.submissions;
       if (!submissions || submissions.length == 0) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Final Submission is required.`);
       }
       const final = submissions.filter(s => s.submissionTypeCode == SubmissionTypeCodeEnum.FINAL);
       if (!final || final.length == 0) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Final Submission is required.`);
       }
 
@@ -445,7 +445,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       const publicNotices = await this.attachmentService.findByProjectIdAndAttachmentTypes(entity.id, 
                             [AttachmentTypeEnum.PUBLIC_NOTICE]);
       if (!publicNotices || publicNotices.length == 0) {
-        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+        throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Public Notice is required.`);
       }
 
@@ -454,7 +454,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       if (publicComments && publicComments.length > 0) {
         const unClassifiedComments = publicComments.filter(p => p.response == null);
         if (unClassifiedComments && unClassifiedComments.length > 0) {
-          throw new BadRequestException(`Not a valid request for FOM ${entity.id} transiting to ${stateTransition}.  
+          throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
           All comments must be classified.`);
         }
       }
