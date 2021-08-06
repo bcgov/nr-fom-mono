@@ -129,8 +129,9 @@ export class UploadBoxComponent implements OnInit {
 
     if (this.files.length > 1 && !this.multipleFiles){
       this.invalidTypeText = 'Only one document is allowed';
-      this.onRemove(event);
+      this.onRemove(event.addedFiles[0]);
     }
+
     if (event.addedFiles.length > 0 ) {
       if( this.isBlob){
         this.readFileContentAsBlob(this.files[0])
@@ -162,6 +163,9 @@ export class UploadBoxComponent implements OnInit {
 
   onRemove(event) {
     this.files.splice(this.files.indexOf(event), 1);
+    if (this.files.length == 0) {
+      this.invalidTypeText = null;
+    }
     this.fileUploaded.emit(this.files);
   }
 }

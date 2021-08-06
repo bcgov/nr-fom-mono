@@ -53,7 +53,12 @@ export class InteractionDetailComponent implements OnInit {
   
   addNewFile(newFiles: any[]) {
     this.files = newFiles;
-    this.interactionFormGroup.get('filename').setValue(newFiles[0].name);
+    if (!this.files || this.files.length == 0) {
+      this.interactionFormGroup.get('filename').setValue(null);
+    }
+    else {
+      this.interactionFormGroup.get('filename').setValue(newFiles[0].name);
+    }
   }
 
   getFileContent(fileContent: any) {
