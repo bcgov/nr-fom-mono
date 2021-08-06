@@ -39,6 +39,12 @@
                  text-decoration: underline;
                  cursor: pointer;
              }
+
+             ngx-dropzone-preview, ngx-dropzone-image-preview {
+                 height: 90px !important;
+                 max-height: 100px !important;
+                 min-height: 50px !important;
+             }
          }
      }
  }
