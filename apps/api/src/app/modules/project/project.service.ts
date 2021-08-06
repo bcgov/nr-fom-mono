@@ -111,8 +111,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     // When commenting open, can change closed date but can't make it shorter.
     if (WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode) {
-      if (dayjs(dto.commentingClosedDate).startOf('day').isBefore(
-          dayjs(entity.commentingOpenDate).startOf('day').add(30, 'day'))) {
+      if (DateTimeUtil.getBcDate(dto.commentingClosedDate).startOf('day').isBefore(
+          DateTimeUtil.getBcDate(entity.commentingOpenDate).startOf('day').add(30, 'day'))) {        
         this.logger.debug(`Not allowed to make commenting closed date shorter.`);
         return false;
       }
@@ -162,6 +162,10 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async create(request: any, user: User): Promise<ProjectResponse> {
     request.workflowStateCode = WorkflowStateEnum.INITIAL;
     request.forestClientId = request.forestClientNumber;
+    request.commentingOpenDate = request.commentingOpenDate? 
+            DateTimeUtil.getBcDate(request.commentingOpenDate).format(DateTimeUtil.DATE_FORMAT): null;
+    request.commentingClosedDate = request.commentingClosedDate? 
+            DateTimeUtil.getBcDate(request.commentingClosedDate).format(DateTimeUtil.DATE_FORMAT): null;
     return super.create(request, user);
   }
 
@@ -483,14 +487,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       // We query for projects with dates not only equal but also before the current date in case the batch process happens to not run one day, the subsequent day's 
       // execution will set everything to the proper state.
 
-      const today = dayjs().startOf('day');
+      const today = DateTimeUtil.nowBC().startOf('day');
 
       // Query for projects with workflowState = PUBLISHED and COMMENT_OPEN_DATE equal to or before today: update to have workflow state = COMMENT_OPEN
-      const currentPublishedFomIds = await this.findFomIds(WorkflowStateEnum.PUBLISHED, dayjs(today).format(this.DATE_FORMAT), false);
+      const currentPublishedFomIds = await this.findFomIds(WorkflowStateEnum.PUBLISHED, today.format(this.DATE_FORMAT), false);
       await this.updateProjectsState(WorkflowStateEnum.COMMENT_OPEN, currentPublishedFomIds);
 
       // Query for projects with workflowState = COMMENT_OPEN and 'COMMENT_CLOSED_DATE' equal to or before today:  update to have workflow state = COMMENT_CLOSED
-      const currentCommentOpenFomIds = await this.findFomIds(WorkflowStateEnum.COMMENT_OPEN, dayjs(today).format(this.DATE_FORMAT), true);
+      const currentCommentOpenFomIds = await this.findFomIds(WorkflowStateEnum.COMMENT_OPEN, today.format(this.DATE_FORMAT), true);
       await this.updateProjectsState(WorkflowStateEnum.COMMENT_CLOSED, currentCommentOpenFomIds);
 
       // Query for projects with workflowState = FINALIZED and COMMENT_OPEN_DATE more than 3 years ago (need to check regarding exact business rule): update to have workflow state = EXPIRED

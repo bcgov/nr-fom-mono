@@ -48,6 +48,15 @@ export class DateTimeUtil {
 
     /**
      * 
+     * @param dateInput valid date input string for parsing.
+     * @returns dayjs object at BC timezone 'America/Vancouver'.
+     */
+    public static getBcDate(dateInput: string) {
+        return this.get(dateInput, DateTimeUtil.TIMEZONE_VANCOUVER);
+    }
+
+    /**
+     * 
      * @param startDateSt beginning date as string.
      * @param endDateSt end date as string.
      * @param timezone valid TimeZone string e.g 'America/Vancouver'.
