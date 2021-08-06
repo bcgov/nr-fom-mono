@@ -12,12 +12,28 @@ const MyDeployer = class extends BasicDeployer{
     const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
     // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public, backup-postgres)
+    const dbParams = {
+      'SUFFIX': config.suffix,
+      'IMAGE_STREAM_VERSION': config.tag,
+      'BACKUP_VOLUME_NAME': `backup${config.suffix}`,
+    }
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
-        'SUFFIX': config.suffix,
-        'IMAGE_STREAM_VERSION': config.tag,
+        ...dbParams,
         // TODO: Add more parameters for prod configuration (storage size, etc.)
+      }
+    }));
+
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
+      'param':{
+        ...dbParams,
+        'JOB_NAME': `backup-postgres${config.suffix}`,
+        'VERIFICATION_VOLUME_NAME': `backup-verification${config.suffix}`,
+        'DATABASE_DEPLOYMENT_NAME': `fom-db${config.suffix}`,
+        'DATABASE_SERVICE_NAME':`fom-db${config.suffix}`,
+        'DATABASE_NAME':'fom',
+        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
     }));
 
@@ -78,21 +94,6 @@ const MyDeployer = class extends BasicDeployer{
         ...appParams,
         'API_BASE_URL': apiBaseUrl,
         'REPLICA_COUNT': config.adminReplicaCount, 
-        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
-      }
-    }));
-
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
-      'param':{
-        'SUFFIX': config.suffix,
-        'IMAGE_STREAM_VERSION': config.tag,
-        'JOB_NAME': `backup-postgres${config.suffix}`,
-        'BACKUP_VOLUME_NAME': `backup${config.suffix}`,
-        'VERIFICATION_VOLUME_NAME': `backup-verification${config.suffix}`,
-        'DATABASE_DEPLOYMENT_NAME': `fom-db${config.suffix}`,
-        'DATABASE_SERVICE_NAME':`fom-db${config.suffix}`,
-        'DATABASE_NAME':'fom',
-        // TODO: Need to deal with TABLE_SCHEMA - need both public and app_fom, but this might be fixable.
         // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
       }
     }));

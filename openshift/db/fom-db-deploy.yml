@@ -18,12 +18,21 @@ parameters:
     displayName: Version of PostgreSQL Image
     name: IMAGE_STREAM_VERSION
     required: true
+  - name: BACKUP_VOLUME_NAME
+    displayName: Backup Volume Name
+    description: The name of the persistent volume used to store the backups.
+    required: true
   # Optional parameters with defaults
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
     required: true
     value: 1Gi
+  - name: BACKUP_VOLUME_SIZE
+    displayName: Backup Volume Size
+    description: The size of the persistent volume used to store the backups, e.g. 512Mi, 1Gi, 2Gi.  Ensure this is sized correctly.  Refer to the container documentation for details.
+    required: true
+    value: 5Gi
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
@@ -69,10 +78,14 @@ parameters:
     generate: expression
     name: POSTGRESQL_PASSWORD
     required: true
-  - description: Storage class for PVCs.
-    displayName: Storage class for PVCs.
-    name: STORAGE_CLASS
+  - description: DB Data Storage class.
+    displayName: DB Data Storage class.
+    name: DATA_STORAGE_CLASS
     value: netapp-block-standard
+  - name: BACKUP_STORAGE_CLASS
+    displayName: Backup Storage Class
+    description: The storage class of the persistent volume claim used to store the backups.
+    value: netapp-file-backup
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -123,7 +136,19 @@ objects:
       resources:
         requests:
           storage: ${VOLUME_CAPACITY}
-      storageClassName: ${STORAGE_CLASS}
+      storageClassName: ${DATA_STORAGE_CLASS}
+    # Persistent Storage - Backup Volume
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${BACKUP_VOLUME_NAME}
+    spec:
+      storageClassName: ${BACKUP_STORAGE_CLASS}
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: ${BACKUP_VOLUME_SIZE}
     # DeploymentConfig - DB 
   - kind: DeploymentConfig
     apiVersion: v1
@@ -208,12 +233,17 @@ objects:
                   name: db-data
                 - mountPath: /var/run/postgresql
                   name: db-run
+                - mountPath: /var/backups/
+                  name: backups
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
             - name: db-data
               persistentVolumeClaim:
                 claimName: ${NAME}${SUFFIX}
+            - name: backups
+              persistentVolumeClaim:
+                claimName: ${BACKUP_VOLUME_NAME}
             - name: db-run
               emptyDir: {}
       triggers: 
