@@ -17,7 +17,6 @@ import {HeaderComponent} from './header/header.component';
 import {FooterComponent} from './footer/footer.component';
 
 // services
-import {CanDeactivateGuard} from '../core/services/can-deactivate-guard.service';
 import {KeycloakService} from '../core/services/keycloak.service';
 
 import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
@@ -81,8 +80,7 @@ const apiConfig = new Configuration({
       useClass: TokenInterceptor,
       multi: true
     },
-    ConfigService,
-    CanDeactivateGuard
+    ConfigService
   ],
   bootstrap: [AppComponent]
 })

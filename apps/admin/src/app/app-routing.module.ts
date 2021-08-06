@@ -3,7 +3,6 @@ import {RouterModule, Routes} from '@angular/router';
 
 import {NotAuthorizedComponent} from './not-authorized/not-authorized.component';
 import {SearchComponent} from './search/search.component';
-import {CanDeactivateGuard} from '../core/services/can-deactivate-guard.service';
 
 const routes: Routes = [
   {
@@ -35,7 +34,7 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [CanDeactivateGuard]
+  providers: []
 })
 export class AppRoutingModule {
 }

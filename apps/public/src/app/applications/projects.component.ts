@@ -4,8 +4,6 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Router, UrlTree } from '@angular/router';
 
 import { Observable, Subject, Subscription} from 'rxjs';
-import * as operators from 'rxjs/operators';
-import * as _ from 'lodash';
 
 import { AppMapComponent } from './app-map/app-map.component';
 import { FindPanelComponent } from './find-panel/find-panel.component';
@@ -16,7 +14,6 @@ import { Panel } from './utils/panel.enum';
 import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
-import { AppUtils } from '@public-core/utils/constants/appUtils';
 import { takeUntil } from 'rxjs/operators';
 
 /**
@@ -82,7 +79,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     private fomFiltersSvc: FOMFiltersService
   ) {
     // watch for URL param changes
-    this.urlService.onNavEnd$.pipe(operators.takeUntil(this.ngUnsubscribe)).subscribe(event => {
+    this.urlService.onNavEnd$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(event => {
       this.urlTree = this.router.parseUrl(event.url);
 
       if (this.urlTree) {

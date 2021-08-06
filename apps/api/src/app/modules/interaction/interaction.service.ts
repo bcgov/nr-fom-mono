@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Interaction } from './interaction.entity';
@@ -47,7 +47,11 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
       }
       const prviousAttachmentId = entity.attachmentId;
       if (prviousAttachmentId) {
-        const updated = await super.updateEntity(id, {attachmentId: undefined}, entity); // remove previous attachment from Interaction first.
+        const updateCount = (await super.updateEntity(id, {attachmentId: undefined}, entity)).affected; // remove previous attachment from Interaction first.
+        if (updateCount != 1) {
+          throw new InternalServerErrorException("Error removing previous attachment");
+        }
+    
         await this.attachmentService.delete(prviousAttachmentId, user);
       }
       updateRequest.attachmentId = await this.addNewAttachment(updateRequest.projectId, fileName, file, user);

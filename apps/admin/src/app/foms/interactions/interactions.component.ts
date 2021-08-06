@@ -139,7 +139,6 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     }
     else {
       saveReq.revisionCount = selectedInteraction.revisionCount;
-      const id = selectedInteraction.id;
       resultPromise = this.interactionSvc.interactionControllerUpdate(id, saveReq.fileContent,
         this.projectId,
         saveReq.stakeholder,

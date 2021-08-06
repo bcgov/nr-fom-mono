@@ -7,7 +7,7 @@ enum COMMENT_SCOPE_CODE {
   OVERALL = 'OVERALL',
   CUT_BLOCK = 'CUT_BLOCK',
   ROAD_SECTION = 'ROAD_SECTION'
-};
+}
 
 type CommentScopeOpt = {commentScopeCode: COMMENT_SCOPE_CODE,
                         desc: string,
