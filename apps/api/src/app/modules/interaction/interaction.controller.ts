@@ -9,8 +9,8 @@ import { User } from "@api-core/security/user";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { maxFileSizeBytes } from '../attachment/attachment.controller';
 import { validate } from 'class-validator';
-import dayjs = require('dayjs');
 import _ = require('lodash');
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 // From https://github.com/nestjs/swagger/issues/417#issuecomment-562869578 and https://swagger.io/docs/specification/describing-request-body/file-upload/
 const AttachmentPostBody = (file: string = 'file'): MethodDecorator => (
@@ -86,8 +86,6 @@ const AttachmentUpdateBody = (file: string = 'file'): MethodDecorator => (
 @Controller('interaction')
 export class InteractionController {
 
-  readonly DATE_FORMAT='YYYY-MM-DD';
-
   constructor(
     private readonly service: InteractionService, 
     private logger: PinoLogger) {
@@ -109,8 +107,8 @@ export class InteractionController {
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? dayjs().format(this.DATE_FORMAT)
-                      : dayjs(request.body['communicationDate']).format(this.DATE_FORMAT);
+                      ? DateTimeUtil.nowBC().format(DateTimeUtil.DATE_FORMAT)
+                      : DateTimeUtil.getBcDate(request.body['communicationDate']).format(DateTimeUtil.DATE_FORMAT);
       const createRequest = new InteractionCreateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
@@ -153,8 +151,8 @@ export class InteractionController {
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? dayjs().format(this.DATE_FORMAT)
-                      : dayjs(request.body['communicationDate']).format(this.DATE_FORMAT);
+                      ? DateTimeUtil.nowBC().format(DateTimeUtil.DATE_FORMAT)
+                      : DateTimeUtil.getBcDate(request.body['communicationDate']).format(DateTimeUtil.DATE_FORMAT);                      
       const updateRequest = new InteractionUpdateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
