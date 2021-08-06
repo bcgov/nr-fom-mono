@@ -161,10 +161,10 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       this.workflowStateChangeRequest.revisionCount = this.project.revisionCount;
 
       this.isPublishing = true;
-      const result = await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).pipe(tap(obs => console.log(obs))).toPromise()
-      this.isPublishing = false;
-      const {id} = result;
-      if (!id) {
+      try {
+        await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).toPromise();
+      } finally {
+        this.isPublishing = false;
       }
       this.onSuccess()
     }

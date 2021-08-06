@@ -274,6 +274,8 @@ $app-results-bg: rgba(#fff, 0.9);
   .cdk-overlay-container {
     bottom: 3rem;
     height: auto;
+    // This fix ErrorInterceptor dialog hidding beneath panel     
+    z-index: 8888 !important;
   }
 
   // Splash Modal Sizing
@@ -299,12 +301,6 @@ $app-results-bg: rgba(#fff, 0.9);
   }
 }
 
-// This fix ErrorInterceptor dialog hidding beneath panel 
-::ng-deep {
-  .cdk-overlay-container {
-    z-index: 8888 !important;
-  }
-}
 
 
 // Select Badge Groups

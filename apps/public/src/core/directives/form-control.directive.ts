@@ -1,6 +1,5 @@
-import { HostBinding, Input } from '@angular/core';
-import { Directive, ElementRef, HostListener } from '@angular/core';
-import { AbstractControl, FormControl, NgControl } from '@angular/forms';
+import { Directive, HostBinding, Input } from '@angular/core';
+import { AbstractControl } from '@angular/forms';
 
 @Directive({
   selector: '[appFormControl]'

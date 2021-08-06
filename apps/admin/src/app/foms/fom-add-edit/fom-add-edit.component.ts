@@ -241,9 +241,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.fg.valid) return;
     try {
-      const result = await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).toPromise();
+      await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).toPromise();
 
-      let resultAttachment: Observable<any>;
       let file: any = null;
       let fileContent: any = null;
 
@@ -251,7 +250,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         file = this.initialPublicDocument[0];
         fileContent = new Blob([this.publicNoticeContent], {type: file.type});
 
-        resultAttachment = await this.attachmentUploadSvc
+        await this.attachmentUploadSvc
           .attachmentCreate(file, fileContent, id,
             AttachmentTypeEnum.PUBLIC_NOTICE).pipe(tap(obs => console.log(obs))).toPromise();
 
@@ -260,7 +259,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       if (this.supportingDocuments.length > 0){
         file = this.supportingDocuments[0];
         fileContent = new Blob([this.supportingDocContent], {type: file.type});
-        resultAttachment = await this.attachmentUploadSvc
+        await this.attachmentUploadSvc
           .attachmentCreate(file, fileContent, id,
             AttachmentTypeEnum.SUPPORTING_DOC).pipe(tap(obs => console.log(obs))).toPromise();
       }
