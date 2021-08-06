@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
-import {takeUntil, tap} from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, SubmissionService, ProjectResponse, ProjectService, SpatialFeaturePublicResponse } from "@api-client";
 import { KeycloakService } from '@admin-core/services/keycloak.service';
 import {User} from "@api-core/security/user";

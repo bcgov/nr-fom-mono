@@ -123,7 +123,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     )).subscribe((data: ProjectResponse) => {
 
       if (!this.isCreate) {
-        this.originalProjectResponse = data as ProjectResponse;
+        this.originalProjectResponse = data;
         if (data.district) {
           this.districtIdSelect = this.originalProjectResponse.district.id;
         }

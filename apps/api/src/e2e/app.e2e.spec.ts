@@ -13,9 +13,9 @@ process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication t
 
 const httpGetFunction = (app) => async ( user: User, args: string ) => {
   if (user == null) {
-    return await request(app.getHttpServer()).get(args);
+    return request(app.getHttpServer()).get(args);
   } else {
-    return await request(app.getHttpServer()).get(args).set('Authorization', 'Bearer ' + JSON.stringify(user) );
+    return request(app.getHttpServer()).get(args).set('Authorization', 'Bearer ' + JSON.stringify(user) );
   }
 };
 

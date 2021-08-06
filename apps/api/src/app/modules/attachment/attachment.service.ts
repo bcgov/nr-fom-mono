@@ -298,7 +298,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
                 { attachmentTypeCodes: attachmentTypeCodes})
       .addOrderBy('a.attachment_id', 'DESC');
 
-    return await query.getMany();
+    return query.getMany();
   }
 
 }

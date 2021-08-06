@@ -28,7 +28,7 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   files: any[] = [];
-  public geoTypeValues: String[] = [];
+  public geoTypeValues: string[] = [];
   contentFile: string;
 
   get isLoading() {
@@ -73,7 +73,7 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
         return this.projectSvc.projectControllerFindOne(this.route.snapshot.params.appId);
       }
     )).subscribe((data: ProjectResponse) => {
-      this.project = data as ProjectResponse;
+      this.project = data;
       this.originalSubmissionRequest = <SubmissionRequest> {
         projectId: data.id,
         submissionTypeCode: data.workflowState.code === WorkflowStateEnum.CommentClosed ? SubmissionTypeCodeEnum.Final: SubmissionTypeCodeEnum.Proposed,
