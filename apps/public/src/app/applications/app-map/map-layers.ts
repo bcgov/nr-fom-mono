@@ -1,9 +1,4 @@
-import 'leaflet';
 import { TileLayer, Map } from 'leaflet';
-import * as _ from 'lodash';
-
-declare module 'leaflet' {
-}
 
 const L = window['L'];
 
