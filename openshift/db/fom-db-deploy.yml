@@ -204,7 +204,7 @@ objects:
                 privileged: false
               terminationMessagePath: /dev/termination-log
               volumeMounts:
-                - mountPath: /var/lib/postgres/data
+                - mountPath: /var/lib/postgresql/data
                   name: db-data
                 - mountPath: /var/run/postgresql
                   name: db-run
