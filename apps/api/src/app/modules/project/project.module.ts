@@ -15,7 +15,6 @@ import { ProjectAuthService } from './project-auth.service';
 import { AttachmentModule } from '@api-modules/attachment/attachment.module';
 import { PublicCommentModule } from '../public-comment/public-comment.module';
 import { MailModule } from 'apps/api/src/core/mail/mail.module';
-import { DateTimeUtil } from '@api-core/daytimeUtil';
 
 @Module({
   imports: [
@@ -28,7 +27,7 @@ import { DateTimeUtil } from '@api-core/daytimeUtil';
     MailModule
   ],
   controllers: [ProjectController, WorkflowStateCodeController],
-  providers: [ProjectService, ProjectAuthService, WorkflowStateCodeService, DateTimeUtil],
+  providers: [ProjectService, ProjectAuthService, WorkflowStateCodeService],
   exports: [ProjectService, ProjectAuthService],
 })
 export class ProjectModule {}
