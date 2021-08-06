@@ -26,7 +26,9 @@ export class CommentsSummaryComponent implements OnInit {
   
   constructor(private stateSvc: StateService) { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void { 
+    // Deliberately empty
+  }
 
   @Input() set publicCommentDetails(publicComments: PublicCommentAdminResponse[]) {
     this.publicComments = publicComments;

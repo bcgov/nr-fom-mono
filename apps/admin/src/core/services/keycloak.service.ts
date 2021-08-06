@@ -160,7 +160,11 @@ export class KeycloakService {
           observer.error();
         });
 
-      return { unsubscribe() {} };
+      return { 
+        unsubscribe() {
+          // Deliberately empty
+        } 
+      };
     });
   }
 

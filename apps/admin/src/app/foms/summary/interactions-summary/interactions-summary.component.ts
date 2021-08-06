@@ -21,6 +21,7 @@ export class InteractionsSummaryComponent implements OnInit {
   constructor(private configSvc: ConfigService) { }
 
   ngOnInit(): void {
+    // Deliberately empty
   }
 
   @Input() set interactionDetails(interactions: InteractionResponse[]) {

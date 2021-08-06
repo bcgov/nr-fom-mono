@@ -20,7 +20,9 @@ export class FileUploadComponent {
   @ViewChild('file', { static: false }) fileInput: ElementRef;
   public errors: string[] = [];
 
-  constructor() {}
+  constructor() {
+    // Deliberately empty
+  }
 
   @HostListener('dragover', ['$event']) onDragOver(event) {
     this.dragDropClass = 'droparea';

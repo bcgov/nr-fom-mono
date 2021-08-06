@@ -64,8 +64,8 @@ function generateAllProjectInserts() {
     const startXDelta = (botLeft.x - topLeft.x)/Math.sqrt(numProjects);
     
     let projectIndex = 1;
-    for (col = 0; col < projectsPerRow; col++) {
-        for (row = 0; row < numRows; row++) {
+    for (let col = 0; col < projectsPerRow; col++) {
+        for (let row = 0; row < numRows; row++) {
             const x = topLeft.x + (row*startXDelta) + xDelta * col + (Math.random()*2-1)*xDelta;            
             const y = topLeft.y + yDelta * row + (Math.random()*2-1)*yDelta;
             const commentingOpen = (projectIndex % (12*numYears) == 0);

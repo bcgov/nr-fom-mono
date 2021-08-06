@@ -28,6 +28,7 @@ export class ButtonComponent implements OnInit {
   constructor(public stateSvc: StateService) { }
 
   ngOnInit(): void {
+    // Deliberately empty
   }
 
 }

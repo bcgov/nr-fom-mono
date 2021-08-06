@@ -36,6 +36,7 @@ export class InteractionDetailComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    // Blank method is intentional
   }
 
   @Input() set selectedInteraction(interaction: InteractionResponse) {

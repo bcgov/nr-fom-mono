@@ -14,9 +14,12 @@ export class FormGroupComponent implements OnInit {
   @Input() invalid: boolean = false;
   @Input() label: string = ''
 
-  constructor() { }
+  constructor() { 
+    // Deliberately empty
+  }
 
   ngOnInit(): void {
+    // Deliberately empty
   }
 
 }

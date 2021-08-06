@@ -1,4 +1,4 @@
-<!-- <div> -->
+
   <div class="top-container">
     <div class="container" style="padding-top: 18px; padding-bottom: 18px;">
       <div class="breadcrumb-container">
@@ -92,9 +92,6 @@
           </section>
 
           <section>
-            <!-- <div>
-              <h4>Stakeholder Engagements</h4>
-            </div> -->
             <div>
               <app-interactions-summary
                 [interactionDetails]="interactions"
@@ -107,12 +104,12 @@
         <section>
           <h4>Attachments</h4>
           <div *ngIf="attachments?.length > 0; else noAttachment">
-            <table id="table-card" class="table-cards">
+            <table id="table-card" class="table-cards" aria-label="List of Attachments">
               <thead>
                 <tr>
-                  <th id="dateUploaded" style="width: 10%;">Date Uploaded</th>
-                  <th id="fileName">File Name</th>
-                  <th id="type" style="width: 10%;">Type</th>
+                  <th scope="col" id="dateUploaded" style="width: 10%;">Date Uploaded</th>
+                  <th scope="col" id="fileName">File Name</th>
+                  <th scope="col" id="type" style="width: 10%;">Type</th>
                 </tr>
               </thead>
               <tbody>
@@ -146,4 +143,4 @@
       </section>
     </div>
   </div>
-<!-- </div> -->
+

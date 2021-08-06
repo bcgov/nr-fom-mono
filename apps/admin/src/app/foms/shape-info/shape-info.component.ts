@@ -16,9 +16,12 @@ export class ShapeInfoComponent implements OnInit {
   @Input('spatialDetail')
   projectSpatialDetail: SpatialFeaturePublicResponse[];
 
-  constructor() { }
+  constructor() { 
+    // Deliberately empty
+  }
 
   ngOnInit(): void {
+    // Deliberately empty
   }
 
   getFomSpatialTypeDesc(source: string) {

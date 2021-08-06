@@ -26,10 +26,10 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   description: string;
 
   @prop()
-  commentingOpenDate: string = null; //new Date().toISOString();
+  commentingOpenDate: string = null; 
 
   @prop({})
-  commentingClosedDate: string = null; //new Date().toISOString();
+  commentingClosedDate: string = null; 
 
   @prop()
   @required()

@@ -1,4 +1,3 @@
-// import {AfterViewInit, Component, HostListener, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 
 import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from '@angular/material/snack-bar';
@@ -13,7 +12,6 @@ import {
   ProjectService,
   ForestClientResponse,
   ForestClientService,
-  AttachmentService,
   ProjectCreateRequest, WorkflowStateEnum, AttachmentResponse
 } from '@api-client';
 import {RxFormBuilder, RxFormGroup} from '@rxweb/reactive-form-validators';
@@ -45,7 +43,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
   districts: DistrictResponse[] = this.stateSvc.getCodeTable('district');
   forestClients: ForestClientResponse[] = [];
-  // public project: ProjectResponse = null;
   public supportingDocuments: any[] = [];
   public initialPublicDocument: any[] = [];
   private scrollToFragment: string = null;
@@ -110,7 +107,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public cancelChanges() {
-    // this.location.back(); // FAILS WHEN CANCEL IS CANCELLED (DUE TO DIRTY FORM OR UNSAVED DOCUMENTS) MULTIPLE TIMES
+    // can't call location back() - fails when cancel is cancelled due to dirty form or unsaved documents multiple times
     const routerFragment = this.isCreate ? ['/search'] : ['/a', this.originalProjectResponse.id]
 
     this.router.navigate(routerFragment);

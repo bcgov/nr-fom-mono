@@ -58,7 +58,6 @@
   @include flex(0 0 auto);
 
   flex-direction: column;
-  padding-bottom: 0 !important;
   align-items: baseline;
 
   padding: 1rem;
@@ -190,23 +189,11 @@
 .comment-response {
  @include flex(0 0 auto);
 
-  font-weight: 700;
   white-space: nowrap;
   font-weight: 90%;
   margin-left: 0.5rem;
 }
-/*
-.comment-attachments {
-  margin-top: 0.5rem;
-  font-size: 90%;
 
-  i {
-    margin-top: -0.25rem;
-    vertical-align: middle;
-    font-size: 16px;
-  }
-}
-*/
 .comment-body {
   @include flex(1 1 auto);
 

@@ -21,6 +21,7 @@ export class FileUploadComponent {
   public errors: string[] = [];
 
   constructor() {
+    // Deliberately empty
   }
 
   @HostListener('dragover', ['$event']) onDragOver(event) {

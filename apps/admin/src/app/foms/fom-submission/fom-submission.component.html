@@ -36,8 +36,8 @@
       </div>
       <fieldset>
         <div class="form-row">
-          <div class="form-group col-md-2">
-            <label>FOM ID</label>
+          <div class="form-group col-md-3">
+            <label>FOM ID:</label>
           </div>
           <div class="col-md-2">
             <input
@@ -52,10 +52,10 @@
         </div>
 
         <div class="form-row">
-          <div class="col-md-2">
-            <label  style="white-space: nowrap;">Submission Type:</label>
+          <div class="col-md-3">
+            <label style="white-space: nowrap;">Submission Type:</label>
           </div>
-          <div class="col">
+          <div class="col-md-3">
             <span
               class="value">
               {{originalSubmissionRequest.submissionTypeCode === 'FINAL' ? 'Final' : 'Proposed'}}
@@ -63,12 +63,11 @@
           </div>
         </div>
         <p>
-        <!-- <legend>Application Details</legend> -->
         <div class="form-row">
           <div class="form-group col-md-3">
-            <label>GeoSpatial Object Type:</label>
+            <label style="white-space: nowrap;">GeoSpatial Object Type:</label>
           </div>
-          <div class="form-group col">
+          <div class="form-group col-md-3">
             <select name="objectType" class="sort-comments form-control" (change)="changeGeoType($event)" id="geoSpatialType-list">
               <option  [value]="geoType" *ngFor="let geoType of geoTypeValues"
                        [innerHTML]=" getGeoSpatialTypeDescription(geoType)"> </option>
@@ -98,8 +97,8 @@
         <p><strong>Format Overview </strong> </p>
 
         <br>This FOM geospatial submission format is based on GeoJSON
-        (<a href="https://geojson.org/" target="_blank">https://geojson.org/</a>,
-        <a href="https://tools.ietf.org/html/rfc7946" target="_blank">https://tools.ietf.org/html/rfc7946</a>),
+        (<a href="https://geojson.org/" rel="noopener" target="_blank">https://geojson.org/</a>,
+        <a href="https://tools.ietf.org/html/rfc7946" rel="noopener" target="_blank">https://tools.ietf.org/html/rfc7946</a>),
         but with some deviations. 
         <br/>
         <br>Submit one JSON file per FOM geospatial object type: cut block, WTRA (wildlife tree retention area),
@@ -117,13 +116,15 @@
         <br/>
         <br>The JSON files should use UTF-8 for the character encoding.
         <br/>
+        <br/>
         <table>
+          <caption>Properties of each Geometry Type</caption>
           <thead>
           <tr>
-            <th>FOM Spatial Object / File</th>
-            <th>Geometry Type</th>
-            <th colspan="1">Required Properties</th>
-            <th colspan="1">Optional Properties</th>
+            <th scope="col">FOM Spatial Object / File</th>
+            <th scope="col">Geometry Type</th>
+            <th scope="col" colspan="1">Required Properties</th>
+            <th scope="col" colspan="1">Optional Properties</th>
           </tr>
           </thead>
           <tr>
@@ -148,13 +149,13 @@
 
         <br><strong>Property Format</strong>
         <br>
-        <br>This table specifies the description and format of required properties.<br/>
         <table>
+          <caption>Description and format of required properties</caption>
           <thead>
           <tr>
-            <th>Property</th>
-            <th>Description</th>
-            <th>Value Format</th>
+            <th scope="col">Property</th>
+            <th scope="col">Description</th>
+            <th scope="col">Value Format</th>
           </tr>
           </thead>
           <tr>

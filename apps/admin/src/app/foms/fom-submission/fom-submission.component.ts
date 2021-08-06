@@ -68,7 +68,7 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   public cancelChanges() {
-    // this.location.back(); // FAILS WHEN CANCEL IS CANCELLED (DUE TO DIRTY FORM OR UNSAVED DOCUMENTS) MULTIPLE TIMES
+    // can't call location back() - fails when cancel is cancelled due to dirty form or unsaved documents multiple times
     const routerFragment = ['/a', this.project.id]
     this.router.navigate(routerFragment);
 
@@ -87,7 +87,6 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
         spatialObjectCode: SpatialObjectCodeEnum.CutBlock,
         jsonSpatialSubmission: Object
       }
-      // this.isSubmissionAllowed();
       const form = new FomSubmissionForm(this.originalSubmissionRequest);
       this.fg = <RxFormGroup>this.formBuilder.formGroup(form);
       this.fg.get('projectId').setValue(this.originalSubmissionRequest.projectId);

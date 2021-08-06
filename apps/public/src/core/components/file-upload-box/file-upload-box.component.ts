@@ -126,7 +126,10 @@ export class UploadBoxComponent implements OnInit {
 
   invalidTypeText: string;
 
-  constructor() { }
+  constructor() { 
+    // Deliberately empty
+  }
+  
   ngOnInit(): void {
     const dateTuple = dateBuilder();
     const year = dateTuple[0];

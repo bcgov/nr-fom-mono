@@ -82,7 +82,6 @@ export class SearchComponent implements OnInit, OnDestroy {
           this.searched = true;
           this.searching = false;
           this.snackBarRef = this.snackBar.open('Error searching foms ...', null, {duration: 3000});
-          // this.snackBarRef.onAction().subscribe(() => this.onSubmit()); // commenting out 'action' so user does not click again/and again.
         },
         () => {
           this.searched = true;

@@ -1,4 +1,3 @@
-<!-- <ngb-alert type="danger" [dismissible]="false" *ngFor="let alert of alerts">{{alert}}</ngb-alert> -->
 <ng-container *ngIf="publicComments$ | async as data">
   <div class="top-container">
     <div class="container">
@@ -14,7 +13,6 @@
     </div>
   </div>
 
-
   <div class="bottom-container">
     <div class="container">
       <div class="review-comments">
@@ -22,7 +20,6 @@
           <div class="panel-header">
             <h2 style="margin: 0;">Comments ({{data?.length}})</h2>
             <div>
-              <!-- <mat-label>Commenting Scope</mat-label> -->
               <mat-form-field [style.width.px]=320>
                 <mat-select [(ngModel)]="selectedScope" name="commentScope"
                     (selectionChange)="onScopeOptionChanged(selectedScope)">

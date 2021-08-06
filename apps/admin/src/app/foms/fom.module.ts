@@ -5,7 +5,6 @@ import {CommonModule} from '@angular/common';
 import {SharedModule} from '../shared.module';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FomRoutingModule} from './fom-routing.module';
-// import {InlineSVGModule} from 'ng-inline-svg';
 import { MatTableModule } from '@angular/material/table'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -31,8 +30,6 @@ import { CommentsSummaryComponent } from './summary/comments-summary/comments-su
 import { InteractionsSummaryComponent } from './summary/interactions-summary/interactions-summary.component';
 import {AttachmentResolverSvc} from "../../core/services/AttachmentResolverSvc";
 import { MatSelectModule } from '@angular/material/select';
-// services
-// import { ExportService } from 'core/services/export.service';
 
 @NgModule({
     imports: [
@@ -41,7 +38,6 @@ import { MatSelectModule } from '@angular/material/select';
       CommonModule,
       SharedModule,
       NgbModule,
-      // InlineSVGModule.forRoot(),
       FomRoutingModule,
       BrowserAnimationsModule,
       BsDatepickerModule.forRoot(),

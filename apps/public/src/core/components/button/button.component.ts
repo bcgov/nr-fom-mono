@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { StateService } from 'core/services/state.service';
+import { StateService } from '@public-core/services/state.service';
 
 @Component({
   selector: 'app-button',
@@ -28,6 +28,7 @@ export class ButtonComponent implements OnInit {
   constructor(public stateSvc: StateService) { }
 
   ngOnInit(): void {
+    // Deliberately empty
   }
 
 }

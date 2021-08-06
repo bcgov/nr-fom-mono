@@ -18,9 +18,13 @@ export class MarkerPopupComponent implements OnInit, OnDestroy {
     public urlService: UrlService
   ) {}
 
-  public ngOnInit() {}
+  public ngOnInit() {
+    // Deliberately empty
+  }
 
-  public ngOnDestroy() {}
+  public ngOnDestroy() {
+    // Deliberately empty
+  }
 
   public showDetails() {
     this.urlService.setQueryParam('id', this.projectSummary.id.toString());

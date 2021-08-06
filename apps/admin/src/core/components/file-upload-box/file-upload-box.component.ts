@@ -103,7 +103,10 @@ export class UploadBoxComponent implements OnInit {
   fileContent: string;
   fileContentArrayBuffer: any;
 
-  constructor() { }
+  constructor() { 
+    // Deliberately empty
+  }
+  
   ngOnInit(): void {
 
     /* file size multiplied by 1024 for conversion */

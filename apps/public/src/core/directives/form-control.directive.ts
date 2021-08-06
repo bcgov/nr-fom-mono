@@ -22,6 +22,8 @@ export class AppFormControlDirective {
     this._fc = fc;
   }
 
-  constructor() { }
+  constructor() { 
+    // Deliberately empty
+  }
 
 }

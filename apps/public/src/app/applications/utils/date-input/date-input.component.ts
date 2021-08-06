@@ -17,7 +17,9 @@ export class DateInputComponent implements OnChanges {
   public minNgbDate: NgbDateStruct = null;
   public maxNgbDate: NgbDateStruct = null;
 
-  constructor() {}
+  constructor() {
+    // Deliberately empty
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.date) {

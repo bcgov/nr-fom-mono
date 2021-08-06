@@ -19,7 +19,6 @@ import {UploadBoxComponent} from '../core/components/file-upload-box/file-upload
 import {MatIconModule} from '@angular/material/icon'
 import {FileRowComponent} from '../core/components/file-row/file-row.component';
 import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
-// import {LeafletModule} from '@asymmetrik/ngx-leaflet';
 
 @NgModule({
   imports: [BrowserModule, MatSlideToggleModule, MatSnackBarModule, MatDialogModule, NgxDropzoneModule, MatIconModule, FontAwesomeModule],//LeafletModule
@@ -42,7 +41,6 @@ import {FontAwesomeModule} from '@fortawesome/angular-fontawesome';
     FontAwesomeModule,
     FileRowComponent,
     UploadBoxComponent,
-    // LeafletModule
   ]
 })
 export class SharedModule {

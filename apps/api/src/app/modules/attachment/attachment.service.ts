@@ -244,7 +244,6 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   * - SUPPORTING_DOC
   */
   async findByProjectIdNoInteraction(projectId: number, user?: User): Promise<AttachmentResponse[]> {
-    const criteria = { where: { projectId: projectId } };
 
     if (user && !user.isMinistry) {
       // Don't check workflow states for viewing the comments.
@@ -273,7 +272,6 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     * This is needed when deleting the FOM.
     */
     async findAllAttachments(projectId: number, user?: User): Promise<AttachmentResponse[]> {
-      const criteria = { where: { projectId: projectId } };
   
       if (user && !user.isMinistry) {
         // Don't check workflow states for viewing the comments.
