@@ -30,6 +30,50 @@
   text-align: center;
 }
 
+// legend
+.legend-container {
+  border-width: 0;
+  background-color: #e4f0ec;
+  border-bottom-width: 1px;
+  border-style: solid;
+  padding: 3px 5px;
+  height: 100%;
+  font-size: x-small;
+
+  .legend { list-style: none; padding-left: 10px;}
+  .legend li { float: left; margin-right: 10px; line-height: 23px;}
+  .legend ul { margin-bottom: 0 !important;}
+  .legend span { border: 1px solid #ccc; float: left; width: 18px; height: 18px; margin: 3px;}
+
+  @mixin feature-styles {
+    &.cut-block {
+      background-color: rgba(51,136,255,0.3);
+      border-color: #3388ff;
+    }
+
+    &.retention_area {
+      background-color: rgba(124, 255, 135, 0.5);
+      border-color: #00DD06;
+    }
+
+    &.road_section {
+      border-top: 0; border-left: 0; border-right: 0; background-color: transparent;
+      border-color: black; width: 1.5em; height: 0; margin-top: 8px;
+      margin-top: 10px;
+    }
+  }
+
+  .legend .proposed-submission {
+    border-width: 2px; border-style: dashed;
+    @include feature-styles;
+  }
+
+  .legend .final-submission { 
+    border-width: 2px; border-style: solid;
+    @include feature-styles;
+  }
+}
+
 // Leaflet Control Customization
 ::ng-deep {
   .map-reset-control {
