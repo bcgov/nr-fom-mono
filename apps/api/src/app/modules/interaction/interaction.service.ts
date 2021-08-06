@@ -69,7 +69,6 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     if (attachmentId) {
       await this.attachmentService.delete(attachmentId, user);
     }
-    return;
   }
 
   private async addNewAttachment(projectId: number, fileName: string, file: Buffer, user: User): Promise<number> {

@@ -1,22 +1,15 @@
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, of, Subject} from 'rxjs';
-import {switchMap, takeUntil, tap} from 'rxjs/operators';
-
-import {
-  ProjectResponse,
-  ProjectService,
-  SpatialObjectCodeEnum,
-  SubmissionRequest,
-  SubmissionTypeCodeEnum
-} from '@api-client';
+import {Observable, Subject} from 'rxjs';
+import {switchMap, takeUntil} from 'rxjs/operators';
+import { ProjectResponse, ProjectService, SpatialObjectCodeEnum, SubmissionRequest, SubmissionTypeCodeEnum, SubmissionService, WorkflowStateEnum } from '@api-client';
 import {RxFormBuilder, RxFormGroup} from '@rxweb/reactive-form-validators';
 import { DatePipe } from '@angular/common';
 import {FomSubmissionForm} from './fom-submission.form';
 import {StateService} from '../../../core/services/state.service';
 import {ModalService} from '../../../core/services/modal.service';
-import {SubmissionService, WorkflowStateEnum} from '@api-client';
+
 
 @Component({
   selector: 'app-fom-submission',

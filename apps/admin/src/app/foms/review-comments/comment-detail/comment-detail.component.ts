@@ -1,9 +1,8 @@
 import {Component, Input} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {RxFormBuilder} from '@rxweb/reactive-form-validators';
-import {CommentScopeCode, ResponseCode} from '@api-client';
-import {PublicCommentAdminResponse} from "@api-client";
-import { StateService } from '../../../../core/services/state.service';
+import {CommentScopeCode, PublicCommentAdminResponse, ResponseCode} from '@api-client';
+import { StateService } from '@admin-core/services/state.service';
 import * as _ from 'lodash';
 import {CommentDetailForm} from './comment-detail.form';
 
@@ -28,7 +27,7 @@ export class CommentDetailComponent {
     if (!this.canReplyComment) {
       this.commentFormGroup.disable();
     }
-  };
+  }
 
   constructor(private formBuilder: RxFormBuilder, private stateSvc: StateService) {
     this.commentScopeCodes = _.keyBy(this.stateSvc.getCodeTable('commentScopeCode'), 'code');

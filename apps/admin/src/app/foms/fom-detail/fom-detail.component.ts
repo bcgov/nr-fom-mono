@@ -1,21 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-// @ts-ignore
-import {of, Subject, throwError} from 'rxjs';
-// @ts-ignore
-import {concat, mergeMap, takeUntil, tap} from 'rxjs/operators';
-import {
-  AttachmentResponse,
-  WorkflowStateEnum,
-  ProjectWorkflowStateChangeRequest, SubmissionService
-} from "@api-client";
-
-import {ProjectResponse, ProjectService, SpatialFeaturePublicResponse} from '@api-client';
-import { KeycloakService } from '../../../core/services/keycloak.service';
+import {Subject} from 'rxjs';
+import {takeUntil, tap} from 'rxjs/operators';
+import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, SubmissionService, ProjectResponse, ProjectService, SpatialFeaturePublicResponse } from "@api-client";
+import { KeycloakService } from '@admin-core/services/keycloak.service';
 import {User} from "@api-core/security/user";
-import { ModalService } from '../../../core/services/modal.service';
+import { ModalService } from '@admin-core/services/modal.service';
 import * as moment from 'moment';
-import {AttachmentResolverSvc} from "../../../core/services/AttachmentResolverSvc";
+import {AttachmentResolverSvc} from "@admin-core/services/AttachmentResolverSvc";
 
 
 @Component({

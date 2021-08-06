@@ -161,7 +161,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   async loadForestClients (): Promise<ForestClientResponse[]> {
-   return await this.forestSvc.forestClientControllerFind().toPromise()
+   return this.forestSvc.forestClientControllerFind().toPromise()
 }
 
   addNewFileInitialPublic(newFiles: any[]) {

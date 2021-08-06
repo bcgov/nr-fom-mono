@@ -19,11 +19,11 @@ export class AttachmentResolverSvc {
   ) {  }
 
   public async getAttachments(projectId: number): Promise<AttachmentResponse[]> {
-      return await this.attachmentService.attachmentControllerFind(projectId).toPromise()
+      return this.attachmentService.attachmentControllerFind(projectId).toPromise()
   }
 
   public async attachmentControllerRemove(attachmentId: number): Promise<any> {
-    return await this.attachmentService.attachmentControllerRemove(attachmentId).toPromise();
+    return this.attachmentService.attachmentControllerRemove(attachmentId).toPromise();
   }
 
   getAttachmentUrl(id: number): string {

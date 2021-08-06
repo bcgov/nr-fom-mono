@@ -7,8 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
     <label>{{label}}</label>
     <ng-content></ng-content>
   </div>
-  `,
-  styleUrls: ['./form-group.component.scss']
+  `
 })
 export class FormGroupComponent implements OnInit {
   @Input() invalid: boolean = false;

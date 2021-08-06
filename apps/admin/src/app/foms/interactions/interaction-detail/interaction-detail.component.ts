@@ -49,7 +49,7 @@ export class InteractionDetailComponent implements OnInit {
     
     this.interaction.attachmentId? this.retrieveAttachment(this.interaction.attachmentId)
                                  : this.attachment = null;
-  };
+  }
   
   addNewFile(newFiles: any[]) {
     this.files = newFiles;

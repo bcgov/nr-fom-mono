@@ -1,8 +1,7 @@
-import {  Observable} from "rxjs";
-import {HttpClient, HttpHeaders } from "@angular/common/http";
-import {Inject, Injectable, Optional} from "@angular/core";
-import { BASE_PATH}  from '@api-client';
-import {Configuration} from "@api-client";
+import { Observable } from "rxjs";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Injectable, Optional } from "@angular/core";
+import { Configuration } from "@api-client";
 import { ConfigService } from '@utility/services/config.service';
 
 @Injectable({
@@ -13,8 +12,7 @@ export class AttachmentUploadService {
   public configuration = new Configuration();
   public defaultHeaders = new HttpHeaders();
 
-  constructor(private configService: ConfigService, protected httpClient: HttpClient, @Optional()@Inject(BASE_PATH) basePath: string,
-              @Optional() configuration: Configuration) {
+  constructor(private configService: ConfigService, protected httpClient: HttpClient, @Optional() configuration: Configuration) {
     if (configuration) {
       this.configuration = configuration;
     }

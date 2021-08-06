@@ -4,7 +4,6 @@ import {ActivatedRoute, ParamMap, Params, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
-import * as _ from 'lodash';
 import {ProjectService, WorkflowStateEnum, ProjectResponse} from "@api-client";
 import { StateService } from '../../core/services/state.service';
 import { KeycloakService } from '../../core/services/keycloak.service';

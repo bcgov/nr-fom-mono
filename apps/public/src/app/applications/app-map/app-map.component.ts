@@ -142,34 +142,14 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       this
     );
 
-    // this.map.on('movestart', function () {
-    // }, this);
-
-    // this.map.on('resize', function () {
-    // }, this);
-
     // NB: moveend is called after zoomstart, movestart and resize
     // NB: fitBounds() also ends up here
     this.map.on('moveend', () => {
       // notify applications component of updated coordinates
-      // const newZoom = this.map.getZoom();
-      // const doEmit = newZoom <= this.oldZoom; // ignore zooming in
-      // this.oldZoom = newZoom;
-      // if (doEmit) { this.emitCoordinates(); }
       if (this.isMapReady && this.doNotify) {
         this.emitCoordinates();
       }
       this.doNotify = true; // reset for next time
-
-      // FUTURE
-      // // save map state
-      // if (this.isMapReady) {
-      //   const center = this.map.getCenter();
-      //   const zoom = this.map.getZoom();
-      //   this.urlService.setQueryParam('lat', center.lat.toFixed(4).toString());
-      //   this.urlService.setQueryParam('lng', center.lng.toFixed(4).toString());
-      //   this.urlService.setQueryParam('zoom', zoom.toFixed(1).toString());
-      // }
     });
 
     // add markers group
@@ -270,12 +250,6 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.fitBounds(); // default bounds
     }
 
-    // FUTURE
-    // // clear map state
-    // this.urlService.setQueryParam('lat', null);
-    // this.urlService.setQueryParam('lng', null);
-    // this.urlService.setQueryParam('zoom', null);
-    // this.emitCoordinates();
   }
 
   /**

@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { User } from "@api-core/security/user";
-import * as _ from 'lodash';
 import { JwtHelperService } from "@auth0/angular-jwt";
 import { ConfigService } from '@utility/services/config.service';
 import { HttpClient } from "@angular/common/http";

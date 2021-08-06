@@ -69,7 +69,7 @@ export class AttachmentController {
     const validAttachments:string[] = [AttachmentTypeEnum.PUBLIC_NOTICE, AttachmentTypeEnum.SUPPORTING_DOC, AttachmentTypeEnum.INTERACTION];
     if (validAttachments.indexOf(createRequest.attachmentTypeCode) < 0) {
       throw new BadRequestException("Validation failed (invalid attachment type)");
-    };
+    }
 
     return this.service.create(createRequest, user);
   }
