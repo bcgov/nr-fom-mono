@@ -17,7 +17,7 @@ import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { PublicCommentService } from '../public-comment/public-comment.service';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
 import { MailService } from 'apps/api/src/core/mail/mail.service';
-import { DateTimeUtil } from '@api-core/daytimeUtil';
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -66,8 +66,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     private forestClientService: ForestClientService,
     private attachmentService: AttachmentService,
     private publicCommentService: PublicCommentService,
-    private mailService: MailService,
-    private dateTimeUtil: DateTimeUtil
+    private mailService: MailService
   ) {
     super(repository, new Project(), logger);
   }
@@ -394,7 +393,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // Required COMMENTING_OPEN_DATE: must be at least one day after publish is pushed
-      const dayDiff = this.dateTimeUtil.diffNow(entity.commentingOpenDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
+      const dayDiff = DateTimeUtil.diffNow(entity.commentingOpenDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
       if (dayDiff < 1) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  
         Commenting Open Date: must be at least one day after publish is pushed.`);
@@ -407,7 +406,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // Required: COMMENTING_CLOSED_DATE at least 30 days after commenting open
-      const openClosedDatesDiff = this.dateTimeUtil.diff(entity.commentingOpenDate, entity.commentingClosedDate, 
+      const openClosedDatesDiff = DateTimeUtil.diff(entity.commentingOpenDate, entity.commentingClosedDate, 
                                   DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
       if (openClosedDatesDiff < 30) {
         throw new BadRequestException(`Not a valid request for FOM ${entity.id} transitioning to ${stateTransition}.  

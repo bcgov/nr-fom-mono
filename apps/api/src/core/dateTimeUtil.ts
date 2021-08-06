@@ -1,7 +1,7 @@
 import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
-import * as advancedFormat from 'dayjs/plugin/advancedFormat';
+import * as advancedFormat from 'dayjs/plugin/advancedFormat'
 
 /**
  * This util acts as a wrapper for some date/time munipulation functions, especially for timezone related transform.
@@ -13,22 +13,21 @@ export class DateTimeUtil {
     static readonly TIMEZONE_VANCOUVER: string = 'America/Vancouver';
     static readonly DATE_FORMAT = "YYYY-MM-DD";
 
-    constructor() {
-        dayjs.extend(utc);
-        dayjs.extend(timezone);
-        dayjs.extend(advancedFormat);
-    }
-
     /**
      * This return timezone based date/time or server local date/time.
      * @param timezone valid TimeZone string e.g 'America/Vancouver'
      * @returns current date/time based on 'timezone'. If 'timezone' is not provided, server local date/time.
      */
-    public now(timezone: string) {
-        if (!timezone) {
+    public static now(inTimezone: string) {
+        DateTimeUtil.init();
+        if (!inTimezone) {
             return dayjs(); // dayjs is based on local. If server is using UTC date/time, then it is UTC date/time.
         }
-        return dayjs.tz(dayjs().utc(), DateTimeUtil.DATE_FORMAT, timezone);
+        return dayjs.tz(dayjs().utc(), DateTimeUtil.DATE_FORMAT, inTimezone);
+    }
+
+    public static nowBC() {
+        return DateTimeUtil.now(DateTimeUtil.TIMEZONE_VANCOUVER);
     }
 
     /**
@@ -37,11 +36,14 @@ export class DateTimeUtil {
      * @param timezone valid TimeZone string e.g 'America/Vancouver'.
      * @returns dayjs object based on 'timezone'.
      */
-    public get(dateInput: string, timezone: string) {
-        if (!timezone) {
+    public static get(dateInput: string, inTimezone: string) {
+        DateTimeUtil.init();
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        if (!inTimezone) {
             return dayjs(dateInput);
         }
-        return dayjs(dateInput).tz(timezone);
+        return dayjs(dateInput).tz(inTimezone);
     }
 
     /**
@@ -52,15 +54,28 @@ export class DateTimeUtil {
      * @param unit dayjs valid unit.
      * @returns # of unit difference between two dates.
      */
-    public diff(startDateSt: string, endDateSt: string, timezone: string, unit: any) {
-        const startDate = this.get(startDateSt, timezone);
-        const endDate = this.get(endDateSt, timezone);
+    public static diff(startDateSt: string, endDateSt: string, inTimezone: string, unit: any) {
+        DateTimeUtil.init();
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        const startDate = this.get(startDateSt, inTimezone);
+        const endDate = this.get(endDateSt, inTimezone);
         return endDate.startOf(unit).diff(startDate.startOf(unit), unit);
     }
 
-    public diffNow(endDateSt: string, timezone: string, unit: any) {
-        const now = this.now(timezone);
-        const endDate = this.get(endDateSt, timezone);
+    public static diffNow(endDateSt: string, inTimezone: string, unit: any) {
+        DateTimeUtil.init();
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        const now = this.now(inTimezone);
+        const endDate = this.get(endDateSt, inTimezone);
         return endDate.startOf(unit).diff(now.startOf(unit), unit);
+    }
+
+    private static init() {
+        // dayjs requres additional plugin for timezone/utc mode.
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        dayjs.extend(advancedFormat);
     }
 }
