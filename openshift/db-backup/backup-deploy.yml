@@ -402,8 +402,8 @@ parameters:
   - name: "SCHEDULE"
     displayName: "Cron Schedule"
     description: "Cron Schedule to Execute the Job (using local cluster system TZ)"
-    # Currently targeting 1:00 AM Daily
-    value: "0 1 * * *"
+    # Run at 10:00am UTC each day, which is 1 hour after batch process (~2am BC time depending on daylight savings)
+    value: "0 10 * * *"
     required: true
   - name: BACKUP_VOLUME_SIZE
     displayName: Backup Volume Size

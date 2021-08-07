@@ -62,7 +62,6 @@ objects:
       concurrencyPolicy: Replace
       # Timezone used for Cron schedule appears to be UTC. We want this process to run early morning BC time, which is -7 UTC ignoring daylights savings. So 9am UTC should be good enough.
       schedule: '0 9 * * * ' # Run at 9:00am UTC each day. 
-      #schedule: '*/1 * * * * ' # Run every minute for testing.
       jobTemplate:
         spec:
           template:
