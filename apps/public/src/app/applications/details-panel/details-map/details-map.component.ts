@@ -106,18 +106,14 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
         this.projectFeatures.addLayer(layer);
         this.map.on('zoomend', () => {
           var style: L.PathOptions = {};
-          style.weight = 1.5; 
-          style.fillOpacity = 0.3;
+          style.weight = 5; 
+          style.fillOpacity = 0.25;
           if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
-            style.dashArray = '10,5';
-            if (spatialDetail.featureType == 'road_section') {
-              style.dashArray = '12,12';
-            }
+            style.dashArray = '10,10';
           }
           if (spatialDetail.featureType == 'road_section') {
-            style.color = 'black';
+            style.color = 'yellow';
             style.opacity = 1;
-            style.weight = 5;
           }
           if (spatialDetail.featureType == 'retention_area') {
             style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
