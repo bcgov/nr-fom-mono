@@ -103,6 +103,20 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     if (this.map) {
       projectSpatialDetails.forEach(spatialDetail => {
         const layer = L.geoJSON(<GeoJsonObject>spatialDetail['geometry']);
+
+        const showLabels = false;
+        if (showLabels) {
+          const label = spatialDetail.featureType + " " + spatialDetail.featureId;
+          var markerCoords = spatialDetail.geometry['coordinates'][0][0];
+          if (spatialDetail.featureType == 'road_section') {
+            markerCoords = spatialDetail.geometry['coordinates'][0];
+          }
+          // console.log(label + JSON.stringify(markerCoords));
+          var marker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); //opacity may be set to zero
+          marker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
+          this.projectFeatures.addLayer(marker);
+        }
+
         this.projectFeatures.addLayer(layer);
         this.map.on('zoomend', () => {
           var style: L.PathOptions = {};
