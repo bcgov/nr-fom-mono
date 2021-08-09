@@ -116,6 +116,7 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
           marker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
           this.projectFeatures.addLayer(marker);
         }
+        layer.on('click', L.Util.bind(this.onClick, this, spatialDetail));
 
         this.projectFeatures.addLayer(layer);
         this.map.on('zoomend', () => {
@@ -138,6 +139,23 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
       });
       this.map.addLayer(this.projectFeatures);
     }
+  }
+
+  private onClick(...args: any[]) {
+    const spatialDetail = args[0] as SpatialFeaturePublicResponse; 
+    // console.log("On click " + spatialDetail.featureType + " " + spatialDetail.featureId);
+
+    const label = spatialDetail.featureType + " " + spatialDetail.featureId;
+    var markerCoords = spatialDetail.geometry['coordinates'][0][0];
+    if (spatialDetail.featureType == 'road_section') {
+      markerCoords = spatialDetail.geometry['coordinates'][0];
+    }
+    // console.log(label + JSON.stringify(markerCoords));
+    var marker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); //opacity may be set to zero
+    marker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
+    marker.setPopupContent(label + "popup");
+    this.projectFeatures.addLayer(marker);
+
   }
 
   // to avoid timing conflict with animations (resulting in small map tile at top left of page),
