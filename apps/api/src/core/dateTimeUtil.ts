@@ -22,8 +22,10 @@ export class DateTimeUtil {
         console.log(`----> now is called with inTimezone: ${inTimezone}`);
         DateTimeUtil.init();
         if (!inTimezone) {
+            console.log("----> now using dayjs()")
             return dayjs(); // dayjs is based on local. If server is using UTC date/time, then it is UTC date/time.
         }
+        console.log("----> now using dayjs.tz(dayjs().utc(), DateTimeUtil.DATE_FORMAT, inTimezone)")
         return dayjs.tz(dayjs().utc(), DateTimeUtil.DATE_FORMAT, inTimezone);
     }
 
@@ -41,9 +43,12 @@ export class DateTimeUtil {
         console.log(`----> get is called with dateInput: ${dateInput}, inTimezone: ${inTimezone}`);
         DateTimeUtil.init();
         if (!inTimezone) {
+            console.log("----> get using dayjs(dateInput)")
             return dayjs(dateInput);
         }
-        return dayjs(dateInput).tz(inTimezone);
+        console.log("----> get using dayjs.tz(dateInput, DateTimeUtil.DATE_FORMAT, inTimezone)")
+        // return dayjs(dateInput).tz(inTimezone);
+        return dayjs.tz(dateInput, DateTimeUtil.DATE_FORMAT, inTimezone);
     }
 
     /**
