@@ -3,6 +3,18 @@ import * as L from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
 import { MapLayers } from '../../app-map/map-layers';
+/*
+  Leaflet has bug and would show these error on console: 
+  http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)
+  http://localhost:4300/public/marker-shadow.png 404 (Not Found)
+
+  Add these import(s) to fix them. 
+  (ref: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env: answered by user9547708)
+  import "leaflet/dist/images/marker-shadow.png"; 
+  import "leaflet/dist/images/marker-icon-2x.png";
+*/
+import "leaflet/dist/images/marker-shadow.png"; 
+import "leaflet/dist/images/marker-icon-2x.png";
 
 @Component({
   selector: 'app-details-map',
@@ -16,6 +28,7 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
 
   public map: L.Map;
   public projectFeatures: L.FeatureGroup; // group of layers for the features of a FOM project.
+  private lastLabelMarker: L.Marker; // global variable to keep track latest layer added (as labeling popup for onClick)
 
   // custom reset view control
   public resetViewControl = L.Control.extend({
@@ -104,18 +117,6 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
       projectSpatialDetails.forEach(spatialDetail => {
         const layer = L.geoJSON(<GeoJsonObject>spatialDetail['geometry']);
 
-        const showLabels = false;
-        if (showLabels) {
-          const label = spatialDetail.featureType + " " + spatialDetail.featureId;
-          var markerCoords = spatialDetail.geometry['coordinates'][0][0];
-          if (spatialDetail.featureType == 'road_section') {
-            markerCoords = spatialDetail.geometry['coordinates'][0];
-          }
-          // console.log(label + JSON.stringify(markerCoords));
-          var marker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); //opacity may be set to zero
-          marker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
-          this.projectFeatures.addLayer(marker);
-        }
         layer.on('click', L.Util.bind(this.onClick, this, spatialDetail));
 
         this.projectFeatures.addLayer(layer);
@@ -142,20 +143,21 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   }
 
   private onClick(...args: any[]) {
-    const spatialDetail = args[0] as SpatialFeaturePublicResponse; 
-    // console.log("On click " + spatialDetail.featureType + " " + spatialDetail.featureId);
+    const spatialDetail = args[0] as SpatialFeaturePublicResponse;
 
     const label = spatialDetail.featureType + " " + spatialDetail.featureId;
     var markerCoords = spatialDetail.geometry['coordinates'][0][0];
     if (spatialDetail.featureType == 'road_section') {
       markerCoords = spatialDetail.geometry['coordinates'][0];
     }
-    // console.log(label + JSON.stringify(markerCoords));
-    var marker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); //opacity may be set to zero
-    marker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
-    marker.setPopupContent(label + "popup");
-    this.projectFeatures.addLayer(marker);
 
+    //remove last label first, so it does not stay when next one is added.
+    this.projectFeatures.removeLayer(this.lastLabelMarker);
+
+    this.lastLabelMarker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); //opacity may be set to zero
+    this.lastLabelMarker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
+    this.lastLabelMarker.setPopupContent(label + "popup");
+    this.projectFeatures.addLayer(this.lastLabelMarker);
   }
 
   // to avoid timing conflict with animations (resulting in small map tile at top left of page),
