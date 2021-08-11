@@ -19,13 +19,10 @@ export class DateTimeUtil {
      * @returns current date/time based on 'timezone'. If 'timezone' is not provided, server local date/time.
      */
     public static now(inTimezone: string) {
-        console.log(`----> now is called with inTimezone: ${inTimezone}`);
         DateTimeUtil.init();
         if (!inTimezone) {
-            console.log("----> now using dayjs()")
             return dayjs(); // dayjs is based on local. If server is using UTC date/time, then it is UTC date/time.
         }
-        console.log("----> now using dayjs.tz(dayjs().utc(), DateTimeUtil.DATE_FORMAT, inTimezone)")
         return dayjs.tz(dayjs().utc(), DateTimeUtil.DATE_FORMAT, inTimezone);
     }
 
@@ -40,14 +37,10 @@ export class DateTimeUtil {
      * @returns dayjs object based on 'timezone'.
      */
     public static get(dateInput: string, inTimezone: string) {
-        console.log(`----> get is called with dateInput: ${dateInput}, inTimezone: ${inTimezone}`);
         DateTimeUtil.init();
         if (!inTimezone) {
-            console.log("----> get using dayjs(dateInput)")
             return dayjs(dateInput);
         }
-        console.log("----> get using dayjs.tz(dateInput, DateTimeUtil.DATE_FORMAT, inTimezone)")
-        // return dayjs(dateInput).tz(inTimezone);
         return dayjs.tz(dateInput, DateTimeUtil.DATE_FORMAT, inTimezone);
     }
 
@@ -76,21 +69,10 @@ export class DateTimeUtil {
     }
 
     public static diffNow(endDateSt: string, inTimezone: string, unit: any) {
-        console.log(`----> DateTimeUtil diffNow is called. endDateSt: ${endDateSt}, inTimezone: ${inTimezone}, unit: ${unit}`);
         DateTimeUtil.init();
         const now = this.now(inTimezone);
-        console.log(`----> now returned as: ${now}`);
-        console.log(`----> now formated string as YYYY-MM-DD: ${now.format(DateTimeUtil.DATE_FORMAT)}`);
         const endDate = this.get(endDateSt, inTimezone);
-        console.log(`----> get returned endDate as: ${endDate}`);
-        console.log(`----> endDate formated string as YYYY-MM-DD: ${endDate.format(DateTimeUtil.DATE_FORMAT)}`);
-        console.log(`----> `);
-        console.log(`----> endDate.startOf(unit): `, endDate.startOf(unit));
-        console.log(`----> now.startOf(unit): `, now.startOf(unit));
-        const diff = endDate.startOf(unit).diff(now.startOf(unit), unit);
-        console.log(`----> diff calculated as: ${diff}`);
-        return diff;
-        // return endDate.startOf(unit).diff(now.startOf(unit), unit);
+        return endDate.startOf(unit).diff(now.startOf(unit), unit);
     }
 
     private static init() {
@@ -98,6 +80,5 @@ export class DateTimeUtil {
         dayjs.extend(utc);
         dayjs.extend(timezone);
         dayjs.extend(advancedFormat);
-        console.log(`----> DateTimeUtil init is called to init...`);
     }
 }

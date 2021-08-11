@@ -397,17 +397,11 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // Required COMMENTING_OPEN_DATE: must be at least one day after publish is pushed
-      this.logger.info("***************** COMMENTING_OPEN_DATE on Publish push validation starts *****************");
-      this.logger.info(`----> entity.commentingOpenDate: ${entity.commentingOpenDate}`);
-      this.logger.info(`----> use timezone DateTimeUtil.TIMEZONE_VANCOUVER : ${DateTimeUtil.TIMEZONE_VANCOUVER}`);
       const dayDiff = DateTimeUtil.diffNow(entity.commentingOpenDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
-      this.logger.info(`----> Calculated 'dayDiff' as ${dayDiff}`);
       if (dayDiff < 1) {
-        this.logger.info("----> COMMENTING_OPEN_DATE on date of publish < 1 !!!");
         throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
         Commenting Open Date: must be at least one day after publish is pushed.`);
       }
-      this.logger.info("***************** COMMENTING_OPEN_DATE on Publish push validation ends *****************");
 
       // Required: COMMENTING_CLOSED_DATE
       if (isNil(entity.commentingClosedDate) || !dayjs(entity.commentingClosedDate, this.DATE_FORMAT).isValid()) {
