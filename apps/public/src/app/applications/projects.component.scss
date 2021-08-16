@@ -376,3 +376,17 @@ $select-badge-active-bg: #a5d8ff;
     }
   }
 }
+
+// To accommodate smaller device-width that the lable text wrapped to next line. 
+@media (max-width: 360px) {
+  .app-results {
+    height: 6.2rem;
+  }
+
+  .select-badge {
+    label {
+      padding-top: 0.1rem;
+      padding-bottom: 0.1rem;
+    }
+  }
+}

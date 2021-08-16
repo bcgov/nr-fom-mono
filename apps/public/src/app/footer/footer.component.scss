@@ -69,6 +69,11 @@
     padding-top: 1.5rem;
     border-top: 1px solid $bg-dark-border-color;
 
+    div {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
     .gov-links {
       text-align: center;
       margin: 0;
