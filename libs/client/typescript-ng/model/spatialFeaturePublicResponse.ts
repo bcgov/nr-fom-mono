@@ -10,10 +10,12 @@
  * Do not edit the class manually.
  */
 import { SubmissionTypeCode } from './submissionTypeCode';
+import { FeatureTypeCode } from './featureTypeCode';
 
 
 export interface SpatialFeaturePublicResponse { 
     featureType: SpatialFeaturePublicResponse.FeatureTypeEnum;
+    featureTypeCode: FeatureTypeCode;
     featureId: number;
     name: string;
     /**

@@ -1,10 +1,14 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { SubmissionTypeCode } from "../submission/submission-type-code.entity";
+import { FeatureTypeCode } from "./feature-type-code";
 
 export class SpatialFeaturePublicResponse {
 
     @ApiProperty({ enum: ['cut_block', 'road_section', 'retention_area']})
     featureType: string;
+
+    @ApiProperty()
+    featureTypeCode: FeatureTypeCode;
 
     @ApiProperty()
     featureId: number;

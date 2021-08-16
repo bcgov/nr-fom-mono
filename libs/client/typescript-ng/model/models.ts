@@ -2,6 +2,7 @@ export * from './attachmentResponse';
 export * from './attachmentTypeCode';
 export * from './commentScopeCode';
 export * from './districtResponse';
+export * from './featureTypeCode';
 export * from './forestClientResponse';
 export * from './interactionResponse';
 export * from './keycloakConfig';

@@ -83,36 +83,41 @@
           "createTimestamp"
         ]
       },
-      "ProjectPublicSummaryResponse": {
+      "InteractionResponse": {
         "type": "object",
         "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "stakeholder": {
+            "type": "string"
+          },
+          "communicationDate": {
+            "type": "string"
+          },
+          "communicationDetails": {
+            "type": "string"
+          },
+          "attachmentId": {
+            "type": "number"
+          },
           "id": {
             "type": "number"
           },
-          "name": {
-            "type": "string"
-          },
-          "geojson": {
-            "type": "object",
-            "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
-          },
-          "fspId": {
+          "revisionCount": {
             "type": "number"
           },
-          "forestClientName": {
-            "type": "string"
-          },
-          "workflowStateName": {
-            "type": "string"
+          "createTimestamp": {
+            "type": "string",
+            "description": "ISO-formatted timestamp"
           }
         },
         "required": [
+          "projectId",
+          "communicationDetails",
           "id",
-          "name",
-          "geojson",
-          "fspId",
-          "forestClientName",
-          "workflowStateName"
+          "revisionCount",
+          "createTimestamp"
         ]
       },
       "DistrictResponse": {
@@ -143,6 +148,38 @@
         "required": [
           "id",
           "name"
+        ]
+      },
+      "ProjectPublicSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "geojson": {
+            "type": "object",
+            "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
+          },
+          "fspId": {
+            "type": "number"
+          },
+          "forestClientName": {
+            "type": "string"
+          },
+          "workflowStateName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "geojson",
+          "fspId",
+          "forestClientName",
+          "workflowStateName"
         ]
       },
       "WorkflowStateCode": {
@@ -306,43 +343,6 @@
         "required": [
           "revisionCount",
           "workflowStateCode"
-        ]
-      },
-      "InteractionResponse": {
-        "type": "object",
-        "properties": {
-          "projectId": {
-            "type": "number"
-          },
-          "stakeholder": {
-            "type": "string"
-          },
-          "communicationDate": {
-            "type": "string"
-          },
-          "communicationDetails": {
-            "type": "string"
-          },
-          "attachmentId": {
-            "type": "number"
-          },
-          "id": {
-            "type": "number"
-          },
-          "revisionCount": {
-            "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string",
-            "description": "ISO-formatted timestamp"
-          }
-        },
-        "required": [
-          "projectId",
-          "communicationDetails",
-          "id",
-          "revisionCount",
-          "createTimestamp"
         ]
       },
       "PublicCommentCreateRequest": {
@@ -566,6 +566,21 @@
           "description"
         ]
       },
+      "FeatureTypeCode": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ]
+      },
       "SpatialFeaturePublicResponse": {
         "type": "object",
         "properties": {
@@ -576,6 +591,9 @@
               "road_section",
               "retention_area"
             ]
+          },
+          "featureTypeCode": {
+            "$ref": "#/components/schemas/FeatureTypeCode"
           },
           "featureId": {
             "type": "number"
@@ -603,6 +621,7 @@
         },
         "required": [
           "featureType",
+          "featureTypeCode",
           "featureId",
           "name",
           "geometry",
@@ -888,6 +907,300 @@
         },
         "tags": [
           "attachment"
+        ]
+      }
+    },
+    "/api/interaction": {
+      "post": {
+        "operationId": "InteractionController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "projectId": {
+                    "type": "number"
+                  },
+                  "stakeholder": {
+                    "type": "string"
+                  },
+                  "communicationDate": {
+                    "type": "string"
+                  },
+                  "communicationDetails": {
+                    "type": "string"
+                  },
+                  "filename": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "interaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "get": {
+        "operationId": "InteractionController_find",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InteractionResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "interaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/interaction/{id}": {
+      "put": {
+        "operationId": "InteractionController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "projectId": {
+                    "type": "number"
+                  },
+                  "stakeholder": {
+                    "type": "string"
+                  },
+                  "communicationDate": {
+                    "type": "string"
+                  },
+                  "communicationDetails": {
+                    "type": "string"
+                  },
+                  "revisionCount": {
+                    "type": "number"
+                  },
+                  "filename": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InteractionResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "interaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "InteractionController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "interaction"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/district": {
+      "get": {
+        "operationId": "DistrictController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DistrictResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "district"
+        ]
+      }
+    },
+    "/api/district/{id}": {
+      "get": {
+        "operationId": "DistrictController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "district"
+        ]
+      }
+    },
+    "/api/forest-client": {
+      "get": {
+        "operationId": "ForestClientController_find",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns only forest clients that the user is authorized for.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ForestClientResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "forest-client"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/forest-client/{id}": {
+      "get": {
+        "operationId": "ForestClientController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForestClientResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "forest-client"
         ]
       }
     },
@@ -1214,300 +1527,6 @@
         },
         "tags": [
           "project"
-        ]
-      }
-    },
-    "/api/district": {
-      "get": {
-        "operationId": "DistrictController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DistrictResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "district"
-        ]
-      }
-    },
-    "/api/district/{id}": {
-      "get": {
-        "operationId": "DistrictController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DistrictResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "district"
-        ]
-      }
-    },
-    "/api/forest-client": {
-      "get": {
-        "operationId": "ForestClientController_find",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Returns only forest clients that the user is authorized for.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ForestClientResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "forest-client"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/api/forest-client/{id}": {
-      "get": {
-        "operationId": "ForestClientController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ForestClientResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "forest-client"
-        ]
-      }
-    },
-    "/api/interaction": {
-      "post": {
-        "operationId": "InteractionController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "projectId": {
-                    "type": "number"
-                  },
-                  "stakeholder": {
-                    "type": "string"
-                  },
-                  "communicationDate": {
-                    "type": "string"
-                  },
-                  "communicationDetails": {
-                    "type": "string"
-                  },
-                  "filename": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "interaction"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "get": {
-        "operationId": "InteractionController_find",
-        "parameters": [
-          {
-            "name": "projectId",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/InteractionResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "interaction"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/api/interaction/{id}": {
-      "put": {
-        "operationId": "InteractionController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "format": "binary"
-                  },
-                  "projectId": {
-                    "type": "number"
-                  },
-                  "stakeholder": {
-                    "type": "string"
-                  },
-                  "communicationDate": {
-                    "type": "string"
-                  },
-                  "communicationDetails": {
-                    "type": "string"
-                  },
-                  "revisionCount": {
-                    "type": "number"
-                  },
-                  "filename": {
-                    "type": "string"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/InteractionResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "interaction"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "InteractionController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "interaction"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
         ]
       }
     },
