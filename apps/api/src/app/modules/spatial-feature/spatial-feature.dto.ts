@@ -4,11 +4,8 @@ import { FeatureTypeCode } from "./feature-type-code";
 
 export class SpatialFeaturePublicResponse {
 
-    @ApiProperty({ enum: ['cut_block', 'road_section', 'retention_area']})
-    featureType: string;
-
     @ApiProperty()
-    featureTypeCode: FeatureTypeCode;
+    featureType: FeatureTypeCode;
 
     @ApiProperty()
     featureId: number;

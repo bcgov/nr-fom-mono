@@ -186,11 +186,11 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
     if (spatialDetails) {
       spatialDetails
         .filter((detail) => {
-          return ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType, true);// filter out rention_area.
+          return ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, true);// filter out rention_area.
         })
         .forEach((detail) => {
-        this.commentScopeOpts.push({commentScopeCode: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType, true), 
-                                desc: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType, false),
+        this.commentScopeOpts.push({commentScopeCode: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, true), 
+                                desc: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, false),
                                 name: detail.name, 
                                 scopeId: detail.featureId} as CommentScopeOpt);
       });

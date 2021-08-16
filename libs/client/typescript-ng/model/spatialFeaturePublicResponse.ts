@@ -14,8 +14,7 @@ import { FeatureTypeCode } from './featureTypeCode';
 
 
 export interface SpatialFeaturePublicResponse { 
-    featureType: SpatialFeaturePublicResponse.FeatureTypeEnum;
-    featureTypeCode: FeatureTypeCode;
+    featureType: FeatureTypeCode;
     featureId: number;
     name: string;
     /**
@@ -30,13 +29,4 @@ export interface SpatialFeaturePublicResponse {
     plannedLengthKm: number;
     submissionType: SubmissionTypeCode;
 }
-export namespace SpatialFeaturePublicResponse {
-    export type FeatureTypeEnum = 'cut_block' | 'road_section' | 'retention_area';
-    export const FeatureTypeEnum = {
-        CutBlock: 'cut_block' as FeatureTypeEnum,
-        RoadSection: 'road_section' as FeatureTypeEnum,
-        RetentionArea: 'retention_area' as FeatureTypeEnum
-    };
-}
-
 

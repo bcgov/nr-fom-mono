@@ -51,11 +51,11 @@ export class CommentModalComponent implements OnInit {
     if (this.projectSpatialDetail) {
       this.projectSpatialDetail
         .filter((detail) => {
-          return this.getCommentScopeCodeOrDesc(detail.featureType, true);// filter out rention_area.
+          return this.getCommentScopeCodeOrDesc(detail.featureType.code, true);// filter out rention_area.
         })
         .forEach((detail) => {
-        this.commentScopeOpts.push({commentScopeCode: this.getCommentScopeCodeOrDesc(detail.featureType, true), 
-                                desc: this.getCommentScopeCodeOrDesc(detail.featureType, false),
+        this.commentScopeOpts.push({commentScopeCode: this.getCommentScopeCodeOrDesc(detail.featureType.code, true), 
+                                desc: this.getCommentScopeCodeOrDesc(detail.featureType.code, false),
                                 name: detail.name, 
                                 scopeId: detail.featureId});
       });

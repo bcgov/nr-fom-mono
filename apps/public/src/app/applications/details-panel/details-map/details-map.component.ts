@@ -125,11 +125,11 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
           if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
             style.dashArray = '10,10';
           }
-          if (spatialDetail.featureType == 'road_section') {
+          if (spatialDetail.featureType.code == 'road_section') {
             style.color = 'yellow';
             style.opacity = 1;
           }
-          if (spatialDetail.featureType == 'retention_area') {
+          if (spatialDetail.featureType.code == 'retention_area') {
             style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
             style.fillColor = '#7CFF87';
           }
@@ -143,9 +143,9 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   private onSpatialFeatureClick(...args: any[]) {
     const spatialDetail = args[0] as SpatialFeaturePublicResponse;
 
-    const label = spatialDetail.featureTypeCode.description + " " + spatialDetail.featureId;
+    const label = spatialDetail.featureType.description + " " + spatialDetail.featureId;
     var markerCoords = spatialDetail.geometry['coordinates'][0][0];
-    if (spatialDetail.featureType == 'road_section') {
+    if (spatialDetail.featureType.code == 'road_section') {
       markerCoords = spatialDetail.geometry['coordinates'][0];
     }
 

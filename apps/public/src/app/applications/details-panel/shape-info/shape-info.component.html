@@ -13,7 +13,7 @@
     
       <ng-container matColumnDef="type">
         <mat-header-cell *matHeaderCellDef> <strong>Shape</strong> </mat-header-cell>
-        <mat-cell *matCellDef="let feature"> {{feature.featureTypeCode.description}} </mat-cell>
+        <mat-cell *matCellDef="let feature"> {{feature.featureType.description}} </mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="name">
@@ -57,7 +57,7 @@
         <ul class="meta-container">
           <li>
             <div class="key">Type:</div>
-            <div class="value">{{feature.featureTypeCode.description}}</div>
+            <div class="value">{{feature.featureType.description}}</div>
           </li>
           <li>
             <div class="key">Name:</div>

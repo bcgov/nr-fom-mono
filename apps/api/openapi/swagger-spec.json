@@ -585,14 +585,6 @@
         "type": "object",
         "properties": {
           "featureType": {
-            "type": "string",
-            "enum": [
-              "cut_block",
-              "road_section",
-              "retention_area"
-            ]
-          },
-          "featureTypeCode": {
             "$ref": "#/components/schemas/FeatureTypeCode"
           },
           "featureId": {
@@ -621,7 +613,6 @@
         },
         "required": [
           "featureType",
-          "featureTypeCode",
           "featureId",
           "name",
           "geometry",
