@@ -116,9 +116,7 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     if (this.map) {
       projectSpatialDetails.forEach(spatialDetail => {
         const layer = L.geoJSON(<GeoJsonObject>spatialDetail['geometry']);
-
-        layer.on('click', L.Util.bind(this.onClick, this, spatialDetail));
-
+        layer.on('click', L.Util.bind(this.onSpatialFeatureClick, this, spatialDetail));
         this.projectFeatures.addLayer(layer);
         this.map.on('zoomend', () => {
           var style: L.PathOptions = {};
@@ -142,10 +140,10 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     }
   }
 
-  private onClick(...args: any[]) {
+  private onSpatialFeatureClick(...args: any[]) {
     const spatialDetail = args[0] as SpatialFeaturePublicResponse;
 
-    const label = spatialDetail.featureType + " " + spatialDetail.featureId;
+    const label = spatialDetail.featureTypeCode.description + " " + spatialDetail.featureId;
     var markerCoords = spatialDetail.geometry['coordinates'][0][0];
     if (spatialDetail.featureType == 'road_section') {
       markerCoords = spatialDetail.geometry['coordinates'][0];

@@ -24,20 +24,4 @@ export class ShapeInfoComponent implements OnInit {
     // Deliberately empty
   }
 
-  getFomSpatialTypeDesc(source: string) {
-    switch(source) {
-      case SpatialTypeMap.get(SpatialObjectCodeEnum.CutBlock)['source'].toLowerCase():
-        return SpatialTypeMap.get(SpatialObjectCodeEnum.CutBlock)['desc'];
-
-      case SpatialTypeMap.get(SpatialObjectCodeEnum.RoadSection)['source'].toLowerCase():
-        return SpatialTypeMap.get(SpatialObjectCodeEnum.RoadSection)['desc'];
-
-      case SpatialTypeMap.get(SpatialObjectCodeEnum.Wtra)['source'].toLowerCase():
-        return SpatialTypeMap.get(SpatialObjectCodeEnum.Wtra)['desc'];
-        
-      default:
-        return null;
-    }
-  }
-
 }

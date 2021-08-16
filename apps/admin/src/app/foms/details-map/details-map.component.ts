@@ -16,6 +16,7 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
 
   public map: L.Map;
   public projectFeatures: L.FeatureGroup; // group of layers for the features of a FOM project.
+  private lastLabelMarker: L.Marker; // global variable to keep track latest layer added (as labeling popup for onClick)
 
   // custom reset view control
   public resetViewControl = L.Control.extend({
@@ -103,6 +104,7 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     if (this.map) {
       projectSpatialDetails.forEach(spatialDetail => {
         const layer = L.geoJSON(<GeoJsonObject>spatialDetail['geometry']);
+        layer.on('click', L.Util.bind(this.onSpatialFeatureClick, this, spatialDetail));
         this.projectFeatures.addLayer(layer);
         this.map.on('zoomend', () => {
           var style: L.PathOptions = {};
@@ -124,6 +126,24 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
       });
       this.map.addLayer(this.projectFeatures);
     }
+  }
+
+  private onSpatialFeatureClick(...args: any[]) {
+    const spatialDetail = args[0] as SpatialFeaturePublicResponse;
+
+    const label = spatialDetail.featureTypeCode.description + " " + spatialDetail.featureId;
+    var markerCoords = spatialDetail.geometry['coordinates'][0][0];
+    if (spatialDetail.featureType == 'road_section') {
+      markerCoords = spatialDetail.geometry['coordinates'][0];
+    }
+
+    //remove last label first, so it does not stay when next one is added.
+    this.projectFeatures.removeLayer(this.lastLabelMarker);
+
+    this.lastLabelMarker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); //opacity may be set to zero
+    this.lastLabelMarker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
+    this.lastLabelMarker.setPopupContent(label + "popup");
+    this.projectFeatures.addLayer(this.lastLabelMarker);
   }
 
   // to avoid timing conflict with animations (resulting in small map tile at top left of page),
