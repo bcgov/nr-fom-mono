@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
-import { SpatialFeaturePublicResponse, SpatialObjectCodeEnum } from '@api-client';
+import { SpatialFeaturePublicResponse } from '@api-client';
 
 @Component({
   selector: 'app-shape-info',

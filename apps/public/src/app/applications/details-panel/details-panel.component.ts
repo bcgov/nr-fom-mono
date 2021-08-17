@@ -7,10 +7,8 @@ import { CommentModalComponent } from '../../comment-modal/comment-modal.compone
 import { UrlService } from '@public-core/services/url.service';
 import { Filter } from '../utils/filter';
 import { AttachmentResponse, AttachmentService, ProjectResponse, ProjectService, 
-        SpatialFeaturePublicResponse, SpatialFeatureService, SpatialObjectCodeEnum, 
-        WorkflowStateCode } from '@api-client';
+        SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode } from '@api-client';
 import * as _ from 'lodash';
-import { SpatialTypeMap } from '@public-core/utils/constants/appUtils';
 import { ConfigService } from '@utility/services/config.service';
 
 /**
