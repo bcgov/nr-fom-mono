@@ -23,7 +23,8 @@ COPY . .
 
 RUN npm run build:api
 
-FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim AS run
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:14.17-slim as run
+#FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim AS run
 
 # Workaround npm limitation with installing as non-root
 USER 0
