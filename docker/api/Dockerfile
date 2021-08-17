@@ -1,5 +1,6 @@
 
-FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim as build
+# FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim as build
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:14.17-slim as build
 # FROM node:14-alpine
 
 # Workaround npm limitation with building as non-root
