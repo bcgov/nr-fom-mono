@@ -597,6 +597,10 @@
             "type": "object",
             "description": "Format: GeoJSON Geometry object"
           },
+          "centroid": {
+            "type": "object",
+            "description": "Format: GeoJSON Point"
+          },
           "plannedDevelopmentDate": {
             "type": "string",
             "description": "Format: YYYY-MM-DD"
@@ -616,6 +620,7 @@
           "featureId",
           "name",
           "geometry",
+          "centroid",
           "plannedDevelopmentDate",
           "plannedAreaHa",
           "plannedLengthKm",

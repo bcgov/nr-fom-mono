@@ -16,6 +16,9 @@ export class SpatialFeaturePublicResponse {
     @ApiProperty({ description: 'Format: GeoJSON Geometry object' })
     geometry: object;
 
+    @ApiProperty({ description: 'Format: GeoJSON Point' })
+    centroid: object;
+
     @ApiProperty({ description: 'Format: YYYY-MM-DD'})
     plannedDevelopmentDate: string;
   

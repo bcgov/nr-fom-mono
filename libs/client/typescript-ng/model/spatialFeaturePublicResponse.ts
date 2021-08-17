@@ -22,6 +22,10 @@ export interface SpatialFeaturePublicResponse {
      */
     geometry: object;
     /**
+     * Format: GeoJSON Point
+     */
+    centroid: object;
+    /**
      * Format: YYYY-MM-DD
      */
     plannedDevelopmentDate: string;

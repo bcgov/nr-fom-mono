@@ -1,6 +1,7 @@
 import { ViewEntity, JoinColumn, ManyToOne, ViewColumn } from 'typeorm';
 import { SubmissionTypeCode } from '../submission/submission-type-code.entity';
 import { ForestClient } from '../forest-client/forest-client.entity';
+import { FomPoint } from '@api-modules/project/project.dto';
 
 // This entity represents all the shapes (cut blocks, road sections, retention areas) for FOM projects
 // denormalized and converted for easy rendering in leaflet and exporting to BCGW.
@@ -22,6 +23,10 @@ export class SpatialFeature {
   // Loaded from DB as geojson string, converted to geojson object 
   @ViewColumn({name:"geojson"})
   geometry: string;
+
+  // Loaded from DB as geojson string, converted to geojson object 
+  @ViewColumn({ name: 'centroid' })
+  centroid: string;
 
   @ViewColumn({name: 'planned_development_date'})
   plannedDevelopmentDate: string;

@@ -56,6 +56,7 @@ async findByProjectId(projectId: number): Promise<SpatialFeaturePublicResponse[]
     const response = new SpatialFeaturePublicResponse();
     response.featureId = entity.featureId;
     response.featureType = FeatureTypeCode.getInstance(entity.featureType);
+    response.centroid = JSON.parse(entity.centroid);
     response.geometry = JSON.parse(entity.geometry);
     response.submissionType = entity.submissionType;
 

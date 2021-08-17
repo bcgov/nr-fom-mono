@@ -130,19 +130,23 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
 
   private onSpatialFeatureClick(...args: any[]) {
     const spatialDetail = args[0] as SpatialFeaturePublicResponse;
-
     const label = spatialDetail.featureType.description + " " + spatialDetail.featureId;
-    var markerCoords = spatialDetail.geometry['coordinates'][0][0];
+    var markerCoords = spatialDetail.centroid['coordinates'];
     if (spatialDetail.featureType.code == 'road_section') {
-      markerCoords = spatialDetail.geometry['coordinates'][0];
+      // Use middle of road, so that the label is next to the road 
+      // (because the centroid of a curving road can lie far away from the actual road segment)
+      const middle = Math.round(spatialDetail.geometry['coordinates'].length / 2);
+      markerCoords = spatialDetail.geometry['coordinates'][middle-1];
     }
 
-    //remove last label first, so it does not stay when next one is added.
+    // Remove last label first, so it does not stay when next one is added.
     this.projectFeatures.removeLayer(this.lastLabelMarker);
 
-    this.lastLabelMarker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); //opacity may be set to zero
-    this.lastLabelMarker.bindTooltip(label, {permanent: true, className: "my-label", offset: [0, 0] });
-    this.lastLabelMarker.setPopupContent(label + "popup");
+    // Opacity 0 hides marker so just label is visible.
+    this.lastLabelMarker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); 
+    // Offset in pixels necessary to align with actual center location (unsure why leaflet has it not aligned by default)
+    // See https://gis.stackexchange.com/questions/394960/marker-position-in-leaflet/395270#395270
+    this.lastLabelMarker.bindTooltip(label, { permanent: true , offset: [-15, 25]}); 
     this.projectFeatures.addLayer(this.lastLabelMarker);
   }
 
