@@ -36,6 +36,12 @@
               (feature.plannedLengthKm? (feature.plannedLengthKm | number) + ' km' : '')
           }} 
         </mat-cell>
+
+        <ng-container matColumnDef="development_date">
+          <mat-header-cell *matHeaderCellDef> <strong>Planned Development Date</strong> </mat-header-cell>
+          <mat-cell *matCellDef="let feature"> {{feature.plannedDevelopmentDate}} </mat-cell>
+        </ng-container>
+        
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>

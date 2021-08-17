@@ -10,7 +10,7 @@ import { SpatialFeaturePublicResponse } from '@api-client';
 export class ShapeInfoComponent implements OnInit {
 
   slideColor: ThemePalette = 'primary';
-  displayedColumns: string[] = ['shape_id', 'type', 'name', 'submission_type', 'area_length'];
+  displayedColumns: string[] = ['shape_id', 'type', 'name', 'submission_type', 'area_length', 'development_date'];
 
   @Input('spatialDetail')
   projectSpatialDetail: SpatialFeaturePublicResponse[];
