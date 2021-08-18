@@ -29,12 +29,12 @@ parameters:
     name: VOLUME_CAPACITY
     required: true
     value: 1Gi
-    # Backups in each environment - 14 daily, 4 weekly, 1 monthly with each around 1-2M based on production-like test data , so likely don't need more than 50M, allocating 1 Gi as a minimum
+    # Backups in each environment - 14 daily, 4 weekly, 1 monthly with each around 1-2M based on production-like test data , so likely don't need more than 50M. 5Gi allocated as default sizing
   - name: BACKUP_VOLUME_SIZE
     displayName: Backup Volume Size
     description: The size of the persistent volume used to store the backups, e.g. 512Mi, 1Gi, 2Gi.  Ensure this is sized correctly.  Refer to the container documentation for details.
     required: true
-    value: 1Gi
+    value: 5Gi
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
