@@ -21,7 +21,10 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
         ...dbParams,
-        // TODO: Add more parameters for prod configuration (storage size, etc.)
+        'REQUEST_CPU': '100m',
+        'LIMIT_CPU': config.dbCpuLimit,
+        'REQUEST_MEMORY': '0.2Gi',
+        'LIMIT_MEMORY': config.dbMemoryLimit,
       }
     }));
 
@@ -33,7 +36,7 @@ const MyDeployer = class extends BasicDeployer{
         'DATABASE_DEPLOYMENT_NAME': `fom-db${config.suffix}`,
         'DATABASE_SERVICE_NAME':`fom-db${config.suffix}`,
         'DATABASE_NAME':'fom',
-        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+        // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
       }
     }));
 
@@ -64,7 +67,11 @@ const MyDeployer = class extends BasicDeployer{
         'OBJECT_STORAGE_URL': config.objectStorageUrl,
         'KEYCLOAK_URL': config.keycloakUrl,
         'REPLICA_COUNT': config.apiReplicaCount,
-        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+        'REQUEST_CPU': '100m',
+        'LIMIT_CPU': config.apiCpuLimit,
+        'REQUEST_MEMORY': '0.2Gi',
+        'LIMIT_MEMORY': config.apiMemoryLimit,
+
         // Test-related parameters
         'DB_TESTDATA': config.testDataEnabled,
         'KEYCLOAK_ENABLED': config.keycloakEnabled,
@@ -76,7 +83,7 @@ const MyDeployer = class extends BasicDeployer{
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_VERSION': config.tag,
         'ENV': config.phase,
-        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+        // Using defaults for memory and CPU limits, as this is a short-running batch process.
       }
     }));
 
@@ -85,7 +92,7 @@ const MyDeployer = class extends BasicDeployer{
         ...appParams,
         'API_BASE_URL': apiBaseUrl,
         'REPLICA_COUNT': config.publicReplicaCount, 
-        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+        // Using defaults for memory and CPU limits, as this is just a static front-end.
       }
     }));
 
@@ -94,7 +101,7 @@ const MyDeployer = class extends BasicDeployer{
         ...appParams,
         'API_BASE_URL': apiBaseUrl,
         'REPLICA_COUNT': config.adminReplicaCount, 
-        // TODO: Add more parameters for prod configuration (CPU, memory, etc.)
+        // Using defaults for memory and CPU limits, as this is just a static front-end.
       }
     }));
 

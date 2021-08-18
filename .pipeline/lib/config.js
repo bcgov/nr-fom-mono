@@ -64,6 +64,14 @@ module.exports = class {
 
       // The object storage API needs the hostname without the https:// prefix
       objectStorageUrl: {default: 'nrs.objectstore.gov.bc.ca'},
+
+      // Use higher limits for prod because only one DB instance
+      dbCpuLimit: {default: '200m', prod: '500m'},
+      dbMemoryLimit: {default: '1Gi', prod: '1.5Gi'},
+
+      // Use higher limits for memory as that's more impactful if it runs out.
+      apiCpuLimit: {default: '200m', prod: '500m'},
+      apiMemoryLimit: {default: '1Gi', prod: '1.5Gi'},
     };
 
     // Pivot configuration table, so that `phase name` becomes a top-level property

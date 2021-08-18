@@ -388,7 +388,7 @@ parameters:
     displayName: "Number of Daily Backups to Retain"
     description: "The number of daily backup files to be retained.  Used for the `rolling` backup strategy."
     required: false
-    value: "7"
+    value: "14"
   - name: "WEEKLY_BACKUPS"
     displayName: "Number of Weekly Backups to Retain"
     description: "The number of weekly backup files to be retained.  Used for the `rolling` backup strategy."
@@ -405,11 +405,6 @@ parameters:
     # Run at 10:00am UTC each day, which is 1 hour after batch process (~2am BC time depending on daylight savings)
     value: "0 10 * * *"
     required: true
-  - name: BACKUP_VOLUME_SIZE
-    displayName: Backup Volume Size
-    description: The size of the persistent volume used to store the backups, e.g. 512Mi, 1Gi, 2Gi.  Ensure this is sized correctly.  Refer to the container documentation for details.
-    required: true
-    value: 5Gi
   - name: VERIFICATION_VOLUME_SIZE
     displayName: Backup Volume Size
     description: The size of the persistent volume used for restoring and verifying backups, e.g. 512Mi, 1Gi, 2Gi.  Ensure this is sized correctly.  It should be large enough to contain your largest database.
@@ -478,22 +473,22 @@ parameters:
     value: /var/lib/pgsql/data
   - name: CPU_REQUEST
     displayName: Resources CPU Request
-    description: The resources CPU request (in cores) for this build.
+    description: The resources CPU request (in cores) for this build. Default is best effort.
     required: true
     value: "0"
   - name: CPU_LIMIT
     displayName: Resources CPU Limit
-    description: The resources CPU limit (in cores) for this build.
+    description: The resources CPU limit (in cores) for this build. Default is best effort.
     required: true
     value: "0"
   - name: MEMORY_REQUEST
     displayName: Resources Memory Request
-    description: The resources Memory request (in Mi, Gi, etc) for this build.
+    description: The resources Memory request (in Mi, Gi, etc) for this build. Default is best effort.
     required: true
     value: 0Mi
   - name: MEMORY_LIMIT
     displayName: Resources Memory Limit
-    description: The resources Memory limit (in Mi, Gi, etc) for this build.
+    description: The resources Memory limit (in Mi, Gi, etc) for this build. Default is best effort.
     required: true
     value: 0Mi
   - name: "JOB_SERVICE_ACCOUNT"

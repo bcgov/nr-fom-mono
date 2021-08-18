@@ -46,16 +46,16 @@ parameters:
     name: REQUEST_CPU
     required: false
     value: 50m
-  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
-    displayName: Memory resource request
-    name: REQUEST_MEMORY
-    required: false
-    value: 50Mi
   - description: Limit for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource limit
     name: LIMIT_CPU
     required: false
     value: 200m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 0.2Gi
   - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
     displayName: Memory resource limit
     name: LIMIT_MEMORY

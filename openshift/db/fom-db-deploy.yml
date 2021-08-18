@@ -23,31 +23,33 @@ parameters:
     description: The name of the persistent volume used to store the backups.
     required: true
   # Optional parameters with defaults
+    # 3+ years production-like volume of projects (without comments, interactions) in test environment is ~170 MiB so default 1 Gi should be sufficient for at least 1+ years.
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Volume Capacity
     name: VOLUME_CAPACITY
     required: true
     value: 1Gi
+    # Backups in each environment - 14 daily, 4 weekly, 1 monthly with each around 1-2M based on production-like test data , so likely don't need more than 50M, allocating 1 Gi as a minimum
   - name: BACKUP_VOLUME_SIZE
     displayName: Backup Volume Size
     description: The size of the persistent volume used to store the backups, e.g. 512Mi, 1Gi, 2Gi.  Ensure this is sized correctly.  Refer to the container documentation for details.
     required: true
-    value: 5Gi
+    value: 1Gi
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
     name: REQUEST_CPU
     required: false
-    value: 100m
-  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
-    displayName: Memory resource request
-    name: REQUEST_MEMORY
-    required: false
-    value: 512Mi
+    value: 50m
   - description: Limit for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource limit
     name: LIMIT_CPU
     required: false
     value: 200m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 0.2Gi
   - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
     displayName: Memory resource limit
     name: LIMIT_MEMORY
