@@ -7,7 +7,6 @@ import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
-import { ProjectController } from './app/modules/project/project.controller';
 import helmet = require('helmet');
 import { ProjectService } from '@api-modules/project/project.service';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
@@ -114,8 +113,7 @@ async function postStartup(app: INestApplication) {
 
     // Preload cache for public summary default data.
     logger.log("Starting public summary cache pre-load...");
-    await app.get(ProjectController).findPublicSummary('true', 'false'); // Comment Open Only (the default)
-    await app.get(ProjectController).findPublicSummary(); // Comment Open & Closed (high volume and slow)
+    await app.get(ProjectService).refreshCache();
 
     logger.log("Done postStartup.");
   } catch (error) {

@@ -18,6 +18,7 @@ import { PublicCommentService } from '../public-comment/public-comment.service';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
 import { MailService } from 'apps/api/src/core/mail/mail.service';
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import { Cron } from '@nestjs/schedule';
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -228,6 +229,27 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return ['district', 'forestClient', 'workflowState'];
   }
 
+  @Cron('45 9 * * * ') // Run at 9:45am UTC each day, shortly after the batch which runs at 9:00am UTC
+  async resetCache() {
+    this.logger.info("Reseting cache for public summaries...");
+    this.cache.flushAll();
+    await this.refreshCache();
+  }
+
+  async refreshCache():Promise<any> {
+    const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
+
+    // Pre-populate cache with default / common searches
+
+    // Commenting Open only
+    findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_OPEN);
+    await this.findPublicSummaries(findCriteria);
+
+    // Commenting open & closed
+    findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_CLOSED);
+    findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.FINALIZED);
+    await this.findPublicSummaries(findCriteria);
+  }
 
   async findPublicSummaries(findCriteria: ProjectFindCriteria):Promise<ProjectPublicSummaryResponse[]> {
     this.logger.debug('Find public summaries criteria: %o', findCriteria);
@@ -235,12 +257,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const cacheKey = 'PublicSummary-' + findCriteria.getCacheKey();
     const cacheResult = this.cache.get(cacheKey);
     if (cacheResult != undefined) {
-      this.logger.info('findPublicSummaries - Using cached result');
+      this.logger.debug('findPublicSummaries - Using cached result');
       return cacheResult as ProjectPublicSummaryResponse[];
     }
 
     // Use reduced select to optimize performance. 
-    this.logger.info('findPublicSummaries - Querying database');
+    this.logger.info('findPublicSummaries - Querying database with criteria %o', findCriteria.getCacheKey());
     const query = this.repository.createQueryBuilder("p")
       .select(['p.id', 'p.geojson', 'p.fspId', 'p.name', 'forestClient.name', 'workflowState.description']) 
       .leftJoin('p.forestClient', 'forestClient')
@@ -260,10 +282,9 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       return response;
     });
 
-    // Public summary data only changes daily with batch update process, but we don't want to assume we know when it runs, 
-    // so just use 1 hour cache for the default (most common scenario). We don't want other searches to clog the cache so just use 10 minutes for those.
-    const defaultCacheKey = 'PublicSummary-{"includeWorkflowStateCodes":["COMMENT_OPEN","COMMENT_CLOSED","FINALIZED"],"includeForestClientNumbers":[]}';
-    const ttl = cacheKey == defaultCacheKey ? 60*60 : 10*60;
+    // Public summary data only changes daily with batch update process, so we let cached data persist for 24 hours, and have scheduled logic
+    // to reset the cache shortly after the batch runs.
+    const ttl = 24*60*60; // 24 hours
     this.cache.set(cacheKey, result, ttl);
 
     return result;

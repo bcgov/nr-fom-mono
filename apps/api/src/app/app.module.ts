@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 
 // Core Modules
 import { AttachmentModule } from './modules/attachment/attachment.module';
@@ -24,6 +25,7 @@ function getLogLevel():string {
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     // Config
     AppConfigModule,
     SecurityModule,
