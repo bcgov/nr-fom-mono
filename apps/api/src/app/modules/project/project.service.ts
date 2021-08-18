@@ -237,15 +237,21 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   }
 
   async refreshCache():Promise<any> {
-    const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
+    let findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
-    // Pre-populate cache with default / common searches
+    // Pre-populate cache with default / common searches in order from most likely to least likely searches
 
     // Commenting Open only
     findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_OPEN);
     await this.findPublicSummaries(findCriteria);
 
     // Commenting open & closed
+    findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_CLOSED);
+    findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.FINALIZED);
+    await this.findPublicSummaries(findCriteria);
+
+    // Commenting closed only
+    findCriteria = new ProjectFindCriteria();
     findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.COMMENT_CLOSED);
     findCriteria.includeWorkflowStateCodes.push(WorkflowStateEnum.FINALIZED);
     await this.findPublicSummaries(findCriteria);
