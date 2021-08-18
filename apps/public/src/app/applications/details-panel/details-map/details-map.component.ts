@@ -82,9 +82,12 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
       scrollWheelZoom: false, // not desired in thumbnail
       doubleClickZoom: false, // not desired in thumbnail
       zoomSnap: 0.1, // for greater granularity when fitting bounds
-      zoomDelta: 2, // for faster zooming in thumbnail
+      zoomDelta: 1, 
+      maxZoom: MapLayers.MAX_ZOOM_LEVEL,
+      minZoom: 5, // Most of BC on screen
       maxBounds: L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180)) // restrict view to "the world"
     });
+
 
     mapLayers.addLayerControl(this.map);
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {

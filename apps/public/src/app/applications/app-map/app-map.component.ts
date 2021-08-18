@@ -124,7 +124,8 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     this.map = L.map('map', {
       zoomControl: false, // will be added manually below
       maxBounds: L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180)), // restrict view to "the world"
-      minZoom: 2, // prevent zooming out too far
+      minZoom: 3, // prevent zooming out too far
+      maxZoom: MapLayers.MAX_ZOOM_LEVEL,
       zoomSnap: 0.1, // for greater granularity when fitting bounds
       attributionControl: false
     });
