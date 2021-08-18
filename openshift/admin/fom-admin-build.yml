@@ -73,6 +73,8 @@ objects:
         type: Docker
         dockerStrategy:
           dockerfilePath: docker/admin/Dockerfile
+          pullSecret: 
+            name: artifactory-docker-registry-secret
       postCommit: {}
       source:
         type: Git

@@ -49,7 +49,7 @@ const MyBuilder = class extends BasicBuilder {
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/admin/fom-admin-build.yml`, {
       'param':{
         ...commonParams,
-        // 'NAME': phases[phase].name, // defaults to fom-public
+        // 'NAME': phases[phase].name, // defaults to fom-admin
       }
     }));
 
