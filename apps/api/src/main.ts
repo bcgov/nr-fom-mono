@@ -10,6 +10,7 @@ import * as ormConfigTest from './migrations/ormconfig-migration-test';
 import helmet = require('helmet');
 import { ProjectService } from '@api-modules/project/project.service';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
+import { urlencoded, json } from 'express';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -44,6 +45,10 @@ async function bootstrap():Promise<INestApplication> {
   }));
   const appConfig:AppConfigService = app.get('AppConfigService');
   app.setGlobalPrefix(appConfig.getGlobalPrefix());
+  // Required setting as per https://stackoverflow.com/questions/52783959/nest-js-request-entity-too-large-payloadtoolargeerror-request-entity-too-larg
+  const MAX_CONTENT_LIMIT = '10mb'
+  app.use(json({ limit: MAX_CONTENT_LIMIT }));
+  app.use(urlencoded({ extended: true, limit: MAX_CONTENT_LIMIT }));
 
   if (process.env.BYPASS_CORS) {
     // For local development only, leave env var undefined within OpenShift deployments.
