@@ -177,10 +177,9 @@ export class SubmissionService {
     const DATE_FORMAT = "YYYY-MM-DD";
 
     // validation - Validate each point(Position) is within BC bounding box.
-    // From epsg.io visual insepection in EPSG 3005 coordinates: miny 358,065 maxy = 1,614,000   minx = 500,800 maxx = 1,582,000
-    // Adjusted bounds slightly larger to accept Julius's test file.
+    // Coordinates based on epsg.io visual inspection in EPSG 3005 (BC Albers) coordinates 
     const validateCoordWithinBounding = (geometry: Geometry) => {
-      const bb = {minx: 500000, miny: 350000, maxx: 1810000, maxy: 1730000};
+      const bb = {minx: 270000, miny: 360000, maxx: 1900000, maxy: 1750000};
       const coordinates = (<Polygon | LineString> geometry).coordinates;
       const d = (geometry.type == 'Polygon') ? 1 : 0 // flatten d level (dimension) down for an array. Assume geometry is either 'Polygon' or 'LineString' type for now.
       flatDeep(coordinates, d).forEach( (p: Position) => {
