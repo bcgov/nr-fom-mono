@@ -179,13 +179,14 @@ export class SubmissionService {
     // validation - Validate each point(Position) is within BC bounding box.
     // BC bounding box: 1665146.77055,1725046.3621 to 33240.8114887,445948.165738.
     const validateCoordWithinBounding = (geometry: Geometry) => {
-      const bb = {ix: 33240.8114887, iy: 445948.165738, ax: 1665146.77055, ay: 1725046.3621};
+      const bb = {minx: 33240.8114887, miny: 445948.165738, maxx: 1665146.77055, maxy: 1725046.3621};
       const coordinates = (<Polygon | LineString> geometry).coordinates;
       const d = (geometry.type == 'Polygon') ? 1 : 0 // flatten d level (dimension) down for an array. Assume geometry is either 'Polygon' or 'LineString' type for now.
       flatDeep(coordinates, d).forEach( (p: Position) => {
-        if( !(bb.ix <= p[0] && p[0] <= bb.ax && bb.iy <= p[1] && p[1] <= bb.ay) ) {
-          const errMsg = `Coordinate (${p}) is not within BC bounding box ${JSON.stringify(bb)}.`;
-          throw new BadRequestException(errMsg);
+        if( !(bb.minx <= p[0] && p[0] <= bb.maxx && bb.miny <= p[1] && p[1] <= bb.maxy) ) {
+          // Add spacing to bounding box.
+          const errMsg = `Coordinate (${p}) is not within the boundary of British Columbia ${JSON.stringify(bb).split(',').join(', ')}.`;
+          throw new BadRequestException(errMsg); 
         }
       });
     };

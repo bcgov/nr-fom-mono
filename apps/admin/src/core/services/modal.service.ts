@@ -54,8 +54,9 @@ export class ModalService {
       data: {
         message: message || 'There was an error with the request, please try again.',
         title: title,
-        width: '340px',
-        height: '200px',
+        // Increase size due to possibility of larger error messages.
+        width: '500px',
+        height: '300px',
         buttons: {confirm: {text: 'OK'}}
       }
     });
