@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, getManager, Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import * as dayjs from 'dayjs';
 import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
@@ -76,9 +76,9 @@ export class SubmissionService {
 
     const updatedSubmission = await this.repository.save(submission);
 
-    await this.updateGeospatialAreaOrLength(dto.spatialObjectCode, updatedSubmission.id, spatialObjects);
-
     await this.updateProjectLocation(project.id, user);
+
+    await this.updateGeospatialAreaOrLength(dto.spatialObjectCode, updatedSubmission.id);
   }
 
   /**
@@ -177,9 +177,10 @@ export class SubmissionService {
     const DATE_FORMAT = "YYYY-MM-DD";
 
     // validation - Validate each point(Position) is within BC bounding box.
-    // BC bounding box: 1665146.77055,1725046.3621 to 33240.8114887,445948.165738.
+    // From epsg.io visual insepection in EPSG 3005 coordinates: miny 358,065 maxy = 1,614,000   minx = 500,800 maxx = 1,582,000
+    // Adjusted bounds slightly larger to accept Julius's test file.
     const validateCoordWithinBounding = (geometry: Geometry) => {
-      const bb = {minx: 33240.8114887, miny: 445948.165738, maxx: 1665146.77055, maxy: 1725046.3621};
+      const bb = {minx: 500000, miny: 350000, maxx: 1810000, maxy: 1730000};
       const coordinates = (<Polygon | LineString> geometry).coordinates;
       const d = (geometry.type == 'Polygon') ? 1 : 0 // flatten d level (dimension) down for an array. Assume geometry is either 'Polygon' or 'LineString' type for now.
       flatDeep(coordinates, d).forEach( (p: Position) => {
@@ -281,39 +282,40 @@ export class SubmissionService {
   // update app_fom.cut_block set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
   // update app_fom.retention_area set planned_area_ha = ST_AREA(geometry)/10000 where submission_id = {};
   // update app_fom.road_section set planned_length_km  = ST_Length(geometry)/1000 where submission_id = {};
-  async updateGeospatialAreaOrLength(spatialObjectCode: SpatialObjectCodeEnum, submissionId: number, spatialObjects: SpatialObject[]) {
-    this.logger.debug(`Method updateGeospatialAreaOrLength called with spatialObjectCode:${spatialObjectCode}, 
-      submissionId:${submissionId} and spatialObjects: %o`, spatialObjects);
-    let entityName: string;
-    let setClause: object;
+  async updateGeospatialAreaOrLength(spatialObjectCode: SpatialObjectCodeEnum, submissionId: number) {
+    this.logger.debug(`Method updateGeospatialAreaOrLength called with spatialObjectCode:${spatialObjectCode} and submissionId:${submissionId}`);
+
     switch (spatialObjectCode) {
       case SpatialObjectCodeEnum.ROAD_SECTION:
-        entityName = RoadSection.name;
-        setClause = { plannedLengthKm: () => 'ST_Length(geometry)/1000' };
+        await getConnection().createQueryBuilder()
+          .update(RoadSection.name)
+          .set({ plannedLengthKm: () => 'ST_Length(geometry)/1000' })
+          .where("submission_id = :submissionId", { submissionId })
+          .execute();
         break;
       case SpatialObjectCodeEnum.WTRA:
-        entityName = RetentionArea.name;
-        setClause = { plannedAreaHa: () => 'ST_AREA(geometry)/10000' };
+        await getConnection().createQueryBuilder()
+          .update(RetentionArea.name)
+          .set({ plannedAreaHa: () => 'ST_AREA(geometry)/10000' })
+          .where("submission_id = :submissionId", { submissionId })
+          .execute();
+        break;
+      case SpatialObjectCodeEnum.CUT_BLOCK:
+        await getConnection().createQueryBuilder()
+          .update(CutBlock.name)
+          .set({ plannedAreaHa: () => 'ST_AREA(geometry)/10000' })
+          .where("submission_id = :submissionId", { submissionId })
+          .execute();
         break;
       default:
-        entityName = CutBlock.name;
-        setClause = { plannedAreaHa: () => 'ST_AREA(geometry)/10000' };
+        throw new BadRequestException("Unrecognized spatial object code.");
     }
-
-    await Promise.all(spatialObjects.map(async (s) => {
-      await getConnection()
-      .createQueryBuilder()
-      .update(entityName)
-      .set(setClause)
-      .where("submission_id = :submissionId", { submissionId })
-      .execute();
-    }));
   }
 
   // Update project location
   async updateProjectLocation(projectId: number, user: User) {
     this.logger.debug(`Updating project location for projectId: ${projectId}`);
-    await getManager().query(`
+    await getConnection().query(`
       with project_geometries as (
         select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
         union 
