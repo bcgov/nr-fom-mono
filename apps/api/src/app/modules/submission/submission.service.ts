@@ -187,12 +187,14 @@ export class SubmissionService {
 
     // validate geometry type matches what user selected for spatialObject type
     const qualifiedGeometryType: 'Polygon'| 'LineString' = this.getQualifiedGeometryType(spatialObjectCode);
-    jsonSpatialSubmission.features.map(f => {
-      const geometryType = f.geometry.type;
-      if (geometryType !== qualifiedGeometryType) {
-        throw new BadRequestException(`Submission file contains invalid geometry type: ${geometryType}`);
-      }
+    const invalidGeometryTypes = jsonSpatialSubmission.features.filter(f => {
+      return f.geometry.type !== qualifiedGeometryType;
     });
+    if (invalidGeometryTypes && invalidGeometryTypes.length > 1) {
+      const invalidTypes = invalidGeometryTypes.map(f => f.geometry.type);
+      throw new BadRequestException(`Submission file contains invalid geometry type: 
+                ${[...new Set(invalidTypes)].join(', ')}`);
+    }
 
     // spatial objects holder to be parsed into.
     let spatialObjs: SpatialObject[];
