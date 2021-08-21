@@ -107,6 +107,22 @@ export class SubmissionService {
     return submissionTypeCode;
   }
 
+  getQualifiedGeometryType(spatialObjectCode: SpatialObjectCodeEnum): 'Polygon'| 'LineString' {
+    switch (spatialObjectCode) {
+      case SpatialObjectCodeEnum.CUT_BLOCK:
+        return 'Polygon';
+      
+      case SpatialObjectCodeEnum.WTRA:
+        return 'Polygon';
+
+      case SpatialObjectCodeEnum.ROAD_SECTION:
+        return 'LineString';
+
+      default:
+        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`); 
+    }
+  }
+
   /**
    * Return existing Submisson for the Submission type if found or create new one (saved new record).
    * @param projectId submission.project_id
@@ -120,7 +136,7 @@ export class SubmissionService {
       relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
     });
 
-    var submission: Submission;
+    let submission: Submission;
     if (existingSubmissions.length == 0) {
       // Save the submission first in order to populate primary key.
       // Populate fields
@@ -168,6 +184,15 @@ export class SubmissionService {
         throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: { "name": "EPSG:3005" }`);
       }
     }
+
+    // validate geometry type matches what user selected for spatialObject type
+    const qualifiedGeometryType: 'Polygon'| 'LineString' = this.getQualifiedGeometryType(spatialObjectCode);
+    jsonSpatialSubmission.features.map(f => {
+      const geometryType = f.geometry.type;
+      if (geometryType !== qualifiedGeometryType) {
+        throw new BadRequestException(`Submission file contains invalid geometry type: ${geometryType}`);
+      }
+    });
 
     // spatial objects holder to be parsed into.
     let spatialObjs: SpatialObject[];
