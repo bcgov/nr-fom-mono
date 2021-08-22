@@ -177,7 +177,7 @@ export class SubmissionService {
     const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
     const OPTIONAL_PROP_NAME = "NAME";
 
-    const spatialObjs = features.map(f => {
+    return features.map(f => {
       const geometry = f.geometry;
       const properties = f.properties;
       let name: string;
@@ -199,8 +199,6 @@ export class SubmissionService {
         return new RetentionArea({geometry, createUser: user.userName});
       }
     });
-
-    return spatialObjs;
   }
 
   private basicSpatialFileChecks(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): void {
