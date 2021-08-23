@@ -19,6 +19,7 @@ import { flatDeep } from '../../../core/utils';
 import { User } from "@api-core/security/user";
 import { ProjectAuthService } from '../project/project-auth.service';
 import _ = require('lodash');
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 type SpatialObject = CutBlock | RoadSection | RetentionArea;
 
@@ -120,7 +121,7 @@ export class SubmissionService {
       relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
     });
 
-    var submission: Submission;
+    let submission: Submission;
     if (existingSubmissions.length == 0) {
       // Save the submission first in order to populate primary key.
       // Populate fields
@@ -143,6 +144,22 @@ export class SubmissionService {
     return submission;
   }
 
+  getQualifiedGeometryType(spatialObjectCode: SpatialObjectCodeEnum): 'Polygon'| 'LineString' {
+    switch (spatialObjectCode) {
+      case SpatialObjectCodeEnum.CUT_BLOCK:
+        return 'Polygon';
+      
+      case SpatialObjectCodeEnum.WTRA:
+        return 'Polygon';
+
+      case SpatialObjectCodeEnum.ROAD_SECTION:
+        return 'LineString';
+
+      default:
+        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`); 
+    }
+  }
+  
   /**
    * Parse into cut_block, road_section, or WTRA objects based on spatialObjectCode. 
    * 
@@ -150,104 +167,30 @@ export class SubmissionService {
    * @param jsonSpatialSubmission 
    * @returns spatial objects into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode.
    */
-  validateFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User): 
+  parseFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User): 
     SpatialObject[] {
 
-    if (!spatialObjectCode || ![SpatialObjectCodeEnum.CUT_BLOCK, SpatialObjectCodeEnum.ROAD_SECTION, SpatialObjectCodeEnum.ROAD_SECTION]
-      .includes(spatialObjectCode)) {
-        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`);
-    }
+    // do validation before parsing
+    this.basicSpatialFileChecks(spatialObjectCode, jsonSpatialSubmission);
 
-    if (!jsonSpatialSubmission || _.isEmpty(jsonSpatialSubmission) || _.isEmpty(jsonSpatialSubmission.features)) {
-      throw new BadRequestException("Spatial submission is empty!")
-    }
-
-    const crs = jsonSpatialSubmission.crs;
-    if (!_.isEmpty(crs)) {
-      if (!crs.properties || !crs.properties.name || crs.properties.name != 'EPSG:3005') {
-        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: { "name": "EPSG:3005" }`);
-      }
-    }
-
-    // spatial objects holder to be parsed into.
-    let spatialObjs: SpatialObject[];
     const features = jsonSpatialSubmission.features;
     const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
     const OPTIONAL_PROP_NAME = "NAME";
-    const DATE_FORMAT = "YYYY-MM-DD";
 
-    // validation - Validate each point(Position) is within BC bounding box.
-    // Coordinates based on epsg.io visual inspection in EPSG 3005 (BC Albers) coordinates 
-    const validateCoordWithinBounding = (geometry: Geometry) => {
-      const bb = {minx: 270000, miny: 360000, maxx: 1900000, maxy: 1750000};
-      const coordinates = (<Polygon | LineString> geometry).coordinates;
-      const d = (geometry.type == 'Polygon') ? 1 : 0 // flatten d level (dimension) down for an array. Assume geometry is either 'Polygon' or 'LineString' type for now.
-      flatDeep(coordinates, d).forEach( (p: Position) => {
-        if( !(bb.minx <= p[0] && p[0] <= bb.maxx && bb.miny <= p[1] && p[1] <= bb.maxy) ) {
-          // Add spacing to bounding box.
-          const errMsg = `Coordinate (${p}) is not within the boundary of British Columbia ${JSON.stringify(bb).split(',').join(', ')}.`;
-          throw new BadRequestException(errMsg); 
-        }
-      });
-    };
-
-    // validation - development_date
-    const validateDevelopmentDate = (properties: GeoJsonProperties) => {
-      if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK || 
-          spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
-        if (!properties.hasOwnProperty(REQUIRED_PROP_DEVELOPMENT_DATE)) {
-          const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} missing for ${spatialObjectCode}`;
-          throw new BadRequestException(errMsg);
-        }
-        else {
-          // validate date format: YYYY-MM-DD
-          const developmentDate = properties[REQUIRED_PROP_DEVELOPMENT_DATE];
-          if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
-            const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} has wrong date format. Valid format: '${DATE_FORMAT}'`;
-            throw new BadRequestException(errMsg);
-          }
-        }
-      }
-    };
-
-    spatialObjs = features.map(f => {
+    return features.map(f => {
       const geometry = f.geometry;
       const properties = f.properties;
-
-      if (!geometry || _.isEmpty(geometry)) {
-        throw new BadRequestException(`Required Feature object 'geometry' missing for ${spatialObjectCode}`);
-      }
-
-      if (!geometry.hasOwnProperty('coordinates')) {
-        throw new BadRequestException(`Required Feature object 'coordinates' missing for ${spatialObjectCode}`);
-      }
-
       let name: string;
       if (properties && properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
         name = properties[OPTIONAL_PROP_NAME];
       }
 
-      validateCoordWithinBounding(geometry);
-
       if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK) {
-        if (!properties) {
-          throw new BadRequestException(`Required Feature object 'properties' missing for ${spatialObjectCode}`);
-        }
-
-        // validate required properties.
-        validateDevelopmentDate(properties);
         return new CutBlock({name, geometry,
           createUser: user.userName,
           plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
       }
-
       else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
-        if (!properties) {
-          throw new BadRequestException(`Required Feature object 'properties' missing for ${spatialObjectCode}`);
-        }
-
-        // validate required properties.
-        validateDevelopmentDate(properties);
         return new RoadSection({name, geometry,
           createUser: user.userName,
           plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
@@ -256,8 +199,112 @@ export class SubmissionService {
         return new RetentionArea({geometry, createUser: user.userName});
       }
     });
+  }
 
-    return spatialObjs;
+  private basicSpatialFileChecks(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): void {
+    if (!spatialObjectCode || 
+        ![SpatialObjectCodeEnum.CUT_BLOCK, SpatialObjectCodeEnum.ROAD_SECTION, SpatialObjectCodeEnum.WTRA]
+        .includes(spatialObjectCode)) {
+        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`);
+    }
+
+    if (!jsonSpatialSubmission || _.isEmpty(jsonSpatialSubmission) || _.isEmpty(jsonSpatialSubmission.features)) {
+      throw new BadRequestException("Invalid formated JSON submission file or Spatial submission is empty!")
+    }
+
+    const crs = jsonSpatialSubmission.crs;
+    if (!_.isEmpty(crs)) {
+      if (!crs.properties || !crs.properties.name || crs.properties.name != 'EPSG:3005') {
+        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. 
+                                        Should match specification: { "name": "EPSG:3005" }`);
+      }
+    }
+
+    // do this check first before each feature check in depth.
+    this.validateGeometryType(spatialObjectCode, jsonSpatialSubmission);
+
+    jsonSpatialSubmission.features.forEach(f => {
+      const geometry = f.geometry;
+
+      if (!geometry || _.isEmpty(geometry)) {
+        throw new BadRequestException(`Required Feature object 'geometry' is missing for ${spatialObjectCode}`);
+      }
+
+      if (!geometry.type) {
+        throw new BadRequestException(`Required Geometry 'type' field is missing for ${spatialObjectCode}`);
+      }
+
+      const coordinates = geometry['coordinates'];
+      if (!coordinates || _.isEmpty(coordinates)) {
+        throw new BadRequestException(`Required Geometry 'coordinates' field is missing for ${spatialObjectCode}`);
+      }
+
+      this.validateCoordWithinBounding(geometry);
+
+      this.validateRequiredProperties(spatialObjectCode, f.properties);
+    });
+  }
+
+  // validate geometry type matches what user selected for spatialObject type
+  private validateGeometryType(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): void {
+    const qualifiedGeometryType: 'Polygon'| 'LineString' = this.getQualifiedGeometryType(spatialObjectCode);
+    const invalidGeometryTypes = jsonSpatialSubmission.features.filter(f => {
+      return f?.geometry?.type  !== qualifiedGeometryType;
+    });
+    if (invalidGeometryTypes && invalidGeometryTypes.length > 1) {
+      const invalidTypes = invalidGeometryTypes.map(f => f.geometry.type);
+      throw new BadRequestException(`Submission file contains invalid geometry type: 
+                ${[...new Set(invalidTypes)].join(', ')}`);
+    }
+  }
+
+  /** required 'properties' check for different spatial objects (Road Section, Cut Block, WTRA)
+   * Road Section: required - DEVELOPMENT_DATE	
+   *               optional - NAME
+   * Cut Block:   required - DEVELOPMENT_DATE	
+   *               optional - NAME
+   * WTRA:        required - N/A
+   *              optional - NAME
+  */
+  private validateRequiredProperties(spatialObjectCode: SpatialObjectCodeEnum, properties: GeoJsonProperties) {
+    if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK || 
+        spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
+      if (!properties || _.isEmpty(properties)) {
+        throw new BadRequestException(`Required Feature object 'properties' missing for ${spatialObjectCode}`);
+      }
+
+      // validation - development_date
+      const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
+      const DATE_FORMAT = DateTimeUtil.DATE_FORMAT;
+      if (!properties.hasOwnProperty(REQUIRED_PROP_DEVELOPMENT_DATE)) {
+        const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} missing for ${spatialObjectCode}`;
+        throw new BadRequestException(errMsg);
+      }
+      else {
+        // validate date format: YYYY-MM-DD
+        const developmentDate = properties[REQUIRED_PROP_DEVELOPMENT_DATE];
+        if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
+          const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} has wrong date format. 
+                          Valid format: '${DATE_FORMAT}'`;
+          throw new BadRequestException(errMsg);
+        }
+      }
+    }
+  }
+
+  // validation - Validate each point(Position) is within BC bounding box.
+  // Coordinates based on epsg.io visual inspesction in EPSG 3005 (BC Albers) coordinates 
+  private validateCoordWithinBounding(geometry: Geometry): void {
+    const bb = {minx: 270000, miny: 360000, maxx: 1900000, maxy: 1750000};
+    const coordinates = (<Polygon | LineString> geometry).coordinates;
+    const d = (geometry.type == 'Polygon') ? 1 : 0 // flatten d level (dimension) down for an array. Assume geometry is either 'Polygon' or 'LineString' type for now.
+    flatDeep(coordinates, d).forEach( (p: Position) => {
+      if( !(bb.minx <= p[0] && p[0] <= bb.maxx && bb.miny <= p[1] && p[1] <= bb.maxy) ) {
+        // Add spacing to bounding box.
+        const errMsg = `Coordinate (${p}) is not within the boundary of British Columbia ${JSON.stringify(bb).split(',').join(', ')}.`;
+        throw new BadRequestException(errMsg); 
+      }
+    });
   }
 
   /** 
@@ -270,7 +317,7 @@ export class SubmissionService {
     this.logger.debug(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
         and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
 
-    const spatialObjs = this.validateFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
+    const spatialObjs = this.parseFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
     spatialObjs.forEach((s) => {s.submissionId = submissionId}); // assign them to the submission 
 
     this.logger.debug('FOM spatial objects prepared: %o', spatialObjs);
