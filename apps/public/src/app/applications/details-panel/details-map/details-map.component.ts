@@ -146,8 +146,11 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   private onSpatialFeatureClick(...args: any[]) {
     const spatialDetail = args[0] as SpatialFeaturePublicResponse;
 
-    const label = spatialDetail.featureType.description + " " + spatialDetail.featureId;
-    var markerCoords = spatialDetail.centroid['coordinates'];
+    let label = spatialDetail.featureType.description + " " + spatialDetail.featureId;
+    if (spatialDetail.name) { 
+      label += " " + spatialDetail.name;
+    }
+    let markerCoords = spatialDetail.centroid['coordinates'];
     if (spatialDetail.featureType.code == 'road_section') {
       // Use middle of road, so that the label is next to the road 
       // (because the centroid of a curving road can lie far away from the actual road segment)
