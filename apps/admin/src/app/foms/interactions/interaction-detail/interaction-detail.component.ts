@@ -21,12 +21,15 @@ export class InteractionDetailComponent implements OnInit {
   interactionFormGroup: FormGroup;
   files: any[] = []; // Array type, but only 1 attachment for Interaction.
   fileContent: any;
-  supportingFileTypes: string[] =
-    ['application/pdf', 'image/jpg', 'image/jpeg', 'text/csv', 'image/png', 'text/plain',
-     'application/rtf', 'image/tiff', 'application/msword',
-     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-     'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    ]
+  /*
+  * Note: Stakeholder Engagement needs to allow 'application/vnd.ms-outlook' but the library 'ngx-dropzone' is having
+  * problem parsing it to the '(MIME) type'. It always returns '' empty string for type internally, resulting invalid type
+  * check with error message.
+  * To fix this, we allow all extension type at frontend as ['*'] for uploading, and let backend logic to validate the allowed 
+  * file type extension.
+  */
+  supportingFileTypes: string[] = ['*'];
+
   attachment: AttachmentResponse;
 
   constructor(
