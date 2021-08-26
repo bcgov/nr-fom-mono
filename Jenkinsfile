@@ -7,6 +7,7 @@ pipeline {
     stage('Build') {
       agent { label 'build' }
       steps {
+        echo "Change id ${CHANGE_ID} change target = ${env.CHANGE_TARGET}"
         echo "Aborting all running jobs ..."
         script {
           abortAllPreviousBuildInProgress(currentBuild)
