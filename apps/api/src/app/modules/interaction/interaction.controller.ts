@@ -11,6 +11,12 @@ import { maxFileSizeBytes } from '../attachment/attachment.controller';
 import { validate } from 'class-validator';
 import _ = require('lodash');
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import dayjs = require('dayjs');
+import * as utc from 'dayjs/plugin/utc';
+import * as timezone from 'dayjs/plugin/timezone';
+// initialize dayjs extensions
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // From https://github.com/nestjs/swagger/issues/417#issuecomment-562869578 and https://swagger.io/docs/specification/describing-request-body/file-upload/
 const AttachmentPostBody = (file: string = 'file'): MethodDecorator => (
@@ -108,7 +114,8 @@ export class InteractionController {
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? DateTimeUtil.nowBC().format(DateTimeUtil.DATE_FORMAT)
-                      : DateTimeUtil.getBcDate(request.body['communicationDate']).format(DateTimeUtil.DATE_FORMAT);
+                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
+                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
       const createRequest = new InteractionCreateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
@@ -152,7 +159,8 @@ export class InteractionController {
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? DateTimeUtil.nowBC().format(DateTimeUtil.DATE_FORMAT)
-                      : DateTimeUtil.getBcDate(request.body['communicationDate']).format(DateTimeUtil.DATE_FORMAT);                      
+                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
+                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);                     
       const updateRequest = new InteractionUpdateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],

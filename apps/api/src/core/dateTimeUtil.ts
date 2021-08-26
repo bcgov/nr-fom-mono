@@ -41,7 +41,7 @@ export class DateTimeUtil {
         if (!inTimezone) {
             return dayjs(dateInput);
         }
-        return dayjs.tz(dayjs(dateInput).utc(), DateTimeUtil.DATE_FORMAT, inTimezone);
+        return dayjs.tz(dateInput, DateTimeUtil.DATE_FORMAT, inTimezone);
     }
 
     /**
