@@ -39,11 +39,11 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/* /root/.cache
 
-COPY contrib/root /
+COPY docker/db/contrib/root /
 
 RUN mkdir -p /docker-entrypoint-initdb.d
-COPY ./initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
-COPY ./update-postgis.sh /usr/local/bin
+COPY docker/db/initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
+COPY docker/db/update-postgis.sh /usr/local/bin
 
 VOLUME /home/postgres/pgdata
 EXPOSE 5432 8008
