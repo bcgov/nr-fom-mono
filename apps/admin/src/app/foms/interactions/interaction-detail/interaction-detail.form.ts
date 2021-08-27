@@ -8,6 +8,7 @@ export class InteractionDetailForm implements Pick<InteractionRequest, typeof UP
   @prop()
   stakeholder: string = '';
 
+  @required()
   @prop()
   communicationDate: string = '';
 
