@@ -1,6 +1,6 @@
 # Adapted from https://github.com/BCDevOps/platform-services/tree/master/apps/pgsql/patroni/docker
 # and https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
-FROM postgres:13
+FROM artifacts.developer.gov.bc.ca/docker-remote/postgres:13
 
 ENV PATRONI_VERSION=2.1.1
 ENV POSTGIS_MAJOR=3

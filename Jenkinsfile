@@ -18,7 +18,7 @@ pipeline {
     stage('Approval For DLVR in Jira') {
         agent { label 'deploy' }
         when {
-          expression { return env.CHANGE_TARGET == 'master' || CHANGE_ID == '131';}
+          expression { return env.CHANGE_TARGET == 'master' || env.CHANGE_ID == '131';}
               beforeInput true;
         }
         input {
@@ -36,7 +36,7 @@ pipeline {
     stage('Deploy to DEV') {
         agent { label 'build' } // Run on jenkins slave 'build'
         when {
-          expression { return env.CHANGE_TARGET == 'master' || CHANGE_ID == '131';}
+          expression { return env.CHANGE_TARGET == 'master' || env.CHANGE_ID == '131';}
         }
         steps {
           script {

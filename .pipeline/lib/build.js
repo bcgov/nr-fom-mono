@@ -31,14 +31,13 @@ const MyBuilder = class extends BasicBuilder {
       }
     }));
 
-
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-build.yml`, {
       'param':{
         ...commonParams,
         // 'NAME': phases[phase].name, // defaults to fom-api
       }
     }));
-
+/*
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-build.yml`, {
       'param':{
         ...commonParams,
@@ -52,7 +51,7 @@ const MyBuilder = class extends BasicBuilder {
         // 'NAME': phases[phase].name, // defaults to fom-admin
       }
     }));
-
+*/
     return objects
   }
 }
