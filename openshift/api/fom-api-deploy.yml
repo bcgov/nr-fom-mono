@@ -175,6 +175,8 @@ objects:
               # Supply a space to image:, will use settings in ImageChange trigger.
               image: " "  
               env:
+                - name: DB_HOST
+                  value: '${DB_NAME}${SUFFIX}'
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -189,11 +191,6 @@ objects:
                   valueFrom:
                       secretKeyRef:
                         key: database-name
-                        name: ${DB_NAME}${SUFFIX}
-                - name: DB_HOST
-                  valueFrom:
-                      secretKeyRef:
-                        key: database-host
                         name: ${DB_NAME}${SUFFIX}
                 - name: DATA_ENCRYPTION_KEY
                   valueFrom:
