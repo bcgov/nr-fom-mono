@@ -58,9 +58,7 @@ module.exports = class {
       publicReplicaCount:  {default: '3', dev: '2' },
 
       keycloakEnabled:  {default: 'true' },
-
-      // TODO: Change test keycloak back to 'https://test.oidc.gov.bc.ca/auth' once set up.
-      keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://dev.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},
+      keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://test.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},
 
       // The object storage API needs the hostname without the https:// prefix
       objectStorageUrl: {default: 'nrs.objectstore.gov.bc.ca'},
