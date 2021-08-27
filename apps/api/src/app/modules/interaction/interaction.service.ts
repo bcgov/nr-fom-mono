@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SimpleConsoleLogger } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Interaction } from './interaction.entity';
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectAuthService } from '../project/project-auth.service';
@@ -103,7 +103,7 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     const communicationDate = request.communicationDate;
     if (DateTimeUtil.getBcDate(commentingOpenDate).startOf('day')
         .isAfter(DateTimeUtil.getBcDate(communicationDate).startOf('day'))) {
-      throw new BadRequestException("Engagement Date should be after commenting start date.");
+      throw new BadRequestException("Engagement Date should be on or after commenting start date.");
     }
   }
 
