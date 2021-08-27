@@ -86,7 +86,7 @@ const MyDeployer = class extends BasicDeployer{
         // Using defaults for memory and CPU limits, as this is a short-running batch process.
       }
     }));
-
+/* Not needed for database clustering.
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-deploy.yml`, {
       'param':{
         ...appParams,
@@ -104,7 +104,7 @@ const MyDeployer = class extends BasicDeployer{
         // Using defaults for memory and CPU limits, as this is just a static front-end.
       }
     }));
-
+*/
     return objects;
   }
 }

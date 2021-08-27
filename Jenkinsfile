@@ -15,18 +15,17 @@ pipeline {
         }
       }
     }
-    /*
     stage('Approval For DLVR in Jira') {
         agent { label 'deploy' }
         when {
-            expression { return env.CHANGE_TARGET == 'master';}
+          expression { return env.CHANGE_TARGET == 'master' || CHANGE_ID == '131';}
               beforeInput true;
         }
         input {
             message "Are all the RFDs to DLVR Approved/Resolved, RFC Authorized to DLVR?"
             id "Jira-DLVR"
             parameters { }
-            submitter "SYSTEM"
+            // submitter "SYSTEM"
         }
         steps {
           script {
@@ -34,11 +33,10 @@ pipeline {
           }
         }
     }
-    */
     stage('Deploy to DEV') {
         agent { label 'build' } // Run on jenkins slave 'build'
         when {
-          expression { return env.CHANGE_TARGET == 'master';}
+          expression { return env.CHANGE_TARGET == 'master' || CHANGE_ID == '131';}
         }
         steps {
           script {
