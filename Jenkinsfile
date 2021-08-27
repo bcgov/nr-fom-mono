@@ -15,6 +15,7 @@ pipeline {
         }
       }
     }
+    /* Automatically deploy to dev without asking first.
     stage('Approval For DLVR in Jira') {
         agent { label 'deploy' }
         when {
@@ -33,6 +34,7 @@ pipeline {
           }
         }
     }
+    */
     stage('Deploy to DEV') {
         agent { label 'build' } // Run on jenkins slave 'build'
         when {

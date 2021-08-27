@@ -53,7 +53,7 @@ objects:
       strategy:
         type: Docker
         dockerStrategy:
-          dockerfilePath: docker/db/Dockerfile.original
+          dockerfilePath: docker/db/Dockerfile
           pullSecret: 
             name: artifactory-docker-registry-secret
       postCommit: {}
