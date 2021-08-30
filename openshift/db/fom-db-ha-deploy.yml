@@ -63,14 +63,14 @@ objects:
     name: ${NAME}${SUFFIX}
   spec:
     triggers: 
-      - type: ImageChange
-        imageChangeParams:
-          automatic: true
-          containerNames:
-            - postgresql
-          from:
-            kind: ImageStreamTag
-            name: ${NAME}:${IMAGE_STREAM_VERSION}
+#      - type: ImageChange
+#        imageChangeParams:
+#          automatic: true
+#          containerNames:
+#            - postgresql
+#          from:
+#            kind: ImageStreamTag
+#            name: ${NAME}:${IMAGE_STREAM_VERSION}
       - type: ConfigChange
     podManagementPolicy: OrderedReady
     replicas: ${{REPLICAS}}
@@ -163,7 +163,7 @@ objects:
             value: 0.0.0.0:5432
           - name: PATRONI_RESTAPI_LISTEN
             value: 0.0.0.0:8008
-          image: " "
+          image: ${NAME}:${IMAGE_STREAM_TAG}
           imagePullPolicy: Always
           name: postgresql
           ports:
