@@ -28,7 +28,8 @@ objects:
       app: ${NAME}${SUFFIX}
       cluster-name: ${NAME}${SUFFIX}
     annotations:
-      as-copy-of: "template.${NAME}-patroni"
+      as-copy-of: "${NAME}-template"
+      create-template: 'true'
     name: ${NAME}${SUFFIX}
   stringData:
     replication-username: ${PATRONI_REPLICATION_USERNAME}
