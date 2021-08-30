@@ -113,7 +113,7 @@ export class InteractionController {
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? DateTimeUtil.nowBC().format(DateTimeUtil.DATE_FORMAT)
+                      ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
                         DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
       const createRequest = new InteractionCreateRequest(
@@ -158,7 +158,7 @@ export class InteractionController {
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? DateTimeUtil.nowBC().format(DateTimeUtil.DATE_FORMAT)
+                      ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
                         DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);                     
       const updateRequest = new InteractionUpdateRequest(

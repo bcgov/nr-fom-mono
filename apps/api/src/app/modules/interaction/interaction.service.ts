@@ -12,6 +12,8 @@ import { AttachmentCreateRequest } from '../attachment/attachment.dto';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { User } from "@api-core/security/user";
 import { DataService } from 'apps/api/src/core/models/data.service';
+import { ProjectService } from '@api-modules/project/project.service';
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 @Injectable()
 export class InteractionService extends DataService<Interaction, Repository<Interaction>, InteractionResponse> {
@@ -20,12 +22,16 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     repository: Repository<Interaction>,
     logger: PinoLogger,
     private projectAuthService: ProjectAuthService,
-    private attachmentService: AttachmentService
+    private attachmentService: AttachmentService,
+    private projectService: ProjectService
   ) {
     super(repository, new Interaction(), logger);
   }
 
   async create(request: InteractionCreateRequest, user: User): Promise<InteractionResponse> {
+
+    await this.businessValidate(request);
+
     const {file, fileName} = request;
     // save attachment first.
     if (!_.isNil(fileName) && !_.isEmpty(fileName)) {
@@ -37,6 +43,9 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
   }
 
   async update(id: number, updateRequest: InteractionUpdateRequest, user: User): Promise<InteractionResponse> {
+
+    await this.businessValidate(updateRequest);
+
     const {file, fileName} = updateRequest;
 
     // Attachment update
@@ -83,6 +92,19 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     attachmentCreateRequest.attachmentTypeCode = AttachmentTypeEnum.INTERACTION;
     const attachmentId = (await this.attachmentService.create(attachmentCreateRequest, user)).id;
     return attachmentId;
+  }
+
+  // basic fields validation is done using 'class-validator' on request dto, this is further business validation.
+  private async businessValidate(request: InteractionCreateRequest | InteractionUpdateRequest) {
+
+    // communication_date: >= commenting_open_date
+    const project = await this.projectService.findOne(request.projectId);
+    const commentingOpenDate = project.commentingOpenDate;
+    const communicationDate = request.communicationDate;
+    if (DateTimeUtil.getBcDate(commentingOpenDate).startOf('day')
+        .isAfter(DateTimeUtil.getBcDate(communicationDate).startOf('day'))) {
+      throw new BadRequestException("Engagement Date should be on or after commenting start date.");
+    }
   }
 
   async findByProjectId(projectId: number, user: User): Promise<InteractionResponse[]> {
