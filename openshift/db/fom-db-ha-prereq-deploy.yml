@@ -1,4 +1,4 @@
-# Copied from https://github.com/BCDevOps/platform-services/blob/master/apps/pgsql/patroni/openshift/deployment-prereq.yaml
+# Based on https://github.com/BCDevOps/platform-services/blob/master/apps/pgsql/patroni/openshift/deployment-prereq.yaml
 apiVersion: template.openshift.io/v1
 kind: Template
 metadata:

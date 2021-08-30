@@ -26,6 +26,18 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-deploy.yml`, {
+      'param':{
+        'NAME': 'fom-db-ha',
+        'SUFFIX': config.suffix,
+        'IMAGE_STREAM_TAG': config.tag,
+        'CPU_REQUEST': '100m',
+        'CPU_LIMIT': config.dbCpuLimit,
+        'MEMORY_REQUEST': '0.2Gi',
+        'MEMORY_LIMIT': config.dbMemoryLimit,
+      }
+    }));
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
         ...dbParams,
