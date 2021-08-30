@@ -62,7 +62,7 @@ objects:
       cluster-name: ${NAME}${SUFFIX}
     name: ${NAME}${SUFFIX}
   spec:
-    triggers: 
+#    triggers: 
 #      - type: ImageChange
 #        imageChangeParams:
 #          automatic: true
@@ -71,7 +71,7 @@ objects:
 #          from:
 #            kind: ImageStreamTag
 #            name: ${NAME}:${IMAGE_STREAM_VERSION}
-      - type: ConfigChange
+#      - type: ConfigChange
     podManagementPolicy: OrderedReady
     replicas: ${{REPLICAS}}
     revisionHistoryLimit: 10
