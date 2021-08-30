@@ -18,6 +18,14 @@ const MyDeployer = class extends BasicDeployer{
       'BACKUP_VOLUME_NAME': `backup${config.suffix}`,
     }
 
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
+      'param':{
+        'NAME': 'fom-db-ha',
+        'SUFFIX': config.suffix,
+        'APP_DB_NAME': 'fom',
+      }
+    }));
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
         ...dbParams,
