@@ -47,7 +47,7 @@ const MyDeployer = class extends BasicDeployer{
         'LIMIT_MEMORY': config.dbMemoryLimit,
       }
     }));
-
+/* TODO: Re-enable backups
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
       'param':{
         ...dbParams,
@@ -59,7 +59,7 @@ const MyDeployer = class extends BasicDeployer{
         // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
       }
     }));
-
+*/
     // Parameters common across application components.
     const appParams = {
       'SUFFIX': config.suffix,
