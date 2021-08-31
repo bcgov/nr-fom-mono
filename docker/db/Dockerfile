@@ -40,7 +40,8 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && rm -rf /var/lib/apt/lists/* /root/.cache
 
 COPY docker/db/contrib/root /
-
+# Fix issue PermissionError: [Errno 13] Permission denied: '/usr/share/scripts/patroni/post_init.sh'
+RUN chmod +x /usr/share/scripts/patroni/*.sh
 RUN mkdir -p /docker-entrypoint-initdb.d
 COPY docker/db/initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
 COPY docker/db/update-postgis.sh /usr/local/bin
