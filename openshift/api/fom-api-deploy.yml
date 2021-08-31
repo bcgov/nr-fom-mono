@@ -339,8 +339,7 @@ objects:
     spec:
       podSelector:
         matchLabels:
-                statefulset: ${NAME}${SUFFIX}
-          deploymentconfig: ${DB_NAME}${SUFFIX}
+          statefulset: ${DB_NAME}${SUFFIX}
       ingress:
         - from:
             - podSelector:
