@@ -177,15 +177,15 @@ objects:
               env:
                 - name: DB_HOST
                   value: '${DB_NAME}-master${SUFFIX}'
-                - name: SUPERUSER_PASSWORD
+                - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-password
+                      key: superuser-password
                       name: ${DB_NAME}${SUFFIX}
-                - name: SUPERUSER_USERNAME 
+                - name: DB_USERNAME 
                   valueFrom:
                     secretKeyRef:
-                      key: app-db-username
+                      key: superuser-username
                       name: ${DB_NAME}${SUFFIX}
                 - name: DB_NAME
                   valueFrom:
@@ -339,7 +339,8 @@ objects:
     spec:
       podSelector:
         matchLabels:
-          statefulset: ${DB_NAME}${SUFFIX}
+                statefulset: ${NAME}${SUFFIX}
+          deploymentconfig: ${DB_NAME}${SUFFIX}
       ingress:
         - from:
             - podSelector:
