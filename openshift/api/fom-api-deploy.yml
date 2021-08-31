@@ -177,12 +177,12 @@ objects:
               env:
                 - name: DB_HOST
                   value: '${DB_NAME}-master${SUFFIX}'
-                - name: DB_PASSWORD
+                - name: SUPERUSER_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       key: app-db-password
                       name: ${DB_NAME}${SUFFIX}
-                - name: DB_USERNAME 
+                - name: SUPERUSER_USERNAME 
                   valueFrom:
                     secretKeyRef:
                       key: app-db-username
