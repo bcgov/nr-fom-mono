@@ -88,7 +88,12 @@ objects:
                   - ${NAME}${SUFFIX}
               topologyKey: "kubernetes.io/hostname"
         containers:
-        - env:
+        - name: postgresql
+          image: ${NAME}:${IMAGE_STREAM_TAG}
+          # Because we are using image reference to a tag, we need to always pull the image otherwise
+          # we end up with outdated/out-of-sync image depending on the node where it is running
+          imagePullPolicy: Always
+          env:
           - name: POD_IP
             valueFrom:
               fieldRef:
@@ -153,9 +158,6 @@ objects:
             value: 0.0.0.0:5432
           - name: PATRONI_RESTAPI_LISTEN
             value: 0.0.0.0:8008
-          image: ${NAME}:${IMAGE_STREAM_TAG}
-          imagePullPolicy: Always
-          name: postgresql
           ports:
           - containerPort: 8008
             protocol: TCP
@@ -170,13 +172,36 @@ objects:
               memory: ${MEMORY_LIMIT}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          readinessProbe:
-            initialDelaySeconds: 5
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - bash
+                  - -c
+                  - |
+                    # switch leader pod if the current pod is the leader
+                    if curl --fail http://localhost:8008/read-write; then
+                      patronictl switchover --force
+                    fi
+          livenessProbe:
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - |
+                  set -Eeuo pipefail && curl -s localhost:8008/liveness | jq -e ". | select(.state == \"running\")"
+            initialDelaySeconds: 10
             timeoutSeconds: 5
-            failureThreshold: 4
+            failureThreshold: 3            
+          readinessProbe:
             exec:
               command:
                 - /usr/share/scripts/patroni/health_check.sh
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
           volumeMounts:
           - mountPath: /home/postgres/pgdata
             name: postgresql
@@ -185,7 +210,6 @@ objects:
         schedulerName: default-scheduler
         securityContext: {}
         serviceAccountName: ${NAME}${SUFFIX}
-        terminationGracePeriodSeconds: 0
     updateStrategy:
       type: RollingUpdate
     volumeClaimTemplates:
