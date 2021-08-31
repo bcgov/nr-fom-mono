@@ -62,16 +62,6 @@ objects:
       cluster-name: ${NAME}${SUFFIX}
     name: ${NAME}${SUFFIX}
   spec:
-#    triggers: 
-#      - type: ImageChange
-#        imageChangeParams:
-#          automatic: true
-#          containerNames:
-#            - postgresql
-#          from:
-#            kind: ImageStreamTag
-#            name: ${NAME}:${IMAGE_STREAM_VERSION}
-#      - type: ConfigChange
     podManagementPolicy: OrderedReady
     replicas: ${{REPLICAS}}
     revisionHistoryLimit: 10
@@ -212,6 +202,23 @@ objects:
         resources:
           requests:
             storage: ${PVC_SIZE}
+### Network Policy - DB to DB Traffic
+- kind: NetworkPolicy
+  apiVersion: networking.k8s.io/v1
+  metadata:
+    name: db-to-db-allow-${NAME}${SUFFIX}
+  spec:
+    podSelector:
+      matchLabels:
+        statefulset: ${NAME}${SUFFIX}
+    ingress:
+      - from:
+          - podSelector:
+              matchLabels:
+                statefulset: ${NAME}${SUFFIX}
+        ports:
+          - protocol: TCP
+            port: 5432
 
 parameters:
 - description: The name of the application for labelling all artifacts.
