@@ -25,11 +25,10 @@ objects:
       name: ${NAME}${SUFFIX}
     spec:
       description: |
-        Allow the ${NAME} to access databases in this namespace.
+        Allow the ${NAME} to access corresponding FOM database pods.
       podSelector:
         matchLabels:
           statefulset: ${DB_NAME}${SUFFIX}
-          role: "master"
       ingress:
         - from:
             - podSelector:
