@@ -23,7 +23,7 @@ const MyBuilder = class extends BasicBuilder {
         ...commonParams,
       }
     }));
-/* TODO: Re-enable backups
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-build.yml`, {
       'param':{
         'SUFFIX': config.suffix,
@@ -31,7 +31,7 @@ const MyBuilder = class extends BasicBuilder {
         'BASE_IMAGE_FOR_BUILD': `fom-db-ha:${config.tag}`
       }
     }));
-*/
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-build.yml`, {
       'param':{
         ...commonParams,
