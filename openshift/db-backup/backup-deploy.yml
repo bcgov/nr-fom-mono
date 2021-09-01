@@ -262,12 +262,12 @@ parameters:
     displayName: Database User Key Name
     description: The database user key name stored in database deployment resources specified by DATABASE_DEPLOYMENT_NAME.
     required: true
-    value: database-user
+    value: superuser-username
   - name: DATABASE_PASSWORD_KEY_NAME
     displayName: Database Password Key Name
     description: The database password key name stored in database deployment resources specified by DATABASE_DEPLOYMENT_NAME.
     required: true
-    value: database-password
+    value: superuser-password
   - name: SOURCE_IMAGE_NAME
     displayName: Source Image Name
     description: The name of the image to use for this resource.  Use 'backup-{database name}' depending on your database provider
