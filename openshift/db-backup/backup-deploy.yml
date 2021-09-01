@@ -28,8 +28,8 @@ objects:
         Allow the ${NAME} to access databases in this namespace.
       podSelector:
         matchLabels:
-          deploymentconfig: fom-db${SUFFIX}
-          backup: "true"
+          statefulset: ${DB_NAME}${SUFFIX}
+          role: "master"
       ingress:
         - from:
             - podSelector:
@@ -175,167 +175,6 @@ objects:
               dnsPolicy: "ClusterFirst"
               serviceAccountName: "${JOB_SERVICE_ACCOUNT}"
               serviceAccount: "${JOB_SERVICE_ACCOUNT}"    
-    # - kind: Secret
-    #   apiVersion: v1
-    #   metadata:
-    #     name: ${NAME}
-    #     labels:
-    #       name: ${NAME}
-    #       app: ${APP_NAME}
-    #       role: ${ROLE}
-    #       env: ${TAG_NAME}
-    #   type: Opaque
-    #   stringData:
-    #     webhook-url: ${WEBHOOK_URL}
-    #     webhook-url-host: ${WEBHOOK_URL_HOST}
-    # - kind: Secret
-    #   apiVersion: v1
-    #   metadata:
-    #     name: ${FTP_SECRET_KEY}
-    #     labels:
-    #       name: ${NAME}
-    #       app: ${APP_NAME}
-    #       role: ${ROLE}
-    #       env: ${TAG_NAME}
-    #   type: Opaque
-    #   stringData:
-    #     ftp-url: ${FTP_URL}
-    #     ftp-user: ${FTP_USER}
-    #     ftp-password: ${FTP_PASSWORD}
-    #     ftp-url-host: ${FTP_URL_HOST}
- 
-  # - kind: ConfigMap
-  #   apiVersion: v1
-  #   data:
-  #     backup.conf: |-
-  #       -- SET application_name="container_setup";
-  #       -- \c fom
-  #       -- create extension pg_stat_statements;
-  #       -- create extension pgaudit;
-  #       -- create extension plr;
-  #       -- create extension fuzzystrmatch;
-  #       -- create user "PG_USER" with password 'PG_PASSWORD';
-  #       -- alter user app password 'POSTGRESQL_PASSWORD'; // values are NOT automatically replaced by secrets. Would need to likely use a script.
-  #       -- GRANT ALL PRIVILEGES ON DATABASE POSTGRESQL_DATABASE TO app;
-  #       -- ALTER DEFAULT PRIVILEGES IN SCHEMA postgis_ftw GRANT SELECT ON TABLES TO ftw_reader;
-  #   metadata:
-  #     name: ${NAME}${SUFFIX}-fileconfig
-
-  # - kind: DeploymentConfig
-  #   apiVersion: v1
-  #   metadata:
-  #     name: ${NAME}${SUFFIX}
-  #   spec:
-  #     strategy:
-  #       type: Recreate
-  #     triggers:
-  #       - type: ConfigChange
-  #       - type: ImageChange
-  #         imageChangeParams:
-  #           automatic: true
-  #           containerNames:
-  #             - ${NAME}
-  #           from:
-  #             kind: ImageStreamTag
-  #             name: "${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
-  #     replicas: 1
-  #     selector:
-  #       deploymentconfig: ${NAME}${SUFFIX}
-  #     template:
-  #       metadata:
-  #         name: ${NAME}${SUFFIX}
-  #         labels:
-  #           deploymentconfig: ${NAME}${SUFFIX}
-  #       spec:
-  #         volumes:
-  #           - name: ${BACKUP_VOLUME_NAME}
-  #             persistentVolumeClaim:
-  #               claimName: ${BACKUP_VOLUME_NAME}
-  #           - name: ${VERIFICATION_VOLUME_NAME}
-  #             persistentVolumeClaim:
-  #               claimName: ${VERIFICATION_VOLUME_NAME}
-  #           - name: ${NAME}-config-volume
-  #             configMap:
-  #               name: ${NAME}${SUFFIX}-fileconfig
-  #               items:
-  #                 - key: ${CONFIG_FILE_NAME}
-  #                   path: ${CONFIG_FILE_NAME}
-  #         containers:
-  #           - name: ${NAME}
-  #             image: ""
-  #             ports: []
-  #             env:
-  #               - name: BACKUP_STRATEGY
-  #                 value: ${BACKUP_STRATEGY}
-  #               - name: BACKUP_DIR
-  #                 value: ${BACKUP_DIR}
-  #               - name: NUM_BACKUPS
-  #                 value: ${NUM_BACKUPS}
-  #               - name: DAILY_BACKUPS
-  #                 value: ${DAILY_BACKUPS}
-  #               - name: WEEKLY_BACKUPS
-  #                 value: ${WEEKLY_BACKUPS}
-  #               - name: MONTHLY_BACKUPS
-  #                 value: ${MONTHLY_BACKUPS}
-  #               - name: BACKUP_PERIOD
-  #                 value: ${BACKUP_PERIOD}
-  #               - name: DATABASE_SERVICE_NAME
-  #                 value: ${DATABASE_SERVICE_NAME}
-  #               - name: DATABASE_NAME
-  #                 value: ${DATABASE_NAME}
-  #               - name: MONGODB_AUTHENTICATION_DATABASE
-  #                 value: ${MONGODB_AUTHENTICATION_DATABASE}
-  #               - name: TABLE_SCHEMA
-  #                 value: ${TABLE_SCHEMA}
-  #               - name: DATABASE_USER
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${DATABASE_DEPLOYMENT_NAME}
-  #                     key: ${DATABASE_USER_KEY_NAME}
-  #               - name: DATABASE_PASSWORD
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${DATABASE_DEPLOYMENT_NAME}
-  #                     key: ${DATABASE_PASSWORD_KEY_NAME}
-  #               - name: FTP_URL
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${FTP_SECRET_KEY}
-  #                     key: ftp-url
-  #               - name: FTP_USER
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${FTP_SECRET_KEY}
-  #                     key: ftp-user
-  #               - name: FTP_PASSWORD
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${FTP_SECRET_KEY}
-  #                     key: ftp-password
-  #               - name: WEBHOOK_URL
-  #                 valueFrom:
-  #                   secretKeyRef:
-  #                     name: ${NAME}
-  #                     key: webhook-url
-  #               - name: ENVIRONMENT_FRIENDLY_NAME
-  #                 value: ${ENVIRONMENT_FRIENDLY_NAME}
-  #               - name: ENVIRONMENT_NAME
-  #                 value: ${ENVIRONMENT_NAME}
-  #             resources:
-  #               requests:
-  #                 cpu: ${CPU_REQUEST}
-  #                 memory: ${MEMORY_REQUEST}
-  #               limits:
-  #                 cpu: ${CPU_LIMIT}
-  #                 memory: ${MEMORY_LIMIT}
-  #             volumeMounts:
-  #               - name: ${BACKUP_VOLUME_NAME}
-  #                 mountPath: ${BACKUP_DIR}
-  #               - name: ${VERIFICATION_VOLUME_NAME}
-  #                 mountPath: ${VERIFICATION_VOLUME_MOUNT_PATH}
-  #               - name: ${NAME}-config-volume
-  #                 mountPath: ${CONFIG_MOUNT_PATH}${CONFIG_FILE_NAME}
-  #                 subPath: ${CONFIG_FILE_NAME}
 
 parameters:
   # Required parameters
@@ -352,7 +191,6 @@ parameters:
     description: "Name of the Scheduled Job to Create."
     value: "backup-postgres"
     required: true
-
   - name: BACKUP_VOLUME_NAME
     displayName: Backup Volume Name
     description: The name of the persistent volume used to store the backups.
@@ -416,6 +254,10 @@ parameters:
     description: The name assigned to all of the resources.  Use 'backup-{database name}' depending on your database provider
     required: true
     value: backup-postgres
+  - description: Name of the database component used by the API.
+    displayName: Database Name
+    name: DB_NAME
+    value: fom-db-ha
   - name: DATABASE_USER_KEY_NAME
     displayName: Database User Key Name
     description: The database user key name stored in database deployment resources specified by DATABASE_DEPLOYMENT_NAME.

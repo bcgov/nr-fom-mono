@@ -15,7 +15,7 @@ const MyDeployer = class extends BasicDeployer{
     const dbParams = {
       'SUFFIX': config.suffix,
       'IMAGE_STREAM_VERSION': config.tag,
-      'BACKUP_VOLUME_NAME': `backup${config.suffix}`,
+      'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
     }
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
@@ -26,12 +26,13 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-deploy.yml`, {
       'param':{
         'NAME': 'fom-db-ha',
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_TAG': config.tag,
-        'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
+        'BACKUP_VOLUME_NAME': dbParams.BACKUP_VOLUME_NAME,
         'REPLICAS': config.dbReplicaCount,
         'CPU_REQUEST': '100m',
         'CPU_LIMIT': config.dbCpuLimit,
@@ -39,6 +40,20 @@ const MyDeployer = class extends BasicDeployer{
         'MEMORY_LIMIT': config.dbMemoryLimit,
       }
     }));
+
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
+      'param':{
+        ...dbParams,
+        'JOB_NAME': `backup-fom-db-ha${config.suffix}`,
+        'VERIFICATION_VOLUME_NAME': `backup-verify-fom-db-ha${config.suffix}`,
+        'DATABASE_DEPLOYMENT_NAME': `fom-db-ha${config.suffix}`,
+        'DATABASE_SERVICE_NAME':`fom-db-ha${config.suffix}`,
+        'DATABASE_NAME':'fom',
+        // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
+      }
+    }));
+
+
 /*
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
@@ -50,19 +65,7 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 */
-/* TODO: Re-enable backups
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
-      'param':{
-        ...dbParams,
-        'JOB_NAME': `backup-postgres${config.suffix}`,
-        'VERIFICATION_VOLUME_NAME': `backup-verification${config.suffix}`,
-        'DATABASE_DEPLOYMENT_NAME': `fom-db${config.suffix}`,
-        'DATABASE_SERVICE_NAME':`fom-db${config.suffix}`,
-        'DATABASE_NAME':'fom',
-        // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
-      }
-    }));
-*/
+
     // Parameters common across application components.
     const appParams = {
       'SUFFIX': config.suffix,
