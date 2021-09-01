@@ -31,6 +31,20 @@ objects:
       # Set to true to allow local image name resolution, without having to specify the internal OpenShift image registry and port.
       local: true
 
+  # Persistent Storage - Backup Volume
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    name: ${BACKUP_VOLUME_NAME}
+  spec:
+    storageClassName: ${BACKUP_STORAGE_CLASS}
+    accessModes:
+      # Accessed by both backup and db.
+      - ReadWriteMany
+    resources:
+      requests:
+        storage: ${BACKUP_VOLUME_SIZE}
+
 - apiVersion: v1
   kind: Service
   metadata:
@@ -41,7 +55,6 @@ objects:
   spec:
     ports:
     - port: 5432
-#      name: 'postgresql'
       protocol: TCP
       targetPort: 5432
     selector:
@@ -205,6 +218,12 @@ objects:
           volumeMounts:
           - mountPath: /home/postgres/pgdata
             name: postgresql
+          - mountPath: /var/backups/
+            name: backups
+        volumes:
+          - name: backups
+            persistentVolumeClaim:
+              claimName: ${BACKUP_VOLUME_NAME}
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
@@ -283,3 +302,17 @@ parameters:
   value: 1Gi
 - name: STORAGE_CLASS
   value: netapp-block-standard
+- name: BACKUP_VOLUME_NAME
+  displayName: Backup Volume Name
+  description: The name of the persistent volume used to store the backups.
+  required: true
+  # Backups in each environment - 14 daily, 4 weekly, 1 monthly with each around 1-2M based on production-like test data , so likely don't need more than 50M. 1Gi allocated as default sizing
+- name: BACKUP_VOLUME_SIZE
+  displayName: Backup Volume Size
+  description: The size of the persistent volume used to store the backups, e.g. 512Mi, 1Gi, 2Gi.  Ensure this is sized correctly.  Refer to the container documentation for details.
+  required: true
+  value: 1Gi
+- name: BACKUP_STORAGE_CLASS
+  displayName: Backup Storage Class
+  description: The storage class of the persistent volume claim used to store the backups.
+  value: netapp-file-backup

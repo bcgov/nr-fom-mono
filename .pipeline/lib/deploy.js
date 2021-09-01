@@ -31,6 +31,7 @@ const MyDeployer = class extends BasicDeployer{
         'NAME': 'fom-db-ha',
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_TAG': config.tag,
+        'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
         'REPLICAS': config.dbReplicaCount,
         'CPU_REQUEST': '100m',
         'CPU_LIMIT': config.dbCpuLimit,
