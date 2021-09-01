@@ -38,7 +38,7 @@ const MyDeployer = class extends BasicDeployer{
         'MEMORY_LIMIT': config.dbMemoryLimit,
       }
     }));
-
+/*
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
         ...dbParams,
@@ -48,6 +48,7 @@ const MyDeployer = class extends BasicDeployer{
         'LIMIT_MEMORY': config.dbMemoryLimit,
       }
     }));
+*/
 /* TODO: Re-enable backups
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
       'param':{
