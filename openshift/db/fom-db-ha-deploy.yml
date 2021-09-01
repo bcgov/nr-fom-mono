@@ -172,29 +172,29 @@ objects:
               memory: ${MEMORY_LIMIT}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          # lifecycle:
-          #   preStop:
-          #     exec:
-          #       command:
-          #         - /usr/bin/env
-          #         - bash
-          #         - -c
-          #         - |
-          #           # switch leader pod if the current pod is the leader
-          #           if curl --fail http://localhost:8008/read-write; then
-          #             patronictl switchover --force
-          #           fi
-          # livenessProbe:
-          #   exec:
-          #     command:
-          #       - /usr/bin/env
-          #       - bash
-          #       - -c
-          #       - |
-          #         set -Eeuo pipefail && curl -s localhost:8008/liveness | jq -e ". | select(.state == \"running\")"
-          #   initialDelaySeconds: 10
-          #   timeoutSeconds: 5
-          #   failureThreshold: 3            
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /usr/bin/env
+                  - bash
+                  - -c
+                  - |
+                    # switch leader pod if the current pod is the leader
+                    if curl --fail http://localhost:8008/read-write; then
+                      patronictl switchover --force
+                    fi
+          livenessProbe:
+            exec:
+              command:
+                - /usr/bin/env
+                - bash
+                - -c
+                - |
+                  set -Eeuo pipefail && curl -s localhost:8008/liveness | jq -e ". | select(.state == \"running\")"
+            initialDelaySeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3            
           readinessProbe:
             exec:
               command:
@@ -243,6 +243,8 @@ objects:
         ports:
           - protocol: TCP
             port: 5432
+          - protocol: TCP
+            port: 8008
 
 parameters:
 - description: The name of the application for labelling all artifacts.
