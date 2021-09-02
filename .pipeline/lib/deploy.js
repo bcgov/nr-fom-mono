@@ -48,6 +48,8 @@ const MyDeployer = class extends BasicDeployer{
         'VERIFICATION_VOLUME_NAME': `backup-verify-fom-db-ha${config.suffix}`,
         'DATABASE_DEPLOYMENT_NAME': `fom-db-ha${config.suffix}`,
         'DATABASE_SERVICE_NAME':`fom-db-ha-master${config.suffix}`, // Need to specify specific node since backup script treats this as a hostname and converts to an address
+        'DATABASE_USER_KEY_NAME':'superuser-username',
+        'DATABASE_PASSWORD_KEY_NAME': 'superuser-password',
         'DATABASE_NAME':'fom',
         // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
       }
