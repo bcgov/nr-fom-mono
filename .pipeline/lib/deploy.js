@@ -50,7 +50,6 @@ const MyDeployer = class extends BasicDeployer{
         'DATABASE_SERVICE_NAME':`fom-db-ha-master${config.suffix}`, // Need to specify specific node since backup script treats this as a hostname and converts to an address
         'DATABASE_USER_KEY_NAME':'superuser-username',
         'DATABASE_PASSWORD_KEY_NAME': 'superuser-password',
-        'VERIFICATION_VOLUME_MOUNT_PATH': '/var/lib/postgresql/data',
         'DATABASE_NAME':'fom',
         // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
       }

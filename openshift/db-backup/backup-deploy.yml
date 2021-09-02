@@ -158,16 +158,16 @@ objects:
                         secretKeyRef:
                           name: "${DATABASE_DEPLOYMENT_NAME}"
                           key: "${DATABASE_PASSWORD_KEY_NAME}"
-                    - name: POSTGRESQL_USER
-                      valueFrom:
-                        secretKeyRef:
-                          name: "${DATABASE_DEPLOYMENT_NAME}"
-                          key: "${DATABASE_USER_KEY_NAME}"
-                    - name: POSTGRESQL_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          name: "${DATABASE_DEPLOYMENT_NAME}"
-                          key: "${DATABASE_PASSWORD_KEY_NAME}"
+                    # - name: POSTGRESQL_USER
+                    #   valueFrom:
+                    #     secretKeyRef:
+                    #       name: "${DATABASE_DEPLOYMENT_NAME}"
+                    #       key: "${DATABASE_USER_KEY_NAME}"
+                    # - name: POSTGRESQL_PASSWORD
+                    #   valueFrom:
+                    #     secretKeyRef:
+                    #       name: "${DATABASE_DEPLOYMENT_NAME}"
+                    #       key: "${DATABASE_PASSWORD_KEY_NAME}"
                     # Used for verification
                     - name: DATABASE_SERVER_TIMEOUT
                       value: "300"
