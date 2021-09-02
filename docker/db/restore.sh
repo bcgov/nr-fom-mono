@@ -1,4 +1,6 @@
 # Instructions
+# Connect to terminal for database pod corresponding to master (has role=master as a label, or check fom-db-ha{suffix}-leader config map) for leader annotation.
+# Can confirm by running $ patronictl topology
 # cd into /var/backups/{daily|weekly|month}/{date}
 # backupFile={specific backup to restore including extension .sql.gz}
 
