@@ -1,6 +1,5 @@
 #!/bin/sh
 # Copied from https://github.com/postgis/docker-postgis/blob/master/13-3.1/initdb-postgis.sh
-
 set -e
 
 # Perform all actions as $POSTGRES_USER
