@@ -34,7 +34,7 @@ const MyDeployer = class extends BasicDeployer{
         'IMAGE_STREAM_TAG': config.tag,
         'BACKUP_VOLUME_NAME': dbParams.BACKUP_VOLUME_NAME,
         'REPLICAS': config.dbReplicaCount,
-        'CPU_REQUEST': '100m',
+        'CPU_REQUEST': '50m',
         'CPU_LIMIT': config.dbCpuLimit,
         'MEMORY_REQUEST': '0.2Gi',
         'MEMORY_LIMIT': config.dbMemoryLimit,
