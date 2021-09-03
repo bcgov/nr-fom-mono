@@ -1,1 +1,1 @@
-docker build . -f Dockerfile.local -t patroni
+docker build . -f Dockerfile.local -t fom-db

@@ -1,52 +1,22 @@
-# Adapted from https://github.com/BCDevOps/platform-services/tree/master/apps/pgsql/patroni/docker
-# and https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
+# Copied from https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
+# Locally, can't run patroni (without at least something like etcd), so just base on post-gis
+# FROM postgis/postgis:13-3.1
 FROM postgres:13
 
-ENV PATRONI_VERSION=2.1.1
-ENV POSTGIS_MAJOR=3
-ENV POSTGIS_VERSION=3.1.3+dfsg-1~exp1.pgdg100+1
+LABEL maintainer="PostGIS Project - https://postgis.net"
 
-ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-ENV PATRONI_HOME=/opt/patroni
+ENV POSTGIS_MAJOR 3
+ENV POSTGIS_VERSION 3.1.3+dfsg-1~exp1.pgdg100+1
 
-ARG PGHOME=/home/postgres
-
-RUN export DEBIAN_FRONTEND=noninteractive \
-    && set -x \
-    && echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommend \
-    && apt-get update -y \
-    && apt-get install -y curl jq locales git build-essential python3 python3-dev python3-pip python3-wheel python3-setuptools python3-virtualenv libpq-dev \
-    && echo 'Make sure we have a en_US.UTF-8 locale available' \
-    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
-    && pip3 --isolated --no-cache-dir install psycopg2-binary \
-    && pip3 --isolated --no-cache-dir install "patroni[kubernetes]==${PATRONI_VERSION}" \
-    && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
-    && apt-get install -y --no-install-recommends \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION \
-        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
-    && PGHOME=/home/postgres \
-    && mkdir -p $PGHOME \
-    && sed -i "s|/var/lib/postgresql.*|$PGHOME:/bin/bash|" /etc/passwd \
-    && echo 'Setting permissions for OpenShift' \
-    && chmod 664 /etc/passwd \
-    && mkdir -p $PGHOME/pgdata/pgroot \
-    && chgrp -R 0 $PGHOME \
-    && chown -R postgres $PGHOME \
-    && chmod -R 775 $PGHOME \
-    && echo 'Cleaning up' \
-    && apt-get remove -y git build-essential python3-dev python3-pip python3-wheel python3-setuptools \
-    && apt-get autoremove -y \
-    && apt-get clean -y \
-    && rm -rf /var/lib/apt/lists/* /root/.cache
-
-COPY contrib/root /
+RUN apt-get update \
+      && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
+      && apt-get install -y --no-install-recommends \
+           postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION \
+           postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+      && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /docker-entrypoint-initdb.d
-COPY ./initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
-COPY ./update-postgis.sh /usr/local/bin
-
-VOLUME /home/postgres/pgdata
-EXPOSE 5432 8008
-USER postgres
-WORKDIR /home/postgres
-CMD ["/bin/bash", "/usr/bin/entrypoint.sh"]
+COPY ./init.sql /docker-entrypoint-initdb.d/10_init.sql
+#COPY ./initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
+#COPY ./initdb-fom.sh /docker-entrypoint-initdb.d/20_fom.sh
+#COPY ./update-postgis.sh /usr/local/bin

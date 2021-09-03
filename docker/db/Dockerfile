@@ -43,8 +43,10 @@ COPY docker/db/contrib/root /
 # Fix issue PermissionError: [Errno 13] Permission denied: '/usr/share/scripts/patroni/post_init.sh'
 RUN chmod +x /usr/share/scripts/patroni/*.sh
 RUN mkdir -p /docker-entrypoint-initdb.d
-COPY docker/db/initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
-COPY docker/db/update-postgis.sh /usr/local/bin
+COPY docker/db/init.sql /docker-entrypoint-initdb.d/10_init.sql
+#COPY docker/db/initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
+#COPY docker/db/initdb-fom.sh /docker-entrypoint-initdb.d/20_fom.sh
+#COPY docker/db/update-postgis.sh /usr/local/bin
 
 VOLUME /home/postgres/pgdata
 EXPOSE 5432 8008
