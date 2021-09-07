@@ -180,12 +180,12 @@ objects:
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: superuser-password
+                      key: app-db-password
                       name: ${DB_NAME}${SUFFIX}
                 - name: DB_USERNAME 
                   valueFrom:
                     secretKeyRef:
-                      key: superuser-username
+                      key: app-db-username
                       name: ${DB_NAME}${SUFFIX}
                 - name: DB_NAME
                   valueFrom:
