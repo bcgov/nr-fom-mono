@@ -4,7 +4,7 @@ FROM artifacts.developer.gov.bc.ca/docker-remote/postgres:13
 
 ENV PATRONI_VERSION=2.1.1
 ENV POSTGIS_MAJOR=3
-ENV POSTGIS_VERSION=3.1.3+dfsg-1~exp1.pgdg100+1
+ENV POSTGIS_VERSION=3.1.4+dfsg-1.pgdg100+1
 
 ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
 ENV PATRONI_HOME=/opt/patroni
