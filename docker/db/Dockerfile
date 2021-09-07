@@ -4,6 +4,7 @@ FROM artifacts.developer.gov.bc.ca/docker-remote/postgres:13
 
 ENV PATRONI_VERSION=2.1.1
 ENV POSTGIS_MAJOR=3
+# If build fails, might be due to new version - check output of apt-cache showpkg postgres-13-postgis-3 below for new version
 ENV POSTGIS_VERSION=3.1.4+dfsg-1.pgdg100+1
 
 ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
@@ -42,11 +43,9 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 COPY docker/db/contrib/root /
 # Fix issue PermissionError: [Errno 13] Permission denied: '/usr/share/scripts/patroni/post_init.sh'
 RUN chmod +x /usr/share/scripts/patroni/*.sh
-RUN mkdir -p /docker-entrypoint-initdb.d
-COPY docker/db/init.sql /docker-entrypoint-initdb.d/10_init.sql
-#COPY docker/db/initdb-postgis.sh /docker-entrypoint-initdb.d/10_postgis.sh
-#COPY docker/db/initdb-fom.sh /docker-entrypoint-initdb.d/20_fom.sh
-#COPY docker/db/update-postgis.sh /usr/local/bin
+
+# Cannot use docker-entrypoint-initdb.d from base postgres image as patroni overrides this - see post_init.sh
+#RUN mkdir -p /docker-entrypoint-initdb.d
 
 VOLUME /home/postgres/pgdata
 EXPOSE 5432 8008
