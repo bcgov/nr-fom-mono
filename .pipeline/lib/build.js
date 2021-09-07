@@ -6,53 +6,53 @@ const MyBuilder = class extends BasicBuilder {
   processTemplates(oc){
     const phase = 'build';
     const phases = this.settings.phases
+    const config = phases[phase];
     let objects = [];
     const templatesLocalBaseUrl = oc.toFileUrl(path.resolve(__dirname, '../../openshift'));
 
     // Parameters common across components.
     const commonParams = {
-      'SUFFIX': phases[phase].suffix,
-      'TAG': phases[phase].tag,
+      'SUFFIX': config.suffix,
+      'TAG': config.tag,
       'GIT_REF': oc.git.branch.merge
   }
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-build.yml`, {
       'param':{
+        'NAME': 'fom-db-ha',
         ...commonParams,
-        // 'NAME': phases[phase].name, // defaults to fom-api
       }
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-build.yml`, {
       'param':{
-        'SUFFIX': phases[phase].suffix,
-        'OUTPUT_IMAGE_TAG': phases[phase].tag,
-        'BASE_IMAGE_FOR_BUILD': `fom-db:${phases[phase].tag}`
+        'SUFFIX': config.suffix,
+        'OUTPUT_IMAGE_TAG': config.tag,
+        'BASE_IMAGE_FOR_BUILD': `fom-db-ha:${config.tag}`
       }
     }));
-
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-build.yml`, {
       'param':{
         ...commonParams,
-        // 'NAME': phases[phase].name, // defaults to fom-api
+        // 'NAME': config.name, // defaults to fom-api
       }
     }));
-
+/*
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-build.yml`, {
       'param':{
         ...commonParams,
-        // 'NAME': phases[phase].name, // defaults to fom-public
+        // 'NAME': config.name, // defaults to fom-public
       }
     }));
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/admin/fom-admin-build.yml`, {
       'param':{
         ...commonParams,
-        // 'NAME': phases[phase].name, // defaults to fom-admin
+        // 'NAME': config.name, // defaults to fom-admin
       }
     }));
-
+*/
     return objects
   }
 }

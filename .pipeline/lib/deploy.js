@@ -15,9 +15,48 @@ const MyDeployer = class extends BasicDeployer{
     const dbParams = {
       'SUFFIX': config.suffix,
       'IMAGE_STREAM_VERSION': config.tag,
-      'BACKUP_VOLUME_NAME': `backup${config.suffix}`,
+      'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
     }
 
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
+      'param':{
+        'NAME': 'fom-db-ha',
+        'SUFFIX': config.suffix,
+        'APP_DB_NAME': 'fom',
+      }
+    }));
+
+
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-deploy.yml`, {
+      'param':{
+        'NAME': 'fom-db-ha',
+        'SUFFIX': config.suffix,
+        'IMAGE_STREAM_TAG': config.tag,
+        'BACKUP_VOLUME_NAME': dbParams.BACKUP_VOLUME_NAME,
+        'REPLICAS': config.dbReplicaCount,
+        'CPU_REQUEST': '50m',
+        'CPU_LIMIT': config.dbCpuLimit,
+        'MEMORY_REQUEST': '0.2Gi',
+        'MEMORY_LIMIT': config.dbMemoryLimit,
+      }
+    }));
+
+    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
+      'param':{
+        ...dbParams,
+        'JOB_NAME': `backup-fom-db-ha${config.suffix}`,
+        'VERIFICATION_VOLUME_NAME': `backup-verify-fom-db-ha${config.suffix}`,
+        'DATABASE_DEPLOYMENT_NAME': `fom-db-ha${config.suffix}`,
+        'DATABASE_SERVICE_NAME':`fom-db-ha-master${config.suffix}`, // Need to specify specific node since backup script treats this as a hostname and converts to an address
+        'DATABASE_USER_KEY_NAME':'superuser-username',
+        'DATABASE_PASSWORD_KEY_NAME': 'superuser-password',
+        'DATABASE_NAME':'fom',
+        // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
+      }
+    }));
+
+
+/*
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
       'param':{
         ...dbParams,
@@ -27,18 +66,7 @@ const MyDeployer = class extends BasicDeployer{
         'LIMIT_MEMORY': config.dbMemoryLimit,
       }
     }));
-
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
-      'param':{
-        ...dbParams,
-        'JOB_NAME': `backup-postgres${config.suffix}`,
-        'VERIFICATION_VOLUME_NAME': `backup-verification${config.suffix}`,
-        'DATABASE_DEPLOYMENT_NAME': `fom-db${config.suffix}`,
-        'DATABASE_SERVICE_NAME':`fom-db${config.suffix}`,
-        'DATABASE_NAME':'fom',
-        // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
-      }
-    }));
+*/
 
     // Parameters common across application components.
     const appParams = {
@@ -78,6 +106,7 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
+/* Not needed for database clustering.
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-batch-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
@@ -86,7 +115,6 @@ const MyDeployer = class extends BasicDeployer{
         // Using defaults for memory and CPU limits, as this is a short-running batch process.
       }
     }));
-
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-deploy.yml`, {
       'param':{
         ...appParams,
@@ -104,7 +132,7 @@ const MyDeployer = class extends BasicDeployer{
         // Using defaults for memory and CPU limits, as this is just a static front-end.
       }
     }));
-
+*/
     return objects;
   }
 }

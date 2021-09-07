@@ -106,8 +106,8 @@ objects:
         create-template: 'true'
       name: ${NAME}${SUFFIX}
     stringData:
-      # The unqualified hostname is the name of the db service. Easier to look up in fom-api-deploy than recreate.
-      database-host: ${NAME}${SUFFIX}
+      # Exclude hostname because it can vary between deployments with different suffixes, while this secret creation
+      # is based on a common template so values are reused between deployments.
       database-name: ${POSTGRESQL_DATABASE}
       database-password: ${POSTGRESQL_PASSWORD}
       database-user: ${POSTGRESQL_USER}

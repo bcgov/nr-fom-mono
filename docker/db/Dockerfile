@@ -1,3 +1,54 @@
-FROM artifacts.developer.gov.bc.ca/docker-remote/postgis/postgis:13-3.1
-# Use a specific version to avoid the risk of even minor/patch upgrades not working automatically due to required manual upgrade steps
-# Cannot use alpine version because only debian supports running as any user under openshift as per https://registry.hub.docker.com/_/postgres/
+# Adapted from https://github.com/BCDevOps/platform-services/tree/master/apps/pgsql/patroni/docker
+# and https://github.com/postgis/docker-postgis/blob/master/13-3.1/Dockerfile
+FROM artifacts.developer.gov.bc.ca/docker-remote/postgres:13
+
+ENV PATRONI_VERSION=2.1.1
+ENV POSTGIS_MAJOR=3
+# If build fails, might be due to new version - check output of apt-cache showpkg postgres-13-postgis-3 below for new version
+ENV POSTGIS_VERSION=3.1.4+dfsg-1.pgdg100+1
+
+ENV LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+ENV PATRONI_HOME=/opt/patroni
+
+ARG PGHOME=/home/postgres
+
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && set -x \
+    && echo 'APT::Install-Recommends "0";\nAPT::Install-Suggests "0";' > /etc/apt/apt.conf.d/01norecommend \
+    && apt-get update -y \
+    && apt-get install -y curl jq locales git build-essential python3 python3-dev python3-pip python3-wheel python3-setuptools python3-virtualenv libpq-dev \
+    && echo 'Make sure we have a en_US.UTF-8 locale available' \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+    && pip3 --isolated --no-cache-dir install psycopg2-binary \
+    && pip3 --isolated --no-cache-dir install "patroni[kubernetes]==${PATRONI_VERSION}" \
+    && apt-cache showpkg postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR \
+    && apt-get install -y --no-install-recommends \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR=$POSTGIS_VERSION \
+        postgresql-$PG_MAJOR-postgis-$POSTGIS_MAJOR-scripts \
+    && PGHOME=/home/postgres \
+    && mkdir -p $PGHOME \
+    && sed -i "s|/var/lib/postgresql.*|$PGHOME:/bin/bash|" /etc/passwd \
+    && echo 'Setting permissions for OpenShift' \
+    && chmod 664 /etc/passwd \
+    && mkdir -p $PGHOME/pgdata/pgroot \
+    && chgrp -R 0 $PGHOME \
+    && chown -R postgres $PGHOME \
+    && chmod -R 775 $PGHOME \
+    && echo 'Cleaning up' \
+    && apt-get remove -y git build-essential python3-dev python3-pip python3-wheel python3-setuptools \
+    && apt-get autoremove -y \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/* /root/.cache
+
+COPY docker/db/contrib/root /
+# Fix issue PermissionError: [Errno 13] Permission denied: '/usr/share/scripts/patroni/post_init.sh'
+RUN chmod +x /usr/share/scripts/patroni/*.sh
+
+# Cannot use docker-entrypoint-initdb.d from base postgres image as patroni overrides this - see post_init.sh
+#RUN mkdir -p /docker-entrypoint-initdb.d
+
+VOLUME /home/postgres/pgdata
+EXPOSE 5432 8008
+USER postgres
+WORKDIR /home/postgres
+CMD ["/bin/bash", "/usr/bin/entrypoint.sh"]

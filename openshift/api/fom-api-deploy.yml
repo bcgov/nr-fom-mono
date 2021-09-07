@@ -83,7 +83,7 @@ parameters:
   - description: Name of the database component used by the API.
     displayName: Database Name
     name: DB_NAME
-    value: fom-db
+    value: fom-db-ha
   - description: Port number
     displayName: Port number
     name: PORT
@@ -175,25 +175,22 @@ objects:
               # Supply a space to image:, will use settings in ImageChange trigger.
               image: " "  
               env:
+                - name: DB_HOST
+                  value: '${DB_NAME}-master${SUFFIX}'
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: database-password
+                      key: app-db-password
                       name: ${DB_NAME}${SUFFIX}
                 - name: DB_USERNAME 
                   valueFrom:
                     secretKeyRef:
-                      key: database-user
+                      key: app-db-username
                       name: ${DB_NAME}${SUFFIX}
                 - name: DB_NAME
                   valueFrom:
                       secretKeyRef:
-                        key: database-name
-                        name: ${DB_NAME}${SUFFIX}
-                - name: DB_HOST
-                  valueFrom:
-                      secretKeyRef:
-                        key: database-host
+                        key: app-db-name
                         name: ${DB_NAME}${SUFFIX}
                 - name: DATA_ENCRYPTION_KEY
                   valueFrom:
@@ -342,7 +339,7 @@ objects:
     spec:
       podSelector:
         matchLabels:
-          deploymentconfig: ${DB_NAME}${SUFFIX}
+          statefulset: ${DB_NAME}${SUFFIX}
       ingress:
         - from:
             - podSelector:

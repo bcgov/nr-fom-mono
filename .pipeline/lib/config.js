@@ -53,6 +53,7 @@ module.exports = class {
       // Note that having test data enabled with multiple replicas can cause issues when populating the large volume test data. 
       testDataEnabled:  {default: 'false', dev: 'true', test: 'true' },
 
+      dbReplicaCount:  {dev: '2', test: '3', prod: '3'},
       apiReplicaCount:  {dev: '1', test: '3', prod: '3'},
       adminReplicaCount:  {default: '3', dev: '2' },
       publicReplicaCount:  {default: '3', dev: '2' },
