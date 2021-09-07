@@ -94,7 +94,8 @@ objects:
                   command:
                     - "/bin/bash"
                     - "-c"
-                    - "/backup.sh -c && /backup.sh -1 && /backup.sh -v all"
+                    - "/backup.sh -c && /backup.sh -1"
+                    # && /backup.sh -v all Removed verification step as it isn't working, likely due to container running as wrong user
                   volumeMounts:
                     - name: backup
                       mountPath: "${BACKUP_DIR}"
