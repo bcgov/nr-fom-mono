@@ -38,7 +38,7 @@ const MyBuilder = class extends BasicBuilder {
         // 'NAME': config.name, // defaults to fom-api
       }
     }));
-/*
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/public/fom-public-build.yml`, {
       'param':{
         ...commonParams,
@@ -52,7 +52,7 @@ const MyBuilder = class extends BasicBuilder {
         // 'NAME': config.name, // defaults to fom-admin
       }
     }));
-*/
+
     return objects
   }
 }

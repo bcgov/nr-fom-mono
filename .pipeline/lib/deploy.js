@@ -55,19 +55,6 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
-
-/*
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-deploy.yml`, {
-      'param':{
-        ...dbParams,
-        'REQUEST_CPU': '100m',
-        'LIMIT_CPU': config.dbCpuLimit,
-        'REQUEST_MEMORY': '0.2Gi',
-        'LIMIT_MEMORY': config.dbMemoryLimit,
-      }
-    }));
-*/
-
     // Parameters common across application components.
     const appParams = {
       'SUFFIX': config.suffix,
@@ -106,7 +93,6 @@ const MyDeployer = class extends BasicDeployer{
       }
     }));
 
-/* Not needed for database clustering.
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-batch-deploy.yml`, {
       'param':{
         'SUFFIX': config.suffix,
@@ -132,7 +118,7 @@ const MyDeployer = class extends BasicDeployer{
         // Using defaults for memory and CPU limits, as this is just a static front-end.
       }
     }));
-*/
+
     return objects;
   }
 }
