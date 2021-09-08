@@ -218,7 +218,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     let projectCreate = this.fg.value as ProjectCreateRequest
     projectCreate['districtId'] = this.districtIdSelect;
     projectCreate.forestClientNumber = this.fg.get('forestClient').value;
-
+    projectCreate.commentingOpenDate = moment(this.fg.get('commentingOpenDate').value).format('YYYY-MM-DD');
+    projectCreate.commentingClosedDate = moment(this.fg.get('commentingClosedDate').value).format('YYYY-MM-DD');
     this.projectSvc.projectControllerCreate(projectCreate)
         .toPromise()
         .then(result => this.onSuccess(result.id))
@@ -241,6 +242,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.fg.valid) return;
     try {
+      projectUpdateRequest.commentingOpenDate = moment(this.fg.get('commentingOpenDate').value).format('YYYY-MM-DD');
+      projectUpdateRequest.commentingClosedDate = moment(this.fg.get('commentingClosedDate').value).format('YYYY-MM-DD');
       await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).toPromise();
 
       let file: any = null;
