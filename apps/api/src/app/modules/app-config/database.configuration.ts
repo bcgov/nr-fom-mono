@@ -4,7 +4,7 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('db', () => ({
   entities: [__dirname + '/**/*.entity{.ts,.js}'], // Entity classes must be named with suffix .entity.ts (or .entity.js)
   synchronize: false, // This changes the DB schema to match changes to entities, which we do not want even in development.
-  database: process.env.DB_NAME || 'api-db',
+  database: process.env.DB_NAME || 'fom',
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD,
   host: process.env.DB_HOST || 'localhost',

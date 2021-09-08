@@ -10,7 +10,7 @@ services:
     environment:
       - DB_USERNAME=postgres
       - DB_PASSWORD=test
-      - DB_NAME=api-db
+      - DB_NAME=fom
       - DB_TYPE=postgres
       - DB_HOST=localhost
       - DB_SSL=false
@@ -29,13 +29,15 @@ services:
     links:
       - 'db:database'
   db:
-    image: postgis/postgis
-    container_name: api-postgres
+    container_name: fom-db
+    build:
+      context: ./docker/db
+      dockerfile: ./Dockerfile.local
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
-      - POSTGRES_DB=api-db
+      - POSTGRES_DB=fom
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PORT=5342
     volumes:
