@@ -32,7 +32,7 @@ export class DateTimeUtil {
 
     /**
      * 
-     * @param dateInput valid date input string for parsing.
+     * @param dateInput valid date input string (as "YYYY-MM-DD") for parsing.
      * @param timezone valid TimeZone string e.g 'America/Vancouver'.
      * @returns dayjs object based on 'timezone'.
      */
@@ -46,7 +46,7 @@ export class DateTimeUtil {
 
     /**
      * 
-     * @param dateInput valid date input string for parsing.
+     * @param dateInput valid date input string (as "YYYY-MM-DD") for parsing.
      * @returns dayjs object at BC timezone 'America/Vancouver'.
      */
     public static getBcDate(dateInput: string) {
@@ -55,8 +55,8 @@ export class DateTimeUtil {
 
     /**
      * 
-     * @param startDateSt beginning date as string.
-     * @param endDateSt end date as string.
+     * @param startDateSt beginning date as string (as "YYYY-MM-DD").
+     * @param endDateSt end date as string (as "YYYY-MM-DD").
      * @param timezone valid TimeZone string e.g 'America/Vancouver'.
      * @param unit dayjs valid unit.
      * @returns # of unit difference between two dates.

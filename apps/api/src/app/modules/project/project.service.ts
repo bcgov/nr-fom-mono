@@ -163,10 +163,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async create(request: any, user: User): Promise<ProjectResponse> {
     request.workflowStateCode = WorkflowStateEnum.INITIAL;
     request.forestClientId = request.forestClientNumber;
-    request.commentingOpenDate = request.commentingOpenDate? 
-            DateTimeUtil.getBcDate(request.commentingOpenDate).format(DateTimeUtil.DATE_FORMAT): null;
-    request.commentingClosedDate = request.commentingClosedDate? 
-            DateTimeUtil.getBcDate(request.commentingClosedDate).format(DateTimeUtil.DATE_FORMAT): null;
     return super.create(request, user);
   }
 
