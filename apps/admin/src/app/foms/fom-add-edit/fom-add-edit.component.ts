@@ -218,8 +218,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     let projectCreate = this.fg.value as ProjectCreateRequest
     projectCreate['districtId'] = this.districtIdSelect;
     projectCreate.forestClientNumber = this.fg.get('forestClient').value;
-    projectCreate.commentingOpenDate = moment(this.fg.get('commentingOpenDate').value).format('YYYY-MM-DD');
-    projectCreate.commentingClosedDate = moment(this.fg.get('commentingClosedDate').value).format('YYYY-MM-DD');
+    const cmoDateVal = this.fg.get('commentingOpenDate').value;
+    const cmcDateVal = this.fg.get('commentingClosedDate').value;
+    projectCreate.commentingOpenDate = cmoDateVal? moment(cmoDateVal).format('YYYY-MM-DD'): null;
+    projectCreate.commentingClosedDate = cmcDateVal? moment(cmcDateVal).format('YYYY-MM-DD'): null;
     this.projectSvc.projectControllerCreate(projectCreate)
         .toPromise()
         .then(result => this.onSuccess(result.id))
@@ -242,8 +244,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.fg.valid) return;
     try {
-      projectUpdateRequest.commentingOpenDate = moment(this.fg.get('commentingOpenDate').value).format('YYYY-MM-DD');
-      projectUpdateRequest.commentingClosedDate = moment(this.fg.get('commentingClosedDate').value).format('YYYY-MM-DD');
+      const cmoDateVal = this.fg.get('commentingOpenDate').value;
+      const cmcDateVal = this.fg.get('commentingClosedDate').value;
+      projectUpdateRequest.commentingOpenDate = cmoDateVal? moment(cmoDateVal).format('YYYY-MM-DD'): null;
+      projectUpdateRequest.commentingClosedDate = cmcDateVal? moment(cmcDateVal).format('YYYY-MM-DD'): null;
       await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).toPromise();
 
       let file: any = null;
