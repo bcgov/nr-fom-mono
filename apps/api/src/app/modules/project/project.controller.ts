@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe } from '@nestjs/common';
-import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe, NotImplementedException } from '@nestjs/common';
+import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth, ApiNotImplementedResponse } from '@nestjs/swagger';
 import * as dayjs from 'dayjs';
 
 import { ProjectService, ProjectFindCriteria } from './project.service';
-import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
+import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest, ProjectMetricsResponse } from './project.dto';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
 import { User } from "@api-core/security/user";
@@ -70,6 +70,15 @@ export class ProjectController {
     return this.service.findOne(id, user, {
       relations: ['district', 'forestClient', 'workflowState'],
     });
+  }
+
+  @Get('/metrics/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectMetricsResponse })
+  async findProjectMetrics(
+    @UserHeader() user: User,
+    @Param('id', ParseIntPipe) id: number): Promise<ProjectMetricsResponse> {
+    throw new NotImplementedException('To Be Implemented...');
   }
 
   @Get()
