@@ -5,7 +5,6 @@ import {
   WorkflowStateEnum,
 } from '@api-client';
 import {ConfigService} from "@utility/services/config.service";
-import {AttachmentTypeEnum} from "../models/attachmentTypeEnum";
 
 @Injectable({
   providedIn: 'root'
@@ -30,17 +29,10 @@ export class AttachmentResolverSvc {
     return this.configSvc.getAttachmentUrl(id);
   }
 
-  /*
-* Only allows Supporting_Doc to be deleted in the defined states
-*/
-  public isDeleteAttachmentAllowed(workFlowStateCode: string, attachment: AttachmentResponse) {
-
-    if(attachment.attachmentType.code === AttachmentTypeEnum.SUPPORTING_DOC){
+  public isDeleteAttachmentAllowed(workFlowStateCode: string) {
       return workFlowStateCode === WorkflowStateEnum.Initial
         || workFlowStateCode === WorkflowStateEnum.CommentOpen
         || workFlowStateCode === WorkflowStateEnum.CommentClosed
-    }
-    return false;
   }
 
 

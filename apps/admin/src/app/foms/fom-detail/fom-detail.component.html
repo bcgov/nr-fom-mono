@@ -106,7 +106,7 @@
                 <h2>Attachments</h2>
                 <section *ngIf="attachments.length > 0">
                  <div class="doc-list row" *ngFor="let attachment of attachments">
-                    <a class="doc-list__item"
+                    <a class="doc-list__item" style="width: 90%;"
                        [href]="attachmentResolverSvc.getAttachmentUrl(attachment.id)"
                        [title]="attachment.fileName || ''"
                        target="_blank" rel="noopener">
@@ -118,8 +118,9 @@
                       <div class="cell doc-list__item-name">{{attachment.fileName}}</div>
                       <div style="text-align: right;margin-right: 5px;">({{attachment.attachmentType.description}})</div>
                     </a>
-                    <span *ngIf="isDeleteAttachmentAllowed(attachment)" class="vert-pipe">&nbsp;</span>
-                    <button *ngIf="isDeleteAttachmentAllowed(attachment)" class="btn btn-icon row doc-list__item" title="Delete this attachment"
+                    <span *ngIf="isDeleteAttachmentAllowed()" class="vert-pipe">&nbsp;</span>
+                    <button *ngIf="isDeleteAttachmentAllowed()" class="btn btn-icon row doc-list__item" 
+                            title="Delete this attachment"
                             (click)="deleteAttachment(attachment.id)"
                             [disabled]="isDeleting">
                       <em class="material-icons">

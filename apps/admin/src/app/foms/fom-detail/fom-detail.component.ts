@@ -239,11 +239,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     return this.canAccessComments(); // same as comments for access/viewing.
   }
 
-  /*
-  * Only allows Supporting_Doc to be deleted in the defined states
-  */
-  public isDeleteAttachmentAllowed(attachment: AttachmentResponse) {
-    return this.attachmentResolverSvc.isDeleteAttachmentAllowed(this.project.workflowState.code, attachment);
+  public isDeleteAttachmentAllowed() {
+    return this.attachmentResolverSvc.isDeleteAttachmentAllowed(this.project.workflowState.code);
   }
 
 }
