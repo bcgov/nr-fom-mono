@@ -359,8 +359,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   }
 
-  public isDeleteAttachmentAllowed() {
-    return this.attachmentResolverSvc.isDeleteAttachmentAllowed(this.originalProjectResponse.workflowState.code);
+  public isDeleteAttachmentAllowed(attachment: AttachmentResponse) {
+    return this.attachmentResolverSvc.isDeleteAttachmentAllowed(attachment.attachmentType.code, this.originalProjectResponse.workflowState.code);
   }
 
   /**
