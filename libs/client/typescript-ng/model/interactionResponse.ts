@@ -14,7 +14,7 @@
 export interface InteractionResponse { 
     projectId: number;
     stakeholder?: string;
-    communicationDate?: string;
+    communicationDate: string;
     communicationDetails: string;
     attachmentId?: number;
     id: number;

@@ -7,6 +7,7 @@ export * from './forestClientResponse';
 export * from './interactionResponse';
 export * from './keycloakConfig';
 export * from './projectCreateRequest';
+export * from './projectMetricsResponse';
 export * from './projectPublicSummaryResponse';
 export * from './projectResponse';
 export * from './projectUpdateRequest';
