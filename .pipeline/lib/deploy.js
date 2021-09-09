@@ -13,6 +13,7 @@ const MyDeployer = class extends BasicDeployer{
 
     // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public, backup-postgres)
     const dbParams = {
+      'DB_NAME': 'fom-db-ha',
       'SUFFIX': config.suffix,
       'IMAGE_STREAM_VERSION': config.tag,
       'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
@@ -20,7 +21,7 @@ const MyDeployer = class extends BasicDeployer{
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
       'param':{
-        'NAME': 'fom-db-ha',
+        'NAME': dbParams.DB_NAME,
         'SUFFIX': config.suffix,
         'APP_DB_NAME': 'fom',
       }
@@ -29,7 +30,7 @@ const MyDeployer = class extends BasicDeployer{
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-deploy.yml`, {
       'param':{
-        'NAME': 'fom-db-ha',
+        'NAME': dbParams.DB_NAME,
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_TAG': config.tag,
         'BACKUP_VOLUME_NAME': dbParams.BACKUP_VOLUME_NAME,
@@ -50,7 +51,7 @@ const MyDeployer = class extends BasicDeployer{
         'DATABASE_SERVICE_NAME':`fom-db-ha-master${config.suffix}`, // Need to specify specific node since backup script treats this as a hostname and converts to an address
         'DATABASE_USER_KEY_NAME':'superuser-username',
         'DATABASE_PASSWORD_KEY_NAME': 'superuser-password',
-        'DATABASE_NAME':'fom',
+        'DATABASE_NAME': dbParams.APP_DB_NAME,
         // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
       }
     }));
@@ -78,6 +79,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
         ...appParams,
+        'DB_NAME': dbParams.DB_NAME,
         'INSTANCE_URL_PREFIX': config.instanceUrlPrefix,
         'OBJECT_STORAGE_URL': config.objectStorageUrl,
         'KEYCLOAK_URL': config.keycloakUrl,
@@ -98,6 +100,7 @@ const MyDeployer = class extends BasicDeployer{
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_VERSION': config.tag,
         'ENV': config.phase,
+        'DB_NAME': dbParams.DB_NAME,
         // Using defaults for memory and CPU limits, as this is a short-running batch process.
       }
     }));

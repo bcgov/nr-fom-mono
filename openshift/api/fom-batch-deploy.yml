@@ -52,7 +52,7 @@ parameters:
   - description: Name of the database component used by the batch.
     displayName: Database Name
     name: DB_NAME
-    value: fom-db
+    value: fom-db-ha
 objects:
   - kind: CronJob
     apiVersion: batch/v1beta1
