@@ -20,6 +20,14 @@
   <div class="flex-panel__scroll">
     <div class="app-detail-info">
       <section>
+        <div>
+          <button class="submit-comment-btn btn btn-primary"
+              style="margin-top: 0px; margin-bottom: 1em;" 
+            (click)="addComment()" 
+            *ngIf="project.workflowState.code === workflowStatus['COMMENT_OPEN'].code">
+            Submit a Comment</button>
+        </div>
+
         <h3>Description</h3>
         <ul class="meta-container">
           <li>
