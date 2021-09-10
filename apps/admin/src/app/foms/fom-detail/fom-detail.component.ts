@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, SubmissionService, ProjectResponse, ProjectService, SpatialFeaturePublicResponse } from "@api-client";
+import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, SubmissionService, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, ProjectMetricsResponse } from "@api-client";
 import { KeycloakService } from '@admin-core/services/keycloak.service';
 import {User} from "@api-core/security/user";
 import { ModalService } from '@admin-core/services/modal.service';
@@ -24,6 +24,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   public project: ProjectResponse = null;
   public spatialDetail: SpatialFeaturePublicResponse[];
+  public projectMetrics: ProjectMetricsResponse;
   public isProjectActive = false;
   public attachments: AttachmentResponse[] = [];
   public user: User;
@@ -49,9 +50,11 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     // get data from route resolver
     this.route.data
         .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe((data: { application: ProjectResponse, spatialDetail: Array<SpatialFeaturePublicResponse> }) => {
-      if (data.application) {
-        this.project = data.application;
+        .subscribe((data: { projectDetail: ProjectResponse, 
+                            spatialDetail: Array<SpatialFeaturePublicResponse>, 
+                            projectMetrics: ProjectMetricsResponse }) => {
+      if (data.projectDetail) {
+        this.project = data.projectDetail;
         if (this.project.workflowState['code'] === 'INITIAL') {
           this.isProjectActive = true;
         }
@@ -62,6 +65,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       }
 
       this.spatialDetail = data.spatialDetail;
+      this.projectMetrics = data.projectMetrics;
       this.calculateDaysRemaining();
       this.attachmentResolverSvc.getAttachments(this.project.id)
         .then( (result) => {
