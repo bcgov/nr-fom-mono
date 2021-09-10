@@ -23,6 +23,10 @@ parameters:
     name: ENV
     value: dev
     required: true
+  - name: DATABASE_SERVICE_NAME
+    displayName: Database Service Name
+    description: The name of the database service.
+    required: true
   # Optional parameters with defaults
   - description: Request for CPU resources measured in cpu units, e.g. 200m
     displayName: CPU resource request
@@ -81,23 +85,20 @@ objects:
                     - name: DB_PASSWORD
                       valueFrom:
                         secretKeyRef:
-                          key: database-password
+                          key: app-db-password
                           name: ${DB_NAME}${SUFFIX}
                     - name: DB_USERNAME 
                       valueFrom:
                         secretKeyRef:
-                          key: database-user
+                          key: app-db-username
                           name: ${DB_NAME}${SUFFIX}
                     - name: DB_NAME
                       valueFrom:
                           secretKeyRef:
-                            key: database-name
+                            key: app-db-name
                             name: ${DB_NAME}${SUFFIX}
                     - name: DB_HOST
-                      valueFrom:
-                          secretKeyRef:
-                            key: database-host
-                            name: ${DB_NAME}${SUFFIX}
+                      value: "${DATABASE_SERVICE_NAME}"
                     - name: OBJECT_STORAGE_URL
                       valueFrom:
                         configMapKeyRef:

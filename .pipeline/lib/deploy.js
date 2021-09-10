@@ -19,6 +19,7 @@ const MyDeployer = class extends BasicDeployer{
       'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
       'APP_DB_NAME': 'fom',
     }
+    const databaseServiceName = `${dbParams.APP_DB_NAME}-master${config.suffix}`;
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
       'param':{
@@ -33,6 +34,7 @@ const MyDeployer = class extends BasicDeployer{
       'param':{
         'NAME': dbParams.DB_NAME,
         'SUFFIX': config.suffix,
+        'DATABASE_SERVICE_NAME': databaseServiceName, 
         'IMAGE_STREAM_TAG': config.tag,
         'BACKUP_VOLUME_NAME': dbParams.BACKUP_VOLUME_NAME,
         'REPLICAS': config.dbReplicaCount,
@@ -49,7 +51,7 @@ const MyDeployer = class extends BasicDeployer{
         'JOB_NAME': `backup-fom-db-ha${config.suffix}`,
         'VERIFICATION_VOLUME_NAME': `backup-verify-fom-db-ha${config.suffix}`,
         'DATABASE_DEPLOYMENT_NAME': `fom-db-ha${config.suffix}`,
-        'DATABASE_SERVICE_NAME':`fom-db-ha-master${config.suffix}`, // Need to specify specific node since backup script treats this as a hostname and converts to an address
+        'DATABASE_SERVICE_NAME': databaseServiceName, 
         'DATABASE_USER_KEY_NAME':'superuser-username',
         'DATABASE_PASSWORD_KEY_NAME': 'superuser-password',
         'DATABASE_NAME': dbParams.APP_DB_NAME,
@@ -80,6 +82,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-deploy.yml`, {
       'param':{
         ...appParams,
+        'DATABASE_SERVICE_NAME': databaseServiceName,
         'DB_NAME': dbParams.DB_NAME,
         'INSTANCE_URL_PREFIX': config.instanceUrlPrefix,
         'OBJECT_STORAGE_URL': config.objectStorageUrl,
@@ -102,6 +105,7 @@ const MyDeployer = class extends BasicDeployer{
         'IMAGE_STREAM_VERSION': config.tag,
         'ENV': config.phase,
         'DB_NAME': dbParams.DB_NAME,
+        'DATABASE_SERVICE_NAME': databaseServiceName,
         // Using defaults for memory and CPU limits, as this is a short-running batch process.
       }
     }));

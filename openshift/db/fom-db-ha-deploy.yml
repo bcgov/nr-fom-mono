@@ -51,7 +51,7 @@ objects:
     creationTimestamp: null
     labels:
       cluster-name: ${NAME}${SUFFIX}
-    name: ${NAME}-master${SUFFIX}
+    name: ${DATABASE_SERVICE_NAME}
   spec:
     ports:
     - port: 5432
@@ -275,6 +275,10 @@ parameters:
   value: patroni
 - name: SUFFIX
   description: A suffix appended to all artifact's name (NAME)
+- name: DATABASE_SERVICE_NAME
+  displayName: Database Service Name
+  description: The name of the database service.
+  required: true
 - name: REPLICAS
   displayName: REPLICAS
   description: The number of statefulSet replicas to use.
