@@ -57,7 +57,7 @@ objects:
     data:
       DATABASE_SERVICE_NAME: "${DATABASE_SERVICE_NAME}"
       DEFAULT_PORT: "5432"
-      POSTGRESQL_DATABASE: "${DATABASE_NAME}"
+      POSTGRESQL_DATABASE: "${APP_DB_NAME}"
       BACKUP_STRATEGY: "rolling"
       RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
       RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
@@ -226,7 +226,7 @@ parameters:
     description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database service.
     required: false
     value: ""
-  - name: DATABASE_NAME
+  - name: APP_DB_NAME
     displayName: Database Name
     description: Used for backward compatibility only. Not needed when using the recommended 'backup.conf' configuration.  The name of the database.
     required: false

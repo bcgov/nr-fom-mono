@@ -13,11 +13,11 @@ const MyDeployer = class extends BasicDeployer{
 
     // Using default component names (fom-db, fom-api, fom-batch, fom-admin, fom-public, backup-postgres)
     const dbParams = {
-      'DB_NAME': 'fom-db-ha',
+      'DB_NAME': 'fom-db-ha', // First portion of name of OpenShift resource (StatefulSet and related resources)
       'SUFFIX': config.suffix,
       'IMAGE_STREAM_VERSION': config.tag,
       'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
-      'APP_DB_NAME': 'fom',
+      'APP_DB_NAME': 'fom', // Name of postgres application database
     }
     const databaseServiceName = `${dbParams.APP_DB_NAME}-master${config.suffix}`;
 
@@ -54,7 +54,6 @@ const MyDeployer = class extends BasicDeployer{
         'DATABASE_SERVICE_NAME': databaseServiceName, 
         'DATABASE_USER_KEY_NAME':'superuser-username',
         'DATABASE_PASSWORD_KEY_NAME': 'superuser-password',
-        'DATABASE_NAME': dbParams.APP_DB_NAME,
         // Use defaults (best-effort) for cpu and memory limits, as this is just a backup process.
       }
     }));
