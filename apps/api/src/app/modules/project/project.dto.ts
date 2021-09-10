@@ -120,6 +120,21 @@ export class ProjectResponse {
 
 }
 
+export class ProjectMetricsResponse {
+
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  totalInteractionsCount: number;
+
+  @ApiProperty()
+  totalCommentsCount: number;
+
+  @ApiProperty()
+  respondedToCommentsCount: number;
+}
+
 // Need to do this to get to compile, rather than using Point directly. Not sure why...
 export interface FomPoint extends Point {
 

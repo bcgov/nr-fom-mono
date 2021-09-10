@@ -25,6 +25,7 @@ model/interactionResponse.ts
 model/keycloakConfig.ts
 model/models.ts
 model/projectCreateRequest.ts
+model/projectMetricsResponse.ts
 model/projectPublicSummaryResponse.ts
 model/projectResponse.ts
 model/projectUpdateRequest.ts

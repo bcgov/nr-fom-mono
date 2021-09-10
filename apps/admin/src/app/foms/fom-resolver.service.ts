@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 import {ActivatedRouteSnapshot, Resolve} from '@angular/router';
 import {Observable} from 'rxjs';
-import {ProjectResponse, ProjectService, SpatialFeaturePublicResponse, SpatialFeatureService} from '@api-client';
+import {ProjectMetricsResponse, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, SpatialFeatureService} from '@api-client';
 import { ConstantUtils } from '../../core/utils/constants/constantUtils';
 @Injectable()
-export class ApplicationDetailResolver implements Resolve<ProjectResponse> {
+export class ProjectDetailResolver implements Resolve<ProjectResponse> {
   constructor(private projectService: ProjectService) {
   }
 
@@ -17,6 +17,16 @@ export class ApplicationDetailResolver implements Resolve<ProjectResponse> {
       // view/edit existing application
       return this.projectService.projectControllerFindOne(projectId);
     }
+  }
+}
+@Injectable()
+export class ProjectMetricsDetailResolver implements Resolve<ProjectMetricsResponse> {
+  constructor(private projectService: ProjectService) {
+  }
+
+  resolve(route: ActivatedRouteSnapshot): Observable<ProjectMetricsResponse> {
+    const projectId = parseInt(route.paramMap.get(ConstantUtils.PROJECT_ID_PARAM_KEY));
+    return this.projectService.projectControllerFindProjectMetrics(projectId);
   }
 }
 

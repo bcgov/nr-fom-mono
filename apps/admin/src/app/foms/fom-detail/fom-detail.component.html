@@ -200,6 +200,18 @@
                 Review Comments
               </button>
             </div>
+
+            <ul class="nv-list" style="margin-top: 1em;">
+              <li>
+                <span class="name">Total:</span>
+                <span class="value">{{projectMetrics.totalCommentsCount}}</span>
+              </li>
+              <li>
+                <span class="name">Responded:</span>
+                <span class="value">{{projectMetrics.respondedToCommentsCount}}</span>
+              </li>
+            </ul>
+
           </div>
         </div>
 
@@ -218,6 +230,14 @@
                 Stakeholder Engagements
               </button>
             </div>
+
+            <ul class="nv-list" style="margin-top: 1em;">
+              <li>
+                <span class="name">Total:</span>
+                <span class="value">{{projectMetrics.totalInteractionsCount}}</span>
+              </li>
+            </ul>
+
           </div>
         </div>
         <div *ngIf="canViewSubmission()" class="aside-card">

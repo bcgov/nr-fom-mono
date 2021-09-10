@@ -114,40 +114,11 @@
         },
         "required": [
           "projectId",
+          "communicationDate",
           "communicationDetails",
           "id",
           "revisionCount",
           "createTimestamp"
-        ]
-      },
-      "DistrictResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "number"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
-        ]
-      },
-      "ForestClientResponse": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "name": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "id",
-          "name"
         ]
       },
       "ProjectPublicSummaryResponse": {
@@ -180,6 +151,36 @@
           "fspId",
           "forestClientName",
           "workflowStateName"
+        ]
+      },
+      "DistrictResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "ForestClientResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
         ]
       },
       "WorkflowStateCode": {
@@ -249,6 +250,29 @@
           "workflowState",
           "revisionCount",
           "createTimestamp"
+        ]
+      },
+      "ProjectMetricsResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "totalInteractionsCount": {
+            "type": "number"
+          },
+          "totalCommentsCount": {
+            "type": "number"
+          },
+          "respondedToCommentsCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "totalInteractionsCount",
+          "totalCommentsCount",
+          "respondedToCommentsCount"
         ]
       },
       "ProjectCreateRequest": {
@@ -1087,119 +1111,6 @@
         ]
       }
     },
-    "/api/district": {
-      "get": {
-        "operationId": "DistrictController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DistrictResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "district"
-        ]
-      }
-    },
-    "/api/district/{id}": {
-      "get": {
-        "operationId": "DistrictController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DistrictResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "district"
-        ]
-      }
-    },
-    "/api/forest-client": {
-      "get": {
-        "operationId": "ForestClientController_find",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Returns only forest clients that the user is authorized for.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ForestClientResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "forest-client"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/api/forest-client/{id}": {
-      "get": {
-        "operationId": "ForestClientController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ForestClientResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "forest-client"
-        ]
-      }
-    },
     "/api/project/publicSummary": {
       "get": {
         "operationId": "ProjectController_findPublicSummary",
@@ -1349,6 +1260,41 @@
         "responses": {
           "200": {
             "description": ""
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project/metrics/{id}": {
+      "get": {
+        "operationId": "ProjectController_findProjectMetrics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectMetricsResponse"
+                }
+              }
+            }
           }
         },
         "tags": [
@@ -1523,6 +1469,119 @@
         },
         "tags": [
           "project"
+        ]
+      }
+    },
+    "/api/district": {
+      "get": {
+        "operationId": "DistrictController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DistrictResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "district"
+        ]
+      }
+    },
+    "/api/district/{id}": {
+      "get": {
+        "operationId": "DistrictController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "district"
+        ]
+      }
+    },
+    "/api/forest-client": {
+      "get": {
+        "operationId": "ForestClientController_find",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns only forest clients that the user is authorized for.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ForestClientResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "forest-client"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/forest-client/{id}": {
+      "get": {
+        "operationId": "ForestClientController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForestClientResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "forest-client"
         ]
       }
     },
