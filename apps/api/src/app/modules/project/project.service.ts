@@ -1,11 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { getRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
 import { DataService } from 'apps/api/src/core/models/data.service';
-import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
+import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, 
+         ProjectWorkflowStateChangeRequest, ProjectMetricsResponse } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from "@api-core/security/user";
@@ -19,6 +20,8 @@ import { AttachmentService } from '@api-modules/attachment/attachment.service';
 import { MailService } from 'apps/api/src/core/mail/mail.service';
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { Cron } from '@nestjs/schedule';
+import { PublicComment } from '@api-modules/public-comment/public-comment.entity';
+import { Interaction } from '@api-modules/interaction/interaction.entity';
 
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -56,7 +59,7 @@ export class ProjectFindCriteria {
 }
 
 @Injectable()
-export class ProjectService extends DataService<Project, Repository<Project>, ProjectResponse> { 
+export class ProjectService extends DataService<Project, Repository<Project>, ProjectResponse> {
   readonly DATE_FORMAT = 'YYYY-MM-DD';
 
   constructor(
@@ -528,6 +531,41 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       this.logger.info("Completed batch process for date-based workflow state changes...");
   }
   
+  /**
+   * Find project metrics: currently available for: totalInteractionsCount, totalCommentsCount and respondedToCommentsCount
+   * @param id projectId to find
+   * @param user 
+   * @returns Promise<ProjectMetricsResponse>
+   */
+  async findProjectMetrics(id: number, user: User): Promise<ProjectMetricsResponse> {
+
+    this.findOne(id, user); // Verifying id can be found and user has view authority.
+
+    const response = new ProjectMetricsResponse();
+    response.id = id;
+
+    response.totalInteractionsCount = await getRepository(Interaction)
+      .createQueryBuilder("interaction")
+      .select("interaction.id")
+      .where("interaction.projectId = :projectId", {projectId: id})
+      .getCount();
+
+    response.totalCommentsCount = await getRepository(PublicComment)
+      .createQueryBuilder("comment")
+      .select("comment.id")
+      .where("comment.projectId = :projectId", {projectId: id})
+      .getCount();
+
+    response.respondedToCommentsCount = await getRepository(PublicComment)
+      .createQueryBuilder("comment")
+      .select("comment.id")
+      .where("comment.projectId = :projectId", {projectId: id})
+      .andWhere("comment.responseCode IS NOT NULL")
+      .getCount();
+
+    return response;
+  } 
+
   /**
    * Find FOM Ids by 'workflowStateCode' and 'commentingOpenDate'/'commenting_closed_date' equal or before the 'date' passed for search.
    * @param workflowStateCode 

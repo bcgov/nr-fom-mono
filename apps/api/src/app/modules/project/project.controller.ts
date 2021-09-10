@@ -78,7 +78,7 @@ export class ProjectController {
   async findProjectMetrics(
     @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number): Promise<ProjectMetricsResponse> {
-    throw new NotImplementedException('To Be Implemented...');
+    return this.service.findProjectMetrics(id, user);
   }
 
   @Get()
