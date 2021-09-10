@@ -17,13 +17,14 @@ const MyDeployer = class extends BasicDeployer{
       'SUFFIX': config.suffix,
       'IMAGE_STREAM_VERSION': config.tag,
       'BACKUP_VOLUME_NAME': `backup-fom-db-ha${config.suffix}`,
+      'APP_DB_NAME': 'fom',
     }
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
       'param':{
         'NAME': dbParams.DB_NAME,
         'SUFFIX': config.suffix,
-        'APP_DB_NAME': 'fom',
+        'APP_DB_NAME': dbParams.APP_DB_NAME,
       }
     }));
 
