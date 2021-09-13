@@ -1,0 +1,352 @@
+
+<mat-expansion-panel hideToggle>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <strong>FOM Geospatial Submission Format Overview</strong>
+    </mat-panel-title>
+    <mat-panel-description>
+      Click to expand/collapse
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  This Forest Operations Map (FOM) geospatial submission format is based on GeoJSON 
+  (<a href="https://geojson.org/" rel="noopener" target="_blank">https://geojson.org/</a>,
+  <a href="https://tools.ietf.org/html/rfc7946" rel="noopener" target="_blank">https://tools.ietf.org/html/rfc7946</a>),
+  but with some deviations. (Therefore, technically this is a JSON format, not a compliant GeoJSON format.)
+  <br/>
+  <br>Submit one JSON file per FOM geospatial object type: cut block, WTRA (wildlife tree retention area), or road section. A submission must include at least one cut block file or one road section file.
+  <br/>
+  <br>Each JSON file consists of one FeatureCollection object (as per GeoJSON) that lists geometries of the appropriate type (polygon or linestring) based on the FOM object type (see table below).
+  <br/>
+  <br>GeoJSON, geometry points must be specified using the BC Albers (EPSG:3005) coordinate reference system—not latitude and longitude. Coordinates are ordered as X, Y.
+  <br/>
+  <br>Geometries for cut blocks and road sections are also required to provide the property DEVELOPMENT_DATE. Providing the NAME property is optional but is recommended to make it easier for citizens to comment on specific features. The attribute table of spatial submissions must include the columns depicted below. All cells need to be formatted as text (including the DEVELOPMENT_DATE column)
+  <br/>
+
+  <br>The JSON files should use UTF-8 for the character encoding.
+  <br/>
+  <br/>
+  <table>
+    <!-- <caption>Properties of each Geometry Type</caption> -->
+    <thead>
+    <tr>
+      <th scope="col">FOM_SPATIAL_OBJECT_FILE</th>
+      <th scope="col">GEOMETRY_TYPE</th>
+      <th scope="col" colspan="1">DEVELOPMENT_DATE</th>
+      <th scope="col" colspan="1">NAME</th>
+    </tr>
+    </thead>
+    <tr>
+      <td>Road Section</td>
+      <td>LineString</td>
+      <td colspan="1" class="confluenceTd">YYYY-MM-DD</td>
+      <td colspan="1" class="confluenceTd">NAME</td>
+    </tr>
+    <tr>
+      <td>Cut Block</td>
+      <td>Polygon</td>
+      <td colspan="1" class="confluenceTd">YYYY-MM-DD</td>
+      <td colspan="1" class="confluenceTd">NAME</td>
+    </tr>
+    <tr>
+      <td>WTRA</td>
+      <td >Polygon</td>
+      <td colspan="1" class="confluenceTd">Enter YYYY-MM-DD or leave blank</td>
+      <td colspan="1" class="confluenceTd">NAME</td>
+    </tr>
+  </table>
+  <br/>
+
+  <br/><strong>Property Format</strong><br/><br/>
+  <p>This table specifies the description and format of required properties.</p>
+  
+  <table>
+    <!-- <caption>Description and format of required properties</caption> -->
+    <thead>
+      <tr>
+        <th scope="col">Property</th>
+        <th scope="col">Description</th>
+        <th scope="col">Value Format</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>DEVELOPMENT_DATE</td>
+      <td>Planned date to start development</td>
+      <td>Date in the format "YYYY-MM-DD"</td>
+    </tr>
+    <tr>
+      <td>Name</td>
+      <td>Description/identifier for the spatial object.</td>
+      <td>Text, maximum length 50 characters.</td>
+    </tr>
+  </table>
+  <br/>
+  <p>
+    Prior to publishing a FOM, spatial data can be replaced. In order to do so, a new GeoJSON file has to be uploaded (repeat the regular upload process). This new file will then replace the old one. Successful upload/replacement can be confirmed by clicking on the “Location” button on the “Summary Screen”.
+  </p>
+  <p>
+    Data submitted will be published overnight. Therefore, it will not become viewable in the public interface until the day after it was uploaded.
+  </p>
+
+
+  <br><strong>FOM Example Submissions</strong>
+  <br>
+  <br>This section provides sample submission files.
+  <br>
+  <br>If you are using the ArcGIS conversion tool “Features To JSON” to create your spatial submission, ensure that the “GeoJSON” box is checked prior to running the tool.
+  <br>
+  <br><img src="assets/images/arcgis-featuresToJson.png" alt="ArcGIS Conversion Tool 'Features To JSON' Example PNG" width="800" height="494">
+  <br>
+
+  <br>
+  <br><strong>Cut Block File</strong>
+  <br>
+  <br>This sample file contains two cut blocks.
+  <br>
+
+  <pre>
+    &#123;
+      "type": "FeatureCollection",
+      "crs": &#123;
+        "type": "name",
+        "properties": &#123;
+          "name": "EPSG:3005"
+        }
+      },
+      "features": [
+      &#123;
+          "type": "Feature",
+          "geometry": &#123;
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  1474614.5923999995,
+                  555392.2415999994
+                ],
+                [
+                  1474537.8630999997,
+                  555275.8246999998
+                ],
+                [
+                  1474588.1340999994,
+                  555146.1786000002
+                ],
+                [
+                  1474723.071799999,
+                  555080.0326000005
+                ],
+                [
+                  1474818.3220000006,
+                  555138.2411000002
+                ],
+                [
+                  1474902.9889000002,
+                  555220.2620999999
+                ],
+                [
+                  1474818.3220000006,
+                  555334.0330999997
+                ],
+                [
+                  1474701.9050999992,
+                  555437.2207999993
+                ],
+                [
+                  1474614.5923999995,
+                  555392.2415999994
+                ]
+              ]
+            ]
+          },
+          "properties": &#123;
+            "DEVELOPMENT_DATE": "2022-03-30",
+            "NAME": "Nature's valley"
+          }
+        },
+        &#123;
+          "type": "Feature",
+          "geometry": &#123;
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  1474614.5923999995,
+                  555392.2415999994
+                ],
+                [
+                  1474537.8630999997,
+                  555275.8246999998
+                ],
+                [
+                  1474588.1340999994,
+                  555146.1786000002
+                ],
+                [
+                  1474723.071799999,
+                  555080.0326000005
+                ],
+                [
+                  1474818.3220000006,
+                  555138.2411000002
+                ],
+                [
+                  1474902.9889000002,
+                  555220.2620999999
+                ],
+                [
+                  1474818.3220000006,
+                  555334.0330999997
+                ],
+                [
+                  1474701.9050999992,
+                  555437.2207999993
+                ],
+                [
+                  1474614.5923999995,
+                  555392.2415999994
+                ]
+              ]
+            ]
+          },
+          "properties": &#123;
+            "DEVELOPMENT_DATE": "2022-03-31"
+          }
+        }
+      ]
+    }
+  </pre>
+
+  <strong>WTRA File</strong>
+  <br>
+  <pre>
+    &#123;
+      "type": "FeatureCollection",
+      "crs": &#123;
+        "type": "name",
+        "properties": &#123;
+          "name": "EPSG:3005"
+        }
+      },
+      "features": [
+      &#123;
+          "type": "Feature",
+          "geometry": &#123;
+            "type": "Polygon",
+            "coordinates": [
+              [
+                [
+                  1474782.182,
+                  555366.0662999991
+                ],
+                [
+                  1474701.9050999992,
+                  555437.2207999993
+                ],
+                [
+                  1474651.1418999992,
+                  555411.0701000001
+                ],
+                [
+                  1474667.5091999993,
+                  555386.9498999994
+                ],
+                [
+                  1474760.1136000007,
+                  555331.3872999996
+                ],
+                [
+                  1474782.182,
+                  555366.0662999991
+                ]
+              ]
+            ]
+          },
+          "properties": &#123;}
+        }
+      ]
+    }
+  </pre>
+
+  <strong>Road Section File</strong>
+  <br>
+  <pre>
+    &#123;
+      "type": "FeatureCollection",
+      "crs": &#123;
+        "type": "name",
+        "properties": &#123;
+          "name": "EPSG:3005"
+        }
+      },
+      "features": [
+        &#123;
+          "type": "Feature",
+          "geometry": &#123;
+            "type": "LineString",
+            "coordinates": [
+              [
+                1473871.1118,
+                555638.3046000004
+              ],
+              [
+                1474085.4246999994,
+                555524.5335000008
+              ],
+              [
+                1474315.6127000004,
+                555445.1583999991
+              ],
+              [
+                1474426.7379,
+                555341.9706999995
+              ],
+              [
+                1474543.9969999995,
+                555285.1313000005
+              ],
+              [
+                1474648.9882999994,
+                555283.7621999998
+              ],
+              [
+                1474775.9886000007,
+                555259.9496999998
+              ],
+              [
+                1474940.0306000002,
+                555143.5328000002
+              ]
+            ]
+          },
+          "properties": &#123;
+            "DEVELOPMENT_DATE": "2022-03-30"
+          }
+        }
+      ]
+    }
+  </pre>
+
+  <strong>Design Notes</strong>
+  <br>
+  <br>Other design alternatives considered included:
+  <ol>
+    <li>
+      One single JSON file containing all three objects differentiated by a FOM_TYPE property. Rejected because samples obtained all had one object type per file.
+    </li>
+    <li>
+      GeoJSON format using latitude and longitude. Samples obtained were all using B.C. Albers coordinates, which is a more appropriate coordinate system for FOM needs (being dedicated to the province of B.C.). Easy enough to add in or switch to GeoJSON format by just changing the coordinate reference system.
+    </li>
+    <li>
+      Shape Files. Industry conversations suggested it was trivial for them to convert to JSON.
+    </li>
+    <li>
+      Properties for submission version or FOM object type were not included to maximize simplicity. There is a risk of industry clients submitting the wrong file (e.g. a WTRA file)
+    </li>
+    <li>
+      Shape area/shape length properties were excluded because they can be derived (generated) easily from the provided spatial objects.
+    </li>
+  </ol>
+
+</mat-expansion-panel>
+
