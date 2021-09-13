@@ -5,9 +5,6 @@ import {Component, OnInit} from '@angular/core';
   templateUrl: './submission-format-overview.component.html',
   styleUrls: ['./submission-format-overview.component.scss']
 })
-export class SubmissionFormatOverviewComponent implements OnInit {
-  constructor() {}
+export class SubmissionFormatOverviewComponent {
 
-  ngOnInit() {
-  }
 }
