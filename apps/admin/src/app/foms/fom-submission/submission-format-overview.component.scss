@@ -1,10 +1,17 @@
-th {
-    background-color: #f1f1f1;
+table {
+    margin-bottom: 1em;
+    th {
+        background-color: #f1f1f1;
+    }
+    
+    th, td {
+        border: 1px solid #d4d4d4;
+        padding: 0.35em;
+    }
 }
 
-th, td {
-    border: 1px solid #d4d4d4;
-    padding: 0.35em;
+section {
+    margin-top: 2.5em;
 }
 
 ol {
