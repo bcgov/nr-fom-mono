@@ -132,27 +132,5 @@
       {{roadJSONpretty}}
     </pre>
   </section>
-
-  <section>
-    <p><strong>Design Notes</strong></p>
-    <p>Other design alternatives considered included:</p>
-    <ol>
-      <li>
-        One single JSON file containing all three objects differentiated by a FOM_TYPE property. Rejected because samples obtained all had one object type per file.
-      </li>
-      <li>
-        GeoJSON format using latitude and longitude. Samples obtained were all using B.C. Albers coordinates, which is a more appropriate coordinate system for FOM needs (being dedicated to the province of B.C.). Easy enough to add in or switch to GeoJSON format by just changing the coordinate reference system.
-      </li>
-      <li>
-        Shape Files. Industry conversations suggested it was trivial for them to convert to JSON.
-      </li>
-      <li>
-        Properties for submission version or FOM object type were not included to maximize simplicity. There is a risk of industry clients submitting the wrong file (e.g. a WTRA file)
-      </li>
-      <li>
-        Shape area/shape length properties were excluded because they can be derived (generated) easily from the provided spatial objects.
-      </li>
-    </ol>
-  </section>
 </mat-expansion-panel>
 
