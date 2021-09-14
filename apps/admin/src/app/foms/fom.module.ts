@@ -30,6 +30,7 @@ import { CommentsSummaryComponent } from './summary/comments-summary/comments-su
 import { InteractionsSummaryComponent } from './summary/interactions-summary/interactions-summary.component';
 import {AttachmentResolverSvc} from "../../core/services/AttachmentResolverSvc";
 import { MatSelectModule } from '@angular/material/select';
+import { SubmissionFormatOverviewComponent } from './fom-submission/submission-format-overview.component';
 
 @NgModule({
     imports: [
@@ -56,6 +57,7 @@ import { MatSelectModule } from '@angular/material/select';
     ReviewCommentsComponent,
     CommentDetailComponent,
     FomSubmissionComponent,
+    SubmissionFormatOverviewComponent,
     ShapeInfoComponent,
     InteractionsComponent,
     InteractionDetailComponent,
