@@ -20,6 +20,18 @@ DELETE FROM app_fom.project where project_id >= 1000;
     `);
 }
 
+function generatePublicCommentInserts() {
+    // Adds large volume of comments to project created in initial test data.
+    const projectId = 3;
+    const initialCommentId = 1000;
+    const commentCount = 1000;
+
+    for (let id = initialCommentId; id < initialCommentId + commentCount; id++) {
+        console.log(`INSERT INTO app_fom.public_comment(public_comment_id, project_id, comment_scope_code, scope_cut_block_id, name, location, email, phone_number, response_code, response_details, create_user, feedback) VALUES
+        (${id}, ${projectId}, 'OVERALL', null, null, null, null, null, null, null, 'testdata', 'Anonymous feedback from citizen #${id}. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.');`);
+    }
+}
+
 function generateProjectInserts(index, isCommentingOpen, point) {
     const id = 1000+index;
     const cutblockId=id+index*4;
@@ -82,6 +94,7 @@ alter sequence app_fom.submission_submission_id_seq restart with 100000;
 alter sequence app_fom.cut_block_cut_block_id_seq restart with 100000;
 alter sequence app_fom.retention_area_retention_area_id_seq restart with 100000;
 alter sequence app_fom.road_section_road_section_id_seq restart with 100000;
+alter sequence app_fom.public_comment_public_comment_id_seq restart with 100000;
         `);
 }
 
@@ -109,7 +122,8 @@ where project_id >= 1000
     `);
 }
 
-generateDeletes();
-generateAllProjectInserts();
-generateSequenceUpdates();
-generateGeoSpatialUpdates();
+// generateDeletes();
+generatePublicCommentInserts();
+// generateAllProjectInserts();
+// generateSequenceUpdates();
+// generateGeoSpatialUpdates();
