@@ -122,8 +122,8 @@ where project_id >= 1000
     `);
 }
 
-// generateDeletes();
+generateDeletes();
 generatePublicCommentInserts();
-// generateAllProjectInserts();
-// generateSequenceUpdates();
-// generateGeoSpatialUpdates();
+generateAllProjectInserts();
+generateSequenceUpdates();
+generateGeoSpatialUpdates();
