@@ -174,18 +174,22 @@ export class KeycloakService {
   }
 
   getLogoutURL(): string {
-    const logoutUrl = window.location.origin + '/admin/not-authorized?loggedout=true';
+    const postLoggoutUrl = window.location.origin + '/admin/not-authorized?loggedout=true';
 
     if (!this.config.enabled) {
-      return logoutUrl;
+      return postLoggoutUrl;
     } 
+
+    const keycloakLogoutUrl = this.keycloakAuth.authServerUrl + '/realms/' + this.config.realm +
+      '/protocol/openid-connect/logout?redirect_uri=' + postLoggoutUrl;
 
     // TODO: Hack for testing for FOM-83.
     if (this.config.url.startsWith('https://dev.oidc')) {
-      return 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=' + logoutUrl;
+      // TODO: For prod use logon7 server instead. 
+      // This is the siteminder logout URL. Chaining logouts to log out of SiteMinder first, then Keycloak.
+      return 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=' + keycloakLogoutUrl;
     } else {
-      return this.keycloakAuth.authServerUrl + '/realms/' + this.config.realm +
-        '/protocol/openid-connect/logout?redirect_uri=' + logoutUrl;
+      return keycloakLogoutUrl;
     }
     
   }
