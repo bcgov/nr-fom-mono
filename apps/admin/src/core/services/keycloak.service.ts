@@ -180,8 +180,13 @@ export class KeycloakService {
       return logoutUrl;
     } 
 
-    return this.keycloakAuth.authServerUrl + '/realms/' + this.config.realm +
-      '/protocol/openid-connect/logout?redirect_uri=' + logoutUrl;
+    // TODO: Hack for testing for FOM-83.
+    if (this.config.url.startsWith('https://dev.oidc')) {
+      return 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=' + logoutUrl;
+    } else {
+      return this.keycloakAuth.authServerUrl + '/realms/' + this.config.realm +
+        '/protocol/openid-connect/logout?redirect_uri=' + logoutUrl;
+    }
     
   }
 }
