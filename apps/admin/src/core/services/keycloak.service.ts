@@ -177,7 +177,7 @@ export class KeycloakService {
     // To resolve issues with testers switching between BCeID and IDIR ids, need to log out from both 
     // SiteMinder session (used by BCeID) and Keycloak session). See https://github.com/bcgov/ocp-sso/issues/4 for more details.
     const keycloakLogoutUrl = this.keycloakAuth.authServerUrl + '/realms/' + this.config.realm +
-      '/protocol/openid-connect/logout?redirect_uri=' + postLogoutUrl;
+      '/protocol/openid-connect/logout?post_logout_redirect_uri=' + postLogoutUrl;
 
     const siteMinderLogoutUrl = this.config.siteMinderUrl + '/clp-cgi/logoff.cgi?retnow=1&returl=' + keycloakLogoutUrl;
     return siteMinderLogoutUrl;
