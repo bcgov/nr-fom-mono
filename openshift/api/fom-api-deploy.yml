@@ -32,6 +32,11 @@ parameters:
     name: KEYCLOAK_URL
     value: 'https://dev.oidc.gov.bc.ca/auth'
     required: true
+  - description: URL of SiteMinder Server used for logout (with BCeID)
+    displayName: SiteMinder Server URL
+    name: SITEMINDER_URL
+    value: 'https://logontest7.gov.bc.ca'
+    required: true
   - description: URL of Object Storage Service.
     displayName: Object Storage URL
     name: OBJECT_STORAGE_URL
@@ -122,6 +127,7 @@ objects:
       hostname: ${HOSTNAME}
       # Store settings in config map to allow them to be changed.
       keycloak-url: ${KEYCLOAK_URL}
+      siteminder-url: ${SITEMINDER_URL}
       smtp-server-url: ${SMTP_SERVER_URL}
       object-storage-url: ${OBJECT_STORAGE_URL}
     metadata:
@@ -221,6 +227,11 @@ objects:
                   valueFrom:
                     configMapKeyRef:
                       key: keycloak-url
+                      name: ${NAME}${SUFFIX}
+                - name: SITEMINDER_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      key: siteminder-url
                       name: ${NAME}${SUFFIX}
                 - name: SMTP_SERVER
                   valueFrom:

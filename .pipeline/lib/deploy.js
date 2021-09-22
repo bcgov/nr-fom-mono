@@ -86,6 +86,7 @@ const MyDeployer = class extends BasicDeployer{
         'INSTANCE_URL_PREFIX': config.instanceUrlPrefix,
         'OBJECT_STORAGE_URL': config.objectStorageUrl,
         'KEYCLOAK_URL': config.keycloakUrl,
+        'SITEMINDER_URL': config.siteminderUrl,
         'REPLICA_COUNT': config.apiReplicaCount,
         'REQUEST_CPU': '100m',
         'LIMIT_CPU': config.apiCpuLimit,

@@ -26,6 +26,9 @@
           "url": {
             "type": "string"
           },
+          "siteMinderUrl": {
+            "type": "string"
+          },
           "realm": {
             "type": "string"
           },
@@ -36,6 +39,7 @@
         "required": [
           "enabled",
           "url",
+          "siteMinderUrl",
           "realm",
           "clientId"
         ]

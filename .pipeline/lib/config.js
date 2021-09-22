@@ -60,7 +60,8 @@ module.exports = class {
 
       keycloakEnabled:  {default: 'true' },
       keycloakUrl:      {dev: 'https://dev.oidc.gov.bc.ca/auth', test: 'https://test.oidc.gov.bc.ca/auth', prod: 'https://oidc.gov.bc.ca/auth'},
-
+      siteminderUrl:    {default: 'https://logontest7.gov.bc.ca', prod:'https://logon7.gov.bc.ca' },
+      
       // The object storage API needs the hostname without the https:// prefix
       objectStorageUrl: {default: 'nrs.objectstore.gov.bc.ca'},
 

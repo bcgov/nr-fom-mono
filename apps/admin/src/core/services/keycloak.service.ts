@@ -5,15 +5,9 @@ import { JwtHelperService } from "@auth0/angular-jwt";
 import { ConfigService } from '@utility/services/config.service';
 import { HttpClient } from "@angular/common/http";
 import { getFakeUser } from './mock-user';
+import { KeycloakConfig } from '@api-client';
 
 declare var Keycloak: any;
-
-class KeycloakConfig {
-  enabled: boolean = true;
-  url: string;
-  realm: string;
-  clientId: string = 'fom';
-}
 
 @Injectable()
 export class KeycloakService {
@@ -174,23 +168,19 @@ export class KeycloakService {
   }
 
   getLogoutURL(): string {
-    const postLoggoutUrl = window.location.origin + '/admin/not-authorized?loggedout=true';
+    const postLogoutUrl = window.location.origin + '/admin/not-authorized?loggedout=true';
 
-    if (!this.config.enabled) {
-      return postLoggoutUrl;
+    if (!this.config.enabled) { // Not using keycloak.
+      return postLogoutUrl;
     } 
 
+    // To resolve issues with testers switching between BCeID and IDIR ids, need to log out from both 
+    // SiteMinder session (used by BCeID) and Keycloak session). See https://github.com/bcgov/ocp-sso/issues/4 for more details.
     const keycloakLogoutUrl = this.keycloakAuth.authServerUrl + '/realms/' + this.config.realm +
-      '/protocol/openid-connect/logout?redirect_uri=' + postLoggoutUrl;
+      '/protocol/openid-connect/logout?redirect_uri=' + postLogoutUrl;
 
-    // TODO: Hack for testing for FOM-83.
-    if (this.config.url.startsWith('https://dev.oidc')) {
-      // TODO: For prod use logon7 server instead. 
-      // This is the siteminder logout URL. Chaining logouts to log out of SiteMinder first, then Keycloak.
-      return 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=' + keycloakLogoutUrl;
-    } else {
-      return keycloakLogoutUrl;
-    }
-    
+    const siteMinderLogoutUrl = this.config.siteMinderUrl + '/clp-cgi/logoff.cgi?retnow=1&returl=' + keycloakLogoutUrl;
+    return siteMinderLogoutUrl;
+
   }
 }
