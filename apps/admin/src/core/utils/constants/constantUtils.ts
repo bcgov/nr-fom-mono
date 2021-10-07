@@ -3,6 +3,11 @@ import {ICodeGroup, ICodeSet} from './interfaces';
 import {CommentCodes} from './comment';
 import { SpatialObjectCodeEnum } from '@api-client';
 
+export const MAX_FILEUPLOAD_SIZE = { // as MB
+  SPATIAL: 30,
+  DOCUMENT: 30
+};
+
 /**
  * Enum of supported code sets.
  *

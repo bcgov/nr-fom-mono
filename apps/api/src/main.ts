@@ -46,7 +46,7 @@ async function bootstrap():Promise<INestApplication> {
   const appConfig:AppConfigService = app.get('AppConfigService');
   app.setGlobalPrefix(appConfig.getGlobalPrefix());
   // Required setting as per https://stackoverflow.com/questions/52783959/nest-js-request-entity-too-large-payloadtoolargeerror-request-entity-too-larg
-  const MAX_CONTENT_LIMIT = '10mb'
+  const MAX_CONTENT_LIMIT = '30mb'
   app.use(json({ limit: MAX_CONTENT_LIMIT }));
   app.use(urlencoded({ extended: true, limit: MAX_CONTENT_LIMIT }));
 
