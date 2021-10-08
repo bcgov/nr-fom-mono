@@ -63,7 +63,7 @@ export class SubmissionFormatOverviewComponent {
           ]
         },
         "properties": {
-          "DEVELOPMENT_DATE": "2022-03-30",
+          "DEV_DATE": "2022-03-30",
           "NAME": "Nature's valley"
         }
       },
@@ -113,7 +113,7 @@ export class SubmissionFormatOverviewComponent {
           ]
         },
         "properties": {
-          "DEVELOPMENT_DATE": "2022-03-31"
+          "DEV_DATE": "2022-03-31"
         }
       }
     ]
@@ -217,7 +217,7 @@ export class SubmissionFormatOverviewComponent {
           ]
         },
         "properties": {
-          "DEVELOPMENT_DATE": "2022-03-30"
+          "DEV_DATE": "2022-03-30"
         }
       }
     ]

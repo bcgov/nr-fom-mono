@@ -159,7 +159,13 @@ export class SubmissionService {
         throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`); 
     }
   }
-  
+
+  private getDevelopmentDate(properties): string {
+    // Support DEVELOPMENT_DATE for backwards compatibility, but official property name is DEV_DATE
+    // TODO: Confirm doesn't crash when missing dev date property entirely
+    return properties['DEV_DATE'] || properties['DEVELOPMENT_DATE'] || null;
+  }
+
   /**
    * Parse into cut_block, road_section, or WTRA objects based on spatialObjectCode. 
    * 
@@ -174,7 +180,6 @@ export class SubmissionService {
     this.basicSpatialFileChecks(spatialObjectCode, jsonSpatialSubmission);
 
     const features = jsonSpatialSubmission.features;
-    const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
     const OPTIONAL_PROP_NAME = "NAME";
 
     return features.map(f => {
@@ -184,16 +189,20 @@ export class SubmissionService {
       if (properties && properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
         name = properties[OPTIONAL_PROP_NAME];
       }
+      let devDate: string;
+      if (properties && spatialObjectCode != SpatialObjectCodeEnum.WTRA) {
+        devDate = this.getDevelopmentDate(properties);
+      }
 
       if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK) {
         return new CutBlock({name, geometry,
           createUser: user.userName,
-          plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          plannedDevelopmentDate: devDate});
       }
       else if (spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
         return new RoadSection({name, geometry,
           createUser: user.userName,
-          plannedDevelopmentDate: properties[REQUIRED_PROP_DEVELOPMENT_DATE]});
+          plannedDevelopmentDate: devDate});
       }
       else {
         return new RetentionArea({geometry, createUser: user.userName});
@@ -259,9 +268,9 @@ export class SubmissionService {
   }
 
   /** required 'properties' check for different spatial objects (Road Section, Cut Block, WTRA)
-   * Road Section: required - DEVELOPMENT_DATE	
+   * Road Section: required - DEV_DATE	
    *               optional - NAME
-   * Cut Block:   required - DEVELOPMENT_DATE	
+   * Cut Block:   required - DEV_DATE	
    *               optional - NAME
    * WTRA:        required - N/A
    *              optional - NAME
@@ -274,18 +283,16 @@ export class SubmissionService {
       }
 
       // validation - development_date
-      const REQUIRED_PROP_DEVELOPMENT_DATE = 'DEVELOPMENT_DATE';
       const DATE_FORMAT = DateTimeUtil.DATE_FORMAT;
-      if (!properties.hasOwnProperty(REQUIRED_PROP_DEVELOPMENT_DATE)) {
-        const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} missing for ${spatialObjectCode}`;
+      if (!properties.hasOwnProperty('DEV_DATE') && !properties.hasOwnProperty('DEVELOPMENT_DATE')) {
+        const errMsg = `Required property DEV_DATE missing for ${spatialObjectCode}`;
         throw new BadRequestException(errMsg);
       }
       else {
         // validate date format: YYYY-MM-DD
-        const developmentDate = properties[REQUIRED_PROP_DEVELOPMENT_DATE];
+        const developmentDate = this.getDevelopmentDate(properties);
         if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
-          const errMsg = `Required property ${REQUIRED_PROP_DEVELOPMENT_DATE} has wrong date format. 
-                          Valid format: '${DATE_FORMAT}'`;
+          const errMsg = `Required property DEV_DATE has wrong date format. Valid format: '${DATE_FORMAT}'`;
           throw new BadRequestException(errMsg);
         }
       }
