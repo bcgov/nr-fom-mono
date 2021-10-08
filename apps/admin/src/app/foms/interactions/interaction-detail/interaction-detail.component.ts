@@ -4,6 +4,7 @@ import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { AttachmentResponse, AttachmentService, InteractionResponse } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
 import { InteractionDetailForm } from './interaction-detail.form';
+import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 
 @Component({
   selector: 'app-interaction-detail',
@@ -20,6 +21,7 @@ export class InteractionDetailComponent implements OnInit {
   editMode: boolean;
   interactionFormGroup: FormGroup;
   files: any[] = []; // Array type, but only 1 attachment for Interaction.
+  maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
   fileContent: any;
   /*
   * Note: Stakeholder Engagement needs to allow 'application/vnd.ms-outlook' but the library 'ngx-dropzone' is having

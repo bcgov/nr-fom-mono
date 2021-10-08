@@ -36,7 +36,7 @@ const AttachmentPostBody = (fileName: string = 'file'): MethodDecorator => (
   })(target, propertyKey, descriptor);
 };
 
-export const maxFileSizeBytes = 10000000; // 10 MB amx attachment size
+export const maxFileSizeBytes = 31457280; // 30 MB amx attachment size
 
 @ApiTags('attachment')
 @Controller('attachment')

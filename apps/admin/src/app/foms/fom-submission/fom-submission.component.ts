@@ -9,6 +9,7 @@ import { DatePipe } from '@angular/common';
 import {FomSubmissionForm} from './fom-submission.form';
 import {StateService} from '../../../core/services/state.service';
 import {ModalService} from '../../../core/services/modal.service';
+import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 
 
 @Component({
@@ -30,6 +31,7 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
   files: any[] = [];
   public geoTypeValues: string[] = [];
   contentFile: string;
+  maxSpatialFileSize: number = MAX_FILEUPLOAD_SIZE.SPATIAL;
 
   get isLoading() {
     return this.stateSvc.loading;
