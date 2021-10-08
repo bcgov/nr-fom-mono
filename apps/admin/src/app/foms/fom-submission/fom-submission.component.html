@@ -76,7 +76,10 @@
         </div>
         <div class="form-group mb-0">
 
-          <app-upload-box [multipleFiles]="false" [files]="applicationFiles" [fileTypes]="fileTypesParent"
+          <app-upload-box [multipleFiles]="false" 
+                          [files]="applicationFiles" 
+                          [fileTypes]="fileTypesParent"
+                          [maxFileSizeMB]="maxSpatialFileSize"
                           (fileUploaded)="addNewFiles($event)"
                           (outputFileContent)="getContentFileFromUpload($event)">
           </app-upload-box>

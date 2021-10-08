@@ -24,6 +24,7 @@ import { AttachmentTypeEnum } from "../../../core/models/attachmentTypeEnum";
 import {User} from "@api-core/security/user";
 import {KeycloakService} from "../../../core/services/keycloak.service";
 import {AttachmentResolverSvc} from "../../../core/services/AttachmentResolverSvc";
+import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 
 type ApplicationPageType = 'create' | 'edit';
 
@@ -52,6 +53,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public forestClientSelect: any = null;
   public isPublishState: boolean = false;
   files: any[] = [];
+  maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
   publicNoticeContent: any;
   supportingDocContent: any;
   public isSubmitSaveClicked = false;

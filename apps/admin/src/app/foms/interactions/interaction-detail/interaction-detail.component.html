@@ -79,6 +79,7 @@
                       [files]="files"
                       [isBlob]="true"
                       [fileTypes]="supportingFileTypes"
+                      [maxFileSizeMB]="maxFileSize"
                       (fileUploaded)="addNewFile($event)"
                       (outputFileContent)="getFileContent($event)">
       </app-upload-box>
