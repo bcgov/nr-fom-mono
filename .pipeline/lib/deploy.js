@@ -32,6 +32,7 @@ const MyDeployer = class extends BasicDeployer{
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-deploy.yml`, {
       'param':{
+        'NAMESPACE': config.namespace,
         'NAME': dbParams.DB_NAME,
         'SUFFIX': config.suffix,
         'DATABASE_SERVICE_NAME': databaseServiceName, 
@@ -48,6 +49,7 @@ const MyDeployer = class extends BasicDeployer{
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
       'param':{
         ...dbParams,
+        'NAMESPACE': config.namespace,
         'JOB_NAME': `backup-fom-db-ha${config.suffix}`,
         'VERIFICATION_VOLUME_NAME': `backup-verify-fom-db-ha${config.suffix}`,
         'DATABASE_DEPLOYMENT_NAME': `fom-db-ha${config.suffix}`,
@@ -101,6 +103,7 @@ const MyDeployer = class extends BasicDeployer{
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-batch-deploy.yml`, {
       'param':{
+        'NAMESPACE': config.namespace,
         'SUFFIX': config.suffix,
         'IMAGE_STREAM_VERSION': config.tag,
         'ENV': config.phase,

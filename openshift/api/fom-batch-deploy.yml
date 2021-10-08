@@ -10,6 +10,10 @@ metadata:
   name: fom-batch-deploy
 parameters:
   # Mandatory parameters to be supplied.
+  - description: OpenShift namespace
+    displayName: OpenShift namespace
+    name: NAMESPACE
+    required: true
   - description: API Image Version to use
     displayName: API Image Version
     name: IMAGE_STREAM_VERSION
@@ -76,9 +80,9 @@ objects:
               restartPolicy: OnFailure
               containers:
                 - name: batch
-                  # Cron Jobs don't support ImageChangeTriggers, so we explicitly specify the image, with a policy of pull always so it should always use the 
-                  # most up-to-date image.
-                  image: "fom-api:${IMAGE_STREAM_VERSION}"  
+                  # Cron Jobs don't support ImageChangeTriggers, so we explicitly specify the image with a pull always policy to ensure always up to date.
+                  # Need to use image-registry.../${NAMESPACE}/ prefix due to OpenShift defect https://bugzilla.redhat.com/show_bug.cgi?id=2000216
+                  image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/fom-api:${IMAGE_STREAM_VERSION}"
                   imagePullPolicy: Always
                   args: ["-batch"] 
                   env:

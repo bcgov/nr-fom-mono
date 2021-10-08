@@ -105,7 +105,8 @@ objects:
               topologyKey: "kubernetes.io/hostname"
         containers:
         - name: postgresql
-          image: ${NAME}:${IMAGE_STREAM_TAG}
+          # Need to use image-registry.../${NAMESPACE}/ prefix due to OpenShift defect https://bugzilla.redhat.com/show_bug.cgi?id=2000216
+          image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${NAME}:${IMAGE_STREAM_TAG}"
           # Because we are using image reference to a tag, we need to always pull the image otherwise
           # we end up with outdated/out-of-sync image depending on the node where it is running
           imagePullPolicy: Always
@@ -269,6 +270,10 @@ objects:
             port: 8008
 
 parameters:
+- description: OpenShift namespace
+  displayName: OpenShift namespace
+  name: NAMESPACE
+  required: true
 - description: The name of the application for labelling all artifacts.
   displayName: Application Name
   name: NAME

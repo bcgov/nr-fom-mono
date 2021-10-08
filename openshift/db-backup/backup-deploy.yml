@@ -90,7 +90,9 @@ objects:
             spec:
               containers:
                 - name: "${JOB_NAME}-cronjob"
-                  image: "${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
+                  # Need to use image-registry.../${NAMESPACE}/ prefix due to OpenShift defect https://bugzilla.redhat.com/show_bug.cgi?id=2000216
+                  image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${SOURCE_IMAGE_NAME}:${IMAGE_STREAM_VERSION}"
+                  imagePullPolicy: Always
                   command:
                     - "/bin/bash"
                     - "-c"
@@ -188,6 +190,10 @@ objects:
 
 parameters:
   # Required parameters
+  - description: OpenShift namespace
+    displayName: OpenShift namespace
+    name: NAMESPACE
+    required: true
   - description: Suffix specifying the release/build/environment. Can be blank (for production). 
     displayName: Suffix
     name: SUFFIX
