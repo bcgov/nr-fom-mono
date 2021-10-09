@@ -156,13 +156,12 @@ export class SubmissionService {
         return 'LineString';
 
       default:
-        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`); 
+        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}.`); 
     }
   }
 
   private getDevelopmentDate(properties): string {
     // Support DEVELOPMENT_DATE for backwards compatibility, but official property name is DEV_DATE
-    // TODO: Confirm doesn't crash when missing dev date property entirely
     return properties['DEV_DATE'] || properties['DEVELOPMENT_DATE'] || null;
   }
 
@@ -214,18 +213,17 @@ export class SubmissionService {
     if (!spatialObjectCode || 
         ![SpatialObjectCodeEnum.CUT_BLOCK, SpatialObjectCodeEnum.ROAD_SECTION, SpatialObjectCodeEnum.WTRA]
         .includes(spatialObjectCode)) {
-        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}`);
+        throw new BadRequestException(`Invalid spatialObjectCode ${spatialObjectCode}.`);
     }
 
     if (!jsonSpatialSubmission || _.isEmpty(jsonSpatialSubmission) || _.isEmpty(jsonSpatialSubmission.features)) {
-      throw new BadRequestException("Invalid formated JSON submission file or Spatial submission is empty!")
+      throw new BadRequestException("Invalid formated JSON submission file or spatial submission is empty.")
     }
 
     const crs = jsonSpatialSubmission.crs;
     if (!_.isEmpty(crs)) {
       if (!crs.properties || !crs.properties.name || crs.properties.name != 'EPSG:3005') {
-        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. 
-                                        Should match specification: { "name": "EPSG:3005" }`);
+        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: { "name": "EPSG:3005" }.`);
       }
     }
 
@@ -236,16 +234,16 @@ export class SubmissionService {
       const geometry = f.geometry;
 
       if (!geometry || _.isEmpty(geometry)) {
-        throw new BadRequestException(`Required Feature object 'geometry' is missing for ${spatialObjectCode}`);
+        throw new BadRequestException(`Required Feature object 'geometry' is missing for ${spatialObjectCode}.`);
       }
 
       if (!geometry.type) {
-        throw new BadRequestException(`Required Geometry 'type' field is missing for ${spatialObjectCode}`);
+        throw new BadRequestException(`Required Geometry 'type' field is missing for ${spatialObjectCode}.`);
       }
 
       const coordinates = geometry['coordinates'];
       if (!coordinates || _.isEmpty(coordinates)) {
-        throw new BadRequestException(`Required Geometry 'coordinates' field is missing for ${spatialObjectCode}`);
+        throw new BadRequestException(`Required Geometry 'coordinates' field is missing for ${spatialObjectCode}.`);
       }
 
       this.validateCoordWithinBounding(geometry);
@@ -262,8 +260,7 @@ export class SubmissionService {
     });
     if (invalidGeometryTypes && invalidGeometryTypes.length > 1) {
       const invalidTypes = invalidGeometryTypes.map(f => f.geometry.type);
-      throw new BadRequestException(`Submission file contains invalid geometry type: 
-                ${[...new Set(invalidTypes)].join(', ')}`);
+      throw new BadRequestException(`Submission file contains invalid geometry type: ${[...new Set(invalidTypes)].join(', ')}.`);
     }
   }
 
@@ -279,20 +276,20 @@ export class SubmissionService {
     if (spatialObjectCode === SpatialObjectCodeEnum.CUT_BLOCK || 
         spatialObjectCode === SpatialObjectCodeEnum.ROAD_SECTION) {
       if (!properties || _.isEmpty(properties)) {
-        throw new BadRequestException(`Required Feature object 'properties' missing for ${spatialObjectCode}`);
+        throw new BadRequestException(`Required Feature object 'properties' missing for ${spatialObjectCode}.`);
       }
 
       // validation - development_date
       const DATE_FORMAT = DateTimeUtil.DATE_FORMAT;
       if (!properties.hasOwnProperty('DEV_DATE') && !properties.hasOwnProperty('DEVELOPMENT_DATE')) {
-        const errMsg = `Required property DEV_DATE missing for ${spatialObjectCode}`;
+        const errMsg = `Required property DEV_DATE missing for ${spatialObjectCode}.`;
         throw new BadRequestException(errMsg);
       }
       else {
         // validate date format: YYYY-MM-DD
         const developmentDate = this.getDevelopmentDate(properties);
         if (!dayjs(developmentDate, DATE_FORMAT).isValid()) {
-          const errMsg = `Required property DEV_DATE has wrong date format. Valid format: '${DATE_FORMAT}'`;
+          const errMsg = `Required property DEV_DATE has wrong date format. Valid format: '${DATE_FORMAT}'.`;
           throw new BadRequestException(errMsg);
         }
       }
