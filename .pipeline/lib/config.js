@@ -13,7 +13,7 @@ module.exports = class {
     const environments = ['dev', 'test', 'prod']
     const namespacePrefix = 'a4b31c'
     const changeId = options.pr //aka pull-request
-    const version = '1.0'
+    const version = '1.0.1'
     const appName = 'fom'
 
     // Properties can be defined per phase, or defaulted using key 'default'.

@@ -85,7 +85,7 @@ objects:
     template:
       metadata:
         annotations:
-          # StatefulSet does not support ImageChangeTrigger for auto-deploying image changes. Instead, manually edit this annotation
+          # StatefulSet does not support ImageChangeTrigger for auto-deploying image changes. Instead, manually edit this annotation (might not always work).
           trigger-deploy: "Modify this in StatefulSet container template to trigger redeploy to pick up image changes. 2021-10-12T15:11"
         creationTimestamp: null
         labels:
