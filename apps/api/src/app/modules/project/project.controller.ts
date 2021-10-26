@@ -5,7 +5,7 @@ import * as dayjs from 'dayjs';
 import { ProjectService, ProjectFindCriteria } from './project.service';
 import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest, ProjectMetricsResponse } from './project.dto';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
-import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
+import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
 import { User } from "@api-core/security/user";
 import { PinoLogger } from 'nestjs-pino';
 

@@ -35,5 +35,6 @@ export interface ProjectResponse {
      * ISO-formatted timestamp
      */
     createTimestamp: string;
+    isCommentClassificationMandatory: boolean;
 }
 

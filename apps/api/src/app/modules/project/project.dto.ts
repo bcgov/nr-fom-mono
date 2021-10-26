@@ -118,6 +118,8 @@ export class ProjectResponse {
   @ApiProperty({ description: 'ISO-formatted timestamp'})
   createTimestamp: string;
 
+  @ApiProperty({default: true})
+  isCommentClassificationMandatory: boolean;
 }
 
 export class ProjectMetricsResponse {
