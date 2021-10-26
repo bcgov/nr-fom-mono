@@ -210,7 +210,25 @@
                 <span class="name">Responded:</span>
                 <span class="value">{{projectMetrics.respondedToCommentsCount}}</span>
               </li>
+
+              <li>
+                <span class="name">Comment Classification:</span>
+                <span class="value" 
+                      [ngClass]="{'invalid-type-msg': project.isCommentClassificationMandatory}">
+                      {{project.isCommentClassificationMandatory? 'Mandatory' : 'Not Mandatory'}}
+                </span>
+              </li>
             </ul>
+
+            <div class="btn-container"
+                [hidden]="!canSetCommentClassification()">
+              <button class="cta-btn btn btn-sm btn-outline-primary"
+                      type="button"
+                      title="Comment Classification"
+                      (click)="toggleCommentClassification()">
+                {{'Change to ' + (project.isCommentClassificationMandatory? 'Not Mandatory' : 'Mandatory')}}
+              </button>
+            </div>
 
           </div>
         </div>

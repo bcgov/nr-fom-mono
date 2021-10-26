@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, SubmissionService, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, ProjectMetricsResponse } from "@api-client";
+import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, ProjectMetricsResponse } from "@api-client";
 import { KeycloakService } from '@admin-core/services/keycloak.service';
 import {User} from "@api-core/security/user";
 import { ModalService } from '@admin-core/services/modal.service';
@@ -38,7 +38,6 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     private router: Router,
     private modalSvc: ModalService,
     public projectService: ProjectService, // also used in template
-    private submissionSvc: SubmissionService,
     private keycloakService: KeycloakService,
     public attachmentResolverSvc: AttachmentResolverSvc
   ) {
@@ -193,6 +192,10 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     return ready;
   }
 
+  public toggleCommentClassification() {
+    this.project.isCommentClassificationMandatory = !this.project.isCommentClassificationMandatory;
+  }
+
   /**
     INITIAL: holder can withdraw.
     PUBLISH/COMMENT_OPEN: no actions.
@@ -247,4 +250,9 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     return this.attachmentResolverSvc.isDeleteAttachmentAllowed(attachment.attachmentType.code, this.project.workflowState.code);
   }
 
+  public canSetCommentClassification() {
+    return this.user.isMinistry && 
+          (this.project.workflowState.code == WorkflowStateEnum.CommentOpen
+          || this.project.workflowState.code == WorkflowStateEnum.CommentClosed);
+  }
 }
