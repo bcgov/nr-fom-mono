@@ -378,6 +378,21 @@
           "workflowStateCode"
         ]
       },
+      "ProjectCommentClassificationMandatoryChangeRequest": {
+        "type": "object",
+        "properties": {
+          "commentClassificationMandatory": {
+            "type": "boolean"
+          },
+          "revisionCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "commentClassificationMandatory",
+          "revisionCount"
+        ]
+      },
       "PublicCommentCreateRequest": {
         "type": "object",
         "properties": {
@@ -1431,6 +1446,51 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ProjectWorkflowStateChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project/commentClassification/{id}": {
+      "put": {
+        "operationId": "ProjectController_commentClassificationMandatoryChange",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCommentClassificationMandatoryChangeRequest"
               }
             }
           }

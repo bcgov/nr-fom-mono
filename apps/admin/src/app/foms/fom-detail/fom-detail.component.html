@@ -224,9 +224,11 @@
                 [hidden]="!canSetCommentClassification()">
               <button class="cta-btn btn btn-sm btn-outline-primary"
                       type="button"
-                      title="Comment Classification"
-                      (click)="toggleCommentClassification()">
+                      title="Set Comment Classification"
+                      (click)="setCommentClassification()"
+                      [disabled]="isSettingCommentClassification">
                 {{'Change to ' + (project.isCommentClassificationMandatory? 'Not Mandatory' : 'Mandatory')}}
+                <em class="spinner-border" [hidden]="!isSettingCommentClassification"></em>
               </button>
             </div>
 

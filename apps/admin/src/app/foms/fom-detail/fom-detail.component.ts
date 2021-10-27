@@ -20,6 +20,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   public isDeleting = false;
   public isFinalizing = false;
   public isRefreshing = false;
+  public isSettingCommentClassification = false;
   public application: ProjectResponse = null;
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   public project: ProjectResponse = null;
@@ -56,6 +57,9 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         this.project = data.projectDetail;
         if (this.project.workflowState['code'] === 'INITIAL') {
           this.isProjectActive = true;
+        }
+        if (this.project.isCommentClassificationMandatory == undefined) {
+          this.project.isCommentClassificationMandatory = true;
         }
       } else {
         alert("Uh-oh, couldn't load fom");
@@ -192,8 +196,23 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     return ready;
   }
 
-  public toggleCommentClassification() {
-    this.project.isCommentClassificationMandatory = !this.project.isCommentClassificationMandatory;
+  public async setCommentClassification() {
+    this.isSettingCommentClassification = true;
+    try {
+      await this.projectService.projectControllerCommentClassificationMandatoryChange(
+        this.project.id, 
+        {
+          commentClassificationMandatory: this.project.isCommentClassificationMandatory,
+          revisionCount: this.project.revisionCount
+        })
+      .toPromise();
+      this.onSuccess();
+    } 
+    catch(error) {
+      console.error(error);
+    } finally {
+      this.isSettingCommentClassification = false;
+    }
   }
 
   /**

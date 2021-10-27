@@ -6,6 +6,7 @@ export * from './featureTypeCode';
 export * from './forestClientResponse';
 export * from './interactionResponse';
 export * from './keycloakConfig';
+export * from './projectCommentClassificationMandatoryChangeRequest';
 export * from './projectCreateRequest';
 export * from './projectMetricsResponse';
 export * from './projectPublicSummaryResponse';

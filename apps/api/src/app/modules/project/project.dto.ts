@@ -60,7 +60,6 @@ export class ProjectWorkflowStateChangeRequest {
   workflowStateCode: string;
 }
 
-
 // DTO optimized for Public FE map view
 export class ProjectPublicSummaryResponse {
   @ApiProperty()
@@ -140,4 +139,12 @@ export class ProjectMetricsResponse {
 // Need to do this to get to compile, rather than using Point directly. Not sure why...
 export interface FomPoint extends Point {
 
+}
+export class ProjectCommentClassificationMandatoryChangeRequest {
+    @ApiProperty()
+    commentClassificationMandatory: boolean;
+  
+    @ApiProperty()
+    @IsNumber()
+    revisionCount: number;
 }

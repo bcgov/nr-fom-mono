@@ -6,7 +6,7 @@ import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
 import { DataService } from 'apps/api/src/core/models/data.service';
 import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, 
-         ProjectWorkflowStateChangeRequest, ProjectMetricsResponse } from './project.dto';
+         ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from "@api-core/security/user";
@@ -382,6 +382,46 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return this.convertEntity(updatedEntity);
   }
   
+  async commentClassificationMandatoryChange(projectId: number, request: ProjectCommentClassificationMandatoryChangeRequest, user: User): Promise<ProjectResponse> {
+
+    this.logger.debug(`${this.constructor.name}.CommentClassificationMandatoryChange projectId %o request %o`, projectId, request);
+
+    const entity:Project = await this.findEntityWithCommonRelations(projectId);
+    if (! entity) {
+      throw new BadRequestException("Entity not found.");
+    }
+
+    if (!user || !user.isForestClient) {
+      throw new ForbiddenException();
+    }
+
+    if (entity.revisionCount != request.revisionCount) {
+      this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
+      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+    }
+    if (isNil(request.commentClassificationMandatory)) {
+      throw new BadRequestException("Must provide a value for requested field to change.");
+    }
+
+    /* TODO; enable this later when db is ready.
+    const updateCount = (await this.repository.update(projectId, 
+                          {revisionCount: entity.revisionCount + 1, 
+                          updateUser: user.userName,
+                          updateTimestamp: new Date(),
+                          isCommentClassificationMandatory: request.commentClassificationMandatory
+                          }
+                        )).affected;
+    if (updateCount != 1) {
+    throw new InternalServerErrorException("Error updating object");
+    }
+    */
+
+    const updatedEntity = await this.findEntityWithCommonRelations(projectId);
+    this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
+
+    return this.convertEntity(updatedEntity);
+  }
+
   /**
    * The method validates business rules are met before FOM transitioning.
    * "manual/human-triggered" transition workflowStats only happens on "PUBLISH", "FINALIZED".
