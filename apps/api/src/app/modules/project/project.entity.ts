@@ -62,5 +62,5 @@ export class Project extends ApiBaseEntity<Project> {
   
   // TODO: enable this when column is added in db.
   // @Column({ name: 'comment_classification_mandatory'})
-  isCommentClassificationMandatory: boolean;
+  commentClassificationMandatory: boolean;
 }

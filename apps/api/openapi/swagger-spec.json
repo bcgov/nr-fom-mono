@@ -241,7 +241,7 @@
             "type": "string",
             "description": "ISO-formatted timestamp"
           },
-          "isCommentClassificationMandatory": {
+          "commentClassificationMandatory": {
             "type": "boolean",
             "default": true
           }
@@ -258,7 +258,7 @@
           "workflowState",
           "revisionCount",
           "createTimestamp",
-          "isCommentClassificationMandatory"
+          "commentClassificationMandatory"
         ]
       },
       "ProjectMetricsResponse": {

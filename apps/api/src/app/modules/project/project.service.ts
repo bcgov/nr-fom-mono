@@ -220,7 +220,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     response.name = entity.name;
     response.revisionCount = entity.revisionCount;
     response.workflowState = entity.workflowState;
-    response.isCommentClassificationMandatory = entity.isCommentClassificationMandatory;
+    response.commentClassificationMandatory = entity.commentClassificationMandatory;
 
     return response;
   }

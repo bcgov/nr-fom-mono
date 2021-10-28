@@ -118,7 +118,7 @@ export class ProjectResponse {
   createTimestamp: string;
 
   @ApiProperty({default: true})
-  isCommentClassificationMandatory: boolean;
+  commentClassificationMandatory: boolean;
 }
 
 export class ProjectMetricsResponse {

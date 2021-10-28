@@ -214,8 +214,8 @@
               <li>
                 <span class="name">Comment Classification:</span>
                 <span class="value" 
-                      [ngClass]="{'invalid-type-msg': project.isCommentClassificationMandatory}">
-                      {{project.isCommentClassificationMandatory? 'Mandatory' : 'Not Mandatory'}}
+                      [ngClass]="{'invalid-type-msg': project.commentClassificationMandatory}">
+                      {{project.commentClassificationMandatory? 'Mandatory' : 'Not Mandatory'}}
                 </span>
               </li>
             </ul>
@@ -227,7 +227,7 @@
                       title="Set Comment Classification"
                       (click)="setCommentClassification()"
                       [disabled]="isSettingCommentClassification">
-                {{'Change to ' + (project.isCommentClassificationMandatory? 'Not Mandatory' : 'Mandatory')}}
+                {{'Change to ' + (project.commentClassificationMandatory? 'Not Mandatory' : 'Mandatory')}}
                 <em class="spinner-border" [hidden]="!isSettingCommentClassification"></em>
               </button>
             </div>

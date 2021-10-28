@@ -58,8 +58,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         if (this.project.workflowState['code'] === 'INITIAL') {
           this.isProjectActive = true;
         }
-        if (this.project.isCommentClassificationMandatory == undefined) {
-          this.project.isCommentClassificationMandatory = true;
+        if (this.project.commentClassificationMandatory == undefined) {
+          this.project.commentClassificationMandatory = true;
         }
       } else {
         alert("Uh-oh, couldn't load fom");
@@ -202,7 +202,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       await this.projectService.projectControllerCommentClassificationMandatoryChange(
         this.project.id, 
         {
-          commentClassificationMandatory: this.project.isCommentClassificationMandatory,
+          commentClassificationMandatory: this.project.commentClassificationMandatory,
           revisionCount: this.project.revisionCount
         })
       .toPromise();
