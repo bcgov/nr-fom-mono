@@ -403,18 +403,16 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       throw new BadRequestException("Must provide a value for requested field to change.");
     }
 
-    /* TODO; enable this later when db is ready.
     const updateCount = (await this.repository.update(projectId, 
                           {revisionCount: entity.revisionCount + 1, 
                           updateUser: user.userName,
                           updateTimestamp: new Date(),
-                          isCommentClassificationMandatory: request.commentClassificationMandatory
+                          commentClassificationMandatory: request.commentClassificationMandatory
                           }
                         )).affected;
     if (updateCount != 1) {
-    throw new InternalServerErrorException("Error updating object");
+      throw new InternalServerErrorException("Error updating object");
     }
-    */
 
     const updatedEntity = await this.findEntityWithCommonRelations(projectId);
     this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);

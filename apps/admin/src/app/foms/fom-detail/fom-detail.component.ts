@@ -202,7 +202,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       await this.projectService.projectControllerCommentClassificationMandatoryChange(
         this.project.id, 
         {
-          commentClassificationMandatory: this.project.commentClassificationMandatory,
+          commentClassificationMandatory: !this.project.commentClassificationMandatory,
           revisionCount: this.project.revisionCount
         })
       .toPromise();
