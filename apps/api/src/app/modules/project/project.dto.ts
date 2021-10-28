@@ -3,7 +3,7 @@ import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.enti
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
-import { IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class ProjectCreateRequest {
   @ApiProperty()
@@ -142,6 +142,7 @@ export interface FomPoint extends Point {
 }
 export class ProjectCommentClassificationMandatoryChangeRequest {
     @ApiProperty()
+    @IsBoolean()
     commentClassificationMandatory: boolean;
   
     @ApiProperty()
