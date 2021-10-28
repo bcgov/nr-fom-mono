@@ -518,15 +518,16 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // All comments classified
-      const publicComments = await this.publicCommentService.findByProjectId(entity.id, user);
-      if (publicComments && publicComments.length > 0) {
-        const unClassifiedComments = publicComments.filter(p => p.response == null);
-        if (unClassifiedComments && unClassifiedComments.length > 0) {
-          throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
-          All comments must be classified.`);
+      if (entity.commentClassificationMandatory) { // by default this field is mandatory, only ministry can chang it from admin page.
+        const publicComments = await this.publicCommentService.findByProjectId(entity.id, user);
+        if (publicComments && publicComments.length > 0) {
+          const unClassifiedComments = publicComments.filter(p => p.response == null);
+          if (unClassifiedComments && unClassifiedComments.length > 0) {
+            throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
+            All comments must be classified.`);
+          }
         }
-      }
-
+      } 
     }
 
   }
