@@ -395,6 +395,11 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       throw new ForbiddenException();
     }
 
+    const workflowStateCode = entity.workflowStateCode;
+    if (WorkflowStateEnum.COMMENT_OPEN != workflowStateCode && WorkflowStateEnum.COMMENT_CLOSED != workflowStateCode) {
+      throw new BadRequestException("Can only change Comment Classification Mandatory indicator in Commenting Open or Commenting Closed status.");
+    }
+
     if (entity.revisionCount != request.revisionCount) {
       this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
       throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
