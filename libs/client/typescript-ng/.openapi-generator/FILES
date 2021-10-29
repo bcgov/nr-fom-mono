@@ -24,6 +24,7 @@ model/forestClientResponse.ts
 model/interactionResponse.ts
 model/keycloakConfig.ts
 model/models.ts
+model/projectCommentClassificationMandatoryChangeRequest.ts
 model/projectCreateRequest.ts
 model/projectMetricsResponse.ts
 model/projectPublicSummaryResponse.ts

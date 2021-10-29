@@ -3,9 +3,9 @@ import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/
 import * as dayjs from 'dayjs';
 
 import { ProjectService, ProjectFindCriteria } from './project.service';
-import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest, ProjectMetricsResponse } from './project.dto';
+import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest } from './project.dto';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
-import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
+import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
 import { User } from "@api-core/security/user";
 import { PinoLogger } from 'nestjs-pino';
 
@@ -161,5 +161,17 @@ export class ProjectController {
     @UserRequiredHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
     this.service.delete(id, user);
+  }
+
+  @Put('/commentClassification/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
+  @ApiBody({ type: ProjectCommentClassificationMandatoryChangeRequest })
+  async commentClassificationMandatoryChange(
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: ProjectCommentClassificationMandatoryChangeRequest
+  ): Promise<ProjectResponse> {
+    return this.service.commentClassificationMandatoryChange(id, request, user);
   }
 }

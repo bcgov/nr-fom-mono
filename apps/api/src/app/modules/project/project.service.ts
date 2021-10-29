@@ -6,7 +6,7 @@ import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
 import { DataService } from 'apps/api/src/core/models/data.service';
 import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, 
-         ProjectWorkflowStateChangeRequest, ProjectMetricsResponse } from './project.dto';
+         ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from "@api-core/security/user";
@@ -220,6 +220,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     response.name = entity.name;
     response.revisionCount = entity.revisionCount;
     response.workflowState = entity.workflowState;
+    response.commentClassificationMandatory = entity.commentClassificationMandatory;
 
     return response;
   }
@@ -381,6 +382,49 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return this.convertEntity(updatedEntity);
   }
   
+  async commentClassificationMandatoryChange(projectId: number, request: ProjectCommentClassificationMandatoryChangeRequest, user: User): Promise<ProjectResponse> {
+
+    this.logger.debug(`${this.constructor.name}.CommentClassificationMandatoryChange projectId %o request %o`, projectId, request);
+
+    const entity:Project = await this.findEntityWithCommonRelations(projectId);
+    if (! entity) {
+      throw new BadRequestException("Entity not found.");
+    }
+
+    if (!user || !user.isMinistry) {
+      throw new ForbiddenException();
+    }
+
+    const workflowStateCode = entity.workflowStateCode;
+    if (WorkflowStateEnum.COMMENT_OPEN != workflowStateCode && WorkflowStateEnum.COMMENT_CLOSED != workflowStateCode) {
+      throw new BadRequestException("Can only change Comment Classification Mandatory indicator in Commenting Open or Commenting Closed status.");
+    }
+
+    if (entity.revisionCount != request.revisionCount) {
+      this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
+      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+    }
+    if (isNil(request.commentClassificationMandatory)) {
+      throw new BadRequestException("Must provide a value for requested field to change.");
+    }
+
+    const updateCount = (await this.repository.update(projectId, 
+                          {revisionCount: entity.revisionCount + 1, 
+                          updateUser: user.userName,
+                          updateTimestamp: new Date(),
+                          commentClassificationMandatory: request.commentClassificationMandatory
+                          }
+                        )).affected;
+    if (updateCount != 1) {
+      throw new InternalServerErrorException("Error updating object");
+    }
+
+    const updatedEntity = await this.findEntityWithCommonRelations(projectId);
+    this.logger.debug(`${this.constructor.name}.update result entity %o`, updatedEntity);
+
+    return this.convertEntity(updatedEntity);
+  }
+
   /**
    * The method validates business rules are met before FOM transitioning.
    * "manual/human-triggered" transition workflowStats only happens on "PUBLISH", "FINALIZED".
@@ -479,15 +523,16 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
 
       // All comments classified
-      const publicComments = await this.publicCommentService.findByProjectId(entity.id, user);
-      if (publicComments && publicComments.length > 0) {
-        const unClassifiedComments = publicComments.filter(p => p.response == null);
-        if (unClassifiedComments && unClassifiedComments.length > 0) {
-          throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
-          All comments must be classified.`);
+      if (entity.commentClassificationMandatory) { // by default this field is mandatory, only ministry can chang it from admin page.
+        const publicComments = await this.publicCommentService.findByProjectId(entity.id, user);
+        if (publicComments && publicComments.length > 0) {
+          const unClassifiedComments = publicComments.filter(p => p.response == null);
+          if (unClassifiedComments && unClassifiedComments.length > 0) {
+            throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
+            All comments must be classified.`);
+          }
         }
-      }
-
+      } 
     }
 
   }

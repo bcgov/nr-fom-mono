@@ -60,4 +60,6 @@ export class Project extends ApiBaseEntity<Project> {
   @OneToMany(type => Submission, (submission) => submission.project) 
   submissions: Submission[];
   
+  @Column({ name: 'comment_classification_mandatory', default: true, nullable: false})
+  commentClassificationMandatory: boolean;
 }

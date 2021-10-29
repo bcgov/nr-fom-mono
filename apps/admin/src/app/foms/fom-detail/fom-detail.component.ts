@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, SubmissionService, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, ProjectMetricsResponse } from "@api-client";
+import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, ProjectMetricsResponse } from "@api-client";
 import { KeycloakService } from '@admin-core/services/keycloak.service';
 import {User} from "@api-core/security/user";
 import { ModalService } from '@admin-core/services/modal.service';
@@ -20,8 +20,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   public isDeleting = false;
   public isFinalizing = false;
   public isRefreshing = false;
+  public isSettingCommentClassification = false;
   public application: ProjectResponse = null;
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   public project: ProjectResponse = null;
   public spatialDetail: SpatialFeaturePublicResponse[];
   public projectMetrics: ProjectMetricsResponse;
@@ -29,18 +29,19 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   public attachments: AttachmentResponse[] = [];
   public user: User;
   public daysRemaining: number = null;
+  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   private workflowStateChangeRequest: ProjectWorkflowStateChangeRequest = <ProjectWorkflowStateChangeRequest>{};
   private now = new Date();
   private today = new Date(this.now.getFullYear(), this.now.getMonth(), this.now.getDate());
+  private projectUpdateTriggered$ = new Subject(); // To notify when project update happen.
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private modalSvc: ModalService,
     public projectService: ProjectService, // also used in template
-    private submissionSvc: SubmissionService,
-    private keycloakService: KeycloakService,
-    public attachmentResolverSvc: AttachmentResolverSvc
+    public attachmentResolverSvc: AttachmentResolverSvc,
+    private keycloakService: KeycloakService
   ) {
     this.user = this.keycloakService.getUser();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -57,6 +58,9 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         this.project = data.projectDetail;
         if (this.project.workflowState['code'] === 'INITIAL') {
           this.isProjectActive = true;
+        }
+        if (this.project.commentClassificationMandatory == undefined) {
+          this.project.commentClassificationMandatory = true;
         }
       } else {
         alert("Uh-oh, couldn't load fom");
@@ -76,11 +80,16 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         console.error(error);
       });
     });
-  }
 
-  ngOnDestroy() {
-    this.ngUnsubscribe.next();
-    this.ngUnsubscribe.complete();
+    // rxjs project update trigger initialization
+    if (this.project.id) { // subscribe only when first project init successfully.
+      this.projectUpdateTriggered$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
+        this.projectService.projectControllerFindOne(this.project.id).subscribe((data) => {
+          this.project = data;
+        });
+      });
+    }
+
   }
 
   public deleteAttachment(id: number) {
@@ -150,14 +159,6 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     })
   }
 
-  private calculateDaysRemaining(){
-    this.daysRemaining =
-      moment(this.project.commentingClosedDate).diff(moment(this.today), 'days');
-    if(this.daysRemaining < 0){
-      this.daysRemaining = 0;
-    }
-  }
-
   public async publishFOM(){
     const ready = this.validatePublishReady();
     if (ready) {
@@ -174,23 +175,25 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     }
   }
 
-  private validatePublishReady() {
-    let ready = true;
-    if (moment(this.project.commentingClosedDate).diff(moment(this.project.commentingOpenDate), 'days') < 30) {
-      ready = false;
-      this.modalSvc.openWarningDialog('Comment End Date must be at least 30 days after Comment Start Date when "Publish" is pushed.');
-    }
+  public async setCommentClassification() {
+    this.isSettingCommentClassification = true;
+    try {
+      await this.projectService.projectControllerCommentClassificationMandatoryChange(
+        this.project.id, 
+        {
+          commentClassificationMandatory: !this.project.commentClassificationMandatory,
+          revisionCount: this.project.revisionCount
+        })
+      .toPromise();
 
-    if (!this.spatialDetail || this.spatialDetail.length == 0) {
-      ready = false;
-      this.modalSvc.openWarningDialog('Proposed FOM spatial file should be uploaded before "Publish" is pushed.');
+      // in this case trigger 'this.project' update locally instead of using // this.onSuccess(); which refresh whole page.
+      this.projectUpdateTriggered$.next();
+    } 
+    catch(error) {
+      console.error(error);
+    } finally {
+      this.isSettingCommentClassification = false;
     }
-
-    if(moment(this.project.commentingOpenDate).diff(moment(this.today), 'days') < 1){
-      ready = false;
-      this.modalSvc.openWarningDialog('Comment Start Date must be at least one day after "Publish" is pushed.');
-    }
-    return ready;
   }
 
   /**
@@ -247,4 +250,41 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     return this.attachmentResolverSvc.isDeleteAttachmentAllowed(attachment.attachmentType.code, this.project.workflowState.code);
   }
 
+  public canSetCommentClassification() {
+    return this.user.isMinistry && 
+          (this.project.workflowState.code == WorkflowStateEnum.CommentOpen
+          || this.project.workflowState.code == WorkflowStateEnum.CommentClosed);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
+  }
+
+  private calculateDaysRemaining(){
+    this.daysRemaining =
+      moment(this.project.commentingClosedDate).diff(moment(this.today), 'days');
+    if(this.daysRemaining < 0){
+      this.daysRemaining = 0;
+    }
+  }
+
+  private validatePublishReady() {
+    let ready = true;
+    if (moment(this.project.commentingClosedDate).diff(moment(this.project.commentingOpenDate), 'days') < 30) {
+      ready = false;
+      this.modalSvc.openWarningDialog('Comment End Date must be at least 30 days after Comment Start Date when "Publish" is pushed.');
+    }
+
+    if (!this.spatialDetail || this.spatialDetail.length == 0) {
+      ready = false;
+      this.modalSvc.openWarningDialog('Proposed FOM spatial file should be uploaded before "Publish" is pushed.');
+    }
+
+    if(moment(this.project.commentingOpenDate).diff(moment(this.today), 'days') < 1){
+      ready = false;
+      this.modalSvc.openWarningDialog('Comment Start Date must be at least one day after "Publish" is pushed.');
+    }
+    return ready;
+  }
 }
