@@ -391,7 +391,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       throw new BadRequestException("Entity not found.");
     }
 
-    if (!user || !user.isForestClient) {
+    if (!user || !user.isMinistry) {
       throw new ForbiddenException();
     }
 
