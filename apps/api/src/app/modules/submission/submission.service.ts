@@ -228,6 +228,13 @@ export class SubmissionService {
       throw new BadRequestException("Invalid formated JSON submission file or spatial submission is empty.")
     }
 
+    const crs = jsonSpatialSubmission.crs;
+    if (!_.isEmpty(crs)) {
+      if (!crs.properties || !crs.properties.name || crs.properties.name != 'EPSG:3005') {
+        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: { "name": "EPSG:3005" }.`);
+      }
+    }
+    
     // do this check first before each feature check in depth.
     this.validateGeometryType(spatialObjectCode, jsonSpatialSubmission);
 
