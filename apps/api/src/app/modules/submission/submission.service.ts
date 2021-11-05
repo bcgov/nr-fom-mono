@@ -7,7 +7,7 @@ import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
 import { PinoLogger } from 'nestjs-pino';
 
 import { Submission } from './submission.entity';
-import { FomSpatialJson, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
+import { FomSpatialJson, SpatialCoordSystemEnum, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
 import { ProjectService } from '../project/project.service';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
@@ -172,11 +172,11 @@ export class SubmissionService {
    * @param jsonSpatialSubmission 
    * @returns spatial objects into cut_block, road_section, or WTRA objects based on dto.spatialObjectCode.
    */
-  parseFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User): 
-    SpatialObject[] {
+  async parseFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User): 
+    Promise<SpatialObject[]> {
 
     // do validation before parsing
-    this.basicSpatialFileChecks(spatialObjectCode, jsonSpatialSubmission);
+    await this.basicSpatialFileChecks(spatialObjectCode, jsonSpatialSubmission);
 
     const features = jsonSpatialSubmission.features;
     const OPTIONAL_PROP_NAME = "NAME";
@@ -209,7 +209,15 @@ export class SubmissionService {
     });
   }
 
-  private basicSpatialFileChecks(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): void {
+  /**
+   * Basic check for spatial submission GeoJSON.
+   * Note!: internally it auto detects the spatial coordinates used with the submission. If the submission is not using
+   * BC Albers, it will attempt to convert jsonSpatialSubmission object into BC Albers system and mutate original jsonSpatialSubmission.
+   * 
+   * @param spatialObjectCode GeoSpatial object type to indiate the spatial submission: CUT_BLOCK, ROAD_SECTION, WTRA.
+   * @param jsonSpatialSubmission the GeoJSON spatial submission.
+   */
+  private async basicSpatialFileChecks(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): Promise<void> {
     if (!spatialObjectCode || 
         ![SpatialObjectCodeEnum.CUT_BLOCK, SpatialObjectCodeEnum.ROAD_SECTION, SpatialObjectCodeEnum.WTRA]
         .includes(spatialObjectCode)) {
@@ -220,18 +228,16 @@ export class SubmissionService {
       throw new BadRequestException("Invalid formated JSON submission file or spatial submission is empty.")
     }
 
-    const crs = jsonSpatialSubmission.crs;
-    if (!_.isEmpty(crs)) {
-      if (!crs.properties || !crs.properties.name || crs.properties.name != 'EPSG:3005') {
-        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: { "name": "EPSG:3005" }.`);
-      }
-    }
-
     // do this check first before each feature check in depth.
     this.validateGeometryType(spatialObjectCode, jsonSpatialSubmission);
 
-    jsonSpatialSubmission.features.forEach(f => {
-      const geometry = f.geometry;
+    // Detect referencing system used from submission: BC Albers (EPSG:3005) or WGS84 (EPSG:4326)
+    const coordSystemRef = this.detectSpatialSubmissionCoordRef(jsonSpatialSubmission);
+    this.logger.debug(`Coordinate system: EPSG${coordSystemRef} detected for the spatial submission:`, JSON.stringify(jsonSpatialSubmission));
+    this.logger.debug(`Feature geometry will be convereted to EPSG${SpatialCoordSystemEnum.BC_ALBERS}.`);
+
+    for (const f of jsonSpatialSubmission.features) {
+      let geometry = f.geometry;
 
       if (!geometry || _.isEmpty(geometry)) {
         throw new BadRequestException(`Required Feature object 'geometry' is missing for ${spatialObjectCode}.`);
@@ -246,10 +252,15 @@ export class SubmissionService {
         throw new BadRequestException(`Required Geometry 'coordinates' field is missing for ${spatialObjectCode}.`);
       }
 
-      this.validateCoordWithinBounding(geometry);
+      if (coordSystemRef !== SpatialCoordSystemEnum.BC_ALBERS) {
+        const convertedGeometryJson = await this.convertGeometry(JSON.stringify(geometry), SpatialCoordSystemEnum.BC_ALBERS);
+        f.geometry = geometry = JSON.parse(convertedGeometryJson);
+      }
+
+      this.validateCoordWithinBounding(geometry, (coordSystemRef !== SpatialCoordSystemEnum.BC_ALBERS));
 
       this.validateRequiredProperties(spatialObjectCode, f.properties);
-    });
+    }
   }
 
   // validate geometry type matches what user selected for spatialObject type
@@ -298,17 +309,64 @@ export class SubmissionService {
 
   // validation - Validate each point(Position) is within BC bounding box.
   // Coordinates based on epsg.io visual inspesction in EPSG 3005 (BC Albers) coordinates 
-  private validateCoordWithinBounding(geometry: Geometry): void {
+  private validateCoordWithinBounding(geometry: Geometry, useGenericErrorMsg: boolean): void {
     const bb = {minx: 270000, miny: 360000, maxx: 1900000, maxy: 1750000};
     const coordinates = (<Polygon | LineString> geometry).coordinates;
     const d = (geometry.type == 'Polygon') ? 1 : 0 // flatten d level (dimension) down for an array. Assume geometry is either 'Polygon' or 'LineString' type for now.
     flatDeep(coordinates, d).forEach( (p: Position) => {
       if( !(bb.minx <= p[0] && p[0] <= bb.maxx && bb.miny <= p[1] && p[1] <= bb.maxy) ) {
         // Add spacing to bounding box.
-        const errMsg = `Coordinate (${p}) is not within the boundary of British Columbia ${JSON.stringify(bb).split(',').join(', ')}.`;
+        const errMsg = !useGenericErrorMsg? `Coordinate (${p}) is not within the boundary of British Columbia ${JSON.stringify(bb).split(',').join(', ')}.`
+                                          : `Some coordinates are not within the boundary of British Columbia.`;
         throw new BadRequestException(errMsg); 
       }
     });
+  }
+
+  /**
+   * Detect referencing system used from submission: 
+   *  BC Albers (EPSG:3005) or 
+   *  WGS84 (EPSG:4326)
+   * @param jsonSpatialSubmission 
+   */
+  private detectSpatialSubmissionCoordRef(jsonSpatialSubmission: FomSpatialJson) {
+    const crs = jsonSpatialSubmission.crs;
+    if (!_.isEmpty(crs) && crs?.properties?.name == 'EPSG:3005') {
+      return SpatialCoordSystemEnum.BC_ALBERS;
+    }
+    else {
+      // assuming all geometry are using the same reference system.
+      const feature = jsonSpatialSubmission.features[0];
+      const type = feature.geometry?.type;
+      return this.detectGeometryCoordRef(feature.geometry, type as 'LineString' | 'Polygon');
+    }
+  }
+
+  private detectGeometryCoordRef(geometry: Geometry, type: 'LineString' | 'Polygon') {
+    const maxRange_WGS84 = 360; // Note: we choose 360 for now (although WGS84 lat/long ranging from 180:-180) to distinguish 
+                                // between WGS84 and BC Albers.
+    let p_zero: number;
+    try {
+      if (type == 'Polygon') {
+        p_zero = geometry['coordinates'][0][0][0];
+      }
+      else if (type == 'LineString') {
+        p_zero = geometry['coordinates'][0][0];
+      }
+      else {
+        throw new BadRequestException(`Submitted spatial submission contains invlalid geometry type.`);
+      }
+    }
+    catch (error) {
+      const errMsg = `Problem parsing spatial submission geometry coordinates: ${error}`;
+      this.logger.error(errMsg);
+      throw new BadRequestException(errMsg);
+    }
+
+    if (Math.abs(p_zero) > maxRange_WGS84) {
+      return SpatialCoordSystemEnum.BC_ALBERS;
+    }
+    return SpatialCoordSystemEnum.WGS84;
   }
 
   /** 
@@ -321,7 +379,7 @@ export class SubmissionService {
     this.logger.debug(`Method prepareFomSpatialObjects called with spatialObjectCode:${spatialObjectCode}
         and jsonSpatialSubmission ${JSON.stringify(jsonSpatialSubmission)}`);
 
-    const spatialObjs = this.parseFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
+    const spatialObjs = await this.parseFomSpatialSubmission(spatialObjectCode, jsonSpatialSubmission, user);
     spatialObjs.forEach((s) => {s.submissionId = submissionId}); // assign them to the submission 
 
     this.logger.debug('FOM spatial objects prepared: %o', spatialObjs);
@@ -383,4 +441,43 @@ export class SubmissionService {
     this.logger.debug(`Project location updated for projectId: ${projectId}`);
   }
 
+ /**
+  * Use PostGIS Geometry functions to transform from one coordinate system to another.
+  * Example:
+  *   select ST_AsGeoJson(ST_Transform(
+  *     ST_GeomFromGeoJSON('{"type":"Polygon","coordinates":[[
+  *                           [-119.397280854,49.815298833],[-119.394459294,49.815127941],
+  *                           [-119.394863101,49.812334408],[-119.39768449,49.812505292],[-119.397280854,49.815298833]
+  *                        ]]}')
+  *     , 3005)) as transform;
+  * 
+  *   will be converted to:
+  *    {"type":"Polygon","crs":{"type":"name","properties":{"name":"EPSG:3005"}},
+  *     "coordinates":[[
+  *         [1474613.999997578,555391.999955864],[1474818.000019682,555392.000057264],[1474818.000027833,555079.999953587],
+  *         [1474614.000024779,555080.000049848],[1474613.999997578,555391.999955864]
+  *     ]]}
+  * 
+  * @param geometry geometry from GeoJSON as JSON string
+  * @param srid The EPSG code used as spatial reference identifier (SRID) with a specific coordinate system
+  */
+  async convertGeometry(geometry: string, srid: number): Promise<string> {
+    this.logger.debug(`Coverting geometry to EPSG${srid} with geometry: ${geometry}`)
+    try {
+      const convertedGeometryResult = await getConnection()
+      .query(
+        `
+          SELECT ST_AsGeoJson(ST_Transform(ST_GeomFromGeoJSON($1), CAST($2 AS INTEGER)))
+          AS transform
+        `, [geometry, srid]
+      );
+      this.logger.debug(`Covert geometry successfully: `, convertedGeometryResult[0].transform)
+      return convertedGeometryResult[0].transform;
+    }
+    catch (error) {
+      const errMsg = `Failed on converting geometry: ${geometry} using spatial reference EPSG ${srid}: ${error}`;
+      this.logger.error(errMsg);
+      throw new BadRequestException(errMsg);
+    }
+  }
 }
