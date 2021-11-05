@@ -327,9 +327,12 @@ export class SubmissionService {
    * Detect referencing system used from submission: 
    *  BC Albers (EPSG:3005) or 
    *  WGS84 (EPSG:4326)
+   * Current system assumes if it is not WGS84 (using lat/long) then it is BC Albers,
+   * by checking if crs optional field is presented for BC Albers system; or by checking
+   * Abs(coordinate) that is within 360 degree for WGS84.
    * @param jsonSpatialSubmission 
    */
-  private detectSpatialSubmissionCoordRef(jsonSpatialSubmission: FomSpatialJson) {
+  detectSpatialSubmissionCoordRef(jsonSpatialSubmission: FomSpatialJson) {
     const crs = jsonSpatialSubmission.crs;
     if (!_.isEmpty(crs) && crs?.properties?.name == 'EPSG:3005') {
       return SpatialCoordSystemEnum.BC_ALBERS;
