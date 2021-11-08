@@ -5,7 +5,7 @@ import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
 
 // Using GeoJSON types, won't have the API documentation but that's okay.
 export interface FomSpatialJson extends FeatureCollection {
-  crs: { 
+  crs?: { 
     type: "name", 
     properties: { "name": "EPSG:3005" }
   }
@@ -15,6 +15,11 @@ export enum SpatialObjectCodeEnum {
   CUT_BLOCK = 'CUT_BLOCK',
   ROAD_SECTION = 'ROAD_SECTION',
   WTRA = 'WTRA'
+}
+
+export enum SpatialCoordSystemEnum {
+  BC_ALBERS = 3005, //EPSG:3005
+  WGS84 = 4326 // EPSG:4326
 }
 
 export class SubmissionRequest {

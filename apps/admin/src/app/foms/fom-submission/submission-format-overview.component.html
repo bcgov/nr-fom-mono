@@ -12,8 +12,7 @@
   <p>
     This Forest Operations Map (FOM) geospatial submission format is based on GeoJSON 
     (<a href="https://geojson.org/" rel="noopener" target="_blank">https://geojson.org/</a>,
-    <a href="https://tools.ietf.org/html/rfc7946" rel="noopener" target="_blank">https://tools.ietf.org/html/rfc7946</a>),
-    but with some deviations. (Therefore, technically this is a JSON format, not a compliant GeoJSON format.)
+    <a href="https://tools.ietf.org/html/rfc7946" rel="noopener" target="_blank">https://tools.ietf.org/html/rfc7946</a>).
   </p>
 
   <p>
@@ -25,7 +24,7 @@
   </p>
 
   <p>
-    GeoJSON geometry points must be specified using the BC Albers (EPSG:3005) coordinate reference system—not latitude and longitude. Coordinates are ordered as X, Y.
+    GeoJSON geometry points can be specified using the standard WGS84 (EPSG:4326) coordinate system (latitude and longitude) or using the BC Albers (EPSG:3005) coordinate reference system (as per the 2008 version of the GeoJSON specification). Coordinates are ordered as X, Y.
   </p>
 
   <p>
@@ -112,7 +111,7 @@
   <section>
     <p><strong>Cut Block File</strong></p>
     <p>
-      This sample file contains two cut blocks.
+      This sample file contains two cut blocks, with coordinates are specified in BC Albers.
     </p>
     <pre>
       {{cutblokJSONpretty}}
@@ -121,6 +120,9 @@
 
   <section>
     <p><strong>WTRA File</strong></p>
+    <p>
+      This sample file contains one retention area, with coordinates are specified in BC Albers.
+    </p>
     <pre>
       {{wtraJSONpretty}}
     </pre>
@@ -128,6 +130,9 @@
 
   <section>
     <p><strong>Road Section File</strong></p>
+    <p>
+      This sample file contains one road section, with coordinates specified in WGS84 (latitude and longitude).
+    </p>
     <pre>
       {{roadJSONpretty}}
     </pre>
