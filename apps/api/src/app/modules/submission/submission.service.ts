@@ -320,7 +320,7 @@ export class SubmissionService {
       if( !(bb.minx <= p[0] && p[0] <= bb.maxx && bb.miny <= p[1] && p[1] <= bb.maxy) ) {
         // Add spacing to bounding box.
         const errMsg = !useGenericErrorMsg? `Coordinate (${p}) is not within the boundary of British Columbia ${JSON.stringify(bb).split(',').join(', ')}.`
-                                          : `Some coordinates are not within the boundary of British Columbia.`;
+                                          : `One or more coordinates are not within the boundary of British Columbia.`;
         throw new BadRequestException(errMsg); 
       }
     });
