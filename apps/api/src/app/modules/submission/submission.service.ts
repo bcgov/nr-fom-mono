@@ -236,29 +236,14 @@ export class SubmissionService {
     }
     
     // do this check first before each feature check in depth.
-    this.validateGeometryType(spatialObjectCode, jsonSpatialSubmission);
+    this.validateGeometry(spatialObjectCode, jsonSpatialSubmission);
 
     // Detect referencing system used from submission: BC Albers (EPSG:3005) or WGS84 (EPSG:4326)
     const coordSystemRef = this.detectSpatialSubmissionCoordRef(jsonSpatialSubmission);
     this.logger.debug(`Coordinate system: EPSG${coordSystemRef} detected for the spatial submission:`, JSON.stringify(jsonSpatialSubmission));
-    this.logger.debug(`Feature geometry will be convereted to EPSG${SpatialCoordSystemEnum.BC_ALBERS}.`);
 
     for (const f of jsonSpatialSubmission.features) {
       let geometry = f.geometry;
-
-      if (!geometry || _.isEmpty(geometry)) {
-        throw new BadRequestException(`Required Feature object 'geometry' is missing for ${spatialObjectCode}.`);
-      }
-
-      if (!geometry.type) {
-        throw new BadRequestException(`Required Geometry 'type' field is missing for ${spatialObjectCode}.`);
-      }
-
-      const coordinates = geometry['coordinates'];
-      if (!coordinates || _.isEmpty(coordinates)) {
-        throw new BadRequestException(`Required Geometry 'coordinates' field is missing for ${spatialObjectCode}.`);
-      }
-
       if (coordSystemRef !== SpatialCoordSystemEnum.BC_ALBERS) {
         const convertedGeometryJson = await this.convertGeometry(JSON.stringify(geometry), SpatialCoordSystemEnum.BC_ALBERS);
         f.geometry = geometry = JSON.parse(convertedGeometryJson);
@@ -270,15 +255,26 @@ export class SubmissionService {
     }
   }
 
-  // validate geometry type matches what user selected for spatialObject type
-  private validateGeometryType(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): void {
+  private validateGeometry(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson): void {
+
     const qualifiedGeometryType: 'Polygon'| 'LineString' = this.getQualifiedGeometryType(spatialObjectCode);
-    const invalidGeometryTypes = jsonSpatialSubmission.features.filter(f => {
-      return f?.geometry?.type  !== qualifiedGeometryType;
-    });
-    if (invalidGeometryTypes && invalidGeometryTypes.length >= 1) {
-      const invalidTypes = invalidGeometryTypes.map(f => f.geometry.type);
-      throw new BadRequestException(`Submission file contains invalid geometry type: ${[...new Set(invalidTypes)].join(', ')}.`);
+    for (const f of jsonSpatialSubmission.features) {
+      const geometry = f.geometry;
+      if (!geometry || _.isEmpty(geometry)) {
+        throw new BadRequestException(`Required Feature object 'geometry' is missing for ${spatialObjectCode}.`);
+      }
+
+      if (!geometry.type) {
+        throw new BadRequestException(`Required Geometry 'type' field is missing for ${spatialObjectCode}.`);
+      }
+      if (geometry.type !== qualifiedGeometryType) {
+        throw new BadRequestException(`Submission file contains invalid geometry type: ${geometry.type}.`);
+      }
+
+      const coordinates = geometry['coordinates'];
+      if (!coordinates || _.isEmpty(coordinates)) {
+        throw new BadRequestException(`Required Geometry 'coordinates' field is missing for ${spatialObjectCode}.`);
+      }
     }
   }
 
@@ -363,14 +359,10 @@ export class SubmissionService {
       else if (type == 'LineString') {
         p_zero = geometry['coordinates'][0][0];
       }
-      else {
-        throw new BadRequestException(`Submitted spatial submission contains invlalid geometry type.`);
-      }
     }
     catch (error) {
-      const errMsg = `Problem parsing spatial submission geometry coordinates: ${error}`;
-      this.logger.error(errMsg);
-      throw new BadRequestException(errMsg);
+      throw new BadRequestException(`Problem parsing spatial submission file. 
+            Coordinates might be of wrong format for ${geometry.type} geometry type.: ${error}`);
     }
 
     if (Math.abs(p_zero) > maxRange_WGS84) {
@@ -481,13 +473,11 @@ export class SubmissionService {
           AS transform
         `, [geometry, srid]
       );
-      this.logger.debug(`Covert geometry successfully: `, convertedGeometryResult[0].transform)
+      this.logger.debug(`Convert geometry successfully: `, convertedGeometryResult[0].transform)
       return convertedGeometryResult[0].transform;
     }
     catch (error) {
-      const errMsg = `Failed on converting geometry: ${geometry} using spatial reference EPSG ${srid}: ${error}`;
-      this.logger.error(errMsg);
-      throw new BadRequestException(errMsg);
+      throw new BadRequestException(`Failed on converting geometry: ${geometry} using spatial reference EPSG ${srid}: ${error}`);
     }
   }
 }
