@@ -175,7 +175,7 @@ export class SubmissionService {
   async parseFomSpatialSubmission(spatialObjectCode: SpatialObjectCodeEnum, jsonSpatialSubmission: FomSpatialJson, user: User): 
     Promise<SpatialObject[]> {
 
-    // do validation before parsing
+    // Do validation before parsing and do coordinate conversion if necessary
     await this.basicSpatialFileChecks(spatialObjectCode, jsonSpatialSubmission);
 
     const features = jsonSpatialSubmission.features;
