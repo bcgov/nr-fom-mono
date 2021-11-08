@@ -276,7 +276,7 @@ export class SubmissionService {
     const invalidGeometryTypes = jsonSpatialSubmission.features.filter(f => {
       return f?.geometry?.type  !== qualifiedGeometryType;
     });
-    if (invalidGeometryTypes && invalidGeometryTypes.length > 1) {
+    if (invalidGeometryTypes && invalidGeometryTypes.length >= 1) {
       const invalidTypes = invalidGeometryTypes.map(f => f.geometry.type);
       throw new BadRequestException(`Submission file contains invalid geometry type: ${[...new Set(invalidTypes)].join(', ')}.`);
     }
