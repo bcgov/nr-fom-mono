@@ -24,6 +24,21 @@ describe('SubmissionService', () => {
       expect(service.detectSpatialSubmissionCoordRef(simpleOneFeatureSpatialSubmission)).toBe(SpatialCoordSystemEnum.BC_ALBERS);
     });
 
+    it ('spatial submission contains crs field (urn:ogc:def:crs:EPSG::3005) should return 3005', async () => {
+      simpleOneFeatureSpatialSubmission.crs = {"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::3005"}};
+      expect(service.detectSpatialSubmissionCoordRef(simpleOneFeatureSpatialSubmission)).toBe(SpatialCoordSystemEnum.BC_ALBERS);
+    });
+
+    it ('spatial submission contains crs field (EPSG:4326) should return 4326', async () => {
+      simpleOneFeatureSpatialSubmission.crs = {"type":"name","properties":{"name":"EPSG:4326"}};
+      expect(service.detectSpatialSubmissionCoordRef(simpleOneFeatureSpatialSubmission)).toBe(SpatialCoordSystemEnum.WGS84);
+    });
+
+    it ('spatial submission contains crs field (urn:ogc:def:crs:EPSG::4326) should return 4326', async () => {
+      simpleOneFeatureSpatialSubmission.crs = {"type":"name","properties":{"name":"urn:ogc:def:crs:EPSG::4326"}};
+      expect(service.detectSpatialSubmissionCoordRef(simpleOneFeatureSpatialSubmission)).toBe(SpatialCoordSystemEnum.WGS84);
+    });
+
     it ('spatial submission contains no crs field, but with BC Albers\'s geometry range should return 3005', async () => {
       delete simpleOneFeatureSpatialSubmission.crs;
       simpleOneFeatureSpatialSubmission.features[0].geometry = geometry_BCAlbers as Geometry;

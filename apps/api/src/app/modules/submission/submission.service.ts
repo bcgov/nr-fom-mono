@@ -230,12 +230,17 @@ export class SubmissionService {
 
     const crs = jsonSpatialSubmission.crs;
     if (!_.isEmpty(crs)) {
-      if (!crs.properties || !crs.properties.name || crs.properties.name != 'EPSG:3005') {
-        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: { "name": "EPSG:3005" }.`);
+      if (!crs.properties || !crs.properties.name || 
+            !(crs.properties.name.includes(`:${SpatialCoordSystemEnum.BC_ALBERS}`) || 
+              crs.properties.name.includes(`:${SpatialCoordSystemEnum.WGS84}`))
+          ) {
+        throw new BadRequestException(`Invalid CRS for ${spatialObjectCode}. Should match specification: 
+            { "name": "EPSG:3005" } or { "name": "urn:ogc:def:crs:EPSG::3005"} or 
+            { "name": "EPSG:4326" } or { "name": "urn:ogc:def:crs:EPSG::4326"}.`);
       }
     }
     
-    // do this check first before each feature check in depth.
+    // Do this check first before each feature check in depth.
     this.validateGeometry(spatialObjectCode, jsonSpatialSubmission);
 
     // Detect referencing system used from submission: BC Albers (EPSG:3005) or WGS84 (EPSG:4326)
@@ -330,15 +335,25 @@ export class SubmissionService {
    * Detect referencing system used from submission: 
    *  BC Albers (EPSG:3005) or 
    *  WGS84 (EPSG:4326)
-   * Current system assumes if it is not WGS84 (using lat/long) then it is BC Albers,
-   * by checking if crs optional field is presented for BC Albers system; or by checking
-   * Abs(coordinate) that is within 360 degree for WGS84.
+   * Current system assumes if it is not WGS84 (using lat/long) then it is BC Albers.
+   * If crs optional field is present, check for BC Albers or WGS84; if not present,
+   * then check Abs(coordinate) that is within 360 degree for WGS84 else BC Albers.
    * @param jsonSpatialSubmission 
    */
   detectSpatialSubmissionCoordRef(jsonSpatialSubmission: FomSpatialJson) {
     const crs = jsonSpatialSubmission.crs;
-    if (!_.isEmpty(crs) && crs?.properties?.name == 'EPSG:3005') {
-      return SpatialCoordSystemEnum.BC_ALBERS;
+    if (!_.isEmpty(crs)) {
+      const ptname = crs?.properties?.name;
+      if (ptname.includes(`:${SpatialCoordSystemEnum.BC_ALBERS}`)) {
+        return SpatialCoordSystemEnum.BC_ALBERS;
+      }
+      else if (ptname.includes(`:${SpatialCoordSystemEnum.WGS84}`)) {
+        return SpatialCoordSystemEnum.WGS84;
+      }
+      else {
+        throw new BadRequestException(`Spatial submission file contains invalid value for CRS field: ${ptname}. 
+        Only accept either EPSG:3005 or EPSG:4326 system`);
+      }
     }
     else {
       // assuming all geometry are using the same reference system.

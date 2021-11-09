@@ -7,7 +7,9 @@ import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
 export interface FomSpatialJson extends FeatureCollection {
   crs?: { 
     type: "name", 
-    properties: { "name": "EPSG:3005" }
+    // Only these formats/values (short/long) for supplied spatial submission are accepted.
+    properties: { "name": "EPSG:3005" | "urn:ogc:def:crs:EPSG::3005" | 
+                          "EPSG:4326" | "urn:ogc:def:crs:EPSG::4326" }
   }
 }
 
