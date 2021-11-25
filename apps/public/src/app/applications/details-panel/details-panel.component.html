@@ -81,11 +81,14 @@
           </div>
 
           <div>
-            <div class="status-msg" *ngIf="project.workflowState.code === workflowStatus['COMMENT_OPEN'].code">
-              This project is currently accepting comments until {{project.commentingClosedDate | date:'longDate'}}.
-            </div>
-            <div class="status-msg" *ngIf="project.workflowState.code === workflowStatus['COMMENT_CLOSED'].code">
-              Commenting is closed for this project on {{project.commentingClosedDate | date:'longDate'}}.
+            <div class="status-msg">
+              Commenting opened for this project on {{project.commentingOpenDate | date:'longDate'}}.
+              <div *ngIf="project.workflowState.code === workflowStatus['COMMENT_OPEN'].code">
+                This project is currently accepting comments until {{project.commentingClosedDate | date:'longDate'}}.
+              </div>
+              <div *ngIf="project.workflowState.code !== workflowStatus['COMMENT_OPEN'].code">
+                Commenting closed for this project on {{project.commentingClosedDate | date:'longDate'}}.
+              </div>
             </div>
             <button class="submit-comment-btn btn btn-primary" 
                     (click)="addComment()" 
