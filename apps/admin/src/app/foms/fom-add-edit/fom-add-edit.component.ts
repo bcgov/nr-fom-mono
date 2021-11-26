@@ -38,17 +38,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   fg: RxFormGroup;
   state: ApplicationPageType;
   originalProjectResponse: ProjectResponse;
-  
-  get isCreate() {
-    return this.state === 'create';
-  }
   districts: DistrictResponse[] = this.stateSvc.getCodeTable('district');
   forestClients: ForestClientResponse[] = [];
   public supportingDocuments: any[] = [];
   public initialPublicDocument: any[] = [];
-  private scrollToFragment: string = null;
-  private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   public districtIdSelect: any = null;
   public forestClientSelect: any = null;
   public isPublishState: boolean = false;
@@ -62,6 +55,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public attachments: AttachmentResponse[] = [];
   public attachmentsInitialNotice: AttachmentResponse[] = [];
   public isDeleting = false;
+  public minDate: Date = new Date();
   public fileTypesParentInitial: string[] =
     ['image/png', 'image/jpeg', 'image/jpg', 'image/tiff',
       'image/x-tiff', 'application/pdf']
@@ -73,9 +67,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ]
 
-  get isLoading() {
-    return this.stateSvc.loading;
-  }
+  private scrollToFragment: string = null;
+  private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
+  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private route: ActivatedRoute,
@@ -92,6 +86,14 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     private keycloakService: KeycloakService,
   ) {
     this.user = this.keycloakService.getUser();
+  }
+
+  get isCreate() {
+    return this.state === 'create';
+  }
+  
+  get isLoading() {
+    return this.stateSvc.loading;
   }
 
   // check for unsaved changes before navigating away from current route (ie, this page)
