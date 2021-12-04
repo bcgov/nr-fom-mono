@@ -6,7 +6,7 @@ import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
 import { DataService } from 'apps/api/src/core/models/data.service';
 import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, 
-         ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest } from './project.dto';
+         ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
 import { User } from "@api-core/security/user";
@@ -60,7 +60,7 @@ export class ProjectFindCriteria {
 
 @Injectable()
 export class ProjectService extends DataService<Project, Repository<Project>, ProjectResponse> {
-  readonly DATE_FORMAT = 'YYYY-MM-DD';
+  readonly DATE_FORMAT = DateTimeUtil.DATE_FORMAT; //'YYYY-MM-DD';
 
   constructor(
     @InjectRepository(Project)
@@ -610,6 +610,54 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     return response;
   } 
+
+  async commentingClosedDateChange(projectId: number, request: ProjectCommentingClosedDateChangeRequest, user: User): Promise<boolean> {
+
+    this.logger.debug(`${this.constructor.name}.commentingClosedDateChange projectId %o request %o`, projectId, request);
+
+    const entity:Project = await this.findEntityWithCommonRelations(projectId);
+    if (isNil(entity)) {
+      throw new BadRequestException("Entity not found.");
+    }
+
+    if (isNil(user) || !user.isMinistry) {
+      throw new ForbiddenException();
+    }
+
+    if (entity.revisionCount != request.revisionCount) {
+      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+    }
+
+    if (isNil(request.commentingClosedDate || !dayjs(request.commentingClosedDate, this.DATE_FORMAT).isValid())) {
+      throw new BadRequestException("Missing valid Commenting Closed Date");
+    }
+
+    const dayDiff = DateTimeUtil.diffNow(request.commentingClosedDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
+    if (dayDiff < 1) {
+      throw new BadRequestException(`Unable to update Commenting Closed Date to ${request.commentingClosedDate}. The
+      The earliest new date allowed is tomorrow.`);
+    }
+
+    const workflowStateCode = entity.workflowStateCode;
+    if (WorkflowStateEnum.INITIAL != workflowStateCode && WorkflowStateEnum.COMMENT_OPEN != workflowStateCode) {
+      throw new BadRequestException("Can only change Commenting Closed Date at Initial or Commenting Open status.");
+    }
+
+    // doing update.
+    const updateCount = (await this.repository.update(projectId, 
+                            { revisionCount: entity.revisionCount + 1, 
+                              updateUser: user.userName,
+                              updateTimestamp: new Date(),
+                              commentingClosedDate: request.commentingClosedDate
+                            }
+                          )).affected;
+    if (updateCount != 1) {
+      throw new InternalServerErrorException("Error updating object");
+    }
+
+    return true;
+  }
+
 
   /**
    * Find FOM Ids by 'workflowStateCode' and 'commentingOpenDate'/'commenting_closed_date' equal or before the 'date' passed for search.
