@@ -393,6 +393,22 @@
           "revisionCount"
         ]
       },
+      "ProjectCommentingClosedDateChangeRequest": {
+        "type": "object",
+        "properties": {
+          "commentingClosedDate": {
+            "type": "string",
+            "description": "ISO-formatted date"
+          },
+          "revisionCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "commentingClosedDate",
+          "revisionCount"
+        ]
+      },
       "PublicCommentCreateRequest": {
         "type": "object",
         "properties": {
@@ -1505,6 +1521,44 @@
                 }
               }
             }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project/commentingClosedDate/{id}": {
+      "put": {
+        "operationId": "ProjectController_commentingClosedDateChange",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCommentingClosedDateChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
           }
         },
         "tags": [
