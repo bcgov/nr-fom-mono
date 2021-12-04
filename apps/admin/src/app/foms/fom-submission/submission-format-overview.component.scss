@@ -1,3 +1,15 @@
+$space-10: 10px;
+
+.table-title {
+    margin-bottom: $space-10;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+.field-table {
+    width: 60%;
+}
+
 table {
     margin-bottom: 1em;
     th {
