@@ -30,7 +30,7 @@
     The JSON files should use UTF-8 for the character encoding. Maximum file size is 30 MB.
   </p>
   <p>
-    The attribute table of spatial submissions is described in the tables below. <strong>All cells need to be formatted as text (including the DEV_DATE column). Attribute table fields with header names exceeding ten characters are known to cause issues</strong> during the conversion of other file formats to GeoJSON. Therefore, the exact titles shown below must be used in spatial file attribute tables.
+    The attribute table of spatial submissions is described in the tables below. <strong>All cells need to be formatted as text (including the DEV_DATE column).</strong> Attribute table fields with header names exceeding ten characters are known to cause issues during the conversion of other file formats to GeoJSON. Therefore, the exact titles shown below must be used in spatial file attribute tables.
   </p>
 
   <em>Attribute table as required in the GeoJSON file</em>
@@ -226,7 +226,7 @@
       Please be aware that the Features To JSON tool does not accept curves, and does not automatically convert them to lines. Especially when working with feature classes from geodatabases, features containing curves will have to be converted to replace the curves with lines prior to running the Features To JSON tool. To do so, you can either convert your .gdb feature classes to ESRI Shapefiles .shp, or run the "densify" tool available in ArcMap on your feature classes containing curves. Once your shapes do not contain anymore curves, you can run the Feature To JSON tool. Alternative options for creating GeoJSON files outside of ArcMap are the Feature Manipulation Engine (<a href="https://www.safe.com/support/downloads/" rel="noopener" target="_blank">FME</a>), and the "<a href="https://gdal.org/" rel="noopener" target="_blank">gdal tool</a>". 
     </p>
     <p>
-      As shown in the tables above, the projection of spatial files for upload must either be BC Albers or WGS84 (EPSG:4326 or EPSG:3005). Should your original files be in a different projection, you can use the "Projections" tool in ArcMap to convert files to the required projection. <u><strong>Just manually changing the projection in the "properties" tab of your file will not suffice!</strong></u>
+      As shown in the tables above, the projection of spatial files for upload must either be BC Albers or WGS84 (EPSG:4326 or EPSG:3005). Should your original files be in a different projection, you can use the "Projections" tool in ArcMap to convert files to the required projection. <em>Just manually changing the projection in the "properties" tab of your file will not suffice!</em>
     </p>
   </section>
 
