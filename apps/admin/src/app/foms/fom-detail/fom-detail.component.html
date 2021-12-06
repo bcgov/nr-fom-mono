@@ -190,6 +190,18 @@
                 <span class="value">{{daysRemaining > 0? daysRemaining: ''}}</span>
               </li>
             </ul>
+
+            <div class="btn-container" *ngIf="project">
+              <button class="cta-btn btn btn-sm btn-outline-primary"
+                      type="button"
+                      title="Change Commenting End Date"
+                      [disabled]="isDeleting"
+                      *ngIf="canChangeEndDate()"
+                      (click)="openChangeEndDateModal()">
+                Change Commenting End Date
+              </button>
+            </div>
+
             <div class="btn-container" *ngIf="project">
               <button class="cta-btn btn btn-sm btn-outline-primary"
                       type="button"
