@@ -634,8 +634,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     const dayDiff = DateTimeUtil.diffNow(request.commentingClosedDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
     if (dayDiff < 1) {
-      throw new BadRequestException(`Unable to update Commenting Closed Date to ${request.commentingClosedDate}. The
-      The earliest new date allowed is tomorrow.`);
+      throw new BadRequestException(`Unable to update Commenting Closed Date to ${request.commentingClosedDate}.
+        The earliest new date allowed is tomorrow.`);
     }
 
     const workflowStateCode = entity.workflowStateCode;
