@@ -1,11 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectCommentingClosedDateChangeRequest, ProjectService } from '@api-client';
 import moment = require('moment');
 
 @Component({
   templateUrl: './enddate-change-modal.component.html',
-  styleUrls: ['./enddate-change-modal.component.scss']
+  styleUrls: ['./enddate-change-modal.component.scss'],
+  encapsulation: ViewEncapsulation.None // Important to make bootstrap modal custom styling property 'windowClass' work.
 })
 export class EnddateChangeModalComponent implements OnInit {
 

@@ -271,6 +271,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         this.changeEndDateModal = this.ngbModalService.open(EnddateChangeModalComponent, {
           backdrop: 'static',
           size: 'modal-sm', //or sm
+          windowClass: 'enddate-change-modal' // Important! See endate-change-modal.component.scss for explanation.
         });
         
         let modalInstance = this.changeEndDateModal.componentInstance as EnddateChangeModalComponent;
