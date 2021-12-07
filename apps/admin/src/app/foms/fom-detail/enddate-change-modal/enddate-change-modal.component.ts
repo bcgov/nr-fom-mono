@@ -1,28 +1,22 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectCommentingClosedDateChangeRequest, ProjectService } from '@api-client';
 import moment = require('moment');
-import { Router } from '@angular/router';
 
 @Component({
   templateUrl: './enddate-change-modal.component.html',
   styleUrls: ['./enddate-change-modal.component.scss']
 })
-export class EnddateChangeModalComponent implements OnInit, AfterViewInit {
+export class EnddateChangeModalComponent implements OnInit {
 
   public updating = false;
-  // gets default values assigned when modal compoent was called outside.
-  public changeRequest = {} as ProjectCommentingClosedDateChangeRequest;
+  public changeRequest = {} as ProjectCommentingClosedDateChangeRequest; // Default values assigned when modal compoent was opened outside.
   public projectId: number;
   public currentCommentingClosedDate: string;
   public newCommentingClosedDate: Date;
   public minDate: Date;
 
-  @ViewChild("cancelBtn")
-  cancelBtn: ElementRef;
-
   constructor(
-    private router: Router,
     private activeModal: NgbActiveModal,
     private projectService: ProjectService
   ) {}
@@ -30,10 +24,6 @@ export class EnddateChangeModalComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.minDate = moment().add(1, 'days').toDate(); // Earliest date allowed for change: tomorrow.
     this.newCommentingClosedDate = this.minDate;
-  }
-
-  ngAfterViewInit() {
-    this.cancelBtn.nativeElement.focus();
   }
 
   public changeEndDate() {
@@ -44,8 +34,8 @@ export class EnddateChangeModalComponent implements OnInit, AfterViewInit {
         .toPromise()
         .then(() => {
           this.updating = false;
-          this.router.navigate([`a/${this.projectId}`]);
-          this.dismiss('Commenting End Date updated successfully.');
+          // Close and pass message {reason, projectUpdated}
+          this.activeModal.close({reason: 'Commenting End Date updated successfully.', projectUpdated: true});
         })
         .catch((err) => {
           console.error(err)

@@ -28,7 +28,7 @@
         <div class="col-md-8">
           <div class="input-group">
             <input
-              autofocus
+              ngbAutofocus 
               type="text"
               placeholder="YYYY-MM-DD"
               bsDatepicker
@@ -55,7 +55,6 @@
 
     <div class="modal-footer form-btns">
       <button class="btn btn-light" type="button"
-              #cancelBtn
               (click)="dismiss('dismissed end date change.')">
         Cancel
       </button>

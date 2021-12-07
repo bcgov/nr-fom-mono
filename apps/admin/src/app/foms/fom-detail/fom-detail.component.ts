@@ -3,7 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, ProjectResponse, ProjectService, 
-          SpatialFeaturePublicResponse, ProjectMetricsResponse } from "@api-client";
+          SpatialFeaturePublicResponse, ProjectMetricsResponse 
+        } from "@api-client";
 import { KeycloakService } from '@admin-core/services/keycloak.service';
 import { User } from "@api-core/security/user";
 import { ModalService } from '@admin-core/services/modal.service';
@@ -276,14 +277,16 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         modalInstance.projectId = this.project.id;
         modalInstance.currentCommentingClosedDate = this.project.commentingClosedDate;
         modalInstance.changeRequest.revisionCount = this.project.revisionCount;
-        // check result
+        
         this.changeEndDateModal.result.then(
-          () => {
-            // saved
+          (result) => {
+            // check result
+            if (result.projectUpdated) {
+              this.projectUpdateTriggered$.next();
+            }
             this.changeEndDateModal = null;
           },
           () => {
-            // dismissed
             this.changeEndDateModal = null;
           }
         );
