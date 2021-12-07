@@ -30,6 +30,7 @@
             <input
               ngbAutofocus 
               type="text"
+              class="form-control"
               placeholder="YYYY-MM-DD"
               bsDatepicker
               [bsValue]="minDate"
@@ -39,7 +40,7 @@
               id="newCommentingClosedDate"
               name="newCommentingClosedDate"
               [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
-              containerClass: 'theme-dark-blue', showWeekNumbers: false  }"
+              showWeekNumbers: false  }"
             />
             <div class="input-group-append">
               <button class="btn btn-icon"  type="button" tabindex="-1"
