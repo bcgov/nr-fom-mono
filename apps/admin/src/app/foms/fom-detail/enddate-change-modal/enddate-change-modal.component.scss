@@ -10,7 +10,7 @@
     <ngb-modal-window role="dialog" tabindex="-1" aria-modal="true" class="d-block enddate-change-modal modal fade show">
 */
 .enddate-change-modal {
-  width: 90%; // The position is still 'centered' but I shrink the <ngb-modal-window> down to 90%, so it will off the center 
+  width: 95%; // The position is still 'centered' but I shrink the <ngb-modal-window> down to 95%, so it will off the center 
               // slightly to the left. This will make the modal not to cover the 'Comment Period Details' side panel as what
               // we wanted.
 }

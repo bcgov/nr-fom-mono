@@ -3,6 +3,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectCommentingClosedDateChangeRequest, ProjectService } from '@api-client';
 import moment = require('moment');
 
+declare var $: any;
+
 @Component({
   templateUrl: './enddate-change-modal.component.html',
   styleUrls: ['./enddate-change-modal.component.scss'],
@@ -25,6 +27,17 @@ export class EnddateChangeModalComponent implements OnInit {
   ngOnInit(): void {
     this.minDate = moment().add(1, 'days').toDate(); // Earliest date allowed for change: tomorrow.
     this.newCommentingClosedDate = this.minDate;
+
+    // making modal dragable. Ref: https://www.freakyjolly.com/angular-7-8-9-draggable-bootstrap-modals-in-2-steps-tutorial-by-example/
+    $(document).ready(function () {
+      let modalContent: any = $('.modal-content');
+      modalContent.draggable({
+        handle: '.modal-header',
+        revert: true,
+        revertDuration: 300
+      });
+    });
+
   }
 
   public changeEndDate() {
