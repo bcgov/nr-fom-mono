@@ -274,7 +274,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         
         let modalInstance = this.changeEndDateModal.componentInstance as EnddateChangeModalComponent;
         modalInstance.projectId = this.project.id;
-        modalInstance.changeRequest.commentingClosedDate = this.project.commentingClosedDate;
+        modalInstance.currentCommentingClosedDate = this.project.commentingClosedDate;
         modalInstance.changeRequest.revisionCount = this.project.revisionCount;
         // check result
         this.changeEndDateModal.result.then(
