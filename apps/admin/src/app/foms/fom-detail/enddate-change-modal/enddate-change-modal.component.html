@@ -8,7 +8,11 @@
 <div class="container" style="padding: 0;">
   <form #changeDateForm="ngForm">
     <div class="modal-header" style="padding-bottom: 8px;">
-      <h4 class="modal-title">Change Comment Period End Date</h4>
+      <h4 class="modal-title"
+          ngbTooltip="Draggable" 
+          placement="right">
+          Change Comment Period End Date
+      </h4>
       <button class="btn btn-icon close-btn" type="button" 
               aria-label="Close" 
               (click)="dismiss('dismissed end date change.')">
