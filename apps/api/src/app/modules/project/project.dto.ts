@@ -149,3 +149,13 @@ export class ProjectCommentClassificationMandatoryChangeRequest {
     @IsNumber()
     revisionCount: number;
 }
+
+export class ProjectCommentingClosedDateChangeRequest {
+  @ApiProperty({ description: 'ISO-formatted date'})
+  @IsDateString()
+  commentingClosedDate: string;
+
+  @ApiProperty()
+  @IsNumber()
+  revisionCount: number;
+}

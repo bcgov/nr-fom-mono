@@ -3,7 +3,7 @@ import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/
 import * as dayjs from 'dayjs';
 
 import { ProjectService, ProjectFindCriteria } from './project.service';
-import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest } from './project.dto';
+import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest } from './project.dto';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
 import { User } from "@api-core/security/user";
@@ -173,5 +173,17 @@ export class ProjectController {
     @Body() request: ProjectCommentClassificationMandatoryChangeRequest
   ): Promise<ProjectResponse> {
     return this.service.commentClassificationMandatoryChange(id, request, user);
+  }
+
+  @Put('/commentingClosedDate/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK})
+  @ApiBody({ type: ProjectCommentingClosedDateChangeRequest })
+  async commentingClosedDateChange(
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: ProjectCommentingClosedDateChangeRequest
+  ): Promise<boolean> {
+    return this.service.commentingClosedDateChange(id, request, user);
   }
 }

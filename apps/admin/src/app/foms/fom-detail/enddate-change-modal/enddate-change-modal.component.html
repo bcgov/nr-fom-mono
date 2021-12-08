@@ -1,0 +1,70 @@
+<div class="modal-content progress-content" *ngIf="updating">
+  <div class="modal-body">
+    <h4 class="modal-title">Updating your change...</h4>
+    <mat-progress-bar color="primary" mode="indeterminate"></mat-progress-bar>
+  </div>
+</div>
+
+<div class="modal-content container" style="padding: 0;">
+  <form #changeDateForm="ngForm">
+    <div class="modal-header" style="padding-bottom: 8px;">
+      <h4 class="modal-title">
+          Change Comment Period End Date
+      </h4>
+      <button class="btn btn-icon close-btn" type="button" 
+              aria-label="Close" 
+              (click)="dismiss('dismissed end date change.')">
+        <em class="material-icons">
+          close
+        </em>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group row">
+        <div class="control-label col-md-4">End Date:</div>
+        <div class="control-label col-md-8">{{currentCommentingClosedDate| date:'longDate'}}</div>
+      </div>
+      <div class="form-group row">
+        <div class="control-label col-md-4">New End Date:</div>
+        <div class="col-md-8">
+          <div class="input-group">
+            <input
+              ngbAutofocus 
+              type="text"
+              class="form-control"
+              placeholder="YYYY-MM-DD"
+              bsDatepicker
+              [bsValue]="minDate"
+              [minDate]="minDate"
+              [(ngModel)]="newCommentingClosedDate"
+              #nccdDatepicker="bsDatepicker"
+              id="newCommentingClosedDate"
+              name="newCommentingClosedDate"
+              [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+              showWeekNumbers: false  }"
+            />
+            <div class="input-group-append">
+              <button class="btn btn-icon"  type="button" tabindex="-1"
+                      (click)="nccdDatepicker.show()"
+                      [attr.aria-expanded]="nccdDatepicker.isOpen">
+                <em class="material-icons">date_range</em>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer form-btns">
+      <button class="btn btn-light" type="button"
+              (click)="dismiss('dismissed end date change.')">
+        Cancel
+      </button>
+      <button class="btn btn-primary" type="button"
+        (click)="changeEndDate()">
+        Update
+      </button>
+    </div>
+  </form>
+</div>
