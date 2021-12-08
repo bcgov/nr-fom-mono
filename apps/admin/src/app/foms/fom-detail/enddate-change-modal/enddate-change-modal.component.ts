@@ -3,8 +3,6 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectCommentingClosedDateChangeRequest, ProjectService } from '@api-client';
 import moment = require('moment');
 
-declare var $: any;
-
 @Component({
   templateUrl: './enddate-change-modal.component.html',
   styleUrls: ['./enddate-change-modal.component.scss'],
