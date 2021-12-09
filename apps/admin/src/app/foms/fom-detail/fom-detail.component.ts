@@ -60,13 +60,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
                             spatialDetail: Array<SpatialFeaturePublicResponse>, 
                             projectMetrics: ProjectMetricsResponse }) => {
       if (data.projectDetail) {
-        this.project = data.projectDetail;
-        if (this.project.workflowState['code'] === 'INITIAL') {
-          this.isProjectActive = true;
-        }
-        if (this.project.commentClassificationMandatory == undefined) {
-          this.project.commentClassificationMandatory = true;
-        }
+        this.initProjectDetail(data.projectDetail);
       } else {
         alert("Uh-oh, couldn't load fom");
         // application not found --> navigate back to search
@@ -75,7 +69,6 @@ export class FomDetailComponent implements OnInit, OnDestroy {
 
       this.spatialDetail = data.spatialDetail;
       this.projectMetrics = data.projectMetrics;
-      this.calculateDaysRemaining();
       this.attachmentResolverSvc.getAttachments(this.project.id)
         .then( (result) => {
           this.attachments = result;
@@ -90,11 +83,10 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     if (this.project.id) { // subscribe only when first project init successfully.
       this.projectUpdateTriggered$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.projectService.projectControllerFindOne(this.project.id).subscribe((data) => {
-          this.project = data;
+          this.initProjectDetail(data);
         });
       });
     }
-
   }
 
   public deleteAttachment(id: number) {
@@ -296,6 +288,17 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  private initProjectDetail(project: ProjectResponse) {
+    this.project = project;
+    if (this.project.workflowState['code'] === 'INITIAL') {
+      this.isProjectActive = true;
+    }
+    if (this.project.commentClassificationMandatory == undefined) {
+      this.project.commentClassificationMandatory = true;
+    }
+    this.calculateDaysRemaining();
   }
 
   private calculateDaysRemaining(){
