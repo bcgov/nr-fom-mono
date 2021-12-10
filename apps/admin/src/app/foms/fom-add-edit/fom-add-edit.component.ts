@@ -310,7 +310,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     const defaultClosedDate = moment(commentingOpenDateField.value).add(30, 'd');
     const diff = moment(value.toISOString()).diff(defaultClosedDate, 'days');
     if (diff < 0 ) {
-      this.modalSvc.openWarningDialog(`Commenting Closed Date cannot be before ${defaultClosedDate.format('YYYY-MM-DD')}`);
+      if (this.isCreate || !this.isCreate && (this.originalProjectResponse.commentingClosedDate && 
+              moment(value).format('YYYY-MM-DD') !== this.originalProjectResponse.commentingClosedDate)) {
+        this.modalSvc.openWarningDialog(`Commenting Closed Date cannot be before ${defaultClosedDate.format('YYYY-MM-DD')}`);
+      }
 
       if (!this.isCreate) {
         const closeDatePipe = this.datePipe.transform(this.originalProjectResponse.commentingClosedDate,'yyyy-MM-dd');
