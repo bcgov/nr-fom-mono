@@ -18,6 +18,7 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { ProjectCommentClassificationMandatoryChangeRequest } from '../model/models';
+import { ProjectCommentingClosedDateChangeRequest } from '../model/models';
 import { ProjectCreateRequest } from '../model/models';
 import { ProjectMetricsResponse } from '../model/models';
 import { ProjectPublicSummaryResponse } from '../model/models';
@@ -146,6 +147,70 @@ export class ProjectService {
 
         return this.httpClient.put<ProjectResponse>(`${this.configuration.basePath}/api/project/commentClassification/${encodeURIComponent(String(id))}`,
             projectCommentClassificationMandatoryChangeRequest,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param id 
+     * @param projectCommentingClosedDateChangeRequest 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public projectControllerCommentingClosedDateChange(id: number, projectCommentingClosedDateChangeRequest: ProjectCommentingClosedDateChangeRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public projectControllerCommentingClosedDateChange(id: number, projectCommentingClosedDateChangeRequest: ProjectCommentingClosedDateChangeRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public projectControllerCommentingClosedDateChange(id: number, projectCommentingClosedDateChangeRequest: ProjectCommentingClosedDateChangeRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public projectControllerCommentingClosedDateChange(id: number, projectCommentingClosedDateChangeRequest: ProjectCommentingClosedDateChangeRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling projectControllerCommentingClosedDateChange.');
+        }
+        if (projectCommentingClosedDateChangeRequest === null || projectCommentingClosedDateChangeRequest === undefined) {
+            throw new Error('Required parameter projectCommentingClosedDateChangeRequest was null or undefined when calling projectControllerCommentingClosedDateChange.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.put<any>(`${this.configuration.basePath}/api/project/commentingClosedDate/${encodeURIComponent(String(id))}`,
+            projectCommentingClosedDateChangeRequest,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

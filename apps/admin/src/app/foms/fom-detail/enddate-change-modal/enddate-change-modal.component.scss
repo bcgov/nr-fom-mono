@@ -1,0 +1,16 @@
+/* This custom style works with using ng-boostrap modal's property 'windowClass' when opened.
+   Also for it to work, "encapsulation: ViewEncapsulation.None" needs to be added to modal's component liks below:
+   @Component({
+      templateUrl: './enddate-change-modal.component.html',
+      styleUrls: ['./enddate-change-modal.component.scss'],
+      encapsulation: ViewEncapsulation.None // Important to make bootstrap modal custom styling property 'windowClass' work.
+    })
+
+    This will result into ngb-bootstrap inserting the custom class (from the 'windowClass') similar like below:
+    <ngb-modal-window role="dialog" tabindex="-1" aria-modal="true" class="d-block enddate-change-modal modal fade show">
+*/
+.enddate-change-modal {
+  width: 95%; // The position is still 'centered' but I shrink the <ngb-modal-window> down to 95%, so it will off the center 
+              // slightly to the left. This will make the modal not to cover the 'Comment Period Details' side panel as what
+              // we wanted.
+}

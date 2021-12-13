@@ -1,14 +1,17 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Subject} from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, ProjectMetricsResponse } from "@api-client";
+import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, ProjectResponse, ProjectService, 
+          SpatialFeaturePublicResponse, ProjectMetricsResponse 
+        } from "@api-client";
 import { KeycloakService } from '@admin-core/services/keycloak.service';
-import {User} from "@api-core/security/user";
+import { User } from "@api-core/security/user";
 import { ModalService } from '@admin-core/services/modal.service';
 import * as moment from 'moment';
-import {AttachmentResolverSvc} from "@admin-core/services/AttachmentResolverSvc";
-
+import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
 
 @Component({
   selector: 'app-application-detail',
@@ -16,6 +19,7 @@ import {AttachmentResolverSvc} from "@admin-core/services/AttachmentResolverSvc"
   styleUrls: ['./fom-detail.component.scss']
 })
 export class FomDetailComponent implements OnInit, OnDestroy {
+  public changeEndDateModal : NgbModalRef = null;
   public isPublishing = false;
   public isDeleting = false;
   public isFinalizing = false;
@@ -41,7 +45,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     private modalSvc: ModalService,
     public projectService: ProjectService, // also used in template
     public attachmentResolverSvc: AttachmentResolverSvc,
-    private keycloakService: KeycloakService
+    private keycloakService: KeycloakService,
+    private ngbModalService: NgbModal,
   ) {
     this.user = this.keycloakService.getUser();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -55,13 +60,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
                             spatialDetail: Array<SpatialFeaturePublicResponse>, 
                             projectMetrics: ProjectMetricsResponse }) => {
       if (data.projectDetail) {
-        this.project = data.projectDetail;
-        if (this.project.workflowState['code'] === 'INITIAL') {
-          this.isProjectActive = true;
-        }
-        if (this.project.commentClassificationMandatory == undefined) {
-          this.project.commentClassificationMandatory = true;
-        }
+        this.initProjectDetail(data.projectDetail);
       } else {
         alert("Uh-oh, couldn't load fom");
         // application not found --> navigate back to search
@@ -70,7 +69,6 @@ export class FomDetailComponent implements OnInit, OnDestroy {
 
       this.spatialDetail = data.spatialDetail;
       this.projectMetrics = data.projectMetrics;
-      this.calculateDaysRemaining();
       this.attachmentResolverSvc.getAttachments(this.project.id)
         .then( (result) => {
           this.attachments = result;
@@ -85,11 +83,10 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     if (this.project.id) { // subscribe only when first project init successfully.
       this.projectUpdateTriggered$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
         this.projectService.projectControllerFindOne(this.project.id).subscribe((data) => {
-          this.project = data;
+          this.initProjectDetail(data);
         });
       });
     }
-
   }
 
   public deleteAttachment(id: number) {
@@ -225,6 +222,11 @@ export class FomDetailComponent implements OnInit, OnDestroy {
                         && this.project.workflowState.code !== WorkflowStateEnum.Published);
   }
 
+  public canChangeEndDate(): boolean {
+    return this.user.isMinistry && (this.project.workflowState.code == WorkflowStateEnum.Initial
+            || this.project.workflowState.code == WorkflowStateEnum.CommentOpen);
+  }
+
   public canEditFOM(): boolean {
     const userCanEdit = this.user.isAuthorizedForClientId(this.project.forestClient.id);
     return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Finalized
@@ -256,9 +258,47 @@ export class FomDetailComponent implements OnInit, OnDestroy {
           || this.project.workflowState.code == WorkflowStateEnum.CommentClosed);
   }
 
+  public openChangeEndDateModal() {
+        // open modal
+        this.changeEndDateModal = this.ngbModalService.open(EnddateChangeModalComponent, {
+          backdrop: 'static',
+          size: 'modal-sm', //or sm
+          windowClass: 'enddate-change-modal' // Important! See endate-change-modal.component.scss for explanation.
+        });
+        
+        let modalInstance = this.changeEndDateModal.componentInstance as EnddateChangeModalComponent;
+        modalInstance.projectId = this.project.id;
+        modalInstance.currentCommentingClosedDate = this.project.commentingClosedDate;
+        modalInstance.changeRequest.revisionCount = this.project.revisionCount;
+        
+        this.changeEndDateModal.result.then(
+          (result) => {
+            // check result
+            if (result.projectUpdated) {
+              this.projectUpdateTriggered$.next();
+            }
+            this.changeEndDateModal = null;
+          },
+          () => {
+            this.changeEndDateModal = null;
+          }
+        );
+  }
+
   ngOnDestroy() {
     this.ngUnsubscribe.next();
     this.ngUnsubscribe.complete();
+  }
+
+  private initProjectDetail(project: ProjectResponse) {
+    this.project = project;
+    if (this.project.workflowState['code'] === 'INITIAL') {
+      this.isProjectActive = true;
+    }
+    if (this.project.commentClassificationMandatory == undefined) {
+      this.project.commentClassificationMandatory = true;
+    }
+    this.calculateDaysRemaining();
   }
 
   private calculateDaysRemaining(){
