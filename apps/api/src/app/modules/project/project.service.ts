@@ -639,8 +639,10 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
 
     const workflowStateCode = entity.workflowStateCode;
-    if (WorkflowStateEnum.INITIAL != workflowStateCode && WorkflowStateEnum.COMMENT_OPEN != workflowStateCode) {
-      throw new BadRequestException("Can only change Commenting Closed Date at Initial or Commenting Open status.");
+    if (WorkflowStateEnum.INITIAL != workflowStateCode && 
+      WorkflowStateEnum.COMMENT_OPEN != workflowStateCode && 
+      WorkflowStateEnum.PUBLISHED != workflowStateCode) {
+      throw new BadRequestException("Can only change Commenting Closed Date at Initial, Published, or Commenting Open status.");
     }
 
     // doing update.
