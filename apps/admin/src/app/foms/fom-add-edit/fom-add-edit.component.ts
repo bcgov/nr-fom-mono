@@ -55,7 +55,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public attachments: AttachmentResponse[] = [];
   public attachmentsInitialNotice: AttachmentResponse[] = [];
   public isDeleting = false;
-  public minDate: Date = new Date();
+  public minOpeningDate: Date = new Date();
+  public minClosedDate: Date;
   public fileTypesParentInitial: string[] =
     ['image/png', 'image/jpeg', 'image/jpg', 'image/tiff',
       'image/x-tiff', 'application/pdf']
@@ -331,6 +332,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     if (newCommentingOpenDate) {
       commentingClosedDateField.enable();
       this.validateClosedDate(commentingClosedDateField.value? moment(commentingClosedDateField.value).toDate(): null);
+
+      // disable past date at closedDate selection less than 30 days after commentingOpenDate
+      this.minClosedDate = moment(newCommentingOpenDate).add(30, 'd').toDate();
     }
     else {
       commentingClosedDateField.disable();
