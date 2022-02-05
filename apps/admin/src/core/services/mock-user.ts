@@ -40,8 +40,8 @@ export function getFakeForestClientUser(): User {
   user.displayName = 'Forest Client User';
   user.isMinistry = false;
   user.isForestClient = true;
-  user.clientIds.push('1011')
-  user.clientIds.push('1012');
+  user.clientIds.push('00001011')
+  user.clientIds.push('00001012');
   return user;
 }
 
@@ -51,7 +51,7 @@ export function getFakeAllAccessUser(): User {
   user.displayName = 'All Access User';
   user.isMinistry = true;
   user.isForestClient = true;
-  user.clientIds.push('1011')
-  user.clientIds.push('1012');
+  user.clientIds.push('00001011')
+  user.clientIds.push('00001012');
   return user;
 }
