@@ -55,7 +55,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public attachments: AttachmentResponse[] = [];
   public attachmentsInitialNotice: AttachmentResponse[] = [];
   public isDeleting = false;
-  public minDate: Date = new Date();
+  public minOpeningDate: Date = new Date();
+  public minClosedDate: Date;
   public fileTypesParentInitial: string[] =
     ['image/png', 'image/jpeg', 'image/jpg', 'image/tiff',
       'image/x-tiff', 'application/pdf']
@@ -303,15 +304,16 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   * Closed Date cannot be before (30 days after Comment Opening Date) 
   * if FOM status is in 'Commenting Open".
   */
-  validateClosedDate(value: Date): void {
-    if (!value) return;
+  validateClosedDate(closedDate: Date): void {
+    if (!closedDate) return;
 
     const commentingOpenDateField = this.fg.get('commentingOpenDate');
     const defaultClosedDate = moment(commentingOpenDateField.value).add(30, 'd');
-    const diff = moment(value.toISOString()).diff(defaultClosedDate, 'days');
+    const diff = moment(closedDate.toISOString()).diff(defaultClosedDate, 'days');
     if (diff < 0 ) {
-      if (this.isCreate || !this.isCreate && (this.originalProjectResponse.commentingClosedDate && 
-              moment(value).format('YYYY-MM-DD') !== this.originalProjectResponse.commentingClosedDate)) {
+      const originalOpenDate = this.originalProjectResponse?.commentingOpenDate;
+      if (this.isCreate || !this.isCreate && (originalOpenDate && originalOpenDate
+        !== moment(commentingOpenDateField.value).format('YYYY-MM-DD'))) {
         this.modalSvc.openWarningDialog(`Commenting Closed Date cannot be before ${defaultClosedDate.format('YYYY-MM-DD')}`);
       }
 
@@ -331,6 +333,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     if (newCommentingOpenDate) {
       commentingClosedDateField.enable();
       this.validateClosedDate(commentingClosedDateField.value? moment(commentingClosedDateField.value).toDate(): null);
+
+      // disable past date at closedDate selection less than 30 days after commentingOpenDate
+      this.minClosedDate = moment(newCommentingOpenDate).add(30, 'd').toDate();
     }
     else {
       commentingClosedDateField.disable();

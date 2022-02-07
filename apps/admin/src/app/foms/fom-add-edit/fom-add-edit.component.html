@@ -56,7 +56,8 @@
                 class="form-control"
                 placeholder="YYYY-MM-DD"
                 bsDatepicker
-                [minDate]="minDate"
+                [minDate]="minOpeningDate"
+                onkeydown="return false"
                 #openDate="bsDatepicker"
                 id="commentingOpenDate"
                 name="commentingOpenDate"
@@ -82,7 +83,8 @@
                 class="form-control"
                 placeholder="YYYY-MM-DD"
                 bsDatepicker
-                [minDate]="minDate"
+                [minDate]="minClosedDate"
+                onkeydown="return false"
                 #closedDate="bsDatepicker"
                 id="commentingClosedDate"
                 name="commentingClosedDate"
