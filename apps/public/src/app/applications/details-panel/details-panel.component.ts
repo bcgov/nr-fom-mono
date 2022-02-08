@@ -35,7 +35,6 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
   public workflowStatus: _.Dictionary<WorkflowStateCode>;
   public projectIdFilter = new Filter<string>({ filter: { queryParam: 'id', value: null } });
   public attachments: AttachmentResponse[];
-  public validityPeriodTxt: string;
   public validityPeriodEndDate: Date;
 
   constructor(
@@ -66,10 +65,6 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
         this.getProjectDetails();
       }
     });
-
-    this.validityPeriodTxt = `This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or 
-                              road permit application, or the issuance of a Timber Sales License until the date 
-                              three years after commencement of the public review and commenting period.`;
   }
 
   /**

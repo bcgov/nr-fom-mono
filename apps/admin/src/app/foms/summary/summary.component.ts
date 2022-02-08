@@ -24,7 +24,6 @@ export class SummaryComponent implements OnInit {
   interactionsReqError: boolean;
   attachments: AttachmentResponse[];
   attachmentsReqError: boolean;
-  validityPeriodTxt: string;
 
   constructor(    
     private route: ActivatedRoute,
@@ -43,9 +42,6 @@ export class SummaryComponent implements OnInit {
     this.getSpatialDetails(this.projectId);
     this.getProjectInteractions(this.projectId);
     this.getProjectAttachments(this.projectId);
-    this.validityPeriodTxt = `This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or 
-                              road permit application, or the issuance of a Timber Sales License until the date 
-                              three years after commencement of the public review and commenting period.`;
   }
 
   private async getProject(projectId: number) {
