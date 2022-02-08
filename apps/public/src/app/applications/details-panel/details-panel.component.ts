@@ -10,6 +10,7 @@ import { AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
         SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode } from '@api-client';
 import * as _ from 'lodash';
 import { ConfigService } from '@utility/services/config.service';
+import moment = require('moment');
 
 /**
  * Details side panel.
@@ -34,6 +35,8 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
   public workflowStatus: _.Dictionary<WorkflowStateCode>;
   public projectIdFilter = new Filter<string>({ filter: { queryParam: 'id', value: null } });
   public attachments: AttachmentResponse[];
+  public validityPeriodTxt: string;
+  public validityPeriodEndDate: Date;
 
   constructor(
     public modalService: NgbModal,
@@ -63,6 +66,10 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
         this.getProjectDetails();
       }
     });
+
+    this.validityPeriodTxt = `This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or 
+                              road permit application, or the issuance of a Timber Sales License until the date 
+                              three years after commencement of the public review and commenting period.`;
   }
 
   /**
@@ -86,6 +93,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
       this.projectIdFilter.filter.value = this.project.id.toString();
       this.saveQueryParameters();
       this.update.emit(this.project);
+      this.validityPeriodEndDate = moment(this.project.commentingOpenDate).add(3, 'year').toDate();
     },
     (err) => {
       console.error(err);

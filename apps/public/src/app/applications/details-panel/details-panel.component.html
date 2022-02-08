@@ -82,12 +82,16 @@
 
           <div>
             <div class="status-msg">
-              Commenting opened for this project on {{project.commentingOpenDate | date:'longDate'}}.
+              Commenting opened for this FOM on {{project.commentingOpenDate | date:'longDate'}}.
               <div *ngIf="project.workflowState.code === workflowStatus['COMMENT_OPEN'].code">
-                This project is currently accepting comments until {{project.commentingClosedDate | date:'longDate'}}.
+                This FOM is currently accepting comments until {{project.commentingClosedDate | date:'longDate'}}.
               </div>
               <div *ngIf="project.workflowState.code !== workflowStatus['COMMENT_OPEN'].code">
-                Commenting closed for this project on {{project.commentingClosedDate | date:'longDate'}}.
+                Commenting closed for this FOM on {{project.commentingClosedDate | date:'longDate'}}.
+              </div>
+              <div>
+                The validity period for this FOM ends on {{this.validityPeriodEndDate | date: 'longDate'}}.
+                <div  style="margin-top: 10px;"><small>{{validityPeriodTxt}}</small></div>
               </div>
             </div>
             <button class="submit-comment-btn btn btn-primary" 
