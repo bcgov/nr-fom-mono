@@ -28,6 +28,12 @@
   padding-right: 0;
 }
 
+.title-container__title {
+  @include flex-box();
+  
+  align-items: center;
+}
+
 .summary-container {
 
     margin: 0 auto;
