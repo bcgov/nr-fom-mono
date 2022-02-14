@@ -1,6 +1,6 @@
 import { SpatialObjectCodeEnum } from '@api-client';
 import { SpatialFeaturePublicResponse } from 'libs/client/typescript-ng/model/spatialFeaturePublicResponse';
-import { CommentScopeOpt, COMMENT_SCOPE_CODE, ConstantUtils, SpatialTypeMap } from './constants/constantUtils';
+import { CommentScopeOpt, COMMENT_SCOPE_CODE, SpatialTypeMap } from './constants/constantUtils';
 
 export class CommonUtil {
   
@@ -9,8 +9,8 @@ export class CommonUtil {
     const commentScopeOpts = [];
     const allOpt = {commentScopeCode: null, desc: 'All', name: null, scopeId: null} as CommentScopeOpt;
     const overallOpt = {
-      commentScopeCode: ConstantUtils.getCommentScopeCodeOrDesc(null, true), 
-      desc: ConstantUtils.getCommentScopeCodeOrDesc(null, false), 
+      commentScopeCode: CommonUtil.getCommentScopeCodeOrDesc(null, true), 
+      desc: CommonUtil.getCommentScopeCodeOrDesc(null, false), 
       name: null, 
       scopeId: null} as CommentScopeOpt;     
     commentScopeOpts.push(allOpt);
@@ -19,18 +19,18 @@ export class CommonUtil {
     if (spatialDetails) {
       spatialDetails
         .filter((detail) => {
-          return ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, true);// filter out rention_area.
+          return CommonUtil.getCommentScopeCodeOrDesc(detail.featureType.code, true);// filter out rention_area.
         })
         .forEach((detail) => {
-        commentScopeOpts.push({commentScopeCode: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, true), 
-                                desc: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, false),
+        commentScopeOpts.push({commentScopeCode: CommonUtil.getCommentScopeCodeOrDesc(detail.featureType.code, true), 
+                                desc: CommonUtil.getCommentScopeCodeOrDesc(detail.featureType.code, false),
                                 name: detail.name, 
                                 scopeId: detail.featureId} as CommentScopeOpt);
       });
     }
     return commentScopeOpts;
   }
-  
+
   static getCommentScopeCodeOrDesc(source: string, forCode: boolean): COMMENT_SCOPE_CODE | string {
     switch(source) {
       case SpatialTypeMap.get(SpatialObjectCodeEnum.CutBlock)['source'].toLowerCase():
