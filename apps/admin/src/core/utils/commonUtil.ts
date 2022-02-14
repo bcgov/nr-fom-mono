@@ -29,7 +29,7 @@ export class CommonUtil {
       });
     }
     return commentScopeOpts;
-  };
+  }
   
   static getCommentScopeCodeOrDesc(source: string, forCode: boolean): COMMENT_SCOPE_CODE | string {
     switch(source) {
