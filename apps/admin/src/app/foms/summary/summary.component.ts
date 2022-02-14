@@ -1,4 +1,4 @@
-import { CommentScope } from '@admin-core/utils/constants/comment';
+import { CommonUtil } from '@admin-core/utils/commonUtil';
 import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -92,7 +92,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
     .then(
       (result) => {
         this.spatialDetail = this.filteredSpatialDetail = [...result];
-        this.commentScopeOpts =  CommentScope.buildCommentScopeOptions(result);
+        this.commentScopeOpts =  CommonUtil.buildCommentScopeOptions(result);
         this.commentScopeOpts = _.remove(this.commentScopeOpts, opt => opt.commentScopeCode !== null); // Don't need All option.
         const mainRptOpt = {commentScopeCode: null, desc: 'Main Report', name: null, scopeId: null} as CommentScopeOpt;
         this.selectedScope = mainRptOpt;

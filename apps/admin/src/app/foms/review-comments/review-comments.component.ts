@@ -12,7 +12,7 @@ import { KeycloakService } from '../../../core/services/keycloak.service';
 import { User } from "@api-core/security/user";
 import * as _ from 'lodash';
 import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
-import { CommentScope } from '@admin-core/utils/constants/comment';
+import { CommonUtil } from '@admin-core/utils/commonUtil';
 
 export const ERROR_DIALOG = {
   width: '340px',
@@ -73,7 +73,7 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
     this.spatialFeatureService.spatialFeatureControllerGetForProject(this.projectId)
         .toPromise()
         .then((spatialDetails) => {
-            this.commentScopeOpts =  CommentScope.buildCommentScopeOptions(spatialDetails);
+            this.commentScopeOpts =  CommonUtil.buildCommentScopeOptions(spatialDetails);
             this.selectedScope = this.commentScopeOpts.filter(opt => opt.commentScopeCode == null)[0]; // allOpt;
         });
 

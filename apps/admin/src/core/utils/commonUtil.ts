@@ -1,8 +1,9 @@
 import { SpatialObjectCodeEnum } from '@api-client';
 import { SpatialFeaturePublicResponse } from 'libs/client/typescript-ng/model/spatialFeaturePublicResponse';
-import { CommentScopeOpt, COMMENT_SCOPE_CODE, ConstantUtils, SpatialTypeMap } from './constantUtils';
+import { CommentScopeOpt, COMMENT_SCOPE_CODE, ConstantUtils, SpatialTypeMap } from './constants/constantUtils';
 
-export class CommentScope {
+export class CommonUtil {
+  
   // Comment Scope select options
   static buildCommentScopeOptions(spatialDetails: SpatialFeaturePublicResponse[]): Array<CommentScopeOpt> {
     const commentScopeOpts = [];
