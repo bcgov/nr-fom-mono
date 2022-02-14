@@ -32,14 +32,17 @@ export class CommonUtil {
   }
 
   static getCommentScopeCodeOrDesc(source: string, forCode: boolean): COMMENT_SCOPE_CODE | string {
+    const spatialTypeCutBlock = SpatialTypeMap.get(SpatialObjectCodeEnum.CutBlock);
+    const spatialTypeRoadSection = SpatialTypeMap.get(SpatialObjectCodeEnum.RoadSection);
+    const spatialTypeWtra = SpatialTypeMap.get(SpatialObjectCodeEnum.Wtra);
     switch(source) {
-      case SpatialTypeMap.get(SpatialObjectCodeEnum.CutBlock)['source'].toLowerCase():
-        return forCode? COMMENT_SCOPE_CODE.CUT_BLOCK: SpatialTypeMap.get(SpatialObjectCodeEnum.CutBlock)['desc'];
+      case spatialTypeCutBlock['source'].toLowerCase():
+        return forCode? COMMENT_SCOPE_CODE.CUT_BLOCK: spatialTypeCutBlock['desc'];
 
-      case SpatialTypeMap.get(SpatialObjectCodeEnum.RoadSection)['source'].toLowerCase():
-        return forCode? COMMENT_SCOPE_CODE.ROAD_SECTION: SpatialTypeMap.get(SpatialObjectCodeEnum.RoadSection)['desc'];
+      case spatialTypeRoadSection['source'].toLowerCase():
+        return forCode? COMMENT_SCOPE_CODE.ROAD_SECTION: spatialTypeRoadSection['desc'];
 
-      case SpatialTypeMap.get(SpatialObjectCodeEnum.Wtra)['source'].toLowerCase():
+      case spatialTypeWtra['source'].toLowerCase():
         return null; // only can comment on CutBlock or RoadSection
 
       default:
