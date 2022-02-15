@@ -1,29 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { CommonUtil } from '@admin-core/utils/commonUtil';
+import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AttachmentResponse, AttachmentService, InteractionResponse, InteractionService, 
         ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService, 
         SpatialFeaturePublicResponse, SpatialFeatureService } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
 import * as _ from 'lodash';
+import { Subject } from 'rxjs/internal/Subject';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-summary',
   templateUrl: './summary.component.html',
   styleUrls: ['./summary.component.scss']
 })
-export class SummaryComponent implements OnInit {
+export class SummaryComponent implements OnInit, OnDestroy {
 
   projectId: number;
   project: ProjectResponse;
   projectReqError: boolean;
   publicComments: PublicCommentAdminResponse[];
+  filteredPublicComments: PublicCommentAdminResponse[];
   publicCommentsReqError: boolean;
   spatialDetail: SpatialFeaturePublicResponse[];
+  filteredSpatialDetail: SpatialFeaturePublicResponse[];
   spatialDetailReqError: boolean;
   interactions: InteractionResponse[]
   interactionsReqError: boolean;
   attachments: AttachmentResponse[];
   attachmentsReqError: boolean;
+  commentScopeOpts :Array<CommentScopeOpt> = [];
+  selectedScope: CommentScopeOpt;
+
+  private ngUnsubscribe$: Subject<boolean> = new Subject<boolean>();
+  private scopeOptionChange$ = new Subject<CommentScopeOpt>(); // To notify when scope 'option' changed.
 
   constructor(    
     private route: ActivatedRoute,
@@ -32,7 +43,7 @@ export class SummaryComponent implements OnInit {
     private spatialFeatureSvc: SpatialFeatureService,
     private interactionSvc: InteractionService,
     private attachmentSvc: AttachmentService,
-    private configSvc: ConfigService,
+    private configSvc: ConfigService
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -42,6 +53,14 @@ export class SummaryComponent implements OnInit {
     this.getSpatialDetails(this.projectId);
     this.getProjectInteractions(this.projectId);
     this.getProjectAttachments(this.projectId);
+
+    this.scopeOptionChange$.pipe(takeUntil(this.ngUnsubscribe$)).subscribe((nextScope) => {
+      this.doFiltering(nextScope);
+    });
+  }
+
+  getAttachmentUrl(id: number): string {
+    return this.configSvc.getAttachmentUrl(id);
   }
 
   private async getProject(projectId: number) {
@@ -59,7 +78,7 @@ export class SummaryComponent implements OnInit {
   private async getpublicComments(projectId: number) {
     this.commentSvc.publicCommentControllerFind(projectId).toPromise()
         .then(
-          (result) => {this.publicComments = result;},
+          (result) => {this.filteredPublicComments = this.publicComments = [...result];},
           (error) => {
             console.error(`Error retrieving Public Comments for Summary Report:`, error);
             this.publicComments = undefined;
@@ -71,7 +90,14 @@ export class SummaryComponent implements OnInit {
   private async getSpatialDetails(projectId: number) {
     this.spatialFeatureSvc.spatialFeatureControllerGetForProject(projectId).toPromise()
     .then(
-      (result) => {this.spatialDetail = result;},
+      (result) => {
+        this.spatialDetail = this.filteredSpatialDetail = [...result];
+        this.commentScopeOpts =  CommonUtil.buildCommentScopeOptions(result);
+        this.commentScopeOpts = _.remove(this.commentScopeOpts, opt => opt.commentScopeCode !== null); // Don't need All option.
+        const mainRptOpt = {commentScopeCode: null, desc: 'Main Report', name: null, scopeId: null} as CommentScopeOpt;
+        this.selectedScope = mainRptOpt;
+        this.commentScopeOpts.unshift(mainRptOpt);
+      },
       (error) => {
         console.error(`Error retrieving Spatil Details for Summary Report:`, error);
         this.spatialDetail = undefined;
@@ -106,9 +132,36 @@ export class SummaryComponent implements OnInit {
     );
   }
 
-  getAttachmentUrl(id: number): string {
-    return this.configSvc.getAttachmentUrl(id);
+  private doFiltering(nextScope: CommentScopeOpt) {
+
+    // filtering on spatialDetail
+    this.filteredSpatialDetail = this.spatialDetail.filter((sDetail) => {
+      return (nextScope.commentScopeCode == null || nextScope.commentScopeCode === COMMENT_SCOPE_CODE.OVERALL) 
+          || (sDetail.featureType.code === nextScope.commentScopeCode.toLowerCase() &&
+              sDetail.featureId == nextScope.scopeId);
+    });
+
+    // filtering on publicComments
+    this.filteredPublicComments = this.publicComments.filter((comment) => {
+      if (!nextScope || nextScope.commentScopeCode == null) {
+        return true; // Everything.
+      }
+      else if (nextScope.commentScopeCode === COMMENT_SCOPE_CODE.OVERALL) {
+        return comment.commentScope.code === nextScope.commentScopeCode;
+      }
+      return comment.commentScope.code === nextScope.commentScopeCode &&
+              ((comment.scopeCutBlockId && comment.scopeCutBlockId == nextScope.scopeId) ||
+              (comment.scopeRoadSectionId && comment.scopeRoadSectionId == nextScope.scopeId));
+    });
   }
 
+  onScopeOptionChanged(selection: CommentScopeOpt) {
+    this.scopeOptionChange$.next(selection);
+  }
+
+  ngOnDestroy() {
+    this.ngUnsubscribe$.next();
+    this.ngUnsubscribe$.complete();
+  }
 }
 

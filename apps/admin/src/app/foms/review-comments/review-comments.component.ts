@@ -4,16 +4,15 @@ import {Observable, Subject} from 'rxjs';
 
 import {
   PublicCommentService, ProjectResponse, ProjectService, PublicCommentAdminResponse,
-  PublicCommentAdminUpdateRequest, SpatialFeaturePublicResponse, SpatialFeatureService
-} from '@api-client';
-import {ModalService} from '../../../core/services/modal.service';
+  PublicCommentAdminUpdateRequest, SpatialFeatureService } from '@api-client';
 import {StateService} from '../../../core/services/state.service';
 import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 import { map, takeUntil } from 'rxjs/operators';
 import { KeycloakService } from '../../../core/services/keycloak.service';
 import { User } from "@api-core/security/user";
 import * as _ from 'lodash';
-import { COMMENT_SCOPE_CODE, ConstantUtils } from '../../../core/utils/constants/constantUtils';
+import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
+import { CommonUtil } from '@admin-core/utils/commonUtil';
 
 export const ERROR_DIALOG = {
   width: '340px',
@@ -23,13 +22,6 @@ export const ERROR_DIALOG = {
       text: 'Close'
     }
   }
-};
-
-type CommentScopeOpt = {
-  commentScopeCode: COMMENT_SCOPE_CODE,
-  desc: string,
-  name: string, 
-  scopeId: number
 };
 
 @Component({
@@ -60,7 +52,6 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
 
   constructor(
     private route: ActivatedRoute,
-    private modalSvc: ModalService,
     private commentSvc: PublicCommentService,
     private stateSvc: StateService,
     private projectSvc: ProjectService,
@@ -82,7 +73,8 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
     this.spatialFeatureService.spatialFeatureControllerGetForProject(this.projectId)
         .toPromise()
         .then((spatialDetails) => {
-            this.buildCommentScopeOptions(spatialDetails);
+            this.commentScopeOpts =  CommonUtil.buildCommentScopeOptions(spatialDetails);
+            this.selectedScope = this.commentScopeOpts.filter(opt => opt.commentScopeCode == null)[0]; // allOpt;
         });
 
     this.triggered$.pipe(takeUntil(this.ngUnsubscribe)).subscribe(() => {
@@ -167,33 +159,6 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
     } catch (err) {
       console.error("Failed to save comment.", err)
       this.loading = false;
-    }
-  }
-
-  private buildCommentScopeOptions(spatialDetails: SpatialFeaturePublicResponse[]) {
-    this.commentScopeOpts = [];
-    // Comment Scope select options
-    const allOpt = {commentScopeCode: null, desc: 'All', name: null, scopeId: null} as CommentScopeOpt;
-    const overallOpt = {
-      commentScopeCode: ConstantUtils.getCommentScopeCodeOrDesc(null, true), 
-      desc: ConstantUtils.getCommentScopeCodeOrDesc(null, false), 
-      name: null, 
-      scopeId: null} as CommentScopeOpt;     
-    this.commentScopeOpts.push(allOpt);
-    this.commentScopeOpts.push(overallOpt);
-    this.selectedScope = allOpt;
-
-    if (spatialDetails) {
-      spatialDetails
-        .filter((detail) => {
-          return ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, true);// filter out rention_area.
-        })
-        .forEach((detail) => {
-        this.commentScopeOpts.push({commentScopeCode: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, true), 
-                                desc: ConstantUtils.getCommentScopeCodeOrDesc(detail.featureType.code, false),
-                                name: detail.name, 
-                                scopeId: detail.featureId} as CommentScopeOpt);
-      });
     }
   }
 

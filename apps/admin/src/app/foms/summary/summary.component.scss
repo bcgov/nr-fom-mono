@@ -26,6 +26,15 @@
 
 .top-container {
   padding-right: 0;
+  .container {
+    padding-bottom: 5px;
+  }
+}
+
+.title-container__title {
+  @include flex-box();
+  
+  align-items: center;
 }
 
 .summary-container {
@@ -105,6 +114,10 @@
 
     a {
       display: none;
+    }
+
+    .mat-select-arrow {
+      border: none;
     }
   }
 }
