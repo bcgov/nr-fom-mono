@@ -19,7 +19,7 @@
           </span>
         </mat-panel-description>
         <mat-icon matBadge="{{interactions?.length}}" matBadgePosition="above before" 
-                matBadgeColor="accent" matBadgeSize="small">reply</mat-icon>
+                matBadgeColor="accent" matBadgeSize="medium">reply</mat-icon>
       </mat-expansion-panel-header>
       <mat-card *ngFor="let interaction of interactions">
         <ng-container [ngTemplateOutlet]="comment_fields_template"
