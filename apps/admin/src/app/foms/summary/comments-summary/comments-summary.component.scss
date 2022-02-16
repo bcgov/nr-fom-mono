@@ -26,6 +26,17 @@ table {
     }
 }
 
+// Custom how 'medium' mat-badge look globally.
+::ng-deep .mat-badge-medium.mat-badge-above .mat-badge-content {
+    width: auto;
+    display: grid;
+    min-width: 25px;
+    max-height: 20px;
+    font-size: 10px;
+    top: -8px;
+    opacity: 0.95;
+}
+
 // This is important or will not reach .mat-content to select
 ::ng-deep span.mat-content {
     height: 40px !important;

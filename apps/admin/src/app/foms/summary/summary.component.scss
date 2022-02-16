@@ -31,11 +31,19 @@
   }
 }
 
-.title-container__title {
-  @include flex-box();
-  
-  align-items: center;
+.title-container {
+  .title-container__title {
+    @include flex-box();
+    
+    align-items: center;
+  }
+
+  mat-label {
+    font-size: 20px;
+  }
 }
+
+
 
 .summary-container {
 
