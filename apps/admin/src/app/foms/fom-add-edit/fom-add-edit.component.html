@@ -177,44 +177,49 @@
               <strong>Attachment</strong>
           </div>
         </div>
-          <div class="form-row">
-            <div class="form-group col-md-4" >
-              <app-upload-box [multipleFiles]="false" [files]="initialPublicDocument"
-                              [isBlob]="true"
-                              [fileTypes]="fileTypesParentInitial"
-                              (fileUploaded)="addNewFileInitialPublic($event)"
-                              (outputFileContent)="getContentFileFromUpload($event)"
-                              [maxFileSizeMB]="maxFileSize"
-              ></app-upload-box>
-              <div class="fileTypes"><em>Acceptable File Types: png, jpeg, jpg, tif, pdf </em></div>
-            </div>
-            <div class="form-group col-md-8">
-              <div class="doc-list row"
-                   *ngFor="let attachment of attachmentsInitialNotice">
-                  <a class="doc-list__item"
-                      style="width: 90%;"
-                      [href]="attachmentResolverSvc.getAttachmentUrl(attachment.id)"
-                      [title]="attachment.fileName || ''"
-                      target="_blank" rel="noopener">
-                    <div class="cell doc-list__item-icon">
-                      <em class="material-icons">
-                        insert_drive_file
-                      </em>
-                    </div>
-                    <div class="cell doc-list__item-name">{{attachment.fileName}} &nbsp;</div>
-                    <div style="text-align: right;margin-right: 5px;">({{attachment.attachmentType.description}})</div>
-                  </a>
-                  <span *ngIf="isDeleteAttachmentAllowed(attachment)" class="vert-pipe">&nbsp;</span>
-                  <button *ngIf="isDeleteAttachmentAllowed(attachment)" class="btn btn-icon row doc-list__item" title="Delete this attachment"
-                        (click)="deleteAttachment(attachment.id)"
-                        [disabled]="isDeleting">
+        <div class="form-row">
+          <div class="form-group col-md-4" >
+            <app-upload-box [multipleFiles]="false" [files]="initialPublicDocument"
+                            [isBlob]="true"
+                            [fileTypes]="fileTypesParentInitial"
+                            (fileUploaded)="addNewFileInitialPublic($event)"
+                            (outputFileContent)="getContentFileFromUpload($event)"
+                            [maxFileSizeMB]="maxFileSize"
+            ></app-upload-box>
+            <div class="fileTypes"><em>Acceptable File Types: png, jpeg, jpg, tif, pdf </em></div>
+          </div>
+          <div class="form-group col-md-8">
+            <div class="doc-list row"
+                  *ngFor="let attachment of attachmentsInitialNotice">
+                <a class="doc-list__item"
+                    style="width: 90%;"
+                    [href]="attachmentResolverSvc.getAttachmentUrl(attachment.id)"
+                    [title]="attachment.fileName || ''"
+                    target="_blank" rel="noopener">
+                  <div class="cell doc-list__item-icon">
                     <em class="material-icons">
-                      delete
+                      insert_drive_file
                     </em>
-                  </button>
-              </div>
+                  </div>
+                  <div class="cell doc-list__item-name">{{attachment.fileName}} &nbsp;</div>
+                  <div style="text-align: right;margin-right: 5px;">({{attachment.attachmentType.description}})</div>
+                </a>
+                <span *ngIf="isDeleteAttachmentAllowed(attachment)" class="vert-pipe">&nbsp;</span>
+                <button *ngIf="isDeleteAttachmentAllowed(attachment)" class="btn btn-icon row doc-list__item" title="Delete this attachment"
+                      (click)="deleteAttachment(attachment.id)"
+                      [disabled]="isDeleting">
+                  <em class="material-icons">
+                    delete
+                  </em>
+                </button>
             </div>
           </div>
+          <div class="form-row" *ngIf="attachmentsInitialNotice.length > 0">
+            <div class="col-md-12">
+              <h6><em>Uploading this Public Notice attachment will overwrite the existing, saved Public Notice. If you need to save multiple Public Notices, please upload additional notices to the FOM Supporting Documents area.</em></h6>
+            </div>
+          </div>
+        </div>
 
         <hr>
         <div class="form-row">
