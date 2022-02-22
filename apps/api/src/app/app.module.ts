@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ScheduleModule } from '@nestjs/schedule';
 
 // Core Modules
 import { AttachmentModule } from './modules/attachment/attachment.module';
@@ -7,6 +8,7 @@ import { InteractionModule } from './modules/interaction/interaction.module';
 import { DistrictModule } from './modules/district/district.module';
 import { ForestClientModule } from './modules/forest-client/forest-client.module';
 import { ProjectModule } from './modules/project/project.module';
+import { ProjectAuthModule } from './modules/project/project-auth.module';
 import { PublicCommentModule } from './modules/public-comment/public-comment.module';
 import { SubmissionModule } from './modules/submission/submission.module';
 import { SpatialFeatureModule } from './modules/spatial-feature/spatial-feature.module';
@@ -23,11 +25,16 @@ function getLogLevel():string {
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     // Config
     AppConfigModule,
     SecurityModule,
     LoggerModule.forRoot({ pinoHttp: {
         level: getLogLevel(),
+        timestamp: () => { 
+          const time = new Date().toISOString();
+          return `,"time": ${time}`;
+        },
         formatters: {
           level: (label) => { return { level: label }; }
         }
@@ -55,6 +62,7 @@ function getLogLevel():string {
     DistrictModule,
     ForestClientModule,
     ProjectModule,
+    ProjectAuthModule,
     PublicCommentModule,
     SubmissionModule,
     SpatialFeatureModule,

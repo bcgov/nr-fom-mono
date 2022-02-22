@@ -6,6 +6,7 @@ import { SpatialFeatureBcgwResponse, SpatialFeaturePublicResponse } from './spat
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { SpatialFeature } from './spatial-feature.entity';
 import dayjs = require('dayjs');
+import { FeatureTypeCode } from './feature-type-code';
 
 @Injectable()
 export class SpatialFeatureService {
@@ -54,8 +55,8 @@ async findByProjectId(projectId: number): Promise<SpatialFeaturePublicResponse[]
     const DATE_FORMAT = 'YYYY-MM-DD';
     const response = new SpatialFeaturePublicResponse();
     response.featureId = entity.featureId;
-    response.featureType = entity.featureType;
-    response.featureType = entity.featureType;
+    response.featureType = FeatureTypeCode.getInstance(entity.featureType);
+    response.centroid = JSON.parse(entity.centroid);
     response.geometry = JSON.parse(entity.geometry);
     response.submissionType = entity.submissionType;
 

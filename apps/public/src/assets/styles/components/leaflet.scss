@@ -1,0 +1,83 @@
+.leaflet-container {
+  font-family: "myriad-pro", Calibri, Arial, sans-serif;
+
+  a.leaflet-popup-close-button {
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.5rem 0;
+    width: 2rem;
+    height: 2rem;
+    color: $gray6;
+    border-radius: 0.25rem;
+    font-size: 24px; // default material-icon size
+    font-weight: normal;
+    transition: all ease-out 0.2s;
+
+    &:active,
+    &:focus,
+    &:hover {
+      color: $gray9;
+      background: $gray1;
+    }
+  }
+}
+
+// Popup
+.leaflet-popup {
+  margin-bottom: 60px; // Offset so we can see the marker
+}
+
+.leaflet-popup-content-wrapper {
+  padding: 0;
+  border-radius: 0.2rem;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  width: 15rem !important;
+  overflow: hidden;
+  line-height: 1.5;
+}
+
+// Map Attribution
+.leaflet-control-attribution {
+  padding: 0.5rem;
+  line-height: 0.75rem;
+  font-size: 0.75rem;
+}
+
+// Marker cluster size variants
+// * small  = 1-9
+// * medium = 10-99
+// * large  = 100+
+
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: transparent !important;
+  background-image: url("../../../assets/images/cluster-pin.svg");
+  background-size: 100%;
+  background-repeat: no-repeat;
+
+  div {
+    width: 100%;
+    height: 48px;
+    color: #fff;
+    background-color: transparent !important;
+    text-align: center;
+    line-height: 2.25rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+}
+
+// Layer Control
+.leaflet-touch .leaflet-control-layers-toggle {
+  width: 32px;
+  height: 32px;
+  background: url("../../../assets/images/baseline-layers-24px.svg") no-repeat center 5px;
+}
+
+.leaflet-top.leaflet-right .leaflet-control {
+  margin-top: 14px;
+}

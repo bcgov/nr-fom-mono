@@ -1,7 +1,7 @@
 import { mockLoggerFactory } from '../../factories/mock-logger.factory';
 import { ProjectService } from './project.service';
 import { Project } from './project.entity';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import { ProjectCreateRequest, ProjectUpdateRequest } from './project.dto';
 
@@ -9,7 +9,7 @@ describe('ProjectService', () => {
   let service: ProjectService;
 
   beforeEach(async () => {
-    service = new ProjectService(null, mockLoggerFactory(), null, null);
+    service = new ProjectService(null, mockLoggerFactory(), null, null, null, null, null);
   });
 
   describe('isCreateAuthorized', () => {
@@ -57,10 +57,10 @@ describe('ProjectService', () => {
     it ('public user cannot update', async () => {
       expect(await service.isUpdateAuthorized(request, entity, null)).toBe(false);
     });
-    it ('ministry user can update when commenting open', async () => {
+    it ('ministry user cannot update when commenting open', async () => {
       user.isMinistry = true;
       entity.workflowStateCode = WorkflowStateEnum.COMMENT_OPEN;
-      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(true);
+      expect(await service.isUpdateAuthorized(request, entity, user)).toBe(false);
     });
     it ('ministry user cannot update when commenting closed', async () => {
       user.isMinistry = true;

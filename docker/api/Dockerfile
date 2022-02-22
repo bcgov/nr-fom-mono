@@ -1,6 +1,5 @@
 
-FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim as build
-# FROM node:14-alpine
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:14-slim as build
 
 # Workaround npm limitation with building as non-root
 USER 0
@@ -20,9 +19,9 @@ RUN npm ci
 # Copy local code to the container image.
 COPY . .
 
-RUN npm run build
+RUN npm run build:api
 
-FROM image-registry.openshift-image-registry.svc:5000/a4b31c-tools/node:14-slim AS run
+FROM artifacts.developer.gov.bc.ca/docker-remote/node:14-slim as run
 
 # Workaround npm limitation with installing as non-root
 USER 0
@@ -42,5 +41,6 @@ RUN npm ci --only=production
 EXPOSE 3333
 
 # Run the web service on container startup.
-CMD [ "node", "/app/apps/api/main.js" ]
+# Use entrypoint so that same image can be reused to run batch process with batch argument supplied.
+ENTRYPOINT [ "node", "/app/apps/api/main.js" ]
 

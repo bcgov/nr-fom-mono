@@ -3,7 +3,7 @@ import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.enti
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
-import { IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
 
 export class ProjectCreateRequest {
   @ApiProperty()
@@ -59,7 +59,6 @@ export class ProjectWorkflowStateChangeRequest {
   @IsEnum(WorkflowStateEnum)
   workflowStateCode: string;
 }
-
 
 // DTO optimized for Public FE map view
 export class ProjectPublicSummaryResponse {
@@ -118,9 +117,45 @@ export class ProjectResponse {
   @ApiProperty({ description: 'ISO-formatted timestamp'})
   createTimestamp: string;
 
+  @ApiProperty({default: true})
+  commentClassificationMandatory: boolean;
+}
+
+export class ProjectMetricsResponse {
+
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  totalInteractionsCount: number;
+
+  @ApiProperty()
+  totalCommentsCount: number;
+
+  @ApiProperty()
+  respondedToCommentsCount: number;
 }
 
 // Need to do this to get to compile, rather than using Point directly. Not sure why...
 export interface FomPoint extends Point {
 
+}
+export class ProjectCommentClassificationMandatoryChangeRequest {
+    @ApiProperty()
+    @IsBoolean()
+    commentClassificationMandatory: boolean;
+  
+    @ApiProperty()
+    @IsNumber()
+    revisionCount: number;
+}
+
+export class ProjectCommentingClosedDateChangeRequest {
+  @ApiProperty({ description: 'ISO-formatted date'})
+  @IsDateString()
+  commentingClosedDate: string;
+
+  @ApiProperty()
+  @IsNumber()
+  revisionCount: number;
 }

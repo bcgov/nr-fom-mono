@@ -19,11 +19,15 @@ model/attachmentResponse.ts
 model/attachmentTypeCode.ts
 model/commentScopeCode.ts
 model/districtResponse.ts
+model/featureTypeCode.ts
 model/forestClientResponse.ts
 model/interactionResponse.ts
 model/keycloakConfig.ts
 model/models.ts
+model/projectCommentClassificationMandatoryChangeRequest.ts
+model/projectCommentingClosedDateChangeRequest.ts
 model/projectCreateRequest.ts
+model/projectMetricsResponse.ts
 model/projectPublicSummaryResponse.ts
 model/projectResponse.ts
 model/projectUpdateRequest.ts

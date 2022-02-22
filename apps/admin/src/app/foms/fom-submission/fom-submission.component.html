@@ -1,0 +1,94 @@
+<div class="top-container" *ngIf="fg">
+  <div class="container">
+    <div class="title-container">
+      <div class="title-container__title">
+        <h1 class="text-muted">FSP ID: {{project.fspId}}</h1>
+      </div>
+      <div class="title-container__actions">
+        <button
+          class="btn btn-light"
+          type="button"
+          title="Cancel changes"
+          (click)="cancelChanges()"
+        >
+          Cancel
+        </button>
+        <button
+          class="btn btn-primary ml-1"
+          type="button"
+          title="Upload your GeoJSON FOM File"
+          (click)="submit()"
+          [disabled]="!isSubmissionAllowed()"
+        >{{ isLoading ? "Submitting" : "Submit" }}
+          <em class="spinner rotating" [hidden]="!isLoading"></em>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-container" *ngIf="fg">
+
+  <div class="container">
+
+    <form class="mb-3" [formGroup]="fg">
+      <fieldset>
+        <legend>FOM Spatial Submission</legend>
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label>FOM ID:</label>
+          </div>
+          <div class="col-md-2">
+            <input
+              type="text"
+              class="form-control"
+              id="id"
+              name="name"
+              disabled
+              [value]="project.id"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-md-3">
+            <label style="white-space: nowrap;">Submission Type:</label>
+          </div>
+          <div class="col-md-3">
+            <span
+              class="value">
+              {{originalSubmissionRequest.submissionTypeCode === 'FINAL' ? 'Final' : 'Proposed'}}
+            </span>
+          </div>
+        </div>
+        <p>
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label style="white-space: nowrap;">GeoSpatial Object Type:</label>
+          </div>
+          <div class="form-group col-md-3">
+            <select name="objectType" class="sort-comments form-control" (change)="changeGeoType($event)" id="geoSpatialType-list">
+              <option  [value]="geoType" *ngFor="let geoType of geoTypeValues"
+                       [innerHTML]=" getGeoSpatialTypeDescription(geoType)"> </option>
+            </select>
+          </div>
+
+        </div>
+        <div class="form-group mb-0">
+
+          <app-upload-box [multipleFiles]="false" 
+                          [files]="applicationFiles" 
+                          [fileTypes]="fileTypesParent"
+                          [maxFileSizeMB]="maxSpatialFileSize"
+                          (fileUploaded)="addNewFiles($event)"
+                          (outputFileContent)="getContentFileFromUpload($event)">
+          </app-upload-box>
+          <div class="fileTypes"><em>Acceptable File Types: json, txt</em></div>
+        </div>
+      </fieldset>
+      <br/>
+      <app-submission-format-overview></app-submission-format-overview>
+    </form>
+  </div>
+</div>
+

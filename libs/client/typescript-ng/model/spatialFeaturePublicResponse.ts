@@ -10,16 +10,21 @@
  * Do not edit the class manually.
  */
 import { SubmissionTypeCode } from './submissionTypeCode';
+import { FeatureTypeCode } from './featureTypeCode';
 
 
 export interface SpatialFeaturePublicResponse { 
-    featureType: SpatialFeaturePublicResponse.FeatureTypeEnum;
+    featureType: FeatureTypeCode;
     featureId: number;
     name: string;
     /**
      * Format: GeoJSON Geometry object
      */
     geometry: object;
+    /**
+     * Format: GeoJSON Point
+     */
+    centroid: object;
     /**
      * Format: YYYY-MM-DD
      */
@@ -28,13 +33,4 @@ export interface SpatialFeaturePublicResponse {
     plannedLengthKm: number;
     submissionType: SubmissionTypeCode;
 }
-export namespace SpatialFeaturePublicResponse {
-    export type FeatureTypeEnum = 'cut_block' | 'road_section' | 'retention_area';
-    export const FeatureTypeEnum = {
-        CutBlock: 'cut_block' as FeatureTypeEnum,
-        RoadSection: 'road_section' as FeatureTypeEnum,
-        RetentionArea: 'retention_area' as FeatureTypeEnum
-    };
-}
-
 

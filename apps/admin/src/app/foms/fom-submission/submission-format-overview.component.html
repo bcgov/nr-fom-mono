@@ -1,0 +1,263 @@
+
+<mat-expansion-panel hideToggle>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <strong>FOM Geospatial Submission Format Overview</strong>
+    </mat-panel-title>
+    <mat-panel-description>
+      Click to expand/collapse
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <p>
+    This Forest Operations Map (FOM) geospatial submission format is based on GeoJSON 
+    (<a href="https://geojson.org/" rel="noopener" target="_blank">https://geojson.org/</a>,
+    <a href="https://tools.ietf.org/html/rfc7946" rel="noopener" target="_blank">https://tools.ietf.org/html/rfc7946</a>).
+  </p>
+  <p>
+    Submit one JSON file per FOM geospatial object type: cut block, WTRA (wildlife tree retention area), or road section. Multipart features are not compatible and need to be "exploded" prior to creating the GeoJSON file. ArcMap provides an "explode tool" suited to convert the multipart feature. A submission must include at least one cutblock file or one road section file.
+  </p>
+  <p>
+    Each JSON file consists of one FeatureCollection object (as per GeoJSON) that lists geometries of the appropriate type (polygon or linestring) based on the FOM object type (see table below).
+  </p>
+  <p>
+    GeoJSON geometry points must be specified using the BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system. Submissions must not use latitude and longitude. Coordinates are ordered as X, Y.
+  </p>
+  <p>
+    Geometries for cutblocks and road sections are also required to provide the property DEV_DATE (development date). Providing the NAME property is optional but is recommended to make it easier for the public to comment on specific features.
+  </p>
+  <p>
+    The JSON files should use UTF-8 for the character encoding. Maximum file size is 30 MB.
+  </p>
+  <p>
+    The attribute table of spatial submissions is described in the tables below. <strong>All cells need to be formatted as text (including the DEV_DATE column).</strong> Attribute table fields with header names exceeding ten characters are known to cause issues during the conversion of other file formats to GeoJSON. Therefore, the exact titles shown below must be used in spatial file attribute tables.
+  </p>
+
+  <em>Attribute table as required in the GeoJSON file</em>
+  <table aria-label="Table:Properties of each Geometry Type"
+        class="field-table">
+    <thead>
+      <tr>
+        <th scope="col">FOM_OBJECT</th>
+        <th scope="col">GEOMETRY</th>
+        <th scope="col" colspan="1">DEV_DATE</th>
+        <th scope="col" colspan="1">NAME</th>
+      </tr>
+    </thead>
+    <tr>
+      <td>Road Section</td>
+      <td>LineString</td>
+      <td colspan="1" class="confluenceTd">YYYY-MM-DD</td>
+      <td colspan="1" class="confluenceTd">NAME</td>
+    </tr>
+    <tr>
+      <td>Cut Block</td>
+      <td>Polygon</td>
+      <td colspan="1" class="confluenceTd">YYYY-MM-DD</td>
+      <td colspan="1" class="confluenceTd">NAME</td>
+    </tr>
+    <tr>
+      <td>WTRA</td>
+      <td >Polygon</td>
+      <td colspan="1" class="confluenceTd">Enter YYYY-MM-DD or leave blank</td>
+      <td colspan="1" class="confluenceTd">NAME</td>
+    </tr>
+  </table>
+
+  <section>
+    <p>
+      The following tables provide details on the specific requirements of certain GeoJSON attributes, which need to be met for successful submissions.
+    </p>
+    
+    <div class="table-title">Road Section</div>
+    <table aria-label="Table: Details on the specific requirements of Road Section GeoJSON attributes"
+          class="field-table">
+      <thead>
+        <tr>
+          <th scope="col">Field</th>
+          <th scope="col" colspan="1">Description</th>
+          <th scope="col">Type</th>
+          <th scope="col">Optional</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>FOM_OBJECT</td>
+        <td colspan="1">Road Section</td>
+        <td>text</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>GEOMETRY</td>
+        <td colspan="1">BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
+        <td>LineString</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>DEV_DATE</td>
+        <td colspan="1">Development date. Format: YYYY-MM-DD</td>
+        <td>text</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>NAME</td>
+        <td colspan="1">Road Section Name. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
+        <td>text</td>
+        <td>Y</td>
+      </tr>
+    </table>
+
+    <div class="table-title">Cut Block</div>
+    <table aria-label="Table: Details on the specific requirements of Cut Block GeoJSON attributes"
+          class="field-table">
+      <thead>
+        <tr>
+          <th scope="col">Field</th>
+          <th scope="col" colspan="1">Description</th>
+          <th scope="col">Type</th>
+          <th scope="col">Optional</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>FOM_OBJECT</td>
+        <td colspan="1">Cut Block</td>
+        <td>text</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>GEOMETRY</td>
+        <td colspan="1">BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
+        <td>Polygon</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>DEV_DATE</td>
+        <td colspan="1">Development date. Format: YYYY-MM-DD</td>
+        <td>text</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>NAME</td>
+        <td colspan="1">Cut Block Name. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
+        <td>text</td>
+        <td>Y</td>
+      </tr>
+    </table>
+
+    <div class="table-title">WTRA</div>
+    <table aria-label="Table: Details on the specific requirements of WTRA GeoJSON attributes"
+          class="field-table">
+      <thead>
+        <tr>
+          <th scope="col">Field</th>
+          <th scope="col" colspan="1">Description</th>
+          <th scope="col">Type</th>
+          <th scope="col">Optional</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>FOM_OBJECT</td>
+        <td colspan="1">WTRA</td>
+        <td>text</td>
+        <td>N</td>
+      </tr>
+      <tr>
+        <td>GEOMETRY</td>
+        <td colspan="1">BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
+        <td>Polygon</td>
+        <td>N</td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <p><strong>Property Format</strong></p>
+    <p>This table specifies the description and format of required properties. All attribute table fields <strong>must</strong> be formatted as text, including the date field.</p>
+  
+    <table aria-label="Table: Description and format of required properties">
+      <thead>
+        <tr>
+          <th scope="col">Property</th>
+          <th scope="col">Description</th>
+          <th scope="col">Value Format</th>
+        </tr>
+      </thead>
+      <tr>
+        <td>FOM_OBJECT</td>
+        <td>Describes the feature (Cutblock, Road, WTRA)</td>
+        <td>text</td>
+      </tr>
+      <tr>
+        <td>GEOMETRY</td>
+        <td>Indicates if feature is a polygon or linestring</td>
+        <td>text</td>
+      </tr>
+      <tr>
+        <td>DEV_DATE</td>
+        <td>Planned date to start development</td>
+        <td>Date string in the format "YYYY-MM-DD"</td>
+      </tr>
+      <tr>
+        <td>NAME</td>
+        <td>Description/identifier for the spatial object.</td>
+        <td>Text, maximum length 50 characters.</td>
+      </tr>
+    </table>
+
+    <p>
+      Prior to publishing a FOM, spatial data can be replaced. In order to do so, a new GeoJSON file has to be uploaded (repeat the regular upload process). This new file will then replace the old one. Successful upload/replacement can be confirmed by clicking on the “Location” button on the “Summary Screen”.
+    </p>
+    <p>
+      Data submitted will be published overnight. Therefore, it will not become viewable in the public interface until the day after it was uploaded.
+    </p>
+  </section>
+
+  <section>
+    <p><strong>FOM Example Submissions</strong></p>
+    <p>
+      This section provides sample submission files.
+    </p>
+    <p>
+      If you are using the ArcGIS conversion tool "Features To JSON" to create your spatial submission, ensure that the "GeoJSON" box is checked prior to running the tool.
+    </p>
+    <p>
+      <img src="assets/images/arcgis-featuresToJson.png" alt="ArcGIS Conversion Tool 'Features To JSON' Example PNG" width="800" height="494">
+    </p>
+    <p>
+      Please be aware that the Features To JSON tool does not accept curves, and does not automatically convert them to lines. Especially when working with feature classes from geodatabases, features containing curves will have to be converted to replace the curves with lines prior to running the Features To JSON tool. To do so, you can either convert your .gdb feature classes to ESRI Shapefiles .shp, or run the "densify" tool available in ArcMap on your feature classes containing curves. Once your shapes do not contain anymore curves, you can run the Feature To JSON tool. Alternative options for creating GeoJSON files outside of ArcMap are the Feature Manipulation Engine (<a href="https://www.safe.com/support/downloads/" rel="noopener" target="_blank">FME</a>), and the "<a href="https://gdal.org/" rel="noopener" target="_blank">gdal tool</a>". 
+    </p>
+    <p>
+      As shown in the tables above, the projection of spatial files for upload must either be BC Albers or WGS84 (EPSG:4326 or EPSG:3005). Should your original files be in a different projection, you can use the "Projections" tool in ArcMap to convert files to the required projection. <em>Just manually changing the projection in the "properties" tab of your file will not suffice!</em>
+    </p>
+  </section>
+
+  <section>
+    <p><strong>Cut Block File</strong></p>
+    <p>
+      This sample file contains two cut blocks, with coordinates are specified in BC Albers.
+    </p>
+    <pre>
+      {{cutblokJSONpretty}}
+    </pre>
+  </section>
+
+  <section>
+    <p><strong>WTRA File</strong></p>
+    <p>
+      This sample file contains one retention area, with coordinates are specified in BC Albers.
+    </p>
+    <pre>
+      {{wtraJSONpretty}}
+    </pre>
+  </section>
+
+  <section>
+    <p><strong>Road Section File</strong></p>
+    <p>
+      This sample file contains one road section, with coordinates specified in WGS84 (longitude, latitude).
+    </p>
+    <pre>
+      {{roadJSONpretty}}
+    </pre>
+  </section>
+</mat-expansion-panel>
+

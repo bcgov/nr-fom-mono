@@ -5,12 +5,18 @@ import { InteractionService } from './interaction.service';
 import { PinoLogger } from 'nestjs-pino';
 import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { maxFileSizeBytes } from '../attachment/attachment.controller';
 import { validate } from 'class-validator';
-import dayjs = require('dayjs');
 import _ = require('lodash');
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import dayjs = require('dayjs');
+import * as utc from 'dayjs/plugin/utc';
+import * as timezone from 'dayjs/plugin/timezone';
+// initialize dayjs extensions
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 // From https://github.com/nestjs/swagger/issues/417#issuecomment-562869578 and https://swagger.io/docs/specification/describing-request-body/file-upload/
 const AttachmentPostBody = (file: string = 'file'): MethodDecorator => (
@@ -86,8 +92,6 @@ const AttachmentUpdateBody = (file: string = 'file'): MethodDecorator => (
 @Controller('interaction')
 export class InteractionController {
 
-  readonly DATE_FORMAT='YYYY-MM-DD';
-
   constructor(
     private readonly service: InteractionService, 
     private logger: PinoLogger) {
@@ -109,15 +113,18 @@ export class InteractionController {
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? dayjs().format(this.DATE_FORMAT)
-                      : dayjs(request.body['communicationDate']).format(this.DATE_FORMAT);
+                      ? null
+                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
+                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
       const createRequest = new InteractionCreateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
         reqDate,
         request.body['communicationDetails'],
-        file? file.originalname: request.body['filename'],
-        file? file: request.body['file']
+        // Note, the generated api-client has little issue; it uses 'FormData' to append a file, but did not provide third
+        // argument for 'filename'. To still use generated api-client, 'filename' could be found from extra formData property.
+        file?.originalname?.includes(".")? file.originalname: request.body['filename'],
+        file? file.buffer: request.body['file']['buffer'],
       );
 
       // Validate fields.
@@ -151,15 +158,16 @@ export class InteractionController {
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? dayjs().format(this.DATE_FORMAT)
-                      : dayjs(request.body['communicationDate']).format(this.DATE_FORMAT);
+                      ? null
+                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
+                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);                     
       const updateRequest = new InteractionUpdateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
         reqDate,
         request.body['communicationDetails'],
-        file? file.originalname: request.body['filename'],
-        file? file: request.body['file'],
+        file?.originalname?.includes(".")? file.originalname: request.body['filename'],
+        file? file.buffer: request.body['file']['buffer'],
         id,
         await new ParseIntPipe().transform(request.body['revisionCount'], null)
       );

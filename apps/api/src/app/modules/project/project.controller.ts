@@ -1,12 +1,12 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe, ParseBoolPipe } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, BadRequestException, ForbiddenException, HttpStatus, ParseIntPipe  } from '@nestjs/common';
 import { ApiTags, ApiBody, ApiResponse, ApiQuery, ApiBearerAuth } from '@nestjs/swagger';
 import * as dayjs from 'dayjs';
 
 import { ProjectService, ProjectFindCriteria } from './project.service';
-import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
+import { ProjectPublicSummaryResponse, ProjectResponse, ProjectCreateRequest, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest } from './project.dto';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
-import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
+import { User } from "@api-core/security/user";
 import { PinoLogger } from 'nestjs-pino';
 
 
@@ -55,8 +55,7 @@ export class ProjectController {
         findCriteria.commentingOpenedOnOrAfter = dayjs(openedOnOrAfter).format(DATE_FORMAT);
       } 
 
-      // Logging at info level to help measure performance.
-      this.logger.info('get /project/publicSummary with criteria %o', findCriteria);
+      this.logger.debug('get /project/publicSummary with criteria %o', findCriteria);
 
       return this.service.findPublicSummaries(findCriteria);
   }
@@ -71,6 +70,15 @@ export class ProjectController {
     return this.service.findOne(id, user, {
       relations: ['district', 'forestClient', 'workflowState'],
     });
+  }
+
+  @Get('/metrics/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectMetricsResponse })
+  async findProjectMetrics(
+    @UserHeader() user: User,
+    @Param('id', ParseIntPipe) id: number): Promise<ProjectMetricsResponse> {
+    return this.service.findProjectMetrics(id, user);
   }
 
   @Get()
@@ -153,5 +161,29 @@ export class ProjectController {
     @UserRequiredHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
     this.service.delete(id, user);
+  }
+
+  @Put('/commentClassification/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
+  @ApiBody({ type: ProjectCommentClassificationMandatoryChangeRequest })
+  async commentClassificationMandatoryChange(
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: ProjectCommentClassificationMandatoryChangeRequest
+  ): Promise<ProjectResponse> {
+    return this.service.commentClassificationMandatoryChange(id, request, user);
+  }
+
+  @Put('/commentingClosedDate/:id')
+  @ApiBearerAuth()
+  @ApiResponse({ status: HttpStatus.OK})
+  @ApiBody({ type: ProjectCommentingClosedDateChangeRequest })
+  async commentingClosedDateChange(
+    @UserRequiredHeader() user: User,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() request: ProjectCommentingClosedDateChangeRequest
+  ): Promise<boolean> {
+    return this.service.commentingClosedDateChange(id, request, user);
   }
 }

@@ -15,13 +15,15 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@core-lib": ["libs/core/src/index.ts"],
-      "@util-lib": ["libs/utility/src/index.ts"],
       "@core": ["apps/api/src/core"],
+      "@api-core/*": ["apps/api/src/core/*"],
       "@controllers": ["apps/api/src/core/controllers"],
-      "@dto": ["apps/api/src/core/dto"],
       "@entities": ["apps/api/src/core/entities"],
-      "@models": ["apps/api/src/core/models"]
+      "@api-modules/*": ["apps/api/src/app/modules/*"],
+      "@api-client": ["libs/client/typescript-ng"],
+      "@utility/*": ["libs/utility/src/*"],
+      "@public-core/*": ["apps/public/src/core/*"],
+      "@admin-core/*": ["apps/admin/src/core/*"]
     }
   },
   "exclude": ["node_modules", "tmp"]

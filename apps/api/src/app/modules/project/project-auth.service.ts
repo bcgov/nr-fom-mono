@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './project.entity';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 
 /**

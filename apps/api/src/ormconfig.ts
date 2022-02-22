@@ -4,7 +4,7 @@ import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 // Duplicated with database.configuration.ts. Partly deliberately to allow different credentials to be used (if desired).
 const config: TypeOrmModuleOptions = {
   type: 'postgres',
-  database: process.env.DB_NAME || 'api-db',
+  database: process.env.DB_NAME || 'fom',
   schema: 'app_fom',
   username: process.env.DB_USERNAME || 'postgres',
   password: process.env.DB_PASSWORD,

@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository, UpdateResult } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
@@ -7,7 +7,7 @@ import { ApiBaseEntity, DeepPartial } from '@entities';
 import * as dayjs from 'dayjs';
 
 import { mapToEntity } from '@core';
-import { User } from '../security/user';
+import { User } from "@api-core/security/user";
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 /**
@@ -148,20 +148,21 @@ export abstract class DataService<
    */
   async update(id: number | string, requestDto: any, user?: User): Promise<O> {
     requestDto.updateUser = user ? user.userName : 'Anonymous';
+    // Saving update timestamp in UTC format is fine.
     requestDto.updateTimestamp = dayjs().format();
 
     this.logger.debug(`${this.constructor.name}.update dto %o`, requestDto);
 
     const entity:E = await this.findEntityForUpdate(id)
     if (! entity) {
-      throw new UnprocessableEntityException("Entity not found.");
+      throw new BadRequestException("Entity not found.");
     }
     if (! await this.isUpdateAuthorized(requestDto, entity, user)) {
       throw new ForbiddenException();
     }
     if (entity.revisionCount != requestDto.revisionCount) {
       this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + requestDto.revisionCount);
-      throw new UnprocessableEntityException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
     }
     requestDto.revisionCount += 1;
 
@@ -196,7 +197,7 @@ export abstract class DataService<
 
     const deleteCount = (await this.repository.delete(id)).affected;
     if (deleteCount != 1) {
-      throw new UnprocessableEntityException("No entity to delete");
+      throw new BadRequestException("No entity to delete");
     }
   }
 

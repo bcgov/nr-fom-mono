@@ -1,5 +1,4 @@
 import { ViewEntity, JoinColumn, ManyToOne, ViewColumn } from 'typeorm';
-import { ApiProperty } from '@nestjs/swagger';
 import { SubmissionTypeCode } from '../submission/submission-type-code.entity';
 import { ForestClient } from '../forest-client/forest-client.entity';
 
@@ -23,6 +22,10 @@ export class SpatialFeature {
   // Loaded from DB as geojson string, converted to geojson object 
   @ViewColumn({name:"geojson"})
   geometry: string;
+
+  // Loaded from DB as geojson string, converted to geojson object 
+  @ViewColumn({ name: 'centroid' })
+  centroid: string;
 
   @ViewColumn({name: 'planned_development_date'})
   plannedDevelopmentDate: string;

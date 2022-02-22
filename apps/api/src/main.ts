@@ -2,13 +2,15 @@ import 'dotenv/config';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger, PinoLogger } from 'nestjs-pino';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
-import { ProjectController } from './app/modules/project/project.controller';
 import helmet = require('helmet');
+import { ProjectService } from '@api-modules/project/project.service';
+import { AppConfigService } from '@api-modules/app-config/app-config.provider';
+import { urlencoded, json } from 'express';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -19,6 +21,12 @@ async function dbmigrate(config: ConnectionOptions) {
     }
 }
 
+async function createApp():Promise<INestApplication>  {
+  const app = await NestFactory.create(AppModule, { logger: false });
+  app.useLogger(app.get(Logger));
+  return app;
+}
+
 async function bootstrap():Promise<INestApplication> {
 
   try {
@@ -26,18 +34,21 @@ async function bootstrap():Promise<INestApplication> {
     await dbmigrate(ormConfigMain as ConnectionOptions);
     console.log("Done DB Migrations.");
   } catch (error) {
-    console.log('Error during database migration: ' + JSON.stringify(error));
+    console.error('Error during database migration: ' + JSON.stringify(error));
     return null;
   }
 
-  const app = await NestFactory.create(AppModule, { logger: false });
-  app.useLogger(app.get(Logger));
+  const app = await createApp();
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
   }));
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  const appConfig:AppConfigService = app.get('AppConfigService');
+  app.setGlobalPrefix(appConfig.getGlobalPrefix());
+  // Required setting as per https://stackoverflow.com/questions/52783959/nest-js-request-entity-too-large-payloadtoolargeerror-request-entity-too-larg
+  const MAX_CONTENT_LIMIT = '30mb'
+  app.use(json({ limit: MAX_CONTENT_LIMIT }));
+  app.use(urlencoded({ extended: true, limit: MAX_CONTENT_LIMIT }));
 
   if (process.env.BYPASS_CORS) {
     // For local development only, leave env var undefined within OpenShift deployments.
@@ -67,7 +78,7 @@ async function bootstrap():Promise<INestApplication> {
 
   // Only meant for running locally, not accessible via /api route.
   httpAdapter.get('/health-check', (req, res) => {
-    res.send ('Health check passed');
+    res.send('Health check passed');
   });
 
   const config = new DocumentBuilder()
@@ -76,16 +87,26 @@ async function bootstrap():Promise<INestApplication> {
     .setVersion('1.0')
     .addBearerAuth()
     .build();
-  const appConfig = app.get('AppConfigService');
-  const port = appConfig.get('port') || 3333;
+  const port = appConfig.getPort();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup(appConfig.getGlobalPrefix(), app, document);
 
   await app.listen(port, () => {
-    app.get(Logger).log('Listening at http://localhost:' + port + '/' + globalPrefix);
+    app.get(Logger).log('Listening at http://localhost:' + port + '/' + appConfig.getGlobalPrefix());
   });
 
   return app;
+}
+
+async function runTestDataMigrations(app: INestApplication) {
+  if (process.env.DB_TESTDATA  == "true") {
+    const logger = app.get(Logger);
+    logger.log("Running DB Test Data Migrations...");
+    // Need different name from default connection that is already active.
+    // We don't change ormConfigTest's actual definition because when run via 'npm run' needs to use default connection.
+    ormConfigTest['name'] = 'test-migration'; 
+    await dbmigrate(ormConfigTest as ConnectionOptions);
+  }
 }
 
 async function postStartup(app: INestApplication) {
@@ -93,32 +114,65 @@ async function postStartup(app: INestApplication) {
     const logger = app.get(Logger);
     logger.log("Starting postStartup...");
 
-    if (process.env.DB_TESTDATA  == "true") {
-      logger.log("Running DB Test Data Migrations...");
-      // Need different name from default connection that is already active.
-      // We don't change ormConfigTest's actual definition because when run via 'npm run' needs to use default connection.
-      ormConfigTest['name'] = 'test-migration'; 
-      await dbmigrate(ormConfigTest as ConnectionOptions);
-    }
+    await runTestDataMigrations(app);
 
     // Preload cache for public summary default data.
     logger.log("Starting public summary cache pre-load...");
-    await app.get(ProjectController).findPublicSummary();
+    await app.get(ProjectService).refreshCache();
 
     logger.log("Done postStartup.");
   } catch (error) {
-    console.log('Error during post startup: ' + JSON.stringify(error));
+    console.error('Error during post startup: ' + JSON.stringify(error));
   }
 }
 
-async function start() {
-  const app = await bootstrap();
-  app.get(Logger).log("Done regular startup.");
-  postStartup(app); // Don't await so non-blocking - allows OpenShift container (pod) to be marked ready for traffic.
+async function startApi() {
+  try {
+    const app = await bootstrap();
+    app.get(Logger).log("Done regular startup.");
+    // Don't await so non-blocking - allows OpenShift container (pod) to be marked ready for traffic.
+    postStartup(app).catch((postError) => {
+      console.error('Error during post startup: ' + JSON.stringify(postError));
+    });
+  } catch (error) {
+    console.error('Error during application startup: ' + JSON.stringify(error));
+    process.exit(1);
+  }  
 }
 
-try {
-  start();
-} catch (error) {
-  console.log('Error during application startup: ' + JSON.stringify(error));
+async function runBatch() {
+  try {
+    const app = await createApp();
+    app.get(Logger).log("Done startup.");
+    await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    process.exit(0);
+  } catch (error) {
+    console.error('Error during batch execution: ' + JSON.stringify(error));
+    process.exit(1);
+  }  
+}
+
+async function standaloneRunTestDataMigrations() {
+  try {
+    const app = await createApp();
+    const logger = app.get(Logger);
+    logger.log("Done startup.");
+    await runTestDataMigrations(app);
+
+  } catch (error) {
+    console.error('Error during test data migration: ' + JSON.stringify(error));
+    process.exit(1);
+  }
+}
+
+
+if (process.argv.length > 2 && '-batch' == process.argv[2]) {
+  console.log("Running batch process at " + new Date().toISOString() + " ...");
+  runBatch();
+} else if (process.argv.length > 2 && '-testdata' == process.argv[2]) {
+  // Due to long delays running test migrations during normal startup, this provides a way to run them out-of-band, via an OpenShift batch job.
+  console.log("Running test data migrations at " + new Date().toISOString() + " ...");
+  standaloneRunTestDataMigrations();
+} else {
+  startApi();
 }

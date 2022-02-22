@@ -20,7 +20,7 @@ RUN npm ci
 # Copy local code to the container image.
 COPY . .
 
-RUN npm run build
+RUN npm run build:api
 
 FROM node:14-slim AS run
 
@@ -42,5 +42,5 @@ RUN npm ci --only=production
 EXPOSE 3333
 
 # Run the web service on container startup.
-CMD [ "node", "/app/apps/api/main.js" ]
+ENTRYPOINT [ "node", "/app/apps/api/main.js" ]
 

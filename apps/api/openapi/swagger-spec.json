@@ -26,6 +26,9 @@
           "url": {
             "type": "string"
           },
+          "siteMinderUrl": {
+            "type": "string"
+          },
           "realm": {
             "type": "string"
           },
@@ -36,6 +39,7 @@
         "required": [
           "enabled",
           "url",
+          "siteMinderUrl",
           "realm",
           "clientId"
         ]
@@ -69,13 +73,56 @@
           },
           "attachmentType": {
             "$ref": "#/components/schemas/AttachmentTypeCode"
+          },
+          "createTimestamp": {
+            "format": "date-time",
+            "type": "string"
           }
         },
         "required": [
           "id",
           "projectId",
           "fileName",
-          "attachmentType"
+          "attachmentType",
+          "createTimestamp"
+        ]
+      },
+      "InteractionResponse": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "stakeholder": {
+            "type": "string"
+          },
+          "communicationDate": {
+            "type": "string"
+          },
+          "communicationDetails": {
+            "type": "string"
+          },
+          "attachmentId": {
+            "type": "number"
+          },
+          "id": {
+            "type": "number"
+          },
+          "revisionCount": {
+            "type": "number"
+          },
+          "createTimestamp": {
+            "type": "string",
+            "description": "ISO-formatted timestamp"
+          }
+        },
+        "required": [
+          "projectId",
+          "communicationDate",
+          "communicationDetails",
+          "id",
+          "revisionCount",
+          "createTimestamp"
         ]
       },
       "ProjectPublicSummaryResponse": {
@@ -193,6 +240,10 @@
           "createTimestamp": {
             "type": "string",
             "description": "ISO-formatted timestamp"
+          },
+          "commentClassificationMandatory": {
+            "type": "boolean",
+            "default": true
           }
         },
         "required": [
@@ -206,7 +257,31 @@
           "forestClient",
           "workflowState",
           "revisionCount",
-          "createTimestamp"
+          "createTimestamp",
+          "commentClassificationMandatory"
+        ]
+      },
+      "ProjectMetricsResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "totalInteractionsCount": {
+            "type": "number"
+          },
+          "totalCommentsCount": {
+            "type": "number"
+          },
+          "respondedToCommentsCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "totalInteractionsCount",
+          "totalCommentsCount",
+          "respondedToCommentsCount"
         ]
       },
       "ProjectCreateRequest": {
@@ -303,41 +378,35 @@
           "workflowStateCode"
         ]
       },
-      "InteractionResponse": {
+      "ProjectCommentClassificationMandatoryChangeRequest": {
         "type": "object",
         "properties": {
-          "projectId": {
-            "type": "number"
-          },
-          "stakeholder": {
-            "type": "string"
-          },
-          "communicationDate": {
-            "type": "string"
-          },
-          "communicationDetails": {
-            "type": "string"
-          },
-          "attachmentId": {
-            "type": "number"
-          },
-          "id": {
-            "type": "number"
+          "commentClassificationMandatory": {
+            "type": "boolean"
           },
           "revisionCount": {
             "type": "number"
-          },
-          "createTimestamp": {
-            "type": "string",
-            "description": "ISO-formatted timestamp"
           }
         },
         "required": [
-          "projectId",
-          "communicationDetails",
-          "id",
-          "revisionCount",
-          "createTimestamp"
+          "commentClassificationMandatory",
+          "revisionCount"
+        ]
+      },
+      "ProjectCommentingClosedDateChangeRequest": {
+        "type": "object",
+        "properties": {
+          "commentingClosedDate": {
+            "type": "string",
+            "description": "ISO-formatted date"
+          },
+          "revisionCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "commentingClosedDate",
+          "revisionCount"
         ]
       },
       "PublicCommentCreateRequest": {
@@ -561,16 +630,26 @@
           "description"
         ]
       },
+      "FeatureTypeCode": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "description"
+        ]
+      },
       "SpatialFeaturePublicResponse": {
         "type": "object",
         "properties": {
           "featureType": {
-            "type": "string",
-            "enum": [
-              "cut_block",
-              "road_section",
-              "retention_area"
-            ]
+            "$ref": "#/components/schemas/FeatureTypeCode"
           },
           "featureId": {
             "type": "number"
@@ -581,6 +660,10 @@
           "geometry": {
             "type": "object",
             "description": "Format: GeoJSON Geometry object"
+          },
+          "centroid": {
+            "type": "object",
+            "description": "Format: GeoJSON Point"
           },
           "plannedDevelopmentDate": {
             "type": "string",
@@ -601,6 +684,7 @@
           "featureId",
           "name",
           "geometry",
+          "centroid",
           "plannedDevelopmentDate",
           "plannedAreaHa",
           "plannedLengthKm",
@@ -886,445 +970,6 @@
         ]
       }
     },
-    "/api/project/publicSummary": {
-      "get": {
-        "operationId": "ProjectController_findPublicSummary",
-        "parameters": [
-          {
-            "name": "includeCommentOpen",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "includePostCommentOpen",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "forestClientName",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "openedOnOrAfter",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProjectPublicSummaryResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "project"
-        ]
-      }
-    },
-    "/api/project/{id}": {
-      "get": {
-        "operationId": "ProjectController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "project"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "put": {
-        "operationId": "ProjectController_update",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectUpdateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "project"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "delete": {
-        "operationId": "ProjectController_remove",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": ""
-          }
-        },
-        "tags": [
-          "project"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/api/project": {
-      "get": {
-        "operationId": "ProjectController_find",
-        "parameters": [
-          {
-            "name": "fspId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "districtId",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "workflowStateCode",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "forestClientName",
-            "required": false,
-            "in": "query",
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ProjectResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "project"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      },
-      "post": {
-        "operationId": "ProjectController_create",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectCreateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "project"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/api/project/workflowState/{id}": {
-      "put": {
-        "operationId": "ProjectController_stateChange",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProjectWorkflowStateChangeRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProjectResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "project"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/api/workflow-state-code": {
-      "get": {
-        "operationId": "WorkflowStateCodeController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/WorkflowStateCode"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "project"
-        ]
-      }
-    },
-    "/api/district": {
-      "get": {
-        "operationId": "DistrictController_findAll",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/DistrictResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "district"
-        ]
-      }
-    },
-    "/api/district/{id}": {
-      "get": {
-        "operationId": "DistrictController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DistrictResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "district"
-        ]
-      }
-    },
-    "/api/forest-client": {
-      "get": {
-        "operationId": "ForestClientController_find",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Returns only forest clients that the user is authorized for.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/ForestClientResponse"
-                  }
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "forest-client"
-        ],
-        "security": [
-          {
-            "bearer": []
-          }
-        ]
-      }
-    },
-    "/api/forest-client/{id}": {
-      "get": {
-        "operationId": "ForestClientController_findOne",
-        "parameters": [
-          {
-            "name": "id",
-            "required": true,
-            "in": "path",
-            "schema": {
-              "type": "number"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ForestClientResponse"
-                }
-              }
-            }
-          }
-        },
-        "tags": [
-          "forest-client"
-        ]
-      }
-    },
     "/api/interaction": {
       "post": {
         "operationId": "InteractionController_create",
@@ -1503,6 +1148,563 @@
           {
             "bearer": []
           }
+        ]
+      }
+    },
+    "/api/project/publicSummary": {
+      "get": {
+        "operationId": "ProjectController_findPublicSummary",
+        "parameters": [
+          {
+            "name": "includeCommentOpen",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "includePostCommentOpen",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "forestClientName",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "openedOnOrAfter",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectPublicSummaryResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ]
+      }
+    },
+    "/api/project/{id}": {
+      "get": {
+        "operationId": "ProjectController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "ProjectController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "ProjectController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project/metrics/{id}": {
+      "get": {
+        "operationId": "ProjectController_findProjectMetrics",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectMetricsResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project": {
+      "get": {
+        "operationId": "ProjectController_find",
+        "parameters": [
+          {
+            "name": "fspId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "districtId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "workflowStateCode",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "forestClientName",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProjectResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "post": {
+        "operationId": "ProjectController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project/workflowState/{id}": {
+      "put": {
+        "operationId": "ProjectController_stateChange",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectWorkflowStateChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project/commentClassification/{id}": {
+      "put": {
+        "operationId": "ProjectController_commentClassificationMandatoryChange",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCommentClassificationMandatoryChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProjectResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/project/commentingClosedDate/{id}": {
+      "put": {
+        "operationId": "ProjectController_commentingClosedDateChange",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProjectCommentingClosedDateChangeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/workflow-state-code": {
+      "get": {
+        "operationId": "WorkflowStateCodeController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/WorkflowStateCode"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "project"
+        ]
+      }
+    },
+    "/api/district": {
+      "get": {
+        "operationId": "DistrictController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DistrictResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "district"
+        ]
+      }
+    },
+    "/api/district/{id}": {
+      "get": {
+        "operationId": "DistrictController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DistrictResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "district"
+        ]
+      }
+    },
+    "/api/forest-client": {
+      "get": {
+        "operationId": "ForestClientController_find",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Returns only forest clients that the user is authorized for.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ForestClientResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "forest-client"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/forest-client/{id}": {
+      "get": {
+        "operationId": "ForestClientController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ForestClientResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "forest-client"
         ]
       }
     },

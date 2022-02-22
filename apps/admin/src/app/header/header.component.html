@@ -1,0 +1,36 @@
+<header class="app-header app-header--solid" id="header">
+  <nav class="navbar navbar-expand-md justify-content-between">
+    <a class="navbar-brand" title="Forest Operations Map - FOM" routerLink="/home">
+      <span class="navbar-brand__title">Forest Operations Map - Admin </span>
+    </a>
+    <span class="navbar-environment" *ngIf="environmentDisplay">{{environmentDisplay}}</span>
+    <button class="navbar-toggler" type="button" title="Toggle Main Navigation"
+            aria-controls="navbarText"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+            (click)="toggleNav()">
+      <em class="material-icons">menu</em>
+      <span>MENU</span>
+    </button>
+
+    <div class="navbar-collapse" [@toggleNav]="isNavMenuOpen ? 'navOpen' : 'navClosed'" id="mainNav">
+      <ul class="navbar-nav">
+        <li *ngIf="user && user.isForestClient" class="nav-item">
+          <a class="nav-link" routerLink="/a/create" title="Add a new FOM" tabindex="0">
+            <span>Add New FOM</span>
+          </a>
+        </li>
+        <li *ngIf="user && (user.isMinistry || user.isForestClient)" class="nav-item">
+          <a class="nav-link" routerLink="/search" title="Search for FOMs" tabindex="1">
+            <span>Search FOMs</span>
+          </a>
+        </li>
+        <li *ngIf="user" class="nav-item" placement="bottom-right">
+          <a class="nav-link" (click)="navigateToLogout()" title="Log out" tabindex="0">
+            <span>{{logoutMsg}}</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</header>

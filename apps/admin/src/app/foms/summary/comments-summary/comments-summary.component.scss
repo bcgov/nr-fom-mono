@@ -1,0 +1,44 @@
+h4 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+table {
+    width: 100%;
+}
+
+.no-margin {
+    margin: 0;
+}
+
+.mat-card {
+    .row {
+        padding-bottom: 0.4rem;
+    }
+}
+
+.container.comments-header {
+    padding: 0;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    button {
+        margin-right: 7px;
+    }
+}
+
+// Custom how 'medium' mat-badge look globally.
+::ng-deep .mat-badge-medium.mat-badge-above .mat-badge-content {
+    width: auto;
+    display: grid;
+    min-width: 25px;
+    max-height: 20px;
+    font-size: 10px;
+    top: -8px;
+    opacity: 0.95;
+}
+
+// This is important or will not reach .mat-content to select
+::ng-deep span.mat-content {
+    height: 40px !important;
+    align-items: center !important;
+}

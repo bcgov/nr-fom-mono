@@ -1,0 +1,161 @@
+
+  <div class="top-container">
+    <div class="container">
+      <div class="breadcrumb-container">
+        <a [routerLink]="['/a', projectId]">
+          <em class="material-icons md-20">arrow_back </em> Back to FOM Details</a>
+      </div>
+      <div class="title-container row">
+        <div class="col-md-4 title-container__title">
+          <h1>Summary for FOM ID: {{project?.id}}</h1>
+        </div>
+        <div class="col-md-3">
+          <mat-form-field [style.width.px]=500>
+            <mat-label>Comment Scope</mat-label>
+            <mat-select [(ngModel)]="selectedScope" name="commentScope"
+              (selectionChange)="onScopeOptionChanged(selectedScope)">
+              <mat-option *ngFor="let opt of commentScopeOpts" [value]="opt">
+                <small>{{opt.desc}} {{opt.scopeId}} {{opt.name}}</small>
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-container">
+    <div class="container">
+      <section class="summary-container">
+        <section class="project-info">
+          <div>
+            <h4>Name</h4>
+            {{project?.name | titlecase}}
+          </div>
+
+          <div>
+            <h4>Description</h4>
+            {{project?.description}}
+          </div>
+
+          <div>
+            <h4>Details</h4>
+            <ul class="nv-list">
+              <li>
+                <span class="name">FSP ID:</span>
+                <span class="value">
+                  {{project?.fspId}}
+                </span>
+              </li>
+              <li>
+                <span class="name">FOM Holder:</span>
+                <span class="value">
+                  {{project?.forestClient?.name}}
+                </span>
+              </li>
+              <li>
+                <span class="name">District:</span>
+                <span class="value">
+                  {{project?.district?.name}}
+                </span>
+              </li>
+              <li>
+                <span class="name">FOM Status:</span>
+                <span class="value">
+                  {{project?.workflowState? project.workflowState.description : 'Unknown'}}
+                </span>
+              </li>
+              <li>
+                <span class="name">Commenting Open Date:</span>
+                <span class="value">
+                  {{project?.commentingOpenDate}}
+                </span>
+              </li>
+              <li>
+                <span class="name">Commenting Closed Date:</span>
+                <span class="value">
+                  {{project?.commentingClosedDate}}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section>
+          <h4>Geographic Shape Information</h4>
+          <app-details-map
+            [projectSpatialDetail]="filteredSpatialDetail">
+          </app-details-map>
+
+          <app-shape-info
+            [spatialDetail]="filteredSpatialDetail">
+          </app-shape-info>
+        </section>
+
+        <section class="project-relations">
+          <section>
+            <div>
+              <app-comments-summary
+                [publicCommentDetails]="filteredPublicComments"
+                [requestError]="publicCommentsReqError">
+              </app-comments-summary>
+            </div>
+          </section>
+
+          <section *ngIf="!selectedScope?.commentScopeCode">
+            <div>
+              <app-interactions-summary
+                [interactionDetails]="interactions"
+                [requestError]="interactionsReqError">
+              </app-interactions-summary>
+            </div>
+          </section>
+        </section>
+
+        <section *ngIf="!selectedScope?.commentScopeCode">
+          <h4>Attachments</h4>
+          <div *ngIf="attachments?.length > 0; else noAttachment">
+            <table id="table-card" class="table-cards" aria-label="List of Attachments">
+              <thead>
+                <tr>
+                  <th scope="col" id="dateUploaded" style="width: 10%;">Date Uploaded</th>
+                  <th scope="col" id="fileName">File Name</th>
+                  <th scope="col" id="type" style="width: 10%;">Type</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let attachment of attachments">
+                  <td>
+                    <span>{{attachment.createTimestamp | date: 'medium'}}</span>
+                  </td>
+                  <td data-label="File Name">
+                    <a id="attachment-link"
+                      [href]="getAttachmentUrl(attachment.id)"
+                      [title]="attachment.fileName || ''"
+                      target="_blank" rel="noopener">
+                      {{attachment.fileName}}
+                    </a>
+                  </td>
+                  <td data-label="Type">
+                    <span>{{attachment.attachmentType.description}}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #noAttachment>
+            <div>
+              {{ attachmentsReqError? 'Request encountered error. Please try later.': 'No Attachment' }}.
+            </div>
+          </ng-template>
+        </section>
+
+        <section *ngIf="!selectedScope?.commentScopeCode">
+          <small>This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road permit application, or the issuance of a Timber Sales License until the date three years after commencement of the public review and commenting period.</small>
+        </section>
+
+      </section>
+    </div>
+  </div>
+

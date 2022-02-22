@@ -1,0 +1,392 @@
+@import "../../assets/styles/base/base.scss";
+
+$toggle-list-anim-duration: 0.2s;
+$map-component-shadow: 0.1rem 0.1rem 0.5rem rgba(0, 0, 0, 0.25);
+
+app-projects:host {
+  position: absolute;     // We need to set absolute here --- the map component exhibits some funky behaviour when leveraging flexbox on it's parent container
+  top: 3.5rem;            // Offset height of header
+  right: 0;
+  bottom: 2rem;
+  left: 0;
+}
+
+@media (min-width: 768px) {
+  app-projects:host {
+    top: 4.2rem;
+  }
+}
+
+.applications-view {
+  @include flex-box();
+
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+// Side Navigation
+$side-nav-color: #fff;
+$side-nav-item-height-sm: 4.5rem;
+$side-nav-item-width-lg: 6rem;
+$side-nav-item-height-lg: 5.5rem;
+
+.side-nav {
+  @include flex(0 0 auto);
+
+  position: relative;
+  z-index: 1002;
+  order: 0;
+  background: $primary4;
+}
+
+.side-nav ul {
+  @include flex-box();
+
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+.side-nav-item {
+  @include flex(1 1 auto);
+
+  height: $side-nav-item-height-sm;
+}
+
+.side-nav-item .btn {
+  display: block;
+  width: 100%;
+  height: 100%;
+  color: $side-nav-color;
+  background: $primary4;
+  border-radius: 0;
+  border: none;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  i {
+    margin-bottom: 0.1rem;
+    vertical-align: top;
+  }
+}
+
+.side-nav-item .btn:focus,
+.side-nav-item .btn:hover {
+  color: $side-nav-color;
+  background: $primary5;
+  box-shadow: none;
+}
+
+.side-nav-item.active .btn {
+  color: $side-nav-color;
+  border: none;
+  background: $primary1;
+  box-shadow: none;
+}
+
+@media (min-width: 1024px) {
+  .side-nav {
+    z-index: 1002;
+    height: 100%;
+    border-bottom: none;
+  }
+
+  .side-nav ul {
+    @include flex-direction(column);
+  }
+
+  .side-nav-item {
+    width: $side-nav-item-width-lg;
+    height: $side-nav-item-height-lg;
+  }
+}
+
+// Side panel
+// $side-panel-width-lg: 70rem;
+$side-panel-width-lg: 70%;
+$side-panel-bg: #fff;
+$side-panel-shadow: 0.1rem 0 0.15rem rgba(0, 0, 0, 0.25);
+
+.side-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: $side-nav-item-height-sm;
+  z-index: 1001;
+  width: 100%;
+  overflow-x: hidden;
+  background: $side-panel-bg;
+  transform: translateX(-100%);
+  transition: transform ease-out 0.2s;
+
+  .close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 1001;
+  }
+
+  ::ng-deep {
+    .flex-panel {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .side-panel {
+    bottom: 0;
+    width: $side-panel-width-lg;
+    box-shadow: $side-panel-shadow;
+
+    ::ng-deep {
+      .flex-panel {
+        left: auto;
+        width: 100%;
+      }
+    }
+  }
+}
+
+// Side Panel States
+.side-panel__open {
+  .side-panel {
+    transform: translateX(0);
+  }
+}
+
+@media (min-width: 1024px) {
+  .side-panel__open {
+    .side-panel {
+      transform: translateX($side-nav-item-width-lg);
+    }
+
+    // comment out for better user experience
+    // .app-results {
+    //   left: $side-panel-width-lg;
+    // }
+  }
+}
+
+// Main content area
+.main-panel {
+  @include flex(1 1 auto);
+
+  position: relative;
+}
+
+// Results bar
+$app-results-bg: rgba(#fff, 0.9);
+
+.app-results {
+  @include flex-box();
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  padding: 0.75rem 1.5rem;
+  height: 4rem;
+  border-bottom: 1px solid $gray2;
+  background: $app-results-bg;
+  align-items: center;
+  transition: left ease-out 0.2s;
+}
+
+.app-results__count,
+.app-results__clear {
+  line-height: 1.2rem;
+  font-size: 1rem;
+}
+
+.app-results__count {
+  letter-spacing: -0.01rem;
+  color: $gray9;
+
+  strong {
+    margin-right: 0.1rem;
+    letter-spacing: -0.02rem;
+  }
+}
+
+.app-results__clear {
+  margin-top: 0.1rem;
+  margin-left: 0.8rem;
+  padding-left: 0.25rem;
+  border-left: 1px solid $gray4;
+
+  .btn {
+    font-weight: 700;
+  }
+}
+
+// Define layout order
+@media (max-width: 1023px) {
+  .applications-view {
+    @include flex-flow(column nowrap);
+  }
+
+  .side-nav {
+    order: 3;
+  }
+
+  .side-panel {
+    order: 1;
+  }
+
+  .main-panel {
+    order: 2;
+  }
+
+  .select-badge {
+    label {
+      font-size: 0.75rem !important; // adjust font-size on small device for status filter to look better when checked with blue round label.
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .applications-view {
+    @include flex-flow(row nowrap);
+  }
+
+  .side-nav {
+    order: 0;
+  }
+
+  .side-panel {
+    order: 1;
+  }
+
+  .main-panel {
+    order: 2;
+  }
+}
+
+::ng-deep {
+  .cdk-overlay-container {
+    bottom: 3rem;
+    height: auto;
+    // This fix ErrorInterceptor dialog hidding beneath panel     
+    z-index: 8888 !important;
+  }
+
+  // Splash Modal Sizing
+  .splash-modal {
+    z-index: 1050; // on top of most other stuff
+
+    .modal-dialog {
+      padding-right: 0.5rem;
+      padding-left: 0.5rem;
+      max-width: 800px;
+      background: transparent;
+    }
+  }
+
+  // Comment Modal
+  .comment-modal {
+    z-index: 1055; // on top of Splash modal
+  }
+
+  // Confirm Modal
+  dialog-holder dialog-wrapper .modal {
+    z-index: 1060; // on top of Comment modal
+  }
+}
+
+
+
+// Select Badge Groups
+$select-badge-hover-bg: #d0ebff;
+$select-badge-active-border-color: #74c0fc;
+$select-badge-active-bg: #a5d8ff;
+
+.select-badge-group {
+  margin: -0.2rem -0.15rem;
+  overflow: visible;
+}
+
+.select-badge {
+  position: relative;
+  margin: 0.2rem 0.15rem;
+  float: left;
+
+  label {
+    position: relative;
+    margin: 0;
+    padding-top: 0.2rem;
+    padding-right: 1rem;
+    padding-bottom: 0.2rem;
+    padding-left: 2rem;
+    color: $gray7;
+    border-radius: 1rem;
+    border: 2px solid transparent;
+    background-color: $gray2;
+    background-image: url("../../assets/images/baseline-remove-24px.svg");
+    background-position: 8px center;
+    background-repeat: no-repeat;
+    background-size: 18px;
+    font-size: 0.825rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all ease-out 0.2s;
+  }
+
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+
+  input:focus,
+  input:active {
+    + label {
+      color: $gray9;
+      border-color: $select-badge-active-border-color;
+      background-color: $select-badge-hover-bg;
+    }
+  }
+
+  input:hover {
+    + label {
+      color: $gray9;
+      background-color: $select-badge-hover-bg;
+    }
+  }
+
+  input:checked {
+    + label {
+      color: $gray9;
+      background-color: $select-badge-active-bg;
+      background-image: url("../../assets/images/baseline-check-24px.svg");
+    }
+
+    ~ button {
+      background-color: $select-badge-active-bg;
+    }
+  }
+}
+
+// To accommodate smaller device-width that the lable text wrapped to next line. 
+@media (max-width: 367px) {
+  .app-results {
+    height: 6.2rem;
+  }
+
+  .select-badge {
+    label {
+      padding-top: 0.1rem;
+      padding-bottom: 0.1rem;
+    }
+  }
+}

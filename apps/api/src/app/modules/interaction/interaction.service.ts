@@ -1,10 +1,8 @@
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Interaction } from './interaction.entity';
-import { DataService } from 'apps/api/src/core/models/data.service';
 import { PinoLogger } from 'nestjs-pino';
-import { User } from 'apps/api/src/core/security/user';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
@@ -12,6 +10,10 @@ import _ = require('lodash');
 import { AttachmentService } from '../attachment/attachment.service';
 import { AttachmentCreateRequest } from '../attachment/attachment.dto';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
+import { User } from "@api-core/security/user";
+import { DataService } from 'apps/api/src/core/models/data.service';
+import { ProjectService } from '@api-modules/project/project.service';
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 @Injectable()
 export class InteractionService extends DataService<Interaction, Repository<Interaction>, InteractionResponse> {
@@ -20,12 +22,16 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     repository: Repository<Interaction>,
     logger: PinoLogger,
     private projectAuthService: ProjectAuthService,
-    private attachmentService: AttachmentService
+    private attachmentService: AttachmentService,
+    private projectService: ProjectService
   ) {
     super(repository, new Interaction(), logger);
   }
 
   async create(request: InteractionCreateRequest, user: User): Promise<InteractionResponse> {
+
+    await this.businessValidate(request);
+
     const {file, fileName} = request;
     // save attachment first.
     if (!_.isNil(fileName) && !_.isEmpty(fileName)) {
@@ -37,6 +43,9 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
   }
 
   async update(id: number, updateRequest: InteractionUpdateRequest, user: User): Promise<InteractionResponse> {
+
+    await this.businessValidate(updateRequest);
+
     const {file, fileName} = updateRequest;
 
     // Attachment update
@@ -47,7 +56,11 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
       }
       const prviousAttachmentId = entity.attachmentId;
       if (prviousAttachmentId) {
-        const updated = await super.updateEntity(id, {attachmentId: undefined}, entity); // remove previous attachment from Interaction first.
+        const updateCount = (await super.updateEntity(id, {attachmentId: undefined}, entity)).affected; // remove previous attachment from Interaction first.
+        if (updateCount != 1) {
+          throw new InternalServerErrorException("Error removing previous attachment");
+        }
+    
         await this.attachmentService.delete(prviousAttachmentId, user);
       }
       updateRequest.attachmentId = await this.addNewAttachment(updateRequest.projectId, fileName, file, user);
@@ -69,7 +82,6 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     if (attachmentId) {
       await this.attachmentService.delete(attachmentId, user);
     }
-    return;
   }
 
   private async addNewAttachment(projectId: number, fileName: string, file: Buffer, user: User): Promise<number> {
@@ -80,6 +92,19 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     attachmentCreateRequest.attachmentTypeCode = AttachmentTypeEnum.INTERACTION;
     const attachmentId = (await this.attachmentService.create(attachmentCreateRequest, user)).id;
     return attachmentId;
+  }
+
+  // basic fields validation is done using 'class-validator' on request dto, this is further business validation.
+  private async businessValidate(request: InteractionCreateRequest | InteractionUpdateRequest) {
+
+    // communication_date: >= commenting_open_date
+    const project = await this.projectService.findOne(request.projectId);
+    const commentingOpenDate = project.commentingOpenDate;
+    const communicationDate = request.communicationDate;
+    if (DateTimeUtil.getBcDate(commentingOpenDate).startOf('day')
+        .isAfter(DateTimeUtil.getBcDate(communicationDate).startOf('day'))) {
+      throw new BadRequestException("Engagement Date should be on or after commenting start date.");
+    }
   }
 
   async findByProjectId(projectId: number, user: User): Promise<InteractionResponse[]> {
@@ -99,9 +124,19 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
       return [];
     }
 
-    return records.map((r) => {
-      return this.convertEntity(r);
+    const interactionResponses = records.map((r) => {
+      const interactionResponse = this.convertEntity(r);
+      return interactionResponse;
     });
+
+    // include attachment meta info(if any)
+    for (const interaction of interactionResponses) {
+      if (interaction.attachmentId) {
+        const attachment = await this.attachmentService.findOne(interaction.attachmentId, user);
+        interaction.fileName = attachment.fileName;
+      }
+    }
+    return interactionResponses;
   }
   
   async isCreateAuthorized(dto: InteractionCreateRequest, user?: User): Promise<boolean> {

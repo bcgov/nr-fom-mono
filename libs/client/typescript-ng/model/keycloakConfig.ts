@@ -14,6 +14,7 @@
 export interface KeycloakConfig { 
     enabled: boolean;
     url: string;
+    siteMinderUrl: string;
     realm: string;
     clientId: string;
 }

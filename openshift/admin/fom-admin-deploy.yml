@@ -1,0 +1,223 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: fom-admin-deploy
+  app: fom
+  app-component: ${NAME}
+  # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
+  suffix: fom${SUFFIX}
+  app.kubernetes.io/part-of: fom
+metadata:
+  name: fom-admin-deploy
+parameters:
+  # Mandatory parameters
+  - description: Suffix specifying the release/build/environment. Can be blank (for production).
+    displayName: Suffix
+    name: SUFFIX
+    required: true
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+    required: true
+  - description: DNS Hostname for the public route. 
+    displayName: DNS Hostname
+    name: HOSTNAME
+    required: true
+  - description: API Image Version to use
+    displayName: API Image Version
+    name: IMAGE_STREAM_VERSION
+    required: true
+  - description: Base URL for API component
+    displayName: API Base URL
+    name: API_BASE_URL
+    required: true
+  # Optional parameters with defaults
+  - description: Request for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource request
+    name: REQUEST_CPU
+    required: false
+    value: 25m
+  - description: Limit for CPU resources measured in cpu units, e.g. 200m
+    displayName: CPU resource limit
+    name: LIMIT_CPU
+    required: false
+    value: 100m
+  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource request
+    name: REQUEST_MEMORY
+    required: false
+    value: 30Mi
+  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
+    displayName: Memory resource limit
+    name: LIMIT_MEMORY
+    required: false
+    value: 300Mi
+  - description: Number of replicas
+    displayName: Replica Count
+    name: REPLICA_COUNT
+    required: false
+    value: '2'
+  # Hardcoded parameters - no need to change
+  - description: Name of the application component being deployed.
+    displayName: Name
+    name: NAME
+    value: fom-admin
+  - description: Port number
+    displayName: Port number
+    name: PORT
+    value: '4200'
+  - description: Service port name (referenced by route).
+    displayName: Service port name
+    name: SERVICE_PORT_NAME
+    value: http
+  
+objects:
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: true
+    # ConfigMap - Environment-Specific Settings
+  - kind: ConfigMap
+    apiVersion: v1
+    data:
+      env.js: |-
+        window.localStorage.setItem('fom_environment_name', '${ENV}');
+        window.localStorage.setItem('fom_api_base_url', '${API_BASE_URL}');
+    metadata:
+      name: ${NAME}${SUFFIX}
+  ### DeploymentConfig
+  - kind: DeploymentConfig
+    apiVersion: apps.openshift.io/v1
+    metadata:
+      name: ${NAME}${SUFFIX}
+    spec:
+      replicas: ${{REPLICA_COUNT}}
+      revisionHistoryLimit: 10
+      test: false
+      strategy:
+        type: Rolling
+        rollingParams:
+          updatePeriodSeconds: 1
+          intervalSeconds: 1
+          timeoutSeconds: 600
+          maxUnavailable: 25%
+          maxSurge: 25%
+      resources: {}
+      activeDeadlineSeconds: 21600
+      selector:
+        deploymentconfig: ${NAME}${SUFFIX}
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - app
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}:${IMAGE_STREAM_VERSION}
+        - type: ConfigChange
+      template:
+        metadata:
+          creationTimestamp: null
+          labels:
+            deploymentconfig: ${NAME}${SUFFIX}
+        spec:
+          containers:
+            - name: app
+              # Supply a space to image:, will use settings in ImageChange trigger.
+              image: " " 
+              env:
+                - name: FOM_ENV
+                  value: ${ENV}
+                - name: PORT
+                  value: '${PORT}'
+              resources:
+                requests:
+                  cpu: ${REQUEST_CPU}
+                  memory: ${REQUEST_MEMORY}
+                limits:
+                  cpu: ${LIMIT_CPU}
+                  memory: ${LIMIT_MEMORY}
+              livenessProbe:
+                httpGet:
+                  path: /admin
+                  port: ${{PORT}}
+                  scheme: HTTP
+                timeoutSeconds: 1
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              readinessProbe:
+                httpGet:
+                  path: /admin
+                  port: ${{PORT}}
+                  scheme: HTTP
+                timeoutSeconds: 1
+                periodSeconds: 10
+                successThreshold: 1
+                failureThreshold: 3
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              imagePullPolicy: Always
+              volumeMounts:
+                - mountPath: /app/nr-fom-admin/dist/admin/assets/env
+                  name: env-config
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          dnsPolicy: ClusterFirst
+          securityContext: {}
+          volumes:
+            - name: env-config
+              configMap:
+                name: ${NAME}${SUFFIX}
+
+  ### Service
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      name: ${NAME}${SUFFIX}
+    spec:
+      ports:
+        - name: ${SERVICE_PORT_NAME}
+          protocol: TCP
+          port: ${{PORT}}
+          targetPort: ${{PORT}}
+      selector:
+        deploymentconfig: ${NAME}${SUFFIX}
+      type: ClusterIP
+      sessionAffinity: None
+  ### Route
+  - kind: Route
+    apiVersion: v1
+    metadata:
+      name: ${NAME}${SUFFIX}
+      labels:
+        certbot-managed: "true"
+    spec:
+      host: ${HOSTNAME}
+      path: /admin
+      to:
+        kind: Service
+        name: ${NAME}${SUFFIX}
+        weight: 100
+      port:
+        targetPort: ${SERVICE_PORT_NAME}
+      tls:
+        termination: edge
+        insecureEdgeTerminationPolicy: Redirect
+      wildcardPolicy: None
+  ### Network Policy
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
+    metadata:
+      name: web-allow-external-${NAME}${SUFFIX}
+    spec:
+      podSelector:
+        matchLabels:
+          deploymentconfig: ${NAME}${SUFFIX}
+      ingress:
+        - {}

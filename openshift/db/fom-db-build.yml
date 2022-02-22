@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: Template
+labels:
+  template: fom-db-build
+  app-component: ${NAME}
+  app.kubernetes.io/part-of: fom
+metadata:
+  name: fom-db-build
+parameters:
+  - description: Name of the application component
+    displayName: Name
+    name: NAME
+    value: fom-db
+  - name: SUFFIX
+    value: ''
+  - description: Tag (e.g. release/build)
+    displayName: Tag
+    name: TAG
+    value: main
+  - description: Git Source Reference (branch/tag/ref )
+    displayName: Git Ref
+    name: GIT_REF
+    value: master
+
+objects:
+  ### ImageStream - scoped to entire application component, not to tag. Do not delete/recreate as this leads to loss of previously stored images
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${NAME}
+    spec:
+      lookupPolicy:
+        local: true
+  ### BuildConfig
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${NAME}${SUFFIX}
+      labels:
+        tag: ${TAG}
+    spec:
+      nodeSelector: null
+      output:
+        to:
+          kind: ImageStreamTag
+          name: ${NAME}:${TAG}
+      resources:
+        limits:
+          cpu: '2'
+          memory: 8Gi
+      successfulBuildsHistoryLimit: 5
+      failedBuildsHistoryLimit: 5
+      strategy:
+        type: Docker
+        dockerStrategy:
+          dockerfilePath: docker/db/Dockerfile
+          pullSecret: 
+            name: artifactory-docker-registry-secret
+      postCommit: {}
+      source:
+        type: Git
+        git:
+          uri: 'https://github.com/bcgov/nr-fom-api'
+          ref: ${GIT_REF}
+      runPolicy: SerialLatestOnly
+      triggers: # Disabled by nrdk/pipeline-cli, kept if ever want to run outside the nrdk pipeline.
+        - type: ConfigChange
+          

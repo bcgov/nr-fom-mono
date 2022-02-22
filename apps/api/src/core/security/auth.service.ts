@@ -32,8 +32,12 @@ export class KeycloakConfig {
     @ApiProperty()
     enabled: boolean = true;
 
+    // Keycloak Server URL
     @ApiProperty()
     url: string;
+
+    @ApiProperty()
+    siteMinderUrl: string;
 
     @ApiProperty()
     realm: string;
@@ -61,6 +65,7 @@ export class AuthService {
         this.config.enabled = (process.env.KEYCLOAK_ENABLED || 'true') === 'true';
         this.config.realm = process.env.KEYCLOAK_REALM || 'ichqx89w';
         this.config.url = process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth';
+        this.config.siteMinderUrl = process.env.SITEMINDER_URL || 'https://logontest7.gov.bc.ca';
         // Sample User = {"isMinistry":true,"isForestClient":true,"clientIds":[1011, 1012],"userName":"fakeuser@idir","displayName":"Longlastname, Firstname"}
         // Other values for Keycloak URL: TEST: https://test.oidc.gov.bc.ca/auth, PROD: https://oidc.gov.bc.ca/auth
 

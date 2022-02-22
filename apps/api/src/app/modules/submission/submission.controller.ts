@@ -4,7 +4,7 @@ import { ApiTags, ApiResponse, ApiBody, ApiBearerAuth } from '@nestjs/swagger';
 import { SubmissionService } from './submission.service';
 import { SubmissionRequest } from './submission.dto';
 import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 
 @ApiTags('submission')
 @Controller('submission')

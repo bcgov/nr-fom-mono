@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsPositive, maxLength, MaxLength, Min, MinLength } from 'class-validator';
+import { IsDateString, IsInt, IsNotEmpty, IsPositive, MaxLength, Min, MinLength } from 'class-validator';
 import _ = require('lodash');
 
 export class InteractionCreateRequest {
@@ -25,13 +25,15 @@ export class InteractionCreateRequest {
   @MaxLength(55)
   stakeholder: string;
 
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: true })
   @IsDateString(null, {message: '"$property" must be ISO-formatted date.'})
+  @IsNotEmpty()
   communicationDate?: string;
 
   @ApiProperty()
   @MaxLength(4000)
-  @MinLength(1, {message: '"$property" must have at least 1 character.'}) 
+  @MinLength(1, {message: '"$property" must have at least 1 character.'})
+  @IsNotEmpty()
   communicationDetails: string;
   
   fileName: string; 

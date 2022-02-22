@@ -1,0 +1,76 @@
+<div class="applications-view" [ngClass]="activePanel ? 'side-panel__open' : 'side-panel__closed'">
+  <h1 class="sr-only">Find Applications in British Columbia</h1>
+
+  <div class="side-nav">
+    <ul>
+      <li class="side-nav-item" [ngClass]="{'active': activePanel === Panel.find}">
+        <button class="btn" (click)="togglePanel(Panel.find)">
+          <em class="material-icons">search</em>
+          <div>Find</div>
+        </button>
+      </li>
+      <li class="side-nav-item" [ngClass]="{'active': activePanel === Panel.details}">
+        <button class="btn" (click)="togglePanel(Panel.details)">
+          <em class="material-icons">info</em>
+          <div>Details</div>
+        </button>
+      </li>
+    </ul>
+  </div>
+
+  <div class="side-panel">
+    <button class="close-btn btn btn-icon" (click)="closeSidePanel()">
+      <em class="material-icons">close</em>
+    </button>
+    <app-find-panel #findPanel
+      (update)="handleFindUpdate($event)"
+      [loading]="loading"
+      [hidden]="activePanel !== Panel.find">
+    </app-find-panel>
+    <app-details-panel #detailsPanel
+      [hidden]="activePanel !== Panel.details">
+    </app-details-panel>
+  </div>
+
+  <div class="main-panel">
+    <div class="app-results">
+      <span class="app-results__count">
+        <span *ngIf="loading">Loading...</span>
+        <span *ngIf="!loading && totalNumber == 0">No Results Found</span>
+        <span *ngIf="!loading && totalNumber> 0"><strong>{{totalNumber}}</strong> {{totalNumber !== 1 ? 'FOMs' : 'FOM'}} Found</span>
+      </span>
+
+      <span class="app-results__clear">
+        <div class="form-group">
+        <div class="select-badge-group" *ngIf="commentStatusFilters">
+          <div class="select-badge" *ngFor="let filter of commentStatusFilters.filters"
+              [ngStyle]="loading && {'display': 'none'}">
+            <input type="checkbox" id="project-{{filter.queryParam}}" name="{{filter.queryParam}}" 
+                  [checked]="filter.value" 
+                  (click)="toggleFilter(filter)"
+                  [disabled]="loading">
+            <label for="project-{{filter.queryParam}}" 
+                    (click)="toggleFilter(filter)">{{filter.displayString}}</label>
+          </div>
+        </div>
+        </div>
+      </span>
+
+      <span class="app-results__clear" [ngStyle]="loading && {'display': 'none'}">
+        <button class="clear-btn btn btn-sm btn-link"
+          [disabled]="loading" 
+          (click)="clearFilters();">Clear Filters</button>
+      </span>
+      <span class="app-results__clear" style="border-left: none;">
+        <!-- add this invisible span element so on mobile device for flex content it will display better 
+             and not overlapping with app-map's layer icon-->
+        &nbsp;
+      </span>
+    </div>
+    <app-map class="app-map" *ngIf="projectsSummary" #appmap
+      [loading]="loading"
+      [projectsSummary]="projectsSummary">
+    </app-map>
+  </div>
+
+</div>

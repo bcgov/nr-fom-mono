@@ -6,7 +6,7 @@ import { Multer } from 'multer'; // This is needed, don't know why Visual Studio
 import { AttachmentService } from './attachment.service';
 import { AttachmentCreateRequest, AttachmentResponse } from './attachment.dto';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from 'apps/api/src/core/security/user';
+import { User } from "@api-core/security/user";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
 
@@ -36,7 +36,7 @@ const AttachmentPostBody = (fileName: string = 'file'): MethodDecorator => (
   })(target, propertyKey, descriptor);
 };
 
-export const maxFileSizeBytes = 10000000; // 10 MB amx attachment size
+export const maxFileSizeBytes = 31457280; // 30 MB amx attachment size
 
 @ApiTags('attachment')
 @Controller('attachment')
@@ -69,7 +69,7 @@ export class AttachmentController {
     const validAttachments:string[] = [AttachmentTypeEnum.PUBLIC_NOTICE, AttachmentTypeEnum.SUPPORTING_DOC, AttachmentTypeEnum.INTERACTION];
     if (validAttachments.indexOf(createRequest.attachmentTypeCode) < 0) {
       throw new BadRequestException("Validation failed (invalid attachment type)");
-    };
+    }
 
     return this.service.create(createRequest, user);
   }

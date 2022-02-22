@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>Forest Operations Map</title>
+	<base href="./">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="description" content="Find, learn about, and comment on FOM applications in British Columbia.">
+	<link rel="icon" type="image/x-icon" href="./favicon.ico">
+
+	<script src="assets/env/env.js"></script> 
+</head>
+
+<body id="top">
+	<app-root>
+		<div class="spinner-container" *ngIf="!results" aria-label="Loading...">
+			<div class="spinner-new rotating"></div>
+		</div>
+	</app-root>
+</body>
+
+</html>

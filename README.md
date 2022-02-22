@@ -1,5 +1,5 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](./LICENSE)
-[![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](<Redirect-URL>)
+[![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)]
 
 # Forest Operation Map (FOM)
 
@@ -9,7 +9,7 @@ FOM projects (proposals for logging, essentially) are submitted to FOM and made 
 
 Technology Stack: Angular, Node.js, PostgresSQL with PostGIS running in OCP v4
 
-This repo is for the Node.js API backend.
+This is a monorepo that includes the API backend and the two Angular front-ends.
 
 ## Third-Party Products/Libraries used and the licenses they are covered by
 
@@ -49,7 +49,7 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 ### Run API Backend as open-shift style container
 
 - docker build -f docker/api/Dockerfile.local -t api .
-- docker run -d --name api -p 3333:3333 -u 1001 --read-only -e DB_PASSWORD=test -e DB_NAME=api-db -e DB_USERNAME=postgres -e DB_HOST=localhost -e DB_TYPE=postgres -e DB_PORT=5432 api
+- docker run -d --name api -p 3333:3333 -u 1001 --read-only -e DB_PASSWORD=test -e DB_NAME=fom -e DB_USERNAME=postgres -e DB_HOST=localhost -e DB_TYPE=postgres -e DB_PORT=5432 api
 - WARNING: Currently doesn't work - fails with Error: connect ECONNREFUSED 127.0.0.1:5432
 
 ### Connect to local database:

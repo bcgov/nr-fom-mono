@@ -17,7 +17,7 @@ export const appValidationSchema = Joi.object({
   APP_TITLE: Joi.string().default('Api'),
   DB_HOST: Joi.string().default('localhost'),
   DB_TYPE: Joi.string().default('postgres'),
-  DB_NAME: Joi.string().default('api-db'),
+  DB_NAME: Joi.string().default('fom'),
   DB_SSL: Joi.boolean().default(false),
   DB_SYNCHRONIZE: Joi.boolean().default(false),
   DB_USERNAME: Joi.string().default('postgres'),
