@@ -128,7 +128,7 @@ export class InteractionController {
       );
 
       // Validate fields.
-      const vErrors = await validate(createRequest, { validationError: { target: false } });
+      const vErrors = await validate(createRequest, { forbidUnknownValues: true, validationError: { target: false } });
       if (vErrors && vErrors.length >=1) {
         const errMsgs = vErrors.map(oErr => Object.values(oErr.constraints)[0]);
         this.logger.debug('Create Interaction validation errors: %o', errMsgs);
@@ -173,7 +173,7 @@ export class InteractionController {
       );
 
       // Validate fields.
-      const vErrors = await validate(updateRequest, { validationError: { target: false } });
+      const vErrors = await validate(updateRequest, { forbidUnknownValues: true, validationError: { target: false } });
       if (vErrors && vErrors.length >=1) {
         const errMsgs = vErrors.map(oErr => Object.values(oErr.constraints)[0]);
         this.logger.debug('Update Interaction validation errors: %o', errMsgs);

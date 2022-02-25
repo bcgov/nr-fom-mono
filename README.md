@@ -42,6 +42,8 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 - git clone https://github.com/bcgov/nr-fom-api.git
 - npm install
 - docker-compose up -d db
+- ./localdev.ps1
+- Set environment variables OBJECT_STORAGE_ACCESS_ID and OBJECT_STORAGE_SECRET based on fom-object-storage-dev Secret in OpenShift dev.
 - npm run typeorm:migrate
 - npm run start:api
 - Navigate to http://localhost:3333/api
