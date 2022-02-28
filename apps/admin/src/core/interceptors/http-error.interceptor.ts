@@ -27,7 +27,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         } else if (statusCode == 403) { // Forbidden
           this.modalSvc.openErrorDialog(`You were not authorized to perform the request. Please try again. <br/>If this issue persists, try logging out and back in. If this still persists, please contact the service desk.`, 'Forbidden');
         } else if (statusCode == 422) {
-          this.modalSvc.openErrorDialog(`The request was not valid: ${error}`, 'Bad Request');
+          this.modalSvc.openErrorDialog(` ${error}`, 'Save Conflict');
         } else if (statusCode == 500) { // System Error
           console.error(`${request.urlWithParams} failed with error: ` + JSON.stringify(err));
           this.modalSvc.openErrorDialog(`A system error occurred. Please try again later. If the issue persists please contact the service desk.`, 'System Error');
