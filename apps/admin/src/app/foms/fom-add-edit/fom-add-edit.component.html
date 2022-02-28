@@ -164,8 +164,10 @@
               name="description"
               formControlName="description"
               [appFormControl]="fg.get('description')"
+              maxlength="{{descriptionLimit}}"
             >
             </textarea>
+            <small>{{descriptionLimit-fg.get('description').value?.length}} characters remaining.</small>
           </div>
         </div>
       <section *ngIf="!this.isCreate && isCreateAttachmentAllowed()">
