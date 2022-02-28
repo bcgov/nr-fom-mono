@@ -16,6 +16,7 @@ export class CommentDetailComponent {
   commentScopeCodes: _.Dictionary<CommentScopeCode>;
   commentFormGroup: FormGroup;
   comment: PublicCommentAdminResponse;
+  responseDetailsLimit: number = 4000;
 
   @Input() responseCodes: ResponseCode[];
   @Input() canReplyComment: boolean;

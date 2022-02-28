@@ -68,6 +68,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     ]
 
+  public descriptionLimit: number = 500; // Based on project.dto.ts for limit.
+
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();

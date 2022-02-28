@@ -63,9 +63,10 @@
             class="form-control col-md-12"
             rows="5"
             [ngClass]="{'is-invalid': interactionFormGroup.touched && !isValid('communicationDetails')}"
-            maxlength="4000"
+            maxlength="{{communicationDetailsLimit}}"
             formControlName="communicationDetails">
       </textarea>
+      <small>{{communicationDetailsLimit-interactionFormGroup.get('communicationDetails').value?.length}} characters remaining.</small>
       <div class="invalid-feedback" *ngIf="interactionFormGroup.touched && !isValid('communicationDetails')">
         Please provide description.
       </div>
