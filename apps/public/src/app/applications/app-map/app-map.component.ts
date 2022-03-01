@@ -402,21 +402,7 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
 
   private updateOnLayersChange(data: any) {
     if (data) {
-      if (data.baseLayer) {
-        const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
-        const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
-        this.map.removeLayer(currentActiveBaseLayer);
-        this.map.addLayer(newBaseLayer);
-      }
-      else if (data.overlay) {
-        const overlay = this.mapLayers.getOverlayByName(data.overlay.layerName);
-        if (data.overlay.action == OverlayAction.Add) {
-          this.map.addLayer(overlay);
-        }
-        else {
-          this.map.removeLayer(overlay);
-        }
-      }
+      this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers, data);
     }
   }
 }

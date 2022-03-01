@@ -101,7 +101,6 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
       maxBounds: L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180)) // restrict view to "the world"
     });
 
-
     this.mapLayers.addLayerControl(this.map);
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
       if (e.name != this.mapLayers.getActiveBaseLayerName()) {
@@ -115,6 +114,10 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     this.map.on('overlayremove', (e: L.LayersControlEvent) => {
       this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
     });
+
+    // Initialize current app-map layers state (for the first time it is opened)
+    const currentMapLayersState = this.mapLayersService.getCurrentChangeState();
+    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers, currentMapLayersState);
   }
 
   public addScale() {
@@ -223,21 +226,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   
   private updateOnLayersChange(data: any) {
     if (data) {
-      if (data.baseLayer) {
-        const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
-        const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
-        this.map.removeLayer(currentActiveBaseLayer);
-        this.map.addLayer(newBaseLayer);
-      }
-      else if (data.overlay) {
-        const overlay = this.mapLayers.getOverlayByName(data.overlay.layerName);
-        if (data.overlay.action == OverlayAction.Add) {
-          this.map.addLayer(overlay);
-        }
-        else {
-          this.map.removeLayer(overlay);
-        }
-      }
+      this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers, data);
     }
   }
 
