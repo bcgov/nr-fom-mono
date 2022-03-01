@@ -15,6 +15,9 @@ import { MapLayers } from '../../app-map/map-layers';
 */
 import "leaflet/dist/images/marker-shadow.png"; 
 import "leaflet/dist/images/marker-icon-2x.png";
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { MapLayersService } from '@public-core/services/mapLayers.service';
 
 @Component({
   selector: 'app-details-map',
@@ -29,6 +32,8 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   public map: L.Map;
   public projectFeatures: L.FeatureGroup; // group of layers for the features of a FOM project.
   private lastLabelMarker: L.Marker; // global variable to keep track latest layer added (as labeling popup for onClick)
+  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  private mapLayers: MapLayers = new MapLayers();
 
   // custom reset view control
   public resetViewControl = L.Control.extend({
@@ -51,7 +56,16 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     }
   });
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(
+    private elementRef: ElementRef, 
+    private mapLayersService: MapLayersService
+  ) {
+    this.mapLayersService.$mapLayersChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(data => {
+        this.updateOnLayersChange(data);
+    });
+  }
 
   public ngOnChanges(changes: SimpleChanges) {
     // Note, when Angular first onChange is triggered, the value is undefined.
@@ -71,12 +85,9 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   }
 
   public createBasicMap() {
-    this.projectFeatures = L.featureGroup();
-
-    const mapLayers = new MapLayers();    
-
+    this.projectFeatures = L.featureGroup();   
     this.map = L.map('map', {
-      layers: mapLayers.getAllLayers(),
+      layers: this.mapLayers.getAllLayers(),
       zoomControl: false, // will be added manually below
       attributionControl: true, 
       scrollWheelZoom: false, // not desired in thumbnail
@@ -89,9 +100,12 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     });
 
 
-    mapLayers.addLayerControl(this.map);
+    this.mapLayers.addLayerControl(this.map);
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
-      mapLayers.setActiveBaseLayerName(e.name);
+      if (e.name != this.mapLayers.getActiveBaseLayerName()) {
+        this.mapLayers.setActiveBaseLayerName(e.name);
+        this.mapLayersService.notifyLayersChange({baseLayer: e.name});
+      }
     });
 
   }
@@ -199,8 +213,19 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
       this.projectFeatures.remove();
     }
   }
+  
+  private updateOnLayersChange(data: any) {
+    if (data) {
+      const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
+      const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
+      this.map.removeLayer(currentActiveBaseLayer);
+      this.map.addLayer(newBaseLayer);
+    }
+  }
 
   ngOnDestroy() {
     this.resetMap();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

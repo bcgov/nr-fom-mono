@@ -21,6 +21,8 @@ import { UrlService } from '../../../core/services/url.service';
 import { MarkerPopupComponent } from './marker-popup/marker-popup.component';
 import { ProjectPublicSummaryResponse } from '@api-client';
 import { MapLayers } from './map-layers';
+import { takeUntil } from 'rxjs/operators';
+import { MapLayersService } from '@public-core/services/mapLayers.service';
 
 
 declare module 'leaflet' {
@@ -72,8 +74,15 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     private elementRef: ElementRef,
     public urlService: UrlService,
     private injector: Injector,
-    private resolver: ComponentFactoryResolver
-  ) { }
+    private resolver: ComponentFactoryResolver,
+    private mapLayersService: MapLayersService
+  ) {
+      this.mapLayersService.$mapLayersChange
+        .pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe(data => {
+          this.updateOnLayersChange(data);
+      })
+  }
 
   // for creating custom cluster icon
   private clusterCreate(cluster): L.Icon | L.DivIcon {
@@ -176,7 +185,10 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
     // save any future base layer changes
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
-      this.mapLayers.setActiveBaseLayerName(e.name);
+      if (e.name != this.mapLayers.getActiveBaseLayerName()) {
+        this.mapLayers.setActiveBaseLayerName(e.name);
+        this.mapLayersService.notifyLayersChange({baseLayer: e.name});
+      }
     });
 
     this.fixMap();
@@ -378,4 +390,14 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
       this.currentMarker = null;
     }
   }
+
+  private updateOnLayersChange(data: any) {
+    if (data) {
+      const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
+      const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
+      this.map.removeLayer(currentActiveBaseLayer);
+      this.map.addLayer(newBaseLayer);
+    }
+  }
 }
+
