@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Input, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, Input, ElementRef, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
@@ -17,14 +17,14 @@ import "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/images/marker-icon-2x.png";
 import { takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
-import { MapLayersService } from '@public-core/services/mapLayers.service';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 
 @Component({
   selector: 'app-details-map',
   templateUrl: './details-map.component.html',
   styleUrls: ['./details-map.component.scss']
 })
-export class DetailsMapComponent implements OnChanges, OnDestroy {
+export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() 
   projectSpatialDetail: SpatialFeaturePublicResponse[];
@@ -59,7 +59,9 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   constructor(
     private elementRef: ElementRef, 
     private mapLayersService: MapLayersService
-  ) {
+  ) { }
+
+  ngOnInit(): void {
     this.mapLayersService.$mapLayersChange
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(data => {
@@ -107,7 +109,12 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
         this.mapLayersService.notifyLayersChange({baseLayer: e.name});
       }
     });
-
+    this.map.on('overlayadd', (e: L.LayersControlEvent) => {
+      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Add, layerName: e.name}});
+    });
+    this.map.on('overlayremove', (e: L.LayersControlEvent) => {
+      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
+    });
   }
 
   public addScale() {
@@ -216,10 +223,21 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   
   private updateOnLayersChange(data: any) {
     if (data) {
-      const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
-      const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
-      this.map.removeLayer(currentActiveBaseLayer);
-      this.map.addLayer(newBaseLayer);
+      if (data.baseLayer) {
+        const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
+        const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
+        this.map.removeLayer(currentActiveBaseLayer);
+        this.map.addLayer(newBaseLayer);
+      }
+      else if (data.overlay) {
+        const overlay = this.mapLayers.getOverlayByName(data.overlay.layerName);
+        if (data.overlay.action == OverlayAction.Add) {
+          this.map.addLayer(overlay);
+        }
+        else {
+          this.map.removeLayer(overlay);
+        }
+      }
     }
   }
 

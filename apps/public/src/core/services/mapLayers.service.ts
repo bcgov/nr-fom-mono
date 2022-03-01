@@ -6,6 +6,9 @@ import { BehaviorSubject } from "rxjs";
 })
 export class MapLayersService {
 
+  // Value passing:
+  // - For baseLayer change: {baseLayer: string}
+  // - For overlay change: {overlay: {action: 'ADD'|'REMOVE', layerName: string}}
   private _mapLayersChange = new BehaviorSubject(null);
   $mapLayersChange = this._mapLayersChange.asObservable();
   
@@ -16,4 +19,9 @@ export class MapLayersService {
   notifyLayersChange(data) {
     this._mapLayersChange.next(data);
   }
+}
+
+export const OverlayAction = {
+  Add: 'ADD',
+  Remove: 'REMOVE'
 }

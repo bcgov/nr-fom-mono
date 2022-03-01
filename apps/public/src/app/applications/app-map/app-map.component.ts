@@ -10,7 +10,8 @@ import {
   ElementRef,
   SimpleChanges,
   Injector,
-  ComponentFactoryResolver
+  ComponentFactoryResolver,
+  OnInit
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import 'leaflet';
@@ -22,7 +23,7 @@ import { MarkerPopupComponent } from './marker-popup/marker-popup.component';
 import { ProjectPublicSummaryResponse } from '@api-client';
 import { MapLayers } from './map-layers';
 import { takeUntil } from 'rxjs/operators';
-import { MapLayersService } from '@public-core/services/mapLayers.service';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 
 
 declare module 'leaflet' {
@@ -48,7 +49,7 @@ const markerIcon = L.icon({
   templateUrl: './app-map.component.html',
   styleUrls: ['./app-map.component.scss']
 })
-export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
+export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() loading: boolean; // from projects component
   @Output() updateCoordinates = new EventEmitter(); // to applications component
   @Input() projectsSummary: Array<ProjectPublicSummaryResponse>; // from projects component
@@ -76,31 +77,13 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
     private injector: Injector,
     private resolver: ComponentFactoryResolver,
     private mapLayersService: MapLayersService
-  ) {
-      this.mapLayersService.$mapLayersChange
-        .pipe(takeUntil(this.ngUnsubscribe))
-        .subscribe(data => {
-          this.updateOnLayersChange(data);
-      })
-  }
+  ) { }
 
-  // for creating custom cluster icon
-  private clusterCreate(cluster): L.Icon | L.DivIcon {
-    const childCount = cluster.getChildCount();
-    let c = ' marker-cluster-';
-    if (childCount < 10) {
-      c += 'small';
-    } else if (childCount < 100) {
-      c += 'medium';
-    } else {
-      c += 'large';
-    }
-
-    return new L.DivIcon({
-      html: `<div><span title="${childCount} FOMs near this location">${childCount}</span></div>`,
-      className: 'cluster-marker-count' + c,
-      iconSize: new L.Point(48, 48),
-      iconAnchor: [25, 46]
+  ngOnInit(): void {
+    this.mapLayersService.$mapLayersChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(data => {
+        this.updateOnLayersChange(data);
     });
   }
 
@@ -190,8 +173,34 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
         this.mapLayersService.notifyLayersChange({baseLayer: e.name});
       }
     });
+    this.map.on('overlayadd', (e: L.LayersControlEvent) => {
+      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Add, layerName: e.name}});
+    });
+    this.map.on('overlayremove', (e: L.LayersControlEvent) => {
+      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
+    });
 
     this.fixMap();
+  }
+
+  // for creating custom cluster icon
+  private clusterCreate(cluster): L.Icon | L.DivIcon {
+    const childCount = cluster.getChildCount();
+    let c = ' marker-cluster-';
+    if (childCount < 10) {
+      c += 'small';
+    } else if (childCount < 100) {
+      c += 'medium';
+    } else {
+      c += 'large';
+    }
+
+    return new L.DivIcon({
+      html: `<div><span title="${childCount} FOMs near this location">${childCount}</span></div>`,
+      className: 'cluster-marker-count' + c,
+      iconSize: new L.Point(48, 48),
+      iconAnchor: [25, 46]
+    });
   }
 
   // to avoid timing conflict with animations (resulting in small map tile at top left of page),
@@ -393,10 +402,21 @@ export class AppMapComponent implements AfterViewInit, OnChanges, OnDestroy {
 
   private updateOnLayersChange(data: any) {
     if (data) {
-      const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
-      const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
-      this.map.removeLayer(currentActiveBaseLayer);
-      this.map.addLayer(newBaseLayer);
+      if (data.baseLayer) {
+        const currentActiveBaseLayer = this.mapLayers.getActiveBaseLayer();
+        const newBaseLayer = this.mapLayers.getBaseLayerByName(data.baseLayer);
+        this.map.removeLayer(currentActiveBaseLayer);
+        this.map.addLayer(newBaseLayer);
+      }
+      else if (data.overlay) {
+        const overlay = this.mapLayers.getOverlayByName(data.overlay.layerName);
+        if (data.overlay.action == OverlayAction.Add) {
+          this.map.addLayer(overlay);
+        }
+        else {
+          this.map.removeLayer(overlay);
+        }
+      }
     }
   }
 }
