@@ -61,18 +61,18 @@ export class MapLayersService {
    * observable to do the map layers update when it gets notified.
    * @param map map of the component.
    * @param componentMapLayers MapLayers instance fom the component.
-   * @data new change to update from.
    */
-  mapLayersUpdate(map: L.Map, componentMapLayers: MapLayers, data: any) {
-    if (data.baseLayer) {
+  mapLayersUpdate(map: L.Map, componentMapLayers: MapLayers) {
+    const changeState = this.getCurrentChangeState();
+    if (changeState.baseLayer) {
       const currentActiveBaseLayer = componentMapLayers.getActiveBaseLayer();
-      const newBaseLayer = componentMapLayers.getBaseLayerByName(data.baseLayer);
+      const newBaseLayer = componentMapLayers.getBaseLayerByName(changeState.baseLayer);
       map.removeLayer(currentActiveBaseLayer);
       map.addLayer(newBaseLayer);
     }
-    if (data.overlay) {
-      const overlay = componentMapLayers.getOverlayByName(data.overlay.layerName);
-      if (data.overlay.action == OverlayAction.Add) {
+    if (changeState.overlay) {
+      const overlay = componentMapLayers.getOverlayByName(changeState.overlay.layerName);
+      if (changeState.overlay.action == OverlayAction.Add) {
         map.addLayer(overlay);
       }
       else {
@@ -97,9 +97,9 @@ export class MapLayersService {
 
     // For overlay layers
     const overlayLayersNames = componentMapLayers.getAllOverlayLayersNames();
-    overlayLayersNames.forEach(ln => {
-      const overlay = componentMapLayers.getOverlayByName(ln);
-      if (this._overlayLayers.includes(ln)) {
+    overlayLayersNames.forEach(oln => {
+      const overlay = componentMapLayers.getOverlayByName(oln);
+      if (this._overlayLayers.includes(oln)) {
         map.addLayer(overlay);
       }
       else {

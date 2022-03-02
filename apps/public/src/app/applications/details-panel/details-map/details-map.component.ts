@@ -64,8 +64,8 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void {
     this.mapLayersService.$mapLayersChange
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(data => {
-        this.updateOnLayersChange(data);
+      .subscribe(() => {
+        this.updateOnLayersChange();
     });
   }
 
@@ -223,10 +223,8 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   
-  private updateOnLayersChange(data: any) {
-    if (data) {
-      this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers, data);
-    }
+  private updateOnLayersChange() {
+    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
   }
 
   ngOnDestroy() {

@@ -82,8 +82,8 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   ngOnInit(): void {
     this.mapLayersService.$mapLayersChange
       .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(data => {
-        this.updateOnLayersChange(data);
+      .subscribe(() => {
+        this.updateOnLayersChange();
     });
   }
 
@@ -400,10 +400,8 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     }
   }
 
-  private updateOnLayersChange(data: any) {
-    if (data) {
-      this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers, data);
-    }
+  private updateOnLayersChange() {
+    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
   }
 }
 
