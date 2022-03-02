@@ -103,7 +103,8 @@ export abstract class DataService<
 
   // A hook on saving entity for other service to override if it needs extra operation, like db column encryption.
   protected async saveEntity(model: DeepPartial<E>): Promise<E> {
-    return this.repository.save(model);
+    // <any> necessary to work around type complaint, but the code functions.
+    return this.repository.save(<any>model);
   }
   
   // A hook on updating entity for other service to override if it needs extra operation, like db column encryption.
