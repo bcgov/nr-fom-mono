@@ -103,7 +103,7 @@
     "remeda": "0.0.32",
     "rxjs": "^6.6.6",
     "swagger-ui-express": "^4.3.0",
-    "tslib": "^2.0.0",
+    "tslib": "^2.3.1",
     "tsutils": "^3.21.0",
     "typeorm": "^0.2.34",
     "zone.js": "^0.11.4"
