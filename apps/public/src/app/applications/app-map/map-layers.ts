@@ -56,6 +56,10 @@ export class MapLayers {
     return this.overlayLayers[name];
   }
 
+  getAllOverlayLayersNames() : string[] {
+    return Object.keys(this.overlayLayers);
+  }
+
   getAllLayers():TileLayer[] {
     return [ this.baseLayers[this.activeBaseLayerName], ...this.defaultOverlays];
   }

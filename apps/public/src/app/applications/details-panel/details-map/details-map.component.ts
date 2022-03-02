@@ -115,9 +115,8 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
       this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
     });
 
-    // Initialize current app-map layers state (for the first time it is opened)
-    const currentMapLayersState = this.mapLayersService.getCurrentChangeState();
-    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers, currentMapLayersState);
+    // Initialize current app-map layers state (for the first time when this component map is shown)
+    this.mapLayersService.applyCurrentMapLayers(this.map, this.mapLayers);
   }
 
   public addScale() {
