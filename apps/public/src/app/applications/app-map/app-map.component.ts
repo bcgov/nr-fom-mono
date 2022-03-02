@@ -168,16 +168,21 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
 
     // save any future base layer changes
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
-      if (e.name != this.mapLayers.getActiveBaseLayerName()) {
-        this.mapLayers.setActiveBaseLayerName(e.name);
-        this.mapLayersService.notifyLayersChange({baseLayer: e.name});
+      const layerName = e.name;
+      if (layerName != this.mapLayers.getActiveBaseLayerName()) {
+        this.mapLayers.setActiveBaseLayerName(layerName);
+        this.mapLayersService.notifyLayersChange({baseLayer: layerName});
       }
     });
     this.map.on('overlayadd', (e: L.LayersControlEvent) => {
-      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Add, layerName: e.name}});
+      this.mapLayersService.notifyLayersChange(
+        {overlay: {action: OverlayAction.Add, layerName: e.name}}
+      );
     });
     this.map.on('overlayremove', (e: L.LayersControlEvent) => {
-      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
+      this.mapLayersService.notifyLayersChange(
+        {overlay: {action: OverlayAction.Remove, layerName: e.name}}
+      );
     });
 
     this.fixMap();
