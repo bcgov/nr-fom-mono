@@ -1,7 +1,7 @@
 import { Injectable, ExecutionContext, createParamDecorator, ForbiddenException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { ApiProperty } from '@nestjs/swagger';
-import { decode, verify, JwtPayload } from 'jsonwebtoken';
+import { decode, verify } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 
 import { User } from './user';
