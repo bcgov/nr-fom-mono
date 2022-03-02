@@ -2,12 +2,17 @@ import { Injectable } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
 import { MapLayers } from "../../app/applications/app-map/map-layers";
 
+export const OverlayAction = {
+  Add: 'ADD',
+  Remove: 'REMOVE'
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class MapLayersService {
 
-  // Value passing:
+  // Value passing for next(?):
   // - For baseLayer change: {baseLayer: string}
   // - For overlay change: {overlay: {action: 'ADD'|'REMOVE', layerName: string}}
   private _mapLayersChange = new BehaviorSubject({baseLayer: null, overlay: null});
@@ -25,13 +30,20 @@ export class MapLayersService {
     return this._mapLayersChange.value;
   }
 
+  /**
+   * To notify observable there is a new change.
+   * The function reconstructs the new change and emit it to next();
+   * @param data The 'data' passing into this function if of the form:
+   *              either {baseLayer: string}
+   *              or {overlay: {action: 'ADD'|'REMOVE', layerName: string}}
+   */
   notifyLayersChange(data) {
-    let layersChange = this._mapLayersChange.value;
+    let newLayersChange = Object.assign({}, this._mapLayersChange.value);
     if (data.baseLayer) {
-      layersChange['baseLayer'] = data.baseLayer;
+      newLayersChange['baseLayer'] = data.baseLayer;
     }
     if (data.overlay) {
-      layersChange['overlay'] = data.overlay;
+      newLayersChange['overlay'] = data.overlay;
       // maintain internal overlay state.
       if (data.overlay.action == OverlayAction.Add) {
         this._overlayLayers.push(data.overlay.layerName);
@@ -41,9 +53,16 @@ export class MapLayersService {
       }
     }
 
-    this._mapLayersChange.next(layersChange);
+    this._mapLayersChange.next(newLayersChange);
   }
 
+  /**
+   * A convenient function for the component which subscribe to $mapLayersChange
+   * observable to do the map layers update when it gets notified.
+   * @param map map of the component.
+   * @param componentMapLayers MapLayers instance fom the component.
+   * @data new change to update from.
+   */
   mapLayersUpdate(map: L.Map, componentMapLayers: MapLayers, data: any) {
     if (data.baseLayer) {
       const currentActiveBaseLayer = componentMapLayers.getActiveBaseLayer();
@@ -62,6 +81,11 @@ export class MapLayersService {
     }
   }
 
+  /**
+   * Special case for the first time when the component map is shown, see component (like details-map.component.ts).
+   * @param map map of the component.
+   * @param componentMapLayers MapLayers instance fom the component.
+   */
   applyCurrentMapLayers(map: L.Map, componentMapLayers: MapLayers) {
     // For base layer
     if (this.getCurrentChangeState().baseLayer) {
@@ -83,9 +107,4 @@ export class MapLayersService {
       }
     });
   }
-}
-
-export const OverlayAction = {
-  Add: 'ADD',
-  Remove: 'REMOVE'
 }
