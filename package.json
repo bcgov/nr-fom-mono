@@ -102,9 +102,8 @@
     "reflect-metadata": "^0.1.13",
     "remeda": "0.0.32",
     "rxjs": "^6.6.6",
-    "swagger-ui-express": "^4.1.6",
+    "swagger-ui-express": "^4.3.0",
     "tslib": "^2.0.0",
-    "tsutils": "^3.21.0",
     "typeorm": "^0.2.34",
     "zone.js": "^0.10.3"
   },
