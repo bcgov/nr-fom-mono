@@ -43,7 +43,7 @@ async function bootstrap():Promise<INestApplication> {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
   }));
-  const appConfig:AppConfigService = app.get('AppConfigService');
+  const appConfig:AppConfigService = app.get(AppConfigService);
   app.setGlobalPrefix(appConfig.getGlobalPrefix());
   // Required setting as per https://stackoverflow.com/questions/52783959/nest-js-request-entity-too-large-payloadtoolargeerror-request-entity-too-larg
   const MAX_CONTENT_LIMIT = '30mb'
