@@ -7,7 +7,7 @@ import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
-import helmet = require('helmet');
+import helmet from 'helmet';
 import { ProjectService } from '@api-modules/project/project.service';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 import { urlencoded, json } from 'express';
