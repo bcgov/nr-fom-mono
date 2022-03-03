@@ -98,11 +98,12 @@ export class AuthService {
         try {
           const untrustedDecodedToken = decode(token, { complete: true });
           const kid = untrustedDecodedToken.header.kid;
-  
+          const nonce = untrustedDecodedToken.payload['none'] ? untrustedDecodedToken.payload['none'] : null;
+
           var key = await this.jwksClient.getSigningKey(kid);
           var decodedToken = verify(token, key.getPublicKey(), 
             { issuer: this.config.getIssuer(), 
-              nonce: untrustedDecodedToken.payload.nonce 
+              nonce: nonce
             });
           this.logger.debug("Trusted decoded token = %o" + decodedToken);
           return User.convertJwtToUser(decodedToken);

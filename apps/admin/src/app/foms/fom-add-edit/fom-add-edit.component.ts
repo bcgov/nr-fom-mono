@@ -2,8 +2,7 @@ import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 
 import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from '@angular/material/snack-bar';
 import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, of, Subject} from 'rxjs';
-import {switchMap, takeUntil, tap} from 'rxjs/operators';
+import {Observable, of, Subject, switchMap, takeUntil, tap} from 'rxjs';
 import * as moment from 'moment';
 
 import {
