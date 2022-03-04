@@ -17,7 +17,7 @@ export class AuthInterceptor implements NestInterceptor {
         this.logger.debug("Authenticated user = %o", user);
         request.headers['user'] = user;
       }).catch(err => { 
-        throwError(new ForbiddenException() );
+        throwError(() => new ForbiddenException() );
       });
     }
     return next.handle();
