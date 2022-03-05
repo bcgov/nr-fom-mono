@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 // Modules
 import { SharedModule } from '../shared.module';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 // Components
 import { ProjectsComponent } from './projects.component';
@@ -21,7 +22,15 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.component';
 
 @NgModule({
-  imports: [CommonModule, FormsModule, NgbModule, RouterModule, SharedModule, MatTableModule, MatSlideToggleModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    NgbModule, 
+    RouterModule, 
+    SharedModule, 
+    MatTableModule, 
+    MatSlideToggleModule, 
+    BsDatepickerModule.forRoot()],
   declarations: [
     ProjectsComponent,
     AppMapComponent,
