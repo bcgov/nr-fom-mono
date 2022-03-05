@@ -22,12 +22,20 @@
         <div class="date-range">
           <div class="date-range__input">
             <label class="sr-only">Start Date</label>
-            <div style="width: 15rem">
-              <fom-date-input class="gtm-filter-published-from"
-                [(date)]="postedOnAfterFilter.filter.value"
+            <div>
+              <input
+                style="width: 20rem;"
+                class="form-control"
+                type="text"
+                placeholder="YYYY-MM-DD"
+                bsDatepicker
                 [minDate]="minDate"
-                [maxDate]="maxDate">
-              </fom-date-input>
+                [maxDate]="maxDate"
+                onkeydown="return false"
+                [(ngModel)]="postedOnAfterFilter.filter.value"
+                [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+                containerClass: 'theme-dark-blue', showWeekNumbers: false  }"
+              />
             </div>
           </div>
         </div>
