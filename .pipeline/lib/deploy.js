@@ -21,6 +21,9 @@ const MyDeployer = class extends BasicDeployer{
     }
     const databaseServiceName = `${dbParams.APP_DB_NAME}-master${config.suffix}`;
 
+    /* Disable database deploy due to OpenShift / nrdk issue - trying to deploy fom-db-ha with new PR number results in changes to spec that OpenShift rejects - see error message below
+      Enable this if wanting to create a new environment.
+      Error Message: stderr:The StatefulSet "fom-db-ha-test" is invalid: spec: Forbidden: updates to statefulset spec for fields other than 'replicas', 'template', and 'updateStrategy' are forbidden
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
       'param':{
         'NAME': dbParams.DB_NAME,
@@ -45,7 +48,7 @@ const MyDeployer = class extends BasicDeployer{
         'MEMORY_LIMIT': config.dbMemoryLimit,
       }
     }));
-
+    */
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
       'param':{
         ...dbParams,
