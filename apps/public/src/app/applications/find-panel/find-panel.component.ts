@@ -150,10 +150,6 @@ export class FindPanelComponent implements OnDestroy, OnInit {
     return this.forestClientNameFilter.isFilterSet();
   }
 
-  public showExplorePanel() {
-    this.urlSvc.setFragment(Panel.Explore);
-  }
-
   /**
    * On component destroy.
    *

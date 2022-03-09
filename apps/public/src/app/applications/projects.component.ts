@@ -91,10 +91,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
             this.closeSplashModal();
             this.activePanel = Panel.find;
             break;
-          case Panel.Explore:
-            this.closeSplashModal();
-            this.activePanel = Panel.Explore;
-            break;
           case Panel.details:
             this.closeSplashModal();
             this.activePanel = Panel.details;

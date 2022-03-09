@@ -15,6 +15,12 @@
           <div>Details</div>
         </button>
       </li>
+      <li class="side-nav-item" [ngClass]="{'active': activePanel === Panel.publicNotices}">
+        <button class="btn" (click)="togglePanel(Panel.publicNotices)">
+          <em class="material-icons">notifications</em>
+          <div>Public Notices</div>
+        </button>
+      </li>
     </ul>
   </div>
 
