@@ -7,7 +7,7 @@ FOM projects (proposals for logging, essentially) are submitted to FOM and made 
 
 ## Technical Details
 
-Technology Stack: Angular, Node.js, PostgresSQL with PostGIS running in OCP v4
+Technology Stack: Angular, Node.js with Nest/TypeORM framework, PostgresSQL with PostGIS running in OCP v4
 
 This is a monorepo that includes the API backend and the two Angular front-ends.
 
@@ -20,17 +20,6 @@ This is a monorepo that includes the API backend and the two Angular front-ends.
 
 See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/viewpage.action?pageId=83560736
 
-## Security
-
-<!--- Authentication, Authorization, Policies, etc --->
-
-## Files in this repository
-
-<!--- Use Tree to generate the file structure, try `tree -I '<excluded_paths>' -d -L 3`--->
-
-## Getting Started
-
-<!--- setup env vars, secrets, instructions... --->
 
 ## Local Development
 
@@ -83,6 +72,20 @@ These are the steps to generate the client library used by the frontend componen
 - Remove the existing generated client library files. Delete the directories /libs/client/typescript-ng/{api|models}.
 - Generate the client library using 'npm run gen:client-api:ng'. Generated files will be placed into '/libs/client/typescript-ng'
 - Copy the client library into the Admin and Public components in /src/core/api
+
+## Upgrading 3rd party dependencies
+
+Due to the minimal automated tests, the following should be done after major dependency changes:
+npm run build
+npm test-unit
+npm run start:public
+npm run start:admin (ideally with keycloak and object storage enabled)
+npm run start:api
+Test both front-ends.
+
+To assess the need for upgrades:
+npx dep-check
+npm audit
 
 ## Deployment (OpenShift)
 
