@@ -7,6 +7,8 @@ import { RouterModule } from '@angular/router';
 // Modules
 import { SharedModule } from '../shared.module';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 
 // Components
 import { ProjectsComponent } from './projects.component';
@@ -20,6 +22,7 @@ import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { MatTableModule } from '@angular/material/table'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.component';
+import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
 
 @NgModule({
   imports: [
@@ -29,7 +32,9 @@ import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.compon
     RouterModule, 
     SharedModule, 
     MatTableModule, 
-    MatSlideToggleModule, 
+    MatSlideToggleModule,
+    MatExpansionModule,
+    MatCardModule,
     BsDatepickerModule.forRoot()],
   declarations: [
     ProjectsComponent,
@@ -40,7 +45,8 @@ import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.compon
     DateInputComponent,
     FindPanelComponent,
     SplashModalComponent,
-    ShapeInfoComponent
+    ShapeInfoComponent,
+    PublicNoticesPanelComponent
   ]
 })
 export class ProjectsModule {}
