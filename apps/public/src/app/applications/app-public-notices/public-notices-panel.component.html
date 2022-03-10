@@ -21,19 +21,26 @@
   <div class="flex-panel__scroll">
     <div>
       <section>
-        <div class="row">
-          <div class="col-sm-4" style="padding: 0">
-            <button class="btn btn-primary btn-sm" (click)="accordion.openAll()">Expand</button>
-            <button class="btn btn-light btn-sm" (click)="accordion.closeAll()">Collapse</button>
-          </div>
+ 
+        <div class="expansion-button">
+          <button class="btn btn-primary btn-sm" (click)="accordion.openAll()">Expand</button>
+          <button class="btn btn-light btn-sm" (click)="accordion.closeAll()">Collapse</button>
         </div>
+
         <mat-accordion multi>
           <!-- Public Notices Summary List-->
           <div *ngFor="let pn of pNotices">
             <mat-expansion-panel hideToggle [disabled]="requestError">
               <mat-expansion-panel-header>
                 <mat-panel-title>
-                  #{{pn.fomNum}} ({{pn.fomHolder}}), {{pn.commentingOpen}} {{pn.fomSummary}}
+                  <div class="container" style="padding: 0;">
+                    <div class="row">
+                      <div class="col-1">#{{pn.fomNum}} </div>
+                      <div class="col-4">{{pn.fomHolder | shorten: 25}}</div>
+                      <div class="col-5">{{pn.fomSummary | shorten: 30}}</div>
+                      <div class="col-2" style="padding-right: 0;">{{pn.commentingOpen}}</div>
+                    </div>
+                  </div>
                 </mat-panel-title>
               </mat-expansion-panel-header>
               <mat-card>

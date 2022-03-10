@@ -1,0 +1,15 @@
+@import "../../../assets/styles/base/base.scss";
+
+.expansion-button {
+  padding: 10px 0;
+  button {
+    margin-right: 7px;
+  }
+}
+
+.mat-expansion-panel-header {
+  padding-left: 10px;
+  .mat-expansion-panel-header-title {
+    font-size: small;
+  }
+}

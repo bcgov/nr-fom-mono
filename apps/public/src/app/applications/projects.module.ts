@@ -23,6 +23,7 @@ import { MatTableModule } from '@angular/material/table'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.component';
 import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
+import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 
 @NgModule({
   imports: [
@@ -46,7 +47,8 @@ import { PublicNoticesPanelComponent } from './app-public-notices/public-notices
     FindPanelComponent,
     SplashModalComponent,
     ShapeInfoComponent,
-    PublicNoticesPanelComponent
+    PublicNoticesPanelComponent,
+    ShortenPipe
   ]
 })
 export class ProjectsModule {}
