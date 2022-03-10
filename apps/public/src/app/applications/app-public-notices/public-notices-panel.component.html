@@ -22,7 +22,7 @@
     <div>
       <section>
         <div class="row">
-          <div class="col-md-4" style="padding: 0">
+          <div class="col-sm-4" style="padding: 0">
             <button class="btn btn-primary btn-sm" (click)="accordion.openAll()">Expand</button>
             <button class="btn btn-light btn-sm" (click)="accordion.closeAll()">Collapse</button>
           </div>
@@ -48,8 +48,79 @@
     </div>
 
     <!-- Comment item display template -->
-    <ng-template #pNotice_fields_template let-comment="pNotice">
-      TODO
+    <ng-template #pNotice_fields_template let-pn="pNotice">
+      <div class="row">
+        <div class="col-sm-3 bold">FOM #: </div>
+        <div class="col-sm-3">{{pn.fomNum}}</div>
+        <div class="col-sm-2 bold">FOM Holder: </div>
+        <div class="col-sm-4">{{pn.fomHolder}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3 bold">FSP ID: </div>
+        <div class="col-sm-3">{{pn.fspID}}</div>
+        <div class="col-sm-2 bold">District: </div>
+        <div class="col-sm-4">{{pn.district}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3 bold">Email: </div>
+        <div class="col-sm-9">{{pn.email}}</div>
+      </div>
+
+      <div class="row">
+        &nbsp;
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Commenting Period: </div>
+        <div class="col-sm-8">{{pn.commentingPeriod}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Validity Period: </div>
+        <div class="col-sm-8">{{pn.validityPeriod}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">FOM Summary: </div>
+        <div class="col-sm-8">{{pn.fomSummary}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">FOM Description: </div>
+        <div class="col-sm-8">{{pn.fomDescription}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Review FOM Address: </div>
+        <div class="col-sm-8">{{pn.reviewFOMAddress}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Review FOM Business Hours: </div>
+        <div class="col-sm-8">{{pn.reviewFOMBusinessHours}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Receive Comments Address: </div>
+        <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Receive Comments Business Hours: </div>
+        <div class="col-sm-8">{{pn.receiveCommentsBusinessHours}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Mailing Address: </div>
+        <div class="col-sm-8">{{pn.mailingAddress}}</div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-4 bold">Public Notice URL: </div>
+        <div class="col-sm-8">{{pn.publicNoticeURL}}</div>
+      </div>
     </ng-template>
   </div>
 
