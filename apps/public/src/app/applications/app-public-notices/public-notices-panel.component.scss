@@ -13,3 +13,19 @@
     font-size: small;
   }
 }
+
+@media (max-width: 1023px) {
+  .mat-expansion-panel-header {
+    height: auto;
+    div { padding: 5px 0px 5px 10px}
+    .mat-expansion-panel-header-title {
+      font-size: smaller;
+    }
+  }
+}
+
+.mat-card {
+  .row {
+      padding-bottom: 0.5rem;
+  }
+}

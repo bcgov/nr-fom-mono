@@ -3,6 +3,7 @@ import {MatAccordion} from '@angular/material/expansion';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
 import moment = require('moment');
+import { Panel } from '../utils/panel.enum';
 
 @Component({
   selector: 'app-public-notices-panel',
@@ -22,6 +23,12 @@ export class PublicNoticesPanelComponent implements OnDestroy, OnInit {
 
   ngOnInit(): void {
     this.pNotices = this.getMockPublicNotices();
+  }
+
+  public showDetails() {
+    // this.urlService.setQueryParam('id', this.projectSummary.id.toString());
+    this.urlService.setQueryParam('id', '1180'); // TODO: adjust this, hardcoded for now.
+    this.urlService.setFragment(Panel.details);
   }
 
   ngOnDestroy() {

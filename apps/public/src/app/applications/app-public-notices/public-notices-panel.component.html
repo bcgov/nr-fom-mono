@@ -35,10 +35,18 @@
                 <mat-panel-title>
                   <div class="container" style="padding: 0;">
                     <div class="row">
-                      <div class="col-1">#{{pn.fomNum}} </div>
-                      <div class="col-4">{{pn.fomHolder | shorten: 25}}</div>
-                      <div class="col-5">{{pn.fomSummary | shorten: 30}}</div>
-                      <div class="col-2" style="padding-right: 0;">{{pn.commentingOpen}}</div>
+                      <div class="col-6 col-sm-1">#{{pn.fomNum}} </div>
+                      <div class="col-6 col-sm-4">
+                        <span matTooltip="{{pn.fomHolder}}">
+                          {{pn.fomHolder | shorten: 25}}
+                        </span>
+                      </div>
+                      <div class="col-6 col-sm-5">
+                        <span matTooltip="{{pn.fomSummary}}">
+                          {{pn.fomSummary | shorten: 40}}
+                        </span>
+                      </div>
+                      <div class="col-6 col-sm-2" style="padding-right: 0;">{{pn.commentingOpen}}</div>
                     </div>
                   </div>
                 </mat-panel-title>
@@ -47,6 +55,7 @@
                 <ng-container [ngTemplateOutlet]="pNotice_fields_template"
                               [ngTemplateOutletContext]="{ pNotice: pn }">
                 </ng-container>
+                <button class="app-link btn btn-primary" (click)="showDetails()">View Details</button>
               </mat-card>
             </mat-expansion-panel>
           </div>
@@ -57,25 +66,25 @@
     <!-- Comment item display template -->
     <ng-template #pNotice_fields_template let-pn="pNotice">
       <div class="row">
-        <div class="col-sm-3 bold">FOM #: </div>
-        <div class="col-sm-3">{{pn.fomNum}}</div>
-        <div class="col-sm-2 bold">FOM Holder: </div>
-        <div class="col-sm-4">{{pn.fomHolder}}</div>
+        <div class="col-5 col-sm-3 bold">FOM #: </div>
+        <div class="col-7 col-sm-3 no-padding">{{pn.fomNum}}</div>
+        <div class="col-5 col-sm-2 bold">FOM Holder: </div>
+        <div class="col-7 col-sm-4 no-padding">{{pn.fomHolder}}</div>
       </div>
 
       <div class="row">
-        <div class="col-sm-3 bold">FSP ID: </div>
-        <div class="col-sm-3">{{pn.fspID}}</div>
-        <div class="col-sm-2 bold">District: </div>
-        <div class="col-sm-4">{{pn.district}}</div>
+        <div class="col-5 col-sm-3 bold">FSP ID: </div>
+        <div class="col-7 col-sm-3 no-padding">{{pn.fspID}}</div>
+        <div class="col-5 col-sm-2 bold">District: </div>
+        <div class="col-7 col-sm-4 no-padding">{{pn.district}}</div>
       </div>
 
       <div class="row">
-        <div class="col-sm-3 bold">Email: </div>
-        <div class="col-sm-9">{{pn.email}}</div>
+        <div class="col-5 col-sm-3 bold">Email: </div>
+        <div class="col-7 col-sm-9 no-padding">{{pn.email}}</div>
       </div>
 
-      <div class="row">
+      <div class="row no-padding">
         &nbsp;
       </div>
 

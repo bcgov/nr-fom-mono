@@ -24,6 +24,8 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.component';
 import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   imports: [
@@ -31,11 +33,13 @@ import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
     FormsModule, 
     NgbModule, 
     RouterModule, 
-    SharedModule, 
+    SharedModule,
+    BrowserAnimationsModule,
     MatTableModule, 
     MatSlideToggleModule,
     MatExpansionModule,
     MatCardModule,
+    MatTooltipModule,
     BsDatepickerModule.forRoot()],
   declarations: [
     ProjectsComponent,
