@@ -15,6 +15,7 @@ import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { takeUntil } from 'rxjs/operators';
+import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
 
 /**
  * Object emitted by child panel on update.
@@ -52,6 +53,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   @ViewChild('appmap', { static: false }) appmap: AppMapComponent;
   @ViewChild('findPanel', { static: false }) findPanel: FindPanelComponent;
   @ViewChild('detailsPanel', { static: false }) detailsPanel: DetailsPanelComponent;
+  @ViewChild('publicNoticesPanel', { static: false }) publicNoticesPanel: PublicNoticesPanelComponent;
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   private splashModal: NgbModalRef = null;
@@ -200,6 +202,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.closeSidePanel();
     }
   }
+
+  public handlePublicNoticesUpdate(updateEvent: IUpdateEvent) {
+    if (updateEvent.hidePanel) {
+      this.closeSidePanel();
+    }
+  }
+  
 
   /**
    * Toggles active panel and its corresponding url fragment.

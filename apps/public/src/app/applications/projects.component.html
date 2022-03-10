@@ -36,7 +36,8 @@
     <app-details-panel #detailsPanel
       [hidden]="activePanel !== Panel.details">
     </app-details-panel>
-    <app-public-notices-panel #noticesPanel
+    <app-public-notices-panel #publicNoticesPanel
+      (update)="handlePublicNoticesUpdate($event)"
       [hidden]="activePanel !== Panel.publicNotices">
   </app-public-notices-panel>
   </div>
