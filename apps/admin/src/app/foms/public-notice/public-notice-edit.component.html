@@ -1,0 +1,28 @@
+<div class="top-container">
+  <div class="container">
+    <div class="title-container">
+      <div class="title-container__title">
+        <h1 class="text-muted"> Edit Public Notice</h1>
+      </div>
+      <div class="title-container__actions">
+        <button
+          class="btn btn-light"
+          type="button"
+          title="Cancel changes"
+          (click)="cancelChanges()">
+          Cancel
+        </button>
+        <button
+          class="btn btn-primary ml-1"
+          type="button"
+          title="Create/Edit Public Notice">
+          <!-- (click)="submit()" TODO this button probably should be 'submit' type-->
+          {{ isLoading ? "Saving" : "Save" }}
+          <em class="spinner rotating" [hidden]="!stateSvc.loading"></em>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+TODO
