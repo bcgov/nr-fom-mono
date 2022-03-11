@@ -123,10 +123,10 @@
           <label for="review-fom-address">Review FOM Address</label>
           <textarea class="form-control mb" rows="3" 
             id="review-fom-address" name="review-fom-address" 
-            formControlName="reviewAddress"
+            formControlName="reviewFOMAddress"
             maxlength="{{addressLimit}}">
           </textarea>
-          <small>{{addressLimit-publicNoticeFormGroup.get('reviewAddress').value?.length}} characters remaining.</small>
+          <small>{{addressLimit-publicNoticeFormGroup.get('reviewFOMAddress').value?.length}} characters remaining.</small>
         </div>
       </div>
       
@@ -137,7 +137,7 @@
             id="review-fom-hours" name="review-fom-hours"
             maxlength="50"
             class="form-control"
-            formControlName="reviewBusinessHours"/>
+            formControlName="reviewFOMBusinessHours"/>
         </div>
       </div>
 

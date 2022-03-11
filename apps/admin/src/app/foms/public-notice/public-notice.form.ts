@@ -1,5 +1,5 @@
 import { prop } from "@rxweb/reactive-form-validators";
-
+import * as R from 'remeda';
 export class PublicNoticeForm {
 
   projectId: number;
@@ -7,10 +7,10 @@ export class PublicNoticeForm {
   publicNoticeId: number;
 
   @prop()
-  reviewAddress: string;
+  reviewFOMAddress: string;
 
   @prop()
-  reviewBusinessHours: string;
+  reviewFOMBusinessHours: string;
 
   @prop()
   sameAsReviewInd: boolean;
@@ -26,4 +26,23 @@ export class PublicNoticeForm {
 
   @prop()
   email: string;
+
+  constructor(publicNoticeResponse?: any) {
+    if (publicNoticeResponse) {
+      // Pick the field to instantiate.
+      Object.assign(this, R.pick(publicNoticeResponse, 
+        [
+          'projectId',
+          'publicNoticeId',
+          'reviewFOMAddress',
+          'reviewFOMBusinessHours',
+          'sameAsReviewInd',
+          'receiveCommentsAddress',
+          'receiveCommentsBusinessHours',
+          'mailingAddress',
+          'email'
+        ]
+      ));
+    }
+  }
 }

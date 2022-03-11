@@ -39,7 +39,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     // TODO, call swagger api service to get public notice info from backend and set values to form.
     this.publicNoticeResponse = this.getMockPublicNotice(this.projectId);
 
-    let publicNoticeForm = new PublicNoticeForm();
+    let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
     this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
   }
 
@@ -63,7 +63,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     return {
       reviewFOMAddress: '123 First Street, Vancouver BC',
       reviewFOMBusinessHours: 'Monday to Friday 8am-4pm, Saturday 10am - 2pm',
-      receiveSameAsReview: true,
+      sameAsReviewInd: true,
       receiveCommentsAddress: '123 First Street, Vancouver BC',
       receiveCommentsBusinessHours: 'Monday to Friday 10am to 4pm',
       mailingAddress: 'Box 123 Surrey BC',
@@ -73,7 +73,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
       commentingPeriod: 'January 1, 2022 to January 31, 2022',
 	    commentingOpen: 'January 1, 2022',
       fomHolder: 'Lumber Co. Ltd.',
-      fomNum: projectId,
+      projectId: projectId,
       fomSummary: 'Sunny Ridge Logging',
       fomDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non tincidunt metus, nec facilisis lectus. Donec auctor vitae mi at ultricies.',
       fspID: 10,
