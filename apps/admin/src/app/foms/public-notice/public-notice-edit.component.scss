@@ -19,5 +19,10 @@ form {
 }
 
 .form-group {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
+  .medium-check-box {
+    transform : scale(1.5);
+    vertical-align: middle;
+    position: relative;
+  }
 }
