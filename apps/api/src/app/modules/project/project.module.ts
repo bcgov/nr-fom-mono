@@ -5,6 +5,8 @@ import { Project } from './project.entity';
 import { ProjectService } from './project.service';
 import { ProjectController } from './project.controller';
 
+import { PublicNotice } from './public-notice.entity';
+
 import { DistrictModule } from '../district/district.module';
 import { ForestClientModule } from '../forest-client/forest-client.module';
 import { SecurityModule } from 'apps/api/src/core/security/security.module';
@@ -18,7 +20,7 @@ import { MailModule } from 'apps/api/src/core/mail/mail.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Project, WorkflowStateCode]),
+    TypeOrmModule.forFeature([Project, WorkflowStateCode, PublicNotice]),
     DistrictModule,
     ForestClientModule,
     SecurityModule,
