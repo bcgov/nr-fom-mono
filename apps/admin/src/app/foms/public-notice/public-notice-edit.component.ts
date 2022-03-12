@@ -9,6 +9,7 @@ import {User} from "@api-core/security/user";
 import {KeycloakService} from "../../../core/services/keycloak.service";
 import { FormGroup } from '@angular/forms';
 import { PublicNoticeForm } from './public-notice.form';
+import { PublicNoticeService } from './public-notice.temp.service';
 
 @Component({
   selector: 'app-public-notice-edit',
@@ -30,6 +31,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     private formBuilder: RxFormBuilder,
     public stateSvc: StateService,
     private keycloakService: KeycloakService,
+    private publicNoticeService: PublicNoticeService
   ) {
     this.user = this.keycloakService.getUser();
   }
@@ -37,14 +39,21 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   ngOnInit() {
     this.projectId = this.route.snapshot.params.appId;
     // TODO, call swagger api service to get public notice info from backend and set values to form.
-    this.publicNoticeResponse = this.getMockPublicNotice(this.projectId);
-
+    this.publicNoticeResponse = this.publicNoticeService.getMockData(this.projectId);
     let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
     this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
   }
 
   get isLoading() {
     return this.stateSvc.loading;
+  }
+
+  onSubmit() {
+    console.log("submitting publicNotice: ", this.publicNoticeFormGroup.value);
+    // TODO: check if form touched and valid before further logic. Below is tempoary logic.
+    Object.assign(this.publicNoticeResponse, this.publicNoticeFormGroup.value);
+    this.publicNoticeService.setMockData(this.publicNoticeResponse);
+    this.router.navigate(['/a', this.projectId]);
   }
 
   ngAfterViewInit() {
@@ -57,27 +66,5 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   ngOnDestroy() {
     this.ngUnsubscribe.next(true);
     this.ngUnsubscribe.complete();
-  }
-
-  private getMockPublicNotice(projectId: number) {
-    return {
-      reviewFOMAddress: '123 First Street, Vancouver BC',
-      reviewFOMBusinessHours: 'Monday to Friday 8am-4pm, Saturday 10am - 2pm',
-      sameAsReviewInd: true,
-      receiveCommentsAddress: '123 First Street, Vancouver BC',
-      receiveCommentsBusinessHours: 'Monday to Friday 10am to 4pm',
-      mailingAddress: 'Box 123 Surrey BC',
-      email: 'name@industry.com',
-      publicNoticeURL: 'https://fom-test.nrs.gov.bc.ca/public/projects?id=1720#details',
-      validityPeriod: 'January 1, 2022 to January 1, 2025',
-      commentingPeriod: 'January 1, 2022 to January 31, 2022',
-	    commentingOpen: 'January 1, 2022',
-      fomHolder: 'Lumber Co. Ltd.',
-      projectId: projectId,
-      fomSummary: 'Sunny Ridge Logging',
-      fomDescription: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce non tincidunt metus, nec facilisis lectus. Donec auctor vitae mi at ultricies.',
-      fspID: 10,
-      district: 'Campbell River'
-    };
   }
 }

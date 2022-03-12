@@ -15,10 +15,11 @@
         <button
           class="btn btn-primary ml-1"
           type="button"
-          title="Create/Edit Public Notice">
-          <!-- (click)="submit()" TODO this button probably should be 'submit' type-->
+          title="Create/Edit Public Notice"
+          [disabled]="!publicNoticeFormGroup.valid || isLoading" 
+          (click)="onSubmit()">
           {{ isLoading ? "Saving" : "Save" }}
-          <em class="spinner rotating" [hidden]="!stateSvc.loading"></em>
+          <em class="spinner rotating" [hidden]="!isLoading"></em>
         </button>
       </div>
     </div>
@@ -28,7 +29,8 @@
 <div class="bottom-container">
   <div class="container">
     <form class="mb-3" 
-      [formGroup]="publicNoticeFormGroup">
+      [formGroup]="publicNoticeFormGroup"
+      (ngSubmit)="onSubmit()">
 
       <div class="row">
         <legend>Details</legend>
@@ -195,7 +197,7 @@
             formControlName="email"/>
         </div>
       </div>
-
+    
     </form>
   </div>
 </div>
