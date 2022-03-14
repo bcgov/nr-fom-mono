@@ -1,4 +1,4 @@
-import { prop } from "@rxweb/reactive-form-validators";
+import { email, prop, required } from "@rxweb/reactive-form-validators";
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
@@ -6,12 +6,15 @@ export class PublicNoticeForm {
 
   publicNoticeId: number;
 
+  @required()
   @prop()
   reviewFOMAddress: string;
 
+  @required()
   @prop()
   reviewFOMBusinessHours: string;
 
+  @required()
   @prop()
   sameAsReviewInd: boolean;
 
@@ -21,9 +24,12 @@ export class PublicNoticeForm {
   @prop()
   receiveCommentsBusinessHours: string;
 
+  @required()
   @prop()
   mailingAddress: string;
 
+  @required()
+  @email()
   @prop()
   email: string;
 

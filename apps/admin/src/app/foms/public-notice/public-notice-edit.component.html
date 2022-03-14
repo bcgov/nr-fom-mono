@@ -122,7 +122,7 @@
 
       <div class="form-row" >
         <div class="form-group col-md-12">
-          <label for="review-fom-address">Review FOM Address</label>
+          <label for="review-fom-address" class="required">Review FOM Address</label>
           <textarea class="form-control mb" rows="3" 
             id="review-fom-address" name="review-fom-address" 
             formControlName="reviewFOMAddress"
@@ -134,7 +134,7 @@
       
       <div class="form-row" >
         <div class="form-group col-md-6">
-          <label for="fom-holder">Review FOM Business Hours</label>
+          <label for="fom-holder" class="required">Review FOM Business Hours</label>
           <input type="text"
             id="review-fom-hours" name="review-fom-hours"
             maxlength="50"
@@ -143,9 +143,9 @@
         </div>
       </div>
 
-      <div class="form-row" >
+      <div class="form-row">
         <div class="form-group col-md-12">
-          <label for="sameAsReviewInd">Receive Comments Same as Review:&nbsp;&nbsp;&nbsp;</label>
+          <label for="sameAsReviewInd" class="required">Receive Comments Same as Review:</label>&nbsp;&nbsp;&nbsp;
           <input type="checkbox" class="medium-check-box"
           id="sameAsReviewInd" name="sameAsReviewInd"
           formControlName="sameAsReviewInd"/>
@@ -154,7 +154,10 @@
 
       <div class="form-row" >
         <div class="form-group col-md-12">
-          <label for="receive-fom-address">Receive Comments Address</label>
+          <label for="receive-fom-address"
+            [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value}">
+            Receive Comments Address
+          </label>
           <textarea class="form-control mb" rows="3" 
             id="receive-fom-address" name="receive-fom-address" 
             formControlName="receiveCommentsAddress"
@@ -166,7 +169,10 @@
       
       <div class="form-row" >
         <div class="form-group col-md-6">
-          <label for="receive-fom-hours">Receive Comments Business Hours</label>
+          <label for="receive-fom-hours"
+            [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value}">
+            Receive Comments Business Hours
+          </label>
           <input type="text"
             id="receive-fom-hours" name="receive-fom-hours"
             maxlength="50"
@@ -177,7 +183,7 @@
 
       <div class="form-row" >
         <div class="form-group col-md-12">
-          <label for="mailing-address">Mailing Address</label>
+          <label for="mailing-address" class="required">Mailing Address</label>
           <textarea class="form-control mb" rows="3" 
             id="mailing-address" name="mailing-address" 
             formControlName="mailingAddress"
@@ -189,7 +195,7 @@
 
       <div class="form-row" >
         <div class="form-group col-md-6">
-          <label for="email">Email</label>
+          <label for="email" class="required">Email</label>
           <input type="text"
             id="email" name="email"
             maxlength="50"
