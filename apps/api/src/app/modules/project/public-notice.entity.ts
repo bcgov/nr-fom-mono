@@ -2,7 +2,7 @@ import { ApiBaseEntity } from '@entities';
 import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId, OneToMany } from 'typeorm';
 import { Project } from './project.entity';
 
-@Entity('public-notice', {schema: 'app_fom'})
+@Entity('public_notice', {schema: 'app_fom'})
 export class PublicNotice extends ApiBaseEntity<PublicNotice> {
   constructor(publicNotice?: Partial<PublicNotice>) {
     super(publicNotice);
@@ -14,7 +14,8 @@ export class PublicNotice extends ApiBaseEntity<PublicNotice> {
   @Column({name: 'project_id'})
   projectId: number;
 
-  // @ManyToOne(() => Project, project => project.publicNotices)
+  // TODO: Evaluate whether needed
+  // @ManyToOne(() => Project)
   // @JoinColumn({ name: 'project_id' })
   // project: Project;
 
