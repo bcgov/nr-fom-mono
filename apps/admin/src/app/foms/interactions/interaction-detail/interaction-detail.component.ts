@@ -31,8 +31,8 @@ export class InteractionDetailComponent implements OnInit {
   * file type extension.
   */
   supportingFileTypes: string[] = ['*'];
-
   attachment: AttachmentResponse;
+  communicationDetailsLimit: number = 4000;
 
   constructor(
     private formBuilder: RxFormBuilder,

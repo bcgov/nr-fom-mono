@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository, UpdateResult } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
@@ -103,7 +103,8 @@ export abstract class DataService<
 
   // A hook on saving entity for other service to override if it needs extra operation, like db column encryption.
   protected async saveEntity(model: DeepPartial<E>): Promise<E> {
-    return this.repository.save(model);
+    // <any> necessary to work around type complaint, but the code functions.
+    return this.repository.save(<any>model);
   }
   
   // A hook on updating entity for other service to override if it needs extra operation, like db column encryption.
@@ -162,7 +163,7 @@ export abstract class DataService<
     }
     if (entity.revisionCount != requestDto.revisionCount) {
       this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + requestDto.revisionCount);
-      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+      throw new UnprocessableEntityException("The record you are trying to save has been changed since you retrieved it for editing. Please refresh and try again.");
     }
     requestDto.revisionCount += 1;
 

@@ -7,7 +7,7 @@ import { AppModule } from './app/app.module';
 import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
-import helmet = require('helmet');
+import helmet from 'helmet';
 import { ProjectService } from '@api-modules/project/project.service';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 import { urlencoded, json } from 'express';
@@ -43,7 +43,7 @@ async function bootstrap():Promise<INestApplication> {
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true, // Strips unknown properties not listed in input DTOs.
   }));
-  const appConfig:AppConfigService = app.get('AppConfigService');
+  const appConfig:AppConfigService = app.get(AppConfigService);
   app.setGlobalPrefix(appConfig.getGlobalPrefix());
   // Required setting as per https://stackoverflow.com/questions/52783959/nest-js-request-entity-too-large-payloadtoolargeerror-request-entity-too-larg
   const MAX_CONTENT_LIMIT = '30mb'

@@ -97,14 +97,16 @@ export class AuthService {
         
         try {
           const untrustedDecodedToken = decode(token, { complete: true });
+          this.logger.debug("Untrusted decoded token %o", untrustedDecodedToken);
           const kid = untrustedDecodedToken.header.kid;
-  
           var key = await this.jwksClient.getSigningKey(kid);
+          const nonce = untrustedDecodedToken.payload['nonce']; // Workaround weird typing of payload able to be a string.
+          this.logger.debug("Nonce %o", nonce);
           var decodedToken = verify(token, key.getPublicKey(), 
             { issuer: this.config.getIssuer(), 
-              nonce: untrustedDecodedToken.payload.nonce 
+              nonce: nonce
             });
-          this.logger.debug("Trusted decoded token = %o" + decodedToken);
+          this.logger.debug("Trusted decoded token = %o", decodedToken);
           return User.convertJwtToUser(decodedToken);
         } catch (err) {
           this.logger.warn("Invalid token %o", err);

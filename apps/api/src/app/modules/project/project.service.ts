@@ -1,4 +1,4 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { getRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
@@ -313,7 +313,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     if (entity.revisionCount != request.revisionCount) {
       this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
-      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+      throw new UnprocessableEntityException("The record you are trying to save has been changed since you retrieved it for editing. Please refresh and try again.");
     }
 
     if (request.workflowStateCode == entity.workflowStateCode) {
@@ -402,7 +402,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     if (entity.revisionCount != request.revisionCount) {
       this.logger.debug("Entity revision count " + entity.revisionCount + " dto revision count = " + request.revisionCount);
-      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+      throw new UnprocessableEntityException("The record you are trying to save has been changed since you retrieved it for editing. Please refresh and try again.");
     }
     if (isNil(request.commentClassificationMandatory)) {
       throw new BadRequestException("Must provide a value for requested field to change.");
@@ -625,7 +625,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
 
     if (entity.revisionCount != request.revisionCount) {
-      throw new BadRequestException("Entity has been modified since you retrieved it for editing. Please reload and try again.");
+      throw new UnprocessableEntityException("The record you are trying to save has been changed since you retrieved it for editing. Please refresh and try again.");
     }
 
     if (isNil(request.commentingClosedDate || !dayjs(request.commentingClosedDate, this.DATE_FORMAT).isValid())) {

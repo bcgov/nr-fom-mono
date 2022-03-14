@@ -1,4 +1,4 @@
-import { Component, OnDestroy, Input, ElementRef, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, Input, ElementRef, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import * as L from 'leaflet';
 import { GeoJsonObject } from 'geojson';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
@@ -15,13 +15,16 @@ import { MapLayers } from '../../app-map/map-layers';
 */
 import "leaflet/dist/images/marker-shadow.png"; 
 import "leaflet/dist/images/marker-icon-2x.png";
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 
 @Component({
   selector: 'app-details-map',
   templateUrl: './details-map.component.html',
   styleUrls: ['./details-map.component.scss']
 })
-export class DetailsMapComponent implements OnChanges, OnDestroy {
+export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() 
   projectSpatialDetail: SpatialFeaturePublicResponse[];
@@ -29,6 +32,8 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   public map: L.Map;
   public projectFeatures: L.FeatureGroup; // group of layers for the features of a FOM project.
   private lastLabelMarker: L.Marker; // global variable to keep track latest layer added (as labeling popup for onClick)
+  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  private mapLayers: MapLayers = new MapLayers();
 
   // custom reset view control
   public resetViewControl = L.Control.extend({
@@ -51,7 +56,18 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     }
   });
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(
+    private elementRef: ElementRef, 
+    private mapLayersService: MapLayersService
+  ) { }
+
+  ngOnInit(): void {
+    this.mapLayersService.$mapLayersChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.updateOnLayersChange();
+    });
+  }
 
   public ngOnChanges(changes: SimpleChanges) {
     // Note, when Angular first onChange is triggered, the value is undefined.
@@ -71,12 +87,9 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
   }
 
   public createBasicMap() {
-    this.projectFeatures = L.featureGroup();
-
-    const mapLayers = new MapLayers();    
-
+    this.projectFeatures = L.featureGroup();   
     this.map = L.map('map', {
-      layers: mapLayers.getAllLayers(),
+      layers: this.mapLayers.getAllLayers(),
       zoomControl: false, // will be added manually below
       attributionControl: true, 
       scrollWheelZoom: false, // not desired in thumbnail
@@ -88,12 +101,22 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
       maxBounds: L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180)) // restrict view to "the world"
     });
 
-
-    mapLayers.addLayerControl(this.map);
+    this.mapLayers.addLayerControl(this.map);
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
-      mapLayers.setActiveBaseLayerName(e.name);
+      if (e.name != this.mapLayers.getActiveBaseLayerName()) {
+        this.mapLayers.setActiveBaseLayerName(e.name);
+        this.mapLayersService.notifyLayersChange({baseLayer: e.name});
+      }
+    });
+    this.map.on('overlayadd', (e: L.LayersControlEvent) => {
+      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Add, layerName: e.name}});
+    });
+    this.map.on('overlayremove', (e: L.LayersControlEvent) => {
+      this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
     });
 
+    // Initialize current app-map layers state (for the first time when this component map is shown)
+    this.mapLayersService.applyCurrentMapLayers(this.map, this.mapLayers);
   }
 
   public addScale() {
@@ -199,8 +222,14 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
       this.projectFeatures.remove();
     }
   }
+  
+  private updateOnLayersChange() {
+    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
+  }
 
   ngOnDestroy() {
     this.resetMap();
+    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.complete();
   }
 }

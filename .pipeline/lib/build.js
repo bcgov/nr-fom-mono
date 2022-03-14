@@ -24,7 +24,6 @@ const MyBuilder = class extends BasicBuilder {
       }
     }));
 
-    /* Workaround a build failure with the backup. Error message:  error: build error: failed to pull image: After retrying 2 times, Pull image still failed due to error: unable to retrieve auth token: invalid username/password: unauthorized: unable to validate token: ServiceUnavailable
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-build.yml`, {
       'param':{
         'SUFFIX': config.suffix,
@@ -32,7 +31,6 @@ const MyBuilder = class extends BasicBuilder {
         'BASE_IMAGE_FOR_BUILD': `fom-db-ha:${config.tag}`
       }
     }));
-    */
 
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api/fom-api-build.yml`, {
       'param':{

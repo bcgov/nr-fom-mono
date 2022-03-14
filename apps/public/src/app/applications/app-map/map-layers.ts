@@ -40,6 +40,26 @@ export class MapLayers {
     this.activeBaseLayerName = newActiveBaseLayer;
   }
 
+  getActiveBaseLayerName() {
+    return this.activeBaseLayerName;
+  }
+
+  getActiveBaseLayer() : TileLayer {
+    return this.baseLayers[this.getActiveBaseLayerName()];
+  }
+
+  getBaseLayerByName(name: string) : TileLayer {
+    return this.baseLayers[name];
+  }
+
+  getOverlayByName(name: string): TileLayer {
+    return this.overlayLayers[name];
+  }
+
+  getAllOverlayLayersNames() : string[] {
+    return Object.keys(this.overlayLayers);
+  }
+
   getAllLayers():TileLayer[] {
     return [ this.baseLayers[this.activeBaseLayerName], ...this.defaultOverlays];
   }
