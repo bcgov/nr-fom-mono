@@ -1,4 +1,4 @@
-import { email, prop, required } from "@rxweb/reactive-form-validators";
+import { email, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
@@ -18,9 +18,14 @@ export class PublicNoticeForm {
   @prop()
   sameAsReviewInd: boolean;
 
+  
+  @required({conditionalExpression:x => x.sameAsReviewInd === false })
+  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false })
   @prop()
   receiveCommentsAddress: string;
 
+  @required({conditionalExpression:x => x.sameAsReviewInd === false })
+  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false })
   @prop()
   receiveCommentsBusinessHours: string;
 
