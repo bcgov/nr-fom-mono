@@ -17,15 +17,14 @@ export class PublicNoticeForm {
   @required()
   @prop()
   sameAsReviewInd: boolean;
-
   
-  @required({conditionalExpression:x => x.sameAsReviewInd === false })
-  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false })
+  @required({conditionalExpression:x => x.sameAsReviewInd === false})
+  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false})
   @prop()
   receiveCommentsAddress: string;
 
-  @required({conditionalExpression:x => x.sameAsReviewInd === false })
-  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false })
+  @required({conditionalExpression:x => x.sameAsReviewInd === false})
+  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false})
   @prop()
   receiveCommentsBusinessHours: string;
 

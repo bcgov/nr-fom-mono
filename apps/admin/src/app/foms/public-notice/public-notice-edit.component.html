@@ -148,7 +148,8 @@
           <label for="sameAsReviewInd" class="required">Receive Comments Same as Review:</label>&nbsp;&nbsp;&nbsp;
           <input type="checkbox" class="medium-check-box"
           id="sameAsReviewInd" name="sameAsReviewInd"
-          formControlName="sameAsReviewInd"/>
+          formControlName="sameAsReviewInd"
+          (change)="onSameAsReviewIndToggled()"/>
         </div>
       </div>
 

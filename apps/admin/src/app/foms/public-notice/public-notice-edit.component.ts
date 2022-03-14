@@ -42,10 +42,33 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     this.publicNoticeResponse = this.publicNoticeService.getMockData(this.projectId);
     let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
     this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
+    this.onSameAsReviewIndToggled();
   }
 
   get isLoading() {
     return this.stateSvc.loading;
+  }
+
+  onSameAsReviewIndToggled(): void {
+    const sameAsReviewIndField = this.publicNoticeFormGroup.get('sameAsReviewInd');
+    const receiveCommentsAddressField = this.publicNoticeFormGroup.get('receiveCommentsAddress');
+    const receiveCommentsBusinessHoursField = this.publicNoticeFormGroup.get('receiveCommentsBusinessHours');
+
+    if (sameAsReviewIndField.value) {
+      receiveCommentsAddressField.disable();
+      receiveCommentsAddressField.setValue(null);
+
+      receiveCommentsBusinessHoursField.disable();
+      receiveCommentsBusinessHoursField.setValue(null);
+    }
+    else {
+      receiveCommentsAddressField.enable();
+      receiveCommentsBusinessHoursField.enable();
+    }
+  }
+
+  cancelChanges() {
+    this.router.navigate(['/a', this.projectId]);
   }
 
   onSubmit() {
@@ -57,10 +80,6 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngAfterViewInit() {
-  }
-
-  public cancelChanges() {
-    this.router.navigate(['/a', this.projectId]);
   }
 
   ngOnDestroy() {
