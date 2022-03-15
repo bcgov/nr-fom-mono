@@ -35,18 +35,24 @@
                 <mat-panel-title>
                   <div class="container" style="padding: 0;">
                     <div class="row">
-                      <div class="col-6 col-sm-1">#{{pn.fomNum}} </div>
-                      <div class="col-6 col-sm-4">
+                      <div class="col-6 col-sm-3">
                         <span matTooltip="{{pn.fomHolder}}">
                           {{pn.fomHolder | shorten: 25}}
                         </span>
                       </div>
-                      <div class="col-6 col-sm-5">
+                      <div class="col-6 col-sm-4">
                         <span matTooltip="{{pn.fomSummary}}">
                           {{pn.fomSummary | shorten: 40}}
                         </span>
                       </div>
-                      <div class="col-6 col-sm-2" style="padding-right: 0;">{{pn.commentingOpen}}</div>
+                      <div class="col-6 col-sm-3">
+                        <span matTooltip="{{pn.district}}">
+                          {{pn.district}}
+                        </span>
+                      </div>
+                      <div class="col-6 col-sm-2" style="padding-right: 0;">
+                        {{pn.commentingOpen}}
+                      </div>
                     </div>
                   </div>
                 </mat-panel-title>
@@ -63,7 +69,7 @@
       </section>
     </div>
 
-    <!-- Comment item display template -->
+    <!-- Public Notice item display template -->
     <ng-template #pNotice_fields_template let-pn="pNotice">
       <div class="row">
         <div class="col-5 col-sm-3 bold">FOM #: </div>
@@ -109,23 +115,29 @@
       </div>
 
       <div class="row">
-        <div class="col-sm-4 bold">Review FOM Address: </div>
+        <div class="col-sm-4 bold">
+          {{pn.receiveSameAsReview == false? 'Address to Review FOM': 'Address to Review FOM and Receive Comments'}}:
+        </div>
         <div class="col-sm-8">{{pn.reviewFOMAddress}}</div>
       </div>
 
       <div class="row">
-        <div class="col-sm-4 bold">Review FOM Business Hours: </div>
+        <div class="col-sm-4 bold">
+          {{pn.receiveSameAsReview == false? 'Business Hours to Review FOM': 'Business Hours to Review FOM and Receive Comments'}}:
+        </div>
         <div class="col-sm-8">{{pn.reviewFOMBusinessHours}}</div>
       </div>
 
-      <div class="row">
-        <div class="col-sm-4 bold">Receive Comments Address: </div>
-        <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
-      </div>
+      <div *ngIf="pn.receiveSameAsReview != true">
+        <div class="row">
+          <div class="col-sm-4 bold">Address to Receive Comments: </div>
+          <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
+        </div>
 
-      <div class="row">
-        <div class="col-sm-4 bold">Receive Comments Business Hours: </div>
-        <div class="col-sm-8">{{pn.receiveCommentsBusinessHours}}</div>
+        <div class="row">
+          <div class="col-sm-4 bold">Business Hours to Receive Comments: </div>
+          <div class="col-sm-8">{{pn.receiveCommentsBusinessHours}}</div>
+        </div>
       </div>
 
       <div class="row">

@@ -60,9 +60,9 @@ export class PublicNoticesPanelComponent implements OnDestroy, OnInit {
     },{
       reviewFOMAddress: '123 First Street, Vancouver BC',
       reviewFOMBusinessHours: 'Monday to Friday 8am-4pm, Saturday 10am - 2pm',
-      receiveSameAsReview: true,
-      receiveCommentsAddress: '123 First Street, Vancouver BC',
-      receiveCommentsBusinessHours: 'Monday to Friday 10am to 4pm',
+      receiveSameAsReview: false,
+      receiveCommentsAddress: '321 First Street, Vancouver BC',
+      receiveCommentsBusinessHours: 'Saturday 10am to 4pm',
       mailingAddress: 'Box 123 Surrey BC',
       email: 'name@industry.com',
       publicNoticeURL: 'https://fom-test.nrs.gov.bc.ca/public/projects?id=1720#details',
