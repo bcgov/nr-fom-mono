@@ -171,6 +171,15 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  public goToPublicNotice() {
+    if (this.canEditPublicNotice) {
+      this.router.navigate([`publicNotice/${this.project.id}/edit`])
+    }
+    else {
+      this.router.navigate([`publicNotice/${this.project.id}`])
+    }
+  }
+
   public async setCommentClassification() {
     this.isSettingCommentClassification = true;
     try {
@@ -230,6 +239,17 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     const userCanEdit = this.user.isAuthorizedForClientId(this.project.forestClient.id);
     return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Finalized
       && this.project.workflowState.code !== WorkflowStateEnum.Expired);
+  }
+
+  public canEditPublicNotice(): boolean {
+    const userCanEdit = this.user.isAuthorizedForClientId(this.project.forestClient.id);
+    return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Finalized
+      && this.project.workflowState.code !== WorkflowStateEnum.Expired);
+  }
+
+  public canViewPublicNotice(): boolean {
+    return this.user.isAuthorizedForClientId(this.project.forestClient.id)
+            || this.user.isMinistry;
   }
 
   public canViewSubmission(): boolean {

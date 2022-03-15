@@ -1,0 +1,202 @@
+<div class="top-container">
+  <div class="container">
+    <div class="title-container">
+      <div class="title-container__title">
+        <h1 class="text-muted">Edit Online Public Notice #{{projectId}}</h1>
+      </div>
+      <div class="title-container__actions">
+        <button
+          class="btn btn-light"
+          type="button"
+          title="Cancel changes"
+          (click)="cancelChanges()">
+          Cancel
+        </button>
+        <button
+          class="btn btn-primary ml-1"
+          type="button"
+          title="Create/Edit Public Notice"
+          [disabled]="!publicNoticeFormGroup.valid || isLoading" 
+          (click)="onSubmit()">
+          {{ isLoading ? "Saving" : "Save" }}
+          <em class="spinner rotating" [hidden]="!isLoading"></em>
+        </button>
+
+        <span class="vert-pipe" *ngIf="canDelete()">&nbsp;</span>
+        <button class="btn btn-icon" title="Remove this Online Public Notice"
+          *ngIf="canDelete()"
+          (click)="deletePublicNotice()"
+          [disabled]="isLoading">
+          <em class="spinner-border" [hidden]="!isLoading"></em>
+          <em class="material-icons" [hidden]="isLoading">
+            delete
+          </em>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-container">
+  <div class="container">
+    <form class="mb-3" 
+      [formGroup]="publicNoticeFormGroup"
+      (ngSubmit)="onSubmit()">
+
+      <div class="row">
+        <div class="col-md-2">
+          <legend>Details</legend>
+        </div>
+        <div class="col" 
+            style="text-align: right;"
+            *ngIf="publicNoticeResponse.id">
+          <legend>ID: {{publicNoticeResponse.id}}</legend>
+        </div>
+      </div>
+
+      <div class="form-row" >
+        <div class="form-group col-md-12">
+          <label for="review-fom-address" class="required">Address to Review FOM</label>
+          <textarea class="form-control mb" rows="3" 
+            id="review-fom-address" name="review-fom-address"
+            placeholder="101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9"
+            formControlName="reviewFOMAddress"
+            maxlength="{{addressLimit}}">
+          </textarea>
+          <small>{{addressLimit-publicNoticeFormGroup.get('reviewFOMAddress').value?.length}} characters remaining.</small>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMAddress', 'required')">
+            {{getErrorMessage('reviewFOMAddress', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMAddress', 'notEmpty')">
+            {{getErrorMessage('reviewFOMAddress', 'notEmpty')}}
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row" >
+        <div class="form-group col-md-6">
+          <label for="fom-holder" class="required">Business Hours to Review FOM</label>
+          <input type="text"
+            id="review-fom-hours" name="review-fom-hours"
+            placeholder="Monday to Friday 8am-4pm, Saturday 10am - 2pm"
+            maxlength="50"
+            class="form-control"
+            formControlName="reviewFOMBusinessHours"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMBusinessHours', 'required')">
+            {{getErrorMessage('reviewFOMBusinessHours', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMBusinessHours', 'notEmpty')">
+            {{getErrorMessage('reviewFOMBusinessHours', 'notEmpty')}}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-12">
+          <label for="sameAsReviewInd" class="required">Receive Comments Same as Review:</label>&nbsp;&nbsp;&nbsp;
+          <input type="checkbox" class="medium-check-box"
+          id="sameAsReviewInd" name="sameAsReviewInd"
+          formControlName="sameAsReviewInd"
+          (change)="onSameAsReviewIndToggled()"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('sameAsReviewInd', 'required')">
+            {{getErrorMessage('sameAsReviewInd', 'required')}}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" >
+        <div class="form-group col-md-12">
+          <label for="receive-fom-address"
+            [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value}">
+            Address to Receive Comments
+          </label>
+          <textarea class="form-control mb" rows="3" 
+            id="receive-fom-address" name="receive-fom-address"
+            placeholder="101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9"
+            formControlName="receiveCommentsAddress"
+            maxlength="{{addressLimit}}">
+          </textarea>
+          <small>{{addressLimit-publicNoticeFormGroup.get('receiveCommentsAddress').value?.length}} characters remaining.</small>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsAddress', 'required')">
+            {{getErrorMessage('receiveCommentsAddress', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsAddress', 'notEmpty')">
+            {{getErrorMessage('receiveCommentsAddress', 'notEmpty')}}
+          </div>
+        </div>
+      </div>
+      
+      <div class="form-row" >
+        <div class="form-group col-md-6">
+          <label for="receive-fom-hours"
+            [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value}">
+            Business Hours to Receive Comments
+          </label>
+          <input type="text"
+            id="receive-fom-hours" name="receive-fom-hours"
+            placeholder="Monday to Friday 8am-4pm, Saturday 10am - 2pm"
+            maxlength="50"
+            class="form-control"
+            formControlName="receiveCommentsBusinessHours"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsBusinessHours', 'required')">
+            {{getErrorMessage('receiveCommentsBusinessHours', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsBusinessHours', 'notEmpty')">
+            {{getErrorMessage('receiveCommentsBusinessHours', 'notEmpty')}}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" >
+        <div class="form-group col-md-12">
+          <label for="mailing-address" class="required">Mailing Address</label>
+          <textarea class="form-control mb" rows="3" 
+            id="mailing-address" name="mailing-address"
+            placeholder="Box 123 Surrey BC"
+            formControlName="mailingAddress"
+            maxlength="{{addressLimit}}">
+          </textarea>
+          <small>{{addressLimit-publicNoticeFormGroup.get('mailingAddress').value?.length}} characters remaining.</small>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('mailingAddress', 'required')">
+            {{getErrorMessage('mailingAddress', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('mailingAddress', 'notEmpty')">
+            {{getErrorMessage('mailingAddress', 'notEmpty')}}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" >
+        <div class="form-group col-md-6">
+          <label for="email" class="required">Email</label>
+          <input type="text"
+            id="email" name="email"
+            maxlength="50"
+            placeholder="name@industry.com"
+            class="form-control"
+            formControlName="email"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('email', 'required')">
+            {{getErrorMessage('email', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('email', 'email')">
+            {{getErrorMessage('email', 'email')}}
+          </div>
+        </div>
+      </div>
+    
+    </form>
+  </div>
+</div>
