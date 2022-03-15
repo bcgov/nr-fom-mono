@@ -21,34 +21,36 @@ const MyDeployer = class extends BasicDeployer{
     }
     const databaseServiceName = `${dbParams.APP_DB_NAME}-master${config.suffix}`;
 
-    /* Disable database deploy due to OpenShift / nrdk issue - trying to deploy fom-db-ha with new PR number results in changes to spec that OpenShift rejects - see error message below
-      Enable this if wanting to create a new environment.
+    /* Disable database deploy to test/prod due to OpenShift / nrdk issue - trying to deploy fom-db-ha with new PR number results in changes to spec that OpenShift rejects - see error message below
       Error Message: stderr:The StatefulSet "fom-db-ha-test" is invalid: spec: Forbidden: updates to statefulset spec for fields other than 'replicas', 'template', and 'updateStrategy' are forbidden
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
-      'param':{
-        'NAME': dbParams.DB_NAME,
-        'SUFFIX': config.suffix,
-        'APP_DB_NAME': dbParams.APP_DB_NAME,
-      }
-    }));
-
-
-    objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-deploy.yml`, {
-      'param':{
-        'NAMESPACE': config.namespace,
-        'NAME': dbParams.DB_NAME,
-        'SUFFIX': config.suffix,
-        'DATABASE_SERVICE_NAME': databaseServiceName, 
-        'IMAGE_STREAM_TAG': config.tag,
-        'BACKUP_VOLUME_NAME': dbParams.BACKUP_VOLUME_NAME,
-        'REPLICAS': config.dbReplicaCount,
-        'CPU_REQUEST': '50m',
-        'CPU_LIMIT': config.dbCpuLimit,
-        'MEMORY_REQUEST': '0.2Gi',
-        'MEMORY_LIMIT': config.dbMemoryLimit,
-      }
-    }));
     */
+    if (phase == 'dev') {
+      objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-prereq-deploy.yml`, {
+        'param':{
+          'NAME': dbParams.DB_NAME,
+          'SUFFIX': config.suffix,
+          'APP_DB_NAME': dbParams.APP_DB_NAME,
+        }
+      }));
+
+
+      objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db/fom-db-ha-deploy.yml`, {
+        'param':{
+          'NAMESPACE': config.namespace,
+          'NAME': dbParams.DB_NAME,
+          'SUFFIX': config.suffix,
+          'DATABASE_SERVICE_NAME': databaseServiceName, 
+          'IMAGE_STREAM_TAG': config.tag,
+          'BACKUP_VOLUME_NAME': dbParams.BACKUP_VOLUME_NAME,
+          'REPLICAS': config.dbReplicaCount,
+          'CPU_REQUEST': '50m',
+          'CPU_LIMIT': config.dbCpuLimit,
+          'MEMORY_REQUEST': '0.2Gi',
+          'MEMORY_LIMIT': config.dbMemoryLimit,
+        }
+      }));
+    }
+
     objects.push(... oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/db-backup/backup-deploy.yml`, {
       'param':{
         ...dbParams,
