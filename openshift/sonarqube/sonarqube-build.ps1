@@ -1,1 +1,0 @@
-oc new-build https://github.com/BCDevOps/sonarqube --strategy=docker --name=sonarqube --to=sonarqube:8.8 -e SONAR_VERSION=8.8
