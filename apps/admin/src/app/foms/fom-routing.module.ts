@@ -49,7 +49,10 @@ const routes: Routes = [
   },
   {
     path: 'publicNotice/:appId/edit',
-    component: PublicNoticeEditComponent
+    component: PublicNoticeEditComponent,
+    resolve: {
+      projectDetail: ProjectDetailResolver
+    }
   },
 ];
 

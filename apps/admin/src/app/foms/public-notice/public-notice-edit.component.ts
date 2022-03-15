@@ -9,6 +9,8 @@ import {KeycloakService} from "../../../core/services/keycloak.service";
 import { FormGroup } from '@angular/forms';
 import { PublicNoticeForm } from './public-notice.form';
 import { PublicNoticeService } from './public-notice.temp.service';
+import { ProjectResponse, WorkflowStateEnum } from '@api-client';
+import { ModalService } from '@admin-core/services/modal.service';
 
 @Component({
   selector: 'app-public-notice-edit',
@@ -17,6 +19,7 @@ import { PublicNoticeService } from './public-notice.temp.service';
 })
 export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestroy {
   user: User;
+  project: ProjectResponse;
   projectId: number;
   publicNoticeResponse: any;
   publicNoticeFormGroup: FormGroup;
@@ -30,14 +33,22 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     private formBuilder: RxFormBuilder,
     public stateSvc: StateService,
     private keycloakService: KeycloakService,
+    private modalSvc: ModalService,
     private publicNoticeService: PublicNoticeService
   ) {
     this.user = this.keycloakService.getUser();
   }
 
   ngOnInit() {
+    this.route.data
+      .subscribe((data) => {
+        this.project = data.projectDetail;
+      }
+    );
+
     this.projectId = this.route.snapshot.params.appId;
     // TODO, call swagger api service to get public notice info from backend and set values to form.
+    // TODO, also in this case, handle 'add new public notice' scenario to init empty public notice form.
     this.publicNoticeResponse = this.publicNoticeService.getMockData(this.projectId);
     let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
     this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
@@ -64,6 +75,31 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
       receiveCommentsAddressField.enable();
       receiveCommentsBusinessHoursField.enable();
     }
+  }
+
+  canDelete() {
+    const workflowStateCode = this.project.workflowState.code;
+    if (WorkflowStateEnum.Initial === workflowStateCode) {
+      return this.user.isAuthorizedForClientId(this.project.forestClient.id);
+    }
+    else if (!this.user.isMinistry) {
+      return false;
+    }
+  }
+
+  deletePublicNotice() {
+    const dialogRef = this.modalSvc.openConfirmationDialog(
+      `You are about to delete Online Public Notice <strong>#${this.publicNoticeResponse.id}</strong>. Are you sure?`,
+      'Delete Online Public Notice');
+
+    dialogRef.afterClosed().subscribe((confirm) => {
+      if (confirm) {
+        // this.isLoading = true; TODO: verify if isLoading/end isLoading from "stateSvc" really works 
+        // TODO: delete Public Notice from backend.
+        this.publicNoticeService.setMockData({});
+        this.router.navigate(['/a', this.projectId]);
+      }
+    });
   }
 
   cancelChanges() {

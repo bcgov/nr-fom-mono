@@ -21,6 +21,17 @@
           {{ isLoading ? "Saving" : "Save" }}
           <em class="spinner rotating" [hidden]="!isLoading"></em>
         </button>
+
+        <span class="vert-pipe" *ngIf="canDelete()">&nbsp;</span>
+        <button class="btn btn-icon" title="Remove this Online Public Notice"
+          *ngIf="canDelete()"
+          (click)="deletePublicNotice()"
+          [disabled]="isLoading">
+          <em class="spinner-border" [hidden]="!isLoading"></em>
+          <em class="material-icons" [hidden]="isLoading">
+            delete
+          </em>
+        </button>
       </div>
     </div>
   </div>
@@ -36,7 +47,9 @@
         <div class="col-md-2">
           <legend>Details</legend>
         </div>
-        <div class="col" style="text-align: right;">
+        <div class="col" 
+            style="text-align: right;"
+            *ngIf="publicNoticeResponse.id">
           <legend>ID: {{publicNoticeResponse.id}}</legend>
         </div>
       </div>
@@ -87,6 +100,10 @@
           id="sameAsReviewInd" name="sameAsReviewInd"
           formControlName="sameAsReviewInd"
           (change)="onSameAsReviewIndToggled()"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('sameAsReviewInd', 'required')">
+            {{getErrorMessage('sameAsReviewInd', 'required')}}
+          </div>
         </div>
       </div>
 
