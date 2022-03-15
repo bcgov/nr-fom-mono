@@ -58,7 +58,8 @@
         <div class="form-group col-md-12">
           <label for="review-fom-address" class="required">Address to Review FOM</label>
           <textarea class="form-control mb" rows="3" 
-            id="review-fom-address" name="review-fom-address" 
+            id="review-fom-address" name="review-fom-address"
+            placeholder="101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9"
             formControlName="reviewFOMAddress"
             maxlength="{{addressLimit}}">
           </textarea>
@@ -79,6 +80,7 @@
           <label for="fom-holder" class="required">Business Hours to Review FOM</label>
           <input type="text"
             id="review-fom-hours" name="review-fom-hours"
+            placeholder="Monday to Friday 8am-4pm, Saturday 10am - 2pm"
             maxlength="50"
             class="form-control"
             formControlName="reviewFOMBusinessHours"/>
@@ -114,7 +116,8 @@
             Address to Receive Comments
           </label>
           <textarea class="form-control mb" rows="3" 
-            id="receive-fom-address" name="receive-fom-address" 
+            id="receive-fom-address" name="receive-fom-address"
+            placeholder="101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9"
             formControlName="receiveCommentsAddress"
             maxlength="{{addressLimit}}">
           </textarea>
@@ -138,6 +141,7 @@
           </label>
           <input type="text"
             id="receive-fom-hours" name="receive-fom-hours"
+            placeholder="Monday to Friday 8am-4pm, Saturday 10am - 2pm"
             maxlength="50"
             class="form-control"
             formControlName="receiveCommentsBusinessHours"/>
@@ -156,7 +160,8 @@
         <div class="form-group col-md-12">
           <label for="mailing-address" class="required">Mailing Address</label>
           <textarea class="form-control mb" rows="3" 
-            id="mailing-address" name="mailing-address" 
+            id="mailing-address" name="mailing-address"
+            placeholder="Box 123 Surrey BC"
             formControlName="mailingAddress"
             maxlength="{{addressLimit}}">
           </textarea>
@@ -178,6 +183,7 @@
           <input type="text"
             id="email" name="email"
             maxlength="50"
+            placeholder="name@industry.com"
             class="form-control"
             formControlName="email"/>
           <div class="invalid-feedback" 
