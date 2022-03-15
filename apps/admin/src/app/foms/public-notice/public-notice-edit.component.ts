@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Subject} from 'rxjs';
-import * as moment from 'moment';
 
 import {RxFormBuilder} from '@rxweb/reactive-form-validators';
 import {StateService} from '../../../core/services/state.service';
@@ -77,6 +76,15 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     Object.assign(this.publicNoticeResponse, this.publicNoticeFormGroup.value);
     this.publicNoticeService.setMockData(this.publicNoticeResponse);
     this.router.navigate(['/a', this.projectId]);
+  }
+
+  getErrorMessage(controlName: string, messageKey: string = null): string {
+    const errors = this.publicNoticeFormGroup.controls[controlName]?.errors;
+    if (errors !== null) {
+      const { [messageKey]: messages } = errors;
+      if (messages) return messages.message;
+    }
+    return null;
   }
 
   ngAfterViewInit() {

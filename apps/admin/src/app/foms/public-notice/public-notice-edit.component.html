@@ -129,6 +129,14 @@
             maxlength="{{addressLimit}}">
           </textarea>
           <small>{{addressLimit-publicNoticeFormGroup.get('reviewFOMAddress').value?.length}} characters remaining.</small>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMAddress', 'required')">
+            {{getErrorMessage('reviewFOMAddress', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMAddress', 'notEmpty')">
+            {{getErrorMessage('reviewFOMAddress', 'notEmpty')}}
+          </div>
         </div>
       </div>
       
@@ -140,6 +148,14 @@
             maxlength="50"
             class="form-control"
             formControlName="reviewFOMBusinessHours"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMBusinessHours', 'required')">
+            {{getErrorMessage('reviewFOMBusinessHours', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMBusinessHours', 'notEmpty')">
+            {{getErrorMessage('reviewFOMBusinessHours', 'notEmpty')}}
+          </div>
         </div>
       </div>
 
@@ -165,6 +181,14 @@
             maxlength="{{addressLimit}}">
           </textarea>
           <small>{{addressLimit-publicNoticeFormGroup.get('receiveCommentsAddress').value?.length}} characters remaining.</small>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsAddress', 'required')">
+            {{getErrorMessage('receiveCommentsAddress', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsAddress', 'notEmpty')">
+            {{getErrorMessage('receiveCommentsAddress', 'notEmpty')}}
+          </div>
         </div>
       </div>
       
@@ -179,6 +203,14 @@
             maxlength="50"
             class="form-control"
             formControlName="receiveCommentsBusinessHours"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsBusinessHours', 'required')">
+            {{getErrorMessage('receiveCommentsBusinessHours', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsBusinessHours', 'notEmpty')">
+            {{getErrorMessage('receiveCommentsBusinessHours', 'notEmpty')}}
+          </div>
         </div>
       </div>
 
@@ -191,6 +223,14 @@
             maxlength="{{addressLimit}}">
           </textarea>
           <small>{{addressLimit-publicNoticeFormGroup.get('mailingAddress').value?.length}} characters remaining.</small>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('mailingAddress', 'required')">
+            {{getErrorMessage('mailingAddress', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('mailingAddress', 'notEmpty')">
+            {{getErrorMessage('mailingAddress', 'notEmpty')}}
+          </div>
         </div>
       </div>
 
@@ -202,6 +242,14 @@
             maxlength="50"
             class="form-control"
             formControlName="email"/>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('email', 'required')">
+            {{getErrorMessage('email', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('email', 'email')">
+            {{getErrorMessage('email', 'email')}}
+          </div>
         </div>
       </div>
     

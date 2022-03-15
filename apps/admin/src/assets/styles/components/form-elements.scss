@@ -107,11 +107,11 @@ label {
   }
 }
 
-.is-invalid ~ .invalid-feedback {
+.is-invalid ~ .invalid-feedback, .ng-invalid ~ .invalid-feedback {
   display: inline-block;
 }
 
-.form-control.is-invalid {
+.form-control.is-invalid, .form-control.ng-touched.ng-invalid {
   border-color: $fc-invalid-color;
 }
 
