@@ -6,13 +6,13 @@ export class PublicNoticeForm {
 
   publicNoticeId: number;
 
-  @required({message: 'Address for Review FOM is required.'})
-  @notEmpty({message: 'Address for Review FOM can not be empty'})
+  @required({message: 'Address to Review FOM is required.'})
+  @notEmpty({message: 'Address to Review FOM can not be empty.'})
   @prop()
   reviewFOMAddress: string;
 
-  @required({message: 'Business Hours for Review FOM is required.'})
-  @notEmpty({message: 'Business Hours for Review FOM can not be empty'})
+  @required({message: 'Business Hours to Review FOM is required.'})
+  @notEmpty({message: 'Business Hours to Review FOM can not be empty.'})
   @prop()
   reviewFOMBusinessHours: string;
 
@@ -22,28 +22,28 @@ export class PublicNoticeForm {
   
   @required({
     conditionalExpression:x => x.sameAsReviewInd === false,
-    message: 'Comments Address for Receive FOM is required.'
+    message: 'Address to Receive Comments is required.'
   })
   @notEmpty({
     conditionalExpression:x => x.sameAsReviewInd === false,
-    message: 'Comments Address for Receive FOM can not be empty.'
+    message: 'Address to Receive Comments can not be empty.'
   })
   @prop()
   receiveCommentsAddress: string;
 
   @required({
     conditionalExpression:x => x.sameAsReviewInd === false,
-    message: 'Business Hours for Receive FOM is required.'
+    message: 'Business Hours to Receive Comments is required.'
   })
   @notEmpty({
     conditionalExpression:x => x.sameAsReviewInd === false,
-    message: 'Business Hours for Receive FOM can not be empty'
+    message: 'Business Hours to Receive Comments can not be empty.'
   })
   @prop()
   receiveCommentsBusinessHours: string;
 
   @required({message: 'Mailing Address is required.'})
-  @notEmpty({message: 'Mailing Address can not be empty'})
+  @notEmpty({message: 'Mailing Address can not be empty.'})
   @prop()
   mailingAddress: string;
 

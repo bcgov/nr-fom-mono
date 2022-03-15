@@ -2,7 +2,7 @@
   <div class="container">
     <div class="title-container">
       <div class="title-container__title">
-        <h1 class="text-muted"> Edit Public Notice</h1>
+        <h1 class="text-muted">Edit Online Public Notice #{{projectId}}</h1>
       </div>
       <div class="title-container__actions">
         <button
@@ -33,96 +33,17 @@
       (ngSubmit)="onSubmit()">
 
       <div class="row">
-        <legend>Details</legend>
-      </div>
-
-      <div class="form-row" >
-        <div class="form-group col-md-2">
-          <label for="id">ID</label>
-          <input type="text"
-            id="id" name="id"
-            class="form-control"
-            disabled
-            [value]="projectId"/>
+        <div class="col-md-2">
+          <legend>Details</legend>
         </div>
-
-        <div class="form-group col">
-          <label for="fom-holder">FOM Holder</label>
-          <input type="text"
-            id="fom-holder" name="fom-holder"
-            class="form-control"
-            disabled
-            [value]="publicNoticeResponse.fomHolder"/>
-        </div>
-      </div>
-
-      <div class="form-row" >
-        <div class="form-group col-md-2">
-          <label for="fsp-id">FSP ID</label>
-          <input type="number"
-            id="fsp-id" name="fsp-id"
-            class="form-control"
-            disabled
-            [value]="publicNoticeResponse.fspID"/>
-        </div>
-
-        <div class="form-group col">
-          <label for="district">District</label>
-          <input type="text"
-            id="district" name="district"
-            class="form-control" 
-            disabled
-            [value]="publicNoticeResponse.district" />
-        </div>
-      </div>
-
-      <div class="form-row" >
-        <div class="form-group col-12">
-          <label for="fom-summary">FOM Summary</label>
-          <textarea 
-            id="fom-summary" name="fom-summary"
-            class="form-control"
-            rows="2" 
-            disabled>{{publicNoticeResponse.fomSummary}}
-          </textarea>
-        </div>
-      </div>
-
-      <div class="form-row" >
-        <div class="form-group col-12">
-          <label for="fom-description">FOM Description</label>
-          <textarea 
-            id="fom-description" name="fom-description"
-            class="form-control"
-            rows="4" 
-            disabled>{{publicNoticeResponse.fomDescription}}
-          </textarea>
-        </div>
-      </div>
-
-      <div class="form-row" >
-        <div class="form-group col-md-6">
-          <label for="cmt-period">Commenting Period</label>
-          <input type="text"
-            id="cmt-period" name="cmt-period"
-            class="form-control"
-            disabled
-            [value]="publicNoticeResponse.commentingPeriod"/>
-        </div>
-
-        <div class="form-group col">
-          <label for="vld-period">Validity Period</label>
-          <input type="text"
-            id="vld-period" name="vld-period"
-            class="form-control" 
-            disabled
-            [value]="publicNoticeResponse.validityPeriod" />
+        <div class="col" style="text-align: right;">
+          <legend>ID: {{publicNoticeResponse.id}}</legend>
         </div>
       </div>
 
       <div class="form-row" >
         <div class="form-group col-md-12">
-          <label for="review-fom-address" class="required">Review FOM Address</label>
+          <label for="review-fom-address" class="required">Address to Review FOM</label>
           <textarea class="form-control mb" rows="3" 
             id="review-fom-address" name="review-fom-address" 
             formControlName="reviewFOMAddress"
@@ -142,7 +63,7 @@
       
       <div class="form-row" >
         <div class="form-group col-md-6">
-          <label for="fom-holder" class="required">Review FOM Business Hours</label>
+          <label for="fom-holder" class="required">Business Hours to Review FOM</label>
           <input type="text"
             id="review-fom-hours" name="review-fom-hours"
             maxlength="50"
@@ -173,7 +94,7 @@
         <div class="form-group col-md-12">
           <label for="receive-fom-address"
             [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value}">
-            Receive Comments Address
+            Address to Receive Comments
           </label>
           <textarea class="form-control mb" rows="3" 
             id="receive-fom-address" name="receive-fom-address" 
@@ -196,7 +117,7 @@
         <div class="form-group col-md-6">
           <label for="receive-fom-hours"
             [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value}">
-            Receive Comments Business Hours
+            Business Hours to Receive Comments
           </label>
           <input type="text"
             id="receive-fom-hours" name="receive-fom-hours"

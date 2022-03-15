@@ -6,11 +6,11 @@
       </div>
       <div class="title-container__actions">
         <div class="btn-container">
-          <button class="btn btn-light" type="button" title="Edit Public Notice"
+          <button class="btn btn-light" type="button" title="Edit Online Public Notice"
                   (click)="goToPublicNotice()"
                   [disabled]="isDeleting"
                   style="margin-right: 8px;">
-            {{canEditPublicNotice() ? 'Edit Public Notice' : 'View Public Notice'}}
+            {{canEditPublicNotice() ? 'Edit Online Public Notice' : 'View Online Public Notice'}}
           </button>
         </div>
         <div class="btn-container" *ngIf="canEditFOM()">
