@@ -206,6 +206,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
     if (entity.commentingOpenDate) {
       response.commentingOpenDate = dayjs(entity.commentingOpenDate).format(this.DATE_FORMAT);
+      response.validityEndDate = dayjs(entity.commentingOpenDate).add(3, 'year').format(this.DATE_FORMAT);
     }
     response.createTimestamp = entity.createTimestamp.toISOString();
     response.description = entity.description;

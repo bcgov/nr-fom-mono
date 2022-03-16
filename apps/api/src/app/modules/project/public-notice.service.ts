@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository, Repository, SelectQueryBuilder } from 'typeorm';
+import { getRepository, Repository, RepositoryNotTreeError, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
@@ -17,7 +17,7 @@ import { Cron } from '@nestjs/schedule';
 import { ProjectService } from './project.service';
 import { ProjectResponse } from './project.dto';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
-
+import * as R from 'remeda';
 
 @Injectable()
 export class PublicNoticeService extends DataService<PublicNotice, Repository<PublicNotice>, PublicNoticeResponse> {
@@ -126,47 +126,47 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
   }
 
   async findForPublicFrontEnd():Promise<PublicNoticePublicFrontEndResponse[]> {
-
     const query = this.repository.createQueryBuilder("pn")
       .leftJoinAndSelect("pn.project", "p")
-      // .leftJoinAndSelect("pn.forestClient", "forestClient")
-      // .leftJoinAndSelect("p.workflowState", "workflowState")
-      // .leftJoinAndSelect("p.district", "district")
+      .leftJoinAndSelect("p.forestClient", "forestClient")
+      .leftJoinAndSelect("p.district", "district")
       .andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: [WorkflowStateEnum.COMMENT_OPEN]})
-      .addOrderBy('p.project_id', 'DESC') // Newest first
-      ;
+      .addOrderBy('p.project_id', 'DESC'); // Newest first
 
-    const result:PublicNotice[] = await query.getMany();
-    // TODO: Finish implementation...
-    // return <any> result;
-    return <any> result.map(project => this.convertEntity(project));
+    const entityResult: PublicNotice[] = await query.getMany();
+    const results = entityResult.map(entity => {
+      const response = new PublicNoticePublicFrontEndResponse();
+      const pnr = this.convertEntity(entity);
+      Object.assign(response, R.pick(pnr, 
+        [
+          'projectId',
+          'reviewAddress',
+          'reviewBusinessHours',
+          'receiveCommentsAddress',
+          'receiveCommentsBusinessHours',
+          'isReceiveCommentsSameAsReview',
+          'mailingAddress',
+          'email'
+        ]
+      ));
+      response.project = this.projectService.convertEntity(entity.project);
+      return response;
+    });
+    return results;
   }
-
 
   convertEntity(entity: PublicNotice): PublicNoticeResponse {
     const response = new PublicNoticeResponse();
+    response.id = entity.id;
+    response.projectId = entity.projectId;
+    response.reviewAddress = entity.reviewAddress;
+    response.reviewBusinessHours = entity.reviewBusinessHours;
+    response.receiveCommentsAddress = entity.receiveCommentsAddress;
+    response.receiveCommentsBusinessHours = entity.receiveCommentsBusinessHours;
+    response.isReceiveCommentsSameAsReview = entity.isReceiveCommentsSameAsReview;
+    response.mailingAddress = entity.mailingAddress;
     response.email = entity.email;
-    // if (entity.commentingClosedDate) {
-    //   response.commentingClosedDate = dayjs(entity.commentingClosedDate).format(this.DATE_FORMAT);
-    // }
-    // if (entity.commentingOpenDate) {
-    //   response.commentingOpenDate = dayjs(entity.commentingOpenDate).format(this.DATE_FORMAT);
-    // }
-    // response.createTimestamp = entity.createTimestamp.toISOString();
-    // response.description = entity.description;
-    // if (entity.district != null) {
-    //   response.district = this.districtService.convertEntity(entity.district);
-    // }
-    // if (entity.forestClient != null) {
-    //   response.forestClient = this.forestClientService.convertEntity(entity.forestClient);
-    // }
-    // response.fspId = entity.fspId;
-    // response.id = entity.id;
-    // response.name = entity.name;
-    // response.revisionCount = entity.revisionCount;
-    // response.workflowState = entity.workflowState;
-    // response.commentClassificationMandatory = entity.commentClassificationMandatory;
-
+    response.revisionCount = entity.revisionCount;
     return response;
   }
 
