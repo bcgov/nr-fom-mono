@@ -26,6 +26,10 @@ export interface ProjectResponse {
      * ISO-formatted date
      */
     commentingClosedDate: string;
+    /**
+     * ISO-formatted date
+     */
+    validityEndDate: string;
     fspId: number;
     district: DistrictResponse;
     forestClient: ForestClientResponse;

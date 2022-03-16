@@ -9,6 +9,7 @@ import { ForestClientService } from './api/forestClient.service';
 import { InteractionService } from './api/interaction.service';
 import { ProjectService } from './api/project.service';
 import { PublicCommentService } from './api/publicComment.service';
+import { PublicNoticeService } from './api/publicNotice.service';
 import { SpatialFeatureService } from './api/spatialFeature.service';
 import { SubmissionService } from './api/submission.service';
 
