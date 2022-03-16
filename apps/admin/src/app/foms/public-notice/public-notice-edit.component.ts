@@ -24,6 +24,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   publicNoticeResponse: any;
   publicNoticeFormGroup: FormGroup;
   addressLimit: number = 450;
+  editMode: boolean; // 'edit'/'view' mode.
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
 
@@ -46,6 +47,10 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
       }
     );
 
+    this.editMode = this.route.snapshot.url.filter(
+      (seg)=> seg.path.includes('edit')
+    ).length != 0;
+  
     this.projectId = this.route.snapshot.params.appId;
     // TODO, call swagger api service to get public notice info from backend and set values to form.
     // TODO, also in this case, handle 'add new public notice' scenario to init empty public notice form.
@@ -53,6 +58,10 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
     this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
     this.onSameAsReviewIndToggled();
+
+    if (!this.editMode) {
+      this.publicNoticeFormGroup.disable();
+    }
   }
 
   get isLoading() {
@@ -107,10 +116,13 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   onSubmit() {
-    console.log("submitting publicNotice: ", this.publicNoticeFormGroup.value);
-    // TODO: check if form touched and valid before further logic. Below is tempoary logic.
-    Object.assign(this.publicNoticeResponse, this.publicNoticeFormGroup.value);
-    this.publicNoticeService.setMockData(this.publicNoticeResponse);
+    if (this.editMode) {
+      console.log("submitting publicNotice: ", this.publicNoticeFormGroup.value); // TODO: remove this later.
+      // TODO: check if form touched and valid before further logic. Below is tempoary logic.
+      // TODO: check once again, only allowed to submit when state is 'INITIAL' (or maybe move this check to backend.)
+      Object.assign(this.publicNoticeResponse, this.publicNoticeFormGroup.value);
+      this.publicNoticeService.setMockData(this.publicNoticeResponse);
+    }
     this.router.navigate(['/a', this.projectId]);
   }
 
