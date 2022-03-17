@@ -122,6 +122,9 @@ export class ProjectResponse {
 
   @ApiProperty({default: true})
   commentClassificationMandatory: boolean;
+
+  @ApiProperty({default: false})
+  hasOnlinePublicNotice: boolean;
 }
 
 export class ProjectMetricsResponse {

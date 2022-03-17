@@ -222,12 +222,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     response.revisionCount = entity.revisionCount;
     response.workflowState = entity.workflowState;
     response.commentClassificationMandatory = entity.commentClassificationMandatory;
-
+    response.hasOnlinePublicNotice = (entity.publicNotices != null && entity.publicNotices.length > 0);
     return response;
   }
 
   protected getCommonRelations(): string[] {
-    return ['district', 'forestClient', 'workflowState'];
+    return ['district', 'forestClient', 'workflowState', 'publicNotices'];
   }
 
   @Cron('45 9 * * * ') // Run at 9:45am UTC each day, shortly after the batch which runs at 9:00am UTC

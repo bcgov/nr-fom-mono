@@ -5,6 +5,7 @@ import { District } from '../district/district.entity';
 import { ForestClient } from '../forest-client/forest-client.entity';
 import { FomPoint } from './project.dto';
 import { Submission } from '../submission/submission.entity';
+import { PublicNotice } from './public-notice.entity';
 
 @Entity('project', {schema: 'app_fom'})
 export class Project extends ApiBaseEntity<Project> {
@@ -62,4 +63,8 @@ export class Project extends ApiBaseEntity<Project> {
   
   @Column({ name: 'comment_classification_mandatory', default: true, nullable: false})
   commentClassificationMandatory: boolean;
+  
+  @OneToMany(type => PublicNotice, (publicNotice) => publicNotice.project) 
+  publicNotices: PublicNotice[];
+  
 }
