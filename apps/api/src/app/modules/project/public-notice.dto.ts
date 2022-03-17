@@ -6,6 +6,7 @@ export class PublicNoticeCreateRequest {
   // TODO: Determine Max lengths
 
   @ApiProperty()
+  @IsNumber()
   projectId: number;
 
   @ApiProperty()
