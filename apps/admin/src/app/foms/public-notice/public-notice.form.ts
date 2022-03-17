@@ -9,16 +9,16 @@ export class PublicNoticeForm {
   @required({message: 'Address to Review FOM is required.'})
   @notEmpty({message: 'Address to Review FOM can not be empty.'})
   @prop()
-  reviewFOMAddress: string;
+  reviewAddress: string;
 
   @required({message: 'Business Hours to Review FOM is required.'})
   @notEmpty({message: 'Business Hours to Review FOM can not be empty.'})
   @prop()
-  reviewFOMBusinessHours: string;
+  reviewBusinessHours: string;
 
   @required({message: 'Receive Comments Same as Review Checkbox is required.'})
   @prop()
-  sameAsReviewInd: boolean;
+  isReceiveCommentsSameAsReview: boolean = false;
   
   @required({
     conditionalExpression:x => x.sameAsReviewInd === false,
@@ -57,11 +57,11 @@ export class PublicNoticeForm {
       // Pick the field to instantiate.
       Object.assign(this, R.pick(publicNoticeResponse, 
         [
-          'projectId',
-          'publicNoticeId',
-          'reviewFOMAddress',
-          'reviewFOMBusinessHours',
-          'sameAsReviewInd',
+          'project.projectId',
+          'id',
+          'reviewAddress',
+          'reviewBusinessHours',
+          'isReceiveCommentsSameAsReview',
           'receiveCommentsAddress',
           'receiveCommentsBusinessHours',
           'mailingAddress',

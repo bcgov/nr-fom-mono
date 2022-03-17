@@ -4,7 +4,8 @@
       <div class="title-container__title">
         <h1 class="text-muted">Edit Online Public Notice #{{projectId}}</h1>
       </div>
-      <div class="title-container__actions">
+      <div class="title-container__actions"
+        *ngIf="publicNoticeFormGroup">
         <button
           class="btn btn-light"
           type="button"
@@ -39,7 +40,8 @@
 </div>
 
 <div class="bottom-container">
-  <div class="container">
+  <div class="container"
+    *ngIf="publicNoticeFormGroup">
     <form class="mb-3" 
       [formGroup]="publicNoticeFormGroup"
       (ngSubmit)="onSubmit()">
@@ -50,8 +52,8 @@
         </div>
         <div class="col" 
             style="text-align: right;"
-            *ngIf="publicNoticeResponse.id">
-          <legend>ID: {{publicNoticeResponse.id}}</legend>
+            *ngIf="publicNoticeResponse?.id">
+          <legend>ID: {{publicNoticeResponse?.id}}</legend>
         </div>
       </div>
 
@@ -61,37 +63,37 @@
           <textarea class="form-control mb" rows="3" 
             id="review-fom-address" name="review-fom-address"
             placeholder="101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9"
-            formControlName="reviewFOMAddress"
+            formControlName="reviewAddress"
             maxlength="{{addressLimit}}">
           </textarea>
-          <small *ngIf="editMode">{{addressLimit-publicNoticeFormGroup.get('reviewFOMAddress').value?.length}} characters remaining.</small>
+          <small *ngIf="editMode">{{addressLimit-publicNoticeFormGroup.get('reviewAddress').value?.length}} characters remaining.</small>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMAddress', 'required')">
-            {{getErrorMessage('reviewFOMAddress', 'required')}}
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewAddress', 'required')">
+            {{getErrorMessage('reviewAddress', 'required')}}
           </div>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMAddress', 'notEmpty')">
-            {{getErrorMessage('reviewFOMAddress', 'notEmpty')}}
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewAddress', 'notEmpty')">
+            {{getErrorMessage('reviewAddress', 'notEmpty')}}
           </div>
         </div>
       </div>
       
       <div class="form-row" >
         <div class="form-group col-md-6">
-          <label for="fom-holder" [ngClass]="{'required': editMode}">Business Hours to Review FOM</label>
+          <label for="review-fom-hours" [ngClass]="{'required': editMode}">Business Hours to Review FOM</label>
           <input type="text"
             id="review-fom-hours" name="review-fom-hours"
             placeholder="Monday to Friday 8am-4pm, Saturday 10am - 2pm"
             maxlength="50"
             class="form-control"
-            formControlName="reviewFOMBusinessHours"/>
+            formControlName="reviewBusinessHours"/>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMBusinessHours', 'required')">
-            {{getErrorMessage('reviewFOMBusinessHours', 'required')}}
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewBusinessHours', 'required')">
+            {{getErrorMessage('reviewBusinessHours', 'required')}}
           </div>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewFOMBusinessHours', 'notEmpty')">
-            {{getErrorMessage('reviewFOMBusinessHours', 'notEmpty')}}
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewBusinessHours', 'notEmpty')">
+            {{getErrorMessage('reviewBusinessHours', 'notEmpty')}}
           </div>
         </div>
       </div>
@@ -101,11 +103,11 @@
           <label for="sameAsReviewInd" [ngClass]="{'required': editMode}">Receive Comments Same as Review:</label>&nbsp;&nbsp;&nbsp;
           <input type="checkbox" class="medium-check-box"
           id="sameAsReviewInd" name="sameAsReviewInd"
-          formControlName="sameAsReviewInd"
+          formControlName="isReceiveCommentsSameAsReview"
           (change)="onSameAsReviewIndToggled()"/>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('sameAsReviewInd', 'required')">
-            {{getErrorMessage('sameAsReviewInd', 'required')}}
+            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('isReceiveCommentsSameAsReview', 'required')">
+            {{getErrorMessage('isReceiveCommentsSameAsReview', 'required')}}
           </div>
         </div>
       </div>
@@ -113,7 +115,7 @@
       <div class="form-row" >
         <div class="form-group col-md-12">
           <label for="receive-fom-address"
-            [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value && editMode}">
+            [ngClass]="{'required': !publicNoticeFormGroup.get('isReceiveCommentsSameAsReview').value && editMode}">
             Address to Receive Comments
           </label>
           <textarea class="form-control mb" rows="3" 
@@ -137,7 +139,7 @@
       <div class="form-row" >
         <div class="form-group col-md-6">
           <label for="receive-fom-hours"
-            [ngClass]="{'required': !publicNoticeFormGroup.get('sameAsReviewInd').value && editMode}">
+            [ngClass]="{'required': !publicNoticeFormGroup.get('isReceiveCommentsSameAsReview').value && editMode}">
             Business Hours to Receive Comments
           </label>
           <input type="text"
