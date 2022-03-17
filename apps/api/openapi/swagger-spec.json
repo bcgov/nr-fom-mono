@@ -248,6 +248,9 @@
           "commentClassificationMandatory": {
             "type": "boolean",
             "default": true
+          },
+          "publicNoticeId": {
+            "type": "number"
           }
         },
         "required": [
@@ -263,7 +266,8 @@
           "workflowState",
           "revisionCount",
           "createTimestamp",
-          "commentClassificationMandatory"
+          "commentClassificationMandatory",
+          "publicNoticeId"
         ]
       },
       "ProjectMetricsResponse": {
