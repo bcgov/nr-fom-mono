@@ -10,7 +10,8 @@
                   (click)="goToPublicNotice()"
                   [disabled]="isDeleting"
                   style="margin-right: 8px;">
-            {{canEditPublicNotice() ? 'Edit Online Public Notice' : 'View Online Public Notice'}}
+            {{canEditPublicNotice() ? project.publicNoticeId?'Edit' : 'Add' + ' Online Public Notice' 
+                                    : 'View Online Public Notice'}}
           </button>
         </div>
         <div class="btn-container" *ngIf="canEditFOM()">
@@ -112,7 +113,7 @@
                       <span class="name">Online Public Notice:</span>
                       <span
                         class="value">
-                        <strong>[TODO: Yes/No]</strong>
+                        {{project.publicNoticeId? 'Yes' : 'No'}}
                       </span>
                     </li>
                   </ul>
