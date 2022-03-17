@@ -40,5 +40,6 @@ export interface ProjectResponse {
      */
     createTimestamp: string;
     commentClassificationMandatory: boolean;
+    publicNoticeId: number;
 }
 
