@@ -97,6 +97,10 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   canDelete() {
+    if (this.editMode && !this.publicNoticeResponse) {
+      // Case of new Public Notice
+      return false;
+    }
     const workflowStateCode = this.project?.workflowState.code;
     if (WorkflowStateEnum.Initial === workflowStateCode) {
       return this.user.isAuthorizedForClientId(this.project.forestClient.id);
