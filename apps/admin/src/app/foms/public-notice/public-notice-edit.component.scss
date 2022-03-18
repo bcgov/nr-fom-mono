@@ -16,6 +16,10 @@ form {
   padding-left: 6rem;
   background: #fff;
   box-shadow: 0.02rem 0 0.2rem rgba(#000, 0.15);
+  
+  legend {
+    margin-bottom: 10px;
+  }
 }
 
 .form-group {
@@ -24,5 +28,18 @@ form {
     transform : scale(1.5);
     vertical-align: middle;
     position: relative;
+  }
+}
+
+.vert-pipe {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  display: inline-block;
+  width: 1px;
+  border-left: 1px solid #999;
+  vertical-align: middle;
+
+  &.first-pipe {
+    margin-left: 1.2rem;
   }
 }

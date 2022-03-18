@@ -4,9 +4,10 @@ import { Injectable } from "@angular/core";
 @Injectable({
   providedIn: 'root'
 })
-export class PublicNoticeService {
+export class PublicNoticeTempService {
 
   private mockData = {
+      id: 135,
       reviewFOMAddress: '123 First Street, Vancouver BC',
       reviewFOMBusinessHours: 'Monday to Friday 8am-4pm, Saturday 10am - 2pm',
       sameAsReviewInd: true,

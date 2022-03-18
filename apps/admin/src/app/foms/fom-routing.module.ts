@@ -48,8 +48,18 @@ const routes: Routes = [
     component: SummaryComponent
   },
   {
+    path: 'publicNotice/:appId',
+    component: PublicNoticeEditComponent,
+    resolve: {
+      projectDetail: ProjectDetailResolver
+    }
+  },
+  {
     path: 'publicNotice/:appId/edit',
-    component: PublicNoticeEditComponent
+    component: PublicNoticeEditComponent,
+    resolve: {
+      projectDetail: ProjectDetailResolver
+    }
   },
 ];
 

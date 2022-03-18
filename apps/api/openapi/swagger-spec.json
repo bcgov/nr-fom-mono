@@ -222,6 +222,10 @@
             "type": "string",
             "description": "ISO-formatted date"
           },
+          "validityEndDate": {
+            "type": "string",
+            "description": "ISO-formatted date"
+          },
           "fspId": {
             "type": "number"
           },
@@ -244,6 +248,9 @@
           "commentClassificationMandatory": {
             "type": "boolean",
             "default": true
+          },
+          "publicNoticeId": {
+            "type": "number"
           }
         },
         "required": [
@@ -252,13 +259,15 @@
           "description",
           "commentingOpenDate",
           "commentingClosedDate",
+          "validityEndDate",
           "fspId",
           "district",
           "forestClient",
           "workflowState",
           "revisionCount",
           "createTimestamp",
-          "commentClassificationMandatory"
+          "commentClassificationMandatory",
+          "publicNoticeId"
         ]
       },
       "ProjectMetricsResponse": {
@@ -406,6 +415,178 @@
         },
         "required": [
           "commentingClosedDate",
+          "revisionCount"
+        ]
+      },
+      "PublicNoticePublicFrontEndResponse": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "reviewAddress": {
+            "type": "string"
+          },
+          "reviewBusinessHours": {
+            "type": "string"
+          },
+          "receiveCommentsAddress": {
+            "type": "string"
+          },
+          "receiveCommentsBusinessHours": {
+            "type": "string"
+          },
+          "isReceiveCommentsSameAsReview": {
+            "type": "boolean"
+          },
+          "mailingAddress": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "project": {
+            "$ref": "#/components/schemas/ProjectResponse"
+          }
+        },
+        "required": [
+          "projectId",
+          "reviewAddress",
+          "reviewBusinessHours",
+          "receiveCommentsAddress",
+          "receiveCommentsBusinessHours",
+          "isReceiveCommentsSameAsReview",
+          "mailingAddress",
+          "email",
+          "project"
+        ]
+      },
+      "PublicNoticeResponse": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "reviewAddress": {
+            "type": "string"
+          },
+          "reviewBusinessHours": {
+            "type": "string"
+          },
+          "receiveCommentsAddress": {
+            "type": "string"
+          },
+          "receiveCommentsBusinessHours": {
+            "type": "string"
+          },
+          "isReceiveCommentsSameAsReview": {
+            "type": "boolean"
+          },
+          "mailingAddress": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "revisionCount": {
+            "type": "number"
+          },
+          "id": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "projectId",
+          "reviewAddress",
+          "reviewBusinessHours",
+          "receiveCommentsAddress",
+          "receiveCommentsBusinessHours",
+          "isReceiveCommentsSameAsReview",
+          "mailingAddress",
+          "email",
+          "revisionCount",
+          "id"
+        ]
+      },
+      "PublicNoticeCreateRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "reviewAddress": {
+            "type": "string"
+          },
+          "reviewBusinessHours": {
+            "type": "string"
+          },
+          "receiveCommentsAddress": {
+            "type": "string"
+          },
+          "receiveCommentsBusinessHours": {
+            "type": "string"
+          },
+          "isReceiveCommentsSameAsReview": {
+            "type": "boolean"
+          },
+          "mailingAddress": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "projectId",
+          "reviewAddress",
+          "reviewBusinessHours",
+          "receiveCommentsAddress",
+          "receiveCommentsBusinessHours",
+          "isReceiveCommentsSameAsReview",
+          "mailingAddress",
+          "email"
+        ]
+      },
+      "PublicNoticeUpdateRequest": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "reviewAddress": {
+            "type": "string"
+          },
+          "reviewBusinessHours": {
+            "type": "string"
+          },
+          "receiveCommentsAddress": {
+            "type": "string"
+          },
+          "receiveCommentsBusinessHours": {
+            "type": "string"
+          },
+          "isReceiveCommentsSameAsReview": {
+            "type": "boolean"
+          },
+          "mailingAddress": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "revisionCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "projectId",
+          "reviewAddress",
+          "reviewBusinessHours",
+          "receiveCommentsAddress",
+          "receiveCommentsBusinessHours",
+          "isReceiveCommentsSameAsReview",
+          "mailingAddress",
+          "email",
           "revisionCount"
         ]
       },
@@ -1563,6 +1744,168 @@
         },
         "tags": [
           "project"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/public-notice": {
+      "get": {
+        "operationId": "PublicNoticeController_findListForPublicFrontEnd",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PublicNoticePublicFrontEndResponse"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public-notice"
+        ]
+      },
+      "post": {
+        "operationId": "PublicNoticeController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicNoticeCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicNoticeResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public-notice"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/public-notice/{id}": {
+      "get": {
+        "operationId": "PublicNoticeController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicNoticeResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public-notice"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "put": {
+        "operationId": "PublicNoticeController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PublicNoticeUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicNoticeResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public-notice"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      },
+      "delete": {
+        "operationId": "PublicNoticeController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "public-notice"
         ],
         "security": [
           {

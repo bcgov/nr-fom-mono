@@ -35,18 +35,24 @@
                 <mat-panel-title>
                   <div class="container" style="padding: 0;">
                     <div class="row">
-                      <div class="col-6 col-sm-1">#{{pn.fomNum}} </div>
+                      <div class="col-6 col-sm-3">
+                        <span matTooltip="{{pn.project.forestClient?.name}}">
+                          {{pn.project.forestClient?.name | shorten: 25}}
+                        </span>
+                      </div>
                       <div class="col-6 col-sm-4">
-                        <span matTooltip="{{pn.fomHolder}}">
-                          {{pn.fomHolder | shorten: 25}}
+                        <span matTooltip="{{pn.project.name}}">
+                          {{pn.project.name | shorten: 40}}
                         </span>
                       </div>
-                      <div class="col-6 col-sm-5">
-                        <span matTooltip="{{pn.fomSummary}}">
-                          {{pn.fomSummary | shorten: 40}}
+                      <div class="col-6 col-sm-3">
+                        <span matTooltip="{{pn.project.district?.name}}">
+                          {{pn.project.district?.name}}
                         </span>
                       </div>
-                      <div class="col-6 col-sm-2" style="padding-right: 0;">{{pn.commentingOpen}}</div>
+                      <div class="col-6 col-sm-2" style="padding-right: 0;">
+                        {{pn.project.commentingOpenDate | date: 'longDate'}}
+                      </div>
                     </div>
                   </div>
                 </mat-panel-title>
@@ -55,28 +61,29 @@
                 <ng-container [ngTemplateOutlet]="pNotice_fields_template"
                               [ngTemplateOutletContext]="{ pNotice: pn }">
                 </ng-container>
-                <button class="app-link btn btn-primary" (click)="showDetails()">View Details</button>
+                <button class="app-link btn btn-primary" (click)="showDetails(pn.projectId)">View Details</button>
               </mat-card>
             </mat-expansion-panel>
+            <pre></pre>
           </div>
         </mat-accordion>
       </section>
     </div>
 
-    <!-- Comment item display template -->
+    <!-- Public Notice item display template -->
     <ng-template #pNotice_fields_template let-pn="pNotice">
       <div class="row">
         <div class="col-5 col-sm-3 bold">FOM #: </div>
-        <div class="col-7 col-sm-3 no-padding">{{pn.fomNum}}</div>
+        <div class="col-7 col-sm-3 no-padding">{{pn.projectId}}</div>
         <div class="col-5 col-sm-2 bold">FOM Holder: </div>
-        <div class="col-7 col-sm-4 no-padding">{{pn.fomHolder}}</div>
+        <div class="col-7 col-sm-4 no-padding">{{pn.project.forestClient?.name}}</div>
       </div>
 
       <div class="row">
         <div class="col-5 col-sm-3 bold">FSP ID: </div>
-        <div class="col-7 col-sm-3 no-padding">{{pn.fspID}}</div>
+        <div class="col-7 col-sm-3 no-padding">{{pn.project.fspId}}</div>
         <div class="col-5 col-sm-2 bold">District: </div>
-        <div class="col-7 col-sm-4 no-padding">{{pn.district}}</div>
+        <div class="col-7 col-sm-4 no-padding">{{pn.project.district?.name}}</div>
       </div>
 
       <div class="row">
@@ -90,42 +97,50 @@
 
       <div class="row">
         <div class="col-sm-4 bold">Commenting Period: </div>
-        <div class="col-sm-8">{{pn.commentingPeriod}}</div>
+        <div class="col-sm-8">
+          {{pn.project.commentingOpenDate | date: 'longDate'}} to {{pn.project.commentingClosedDate | date: 'longDate'}}
+        </div>
       </div>
 
       <div class="row">
         <div class="col-sm-4 bold">Validity Period: </div>
-        <div class="col-sm-8">{{pn.validityPeriod}}</div>
+        <div class="col-sm-8">{{pn.project.commentingOpenDate | date: 'longDate'}} to {{pn.project.validityEndDate | date: 'longDate'}}</div>
       </div>
 
       <div class="row">
         <div class="col-sm-4 bold">FOM Summary: </div>
-        <div class="col-sm-8">{{pn.fomSummary}}</div>
+        <div class="col-sm-8">{{pn.project.name}}</div>
       </div>
 
       <div class="row">
         <div class="col-sm-4 bold">FOM Description: </div>
-        <div class="col-sm-8">{{pn.fomDescription}}</div>
+        <div class="col-sm-8">{{pn.project.description}}</div>
       </div>
 
       <div class="row">
-        <div class="col-sm-4 bold">Review FOM Address: </div>
-        <div class="col-sm-8">{{pn.reviewFOMAddress}}</div>
+        <div class="col-sm-4 bold">
+          {{pn.isReceiveCommentsSameAsReview == false? 'Address to Review FOM': 'Address to Review FOM and Receive Comments'}}:
+        </div>
+        <div class="col-sm-8">{{pn.reviewAddress}}</div>
       </div>
 
       <div class="row">
-        <div class="col-sm-4 bold">Review FOM Business Hours: </div>
-        <div class="col-sm-8">{{pn.reviewFOMBusinessHours}}</div>
+        <div class="col-sm-4 bold">
+          {{pn.isReceiveCommentsSameAsReview == false? 'Business Hours to Review FOM': 'Business Hours to Review FOM and Receive Comments'}}:
+        </div>
+        <div class="col-sm-8">{{pn.reviewBusinessHours}}</div>
       </div>
 
-      <div class="row">
-        <div class="col-sm-4 bold">Receive Comments Address: </div>
-        <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
-      </div>
+      <div *ngIf="pn.isReceiveCommentsSameAsReview != true">
+        <div class="row">
+          <div class="col-sm-4 bold">Address to Receive Comments: </div>
+          <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
+        </div>
 
-      <div class="row">
-        <div class="col-sm-4 bold">Receive Comments Business Hours: </div>
-        <div class="col-sm-8">{{pn.receiveCommentsBusinessHours}}</div>
+        <div class="row">
+          <div class="col-sm-4 bold">Business Hours to Receive Comments: </div>
+          <div class="col-sm-8">{{pn.receiveCommentsBusinessHours}}</div>
+        </div>
       </div>
 
       <div class="row">
@@ -133,10 +148,10 @@
         <div class="col-sm-8">{{pn.mailingAddress}}</div>
       </div>
 
-      <div class="row">
+      <!-- <div class="row">
         <div class="col-sm-4 bold">Public Notice URL: </div>
         <div class="col-sm-8">{{pn.publicNoticeURL}}</div>
-      </div>
+      </div> -->
     </ng-template>
   </div>
 

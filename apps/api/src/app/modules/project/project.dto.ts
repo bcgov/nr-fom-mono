@@ -99,6 +99,9 @@ export class ProjectResponse {
   @ApiProperty({ description: 'ISO-formatted date'})
   commentingClosedDate: string; 
 
+  @ApiProperty({ description: 'ISO-formatted date'})
+  validityEndDate: string
+
   @ApiProperty()
   fspId: number;
 
@@ -119,6 +122,9 @@ export class ProjectResponse {
 
   @ApiProperty({default: true})
   commentClassificationMandatory: boolean;
+
+  @ApiProperty()
+  publicNoticeId: number; // Online Public Notice (if any)
 }
 
 export class ProjectMetricsResponse {

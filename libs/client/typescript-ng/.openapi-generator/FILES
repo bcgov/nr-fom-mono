@@ -9,6 +9,7 @@ api/forestClient.service.ts
 api/interaction.service.ts
 api/project.service.ts
 api/publicComment.service.ts
+api/publicNotice.service.ts
 api/spatialFeature.service.ts
 api/submission.service.ts
 configuration.ts
@@ -35,6 +36,10 @@ model/projectWorkflowStateChangeRequest.ts
 model/publicCommentAdminResponse.ts
 model/publicCommentAdminUpdateRequest.ts
 model/publicCommentCreateRequest.ts
+model/publicNoticeCreateRequest.ts
+model/publicNoticePublicFrontEndResponse.ts
+model/publicNoticeResponse.ts
+model/publicNoticeUpdateRequest.ts
 model/responseCode.ts
 model/responseCodeEnum.ts
 model/spatialFeatureBcgwResponse.ts

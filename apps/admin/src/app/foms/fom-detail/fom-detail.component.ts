@@ -172,7 +172,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   public goToPublicNotice() {
-    if (this.canEditPublicNotice) {
+    if (this.canEditPublicNotice()) {
       this.router.navigate([`publicNotice/${this.project.id}/edit`])
     }
     else {
@@ -243,8 +243,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
 
   public canEditPublicNotice(): boolean {
     const userCanEdit = this.user.isAuthorizedForClientId(this.project.forestClient.id);
-    return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Finalized
-      && this.project.workflowState.code !== WorkflowStateEnum.Expired);
+    return userCanEdit && this.project.workflowState.code === WorkflowStateEnum.Initial;
   }
 
   public canViewPublicNotice(): boolean {

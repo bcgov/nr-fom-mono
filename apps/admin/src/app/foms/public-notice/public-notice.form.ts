@@ -6,34 +6,49 @@ export class PublicNoticeForm {
 
   publicNoticeId: number;
 
-  @required()
+  @required({message: 'Address to Review FOM is required.'})
+  @notEmpty({message: 'Address to Review FOM can not be empty.'})
   @prop()
-  reviewFOMAddress: string;
+  reviewAddress: string;
 
-  @required()
+  @required({message: 'Business Hours to Review FOM is required.'})
+  @notEmpty({message: 'Business Hours to Review FOM can not be empty.'})
   @prop()
-  reviewFOMBusinessHours: string;
+  reviewBusinessHours: string;
 
-  @required()
+  @required({message: 'Receive Comments Same as Review Checkbox is required.'})
   @prop()
-  sameAsReviewInd: boolean;
+  isReceiveCommentsSameAsReview: boolean = false;
   
-  @required({conditionalExpression:x => x.sameAsReviewInd === false})
-  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false})
+  @required({
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
+    message: 'Address to Receive Comments is required.'
+  })
+  @notEmpty({
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
+    message: 'Address to Receive Comments can not be empty.'
+  })
   @prop()
   receiveCommentsAddress: string;
 
-  @required({conditionalExpression:x => x.sameAsReviewInd === false})
-  @notEmpty({conditionalExpression:x => x.sameAsReviewInd === false})
+  @required({
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
+    message: 'Business Hours to Receive Comments is required.'
+  })
+  @notEmpty({
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
+    message: 'Business Hours to Receive Comments can not be empty.'
+  })
   @prop()
   receiveCommentsBusinessHours: string;
 
-  @required()
+  @required({message: 'Mailing Address is required.'})
+  @notEmpty({message: 'Mailing Address can not be empty.'})
   @prop()
   mailingAddress: string;
 
-  @required()
-  @email()
+  @required({message: 'Email is required.'})
+  @email({message: 'Email format is invalid.'})
   @prop()
   email: string;
 
@@ -42,11 +57,11 @@ export class PublicNoticeForm {
       // Pick the field to instantiate.
       Object.assign(this, R.pick(publicNoticeResponse, 
         [
-          'projectId',
-          'publicNoticeId',
-          'reviewFOMAddress',
-          'reviewFOMBusinessHours',
-          'sameAsReviewInd',
+          'project.projectId',
+          'id',
+          'reviewAddress',
+          'reviewBusinessHours',
+          'isReceiveCommentsSameAsReview',
           'receiveCommentsAddress',
           'receiveCommentsBusinessHours',
           'mailingAddress',
