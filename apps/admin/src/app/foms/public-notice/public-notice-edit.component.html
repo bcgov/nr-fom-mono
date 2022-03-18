@@ -2,7 +2,9 @@
   <div class="container">
     <div class="title-container">
       <div class="title-container__title">
-        <h1 class="text-muted">Edit Online Public Notice #{{projectId}}</h1>
+        <h1 class="text-muted">
+          {{ editMode? (isAddNewNotice()? 'New': 'Edit' ): '' }}  Online Public Notice &nbsp; FOM ID: {{projectId}}
+        </h1>
       </div>
       <div class="title-container__actions"
         *ngIf="publicNoticeFormGroup">
@@ -50,11 +52,6 @@
         <div class="col-md-2">
           <legend>Details</legend>
         </div>
-        <div class="col" 
-            style="text-align: right;"
-            *ngIf="publicNoticeResponse?.id">
-          <legend>ID: {{publicNoticeResponse?.id}}</legend>
-        </div>
       </div>
 
       <div class="form-row" >
@@ -62,7 +59,7 @@
           <label for="review-fom-address" [ngClass]="{'required': editMode}">Address to Review FOM</label>
           <textarea class="form-control mb" rows="3" 
             id="review-fom-address" name="review-fom-address"
-            placeholder="101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9"
+            [placeholder]="editMode? '101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9': ''"
             formControlName="reviewAddress"
             maxlength="{{addressLimit}}">
           </textarea>
@@ -83,7 +80,7 @@
           <label for="review-fom-hours" [ngClass]="{'required': editMode}">Business Hours to Review FOM</label>
           <input type="text"
             id="review-fom-hours" name="review-fom-hours"
-            placeholder="Monday to Friday 8am-4pm, Saturday 10am - 2pm"
+            [placeholder]="editMode? 'Monday to Friday 8am-4pm, Saturday 10am - 2pm': ''"
             maxlength="50"
             class="form-control"
             formControlName="reviewBusinessHours"/>
@@ -120,7 +117,7 @@
           </label>
           <textarea class="form-control mb" rows="3" 
             id="receive-fom-address" name="receive-fom-address"
-            placeholder="101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9"
+            [placeholder]="editMode? '101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9': ''"
             formControlName="receiveCommentsAddress"
             maxlength="{{addressLimit}}">
           </textarea>
@@ -144,7 +141,7 @@
           </label>
           <input type="text"
             id="receive-fom-hours" name="receive-fom-hours"
-            placeholder="Monday to Friday 8am-4pm, Saturday 10am - 2pm"
+            [placeholder]="editMode? 'Monday to Friday 8am-4pm, Saturday 10am - 2pm': ''"
             maxlength="50"
             class="form-control"
             formControlName="receiveCommentsBusinessHours"/>
@@ -164,7 +161,7 @@
           <label for="mailing-address" [ngClass]="{'required': editMode}">Mailing Address</label>
           <textarea class="form-control mb" rows="3" 
             id="mailing-address" name="mailing-address"
-            placeholder="Box 123 Surrey BC"
+            [placeholder]="editMode? 'Box 123 Surrey BC': ''"
             formControlName="mailingAddress"
             maxlength="{{addressLimit}}">
           </textarea>
@@ -186,7 +183,7 @@
           <input type="text"
             id="email" name="email"
             maxlength="50"
-            placeholder="name@industry.com"
+            [placeholder]="editMode? 'name@industry.com': ''"
             class="form-control"
             formControlName="email"/>
           <div class="invalid-feedback" 
