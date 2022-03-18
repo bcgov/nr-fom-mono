@@ -8,7 +8,10 @@ import {User} from "@api-core/security/user";
 import {KeycloakService} from "../../../core/services/keycloak.service";
 import { FormGroup } from '@angular/forms';
 import { PublicNoticeForm } from './public-notice.form';
-import { ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse, PublicNoticeService, WorkflowStateEnum } from '@api-client';
+import { 
+  ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse, 
+  PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum 
+} from '@api-client';
 import { ModalService } from '@admin-core/services/modal.service';
 
 @Component({
@@ -66,16 +69,20 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
 
+        this.onSameAsReviewIndToggled();
         if (!this.editMode) {
           this.publicNoticeFormGroup.disable();
         }
-        this.onSameAsReviewIndToggled();
       }
     );
   }
 
   get isLoading() {
     return this.stateSvc.loading;
+  }
+
+  isAddNewNotice() {
+    return this.editMode && !this.publicNoticeResponse;
   }
 
   onSameAsReviewIndToggled(): void {
@@ -97,7 +104,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   canDelete() {
-    if (this.editMode && !this.publicNoticeResponse) {
+    if (this.isAddNewNotice()) {
       // Case of new Public Notice
       return false;
     }
@@ -130,18 +137,15 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   async onSubmit() {
-    if (this.editMode) {
-      if (this.publicNoticeFormGroup.touched && this.publicNoticeFormGroup.valid) {
-        // TODO: check once again, only allowed to submit when state is 'INITIAL' (move this check to backend.)
-
-        if (this.publicNoticeResponse) {
-          // TODO: case - Do a PUT request to update Public Notice.
-        }
-        else {
-          // POST - Create Public Notice.
-         await lastValueFrom(this.createNewPublicNotice());
-         // TODO: this.publicNoticeTempService.setMockData(this.publicNoticeResponse); remove this later
-        }
+    if (this.editMode && this.publicNoticeFormGroup.touched 
+        && this.publicNoticeFormGroup.valid) {
+      // TODO: check once again, only allowed to submit when state is 'INITIAL' (move this check to backend.)
+      if (this.publicNoticeResponse) {
+        await lastValueFrom(this.updatePublicNotice());
+      }
+      else {
+        // POST - Create Public Notice.
+        await lastValueFrom(this.createNewPublicNotice());
       }
     }
     this.router.navigate(['/a', this.projectId]);
@@ -160,6 +164,13 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     let createBody = this.publicNoticeFormGroup.value as PublicNoticeCreateRequest
     createBody.projectId = this.project.id;
     return this.publicNoticeService.publicNoticeControllerCreate(createBody);
+  }
+
+  private updatePublicNotice() {
+    const updateBody = this.publicNoticeFormGroup.value as PublicNoticeUpdateRequest;
+    updateBody.projectId = this.project.id;
+    updateBody.revisionCount = this.publicNoticeResponse.revisionCount;
+    return this.publicNoticeService.publicNoticeControllerUpdate(this.publicNoticeResponse.id, updateBody);
   }
 
   ngAfterViewInit() {
