@@ -117,16 +117,16 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     }
   }
 
-  deletePublicNotice() {
+  async deletePublicNotice() {
     const dialogRef = this.modalSvc.openConfirmationDialog(
       `You are about to delete Online Public Notice <strong>#${this.publicNoticeResponse.id}</strong>. Are you sure?`,
       'Delete Online Public Notice');
 
-    dialogRef.afterClosed().subscribe((confirm) => {
+    dialogRef.afterClosed().subscribe(async (confirm) => {
       if (confirm) {
-        // this.isLoading = true; TODO: verify if isLoading/end isLoading from "stateSvc" really works 
-        // TODO: delete Public Notice from backend.
-        // this.publicNoticeTempService.setMockData({});
+        await lastValueFrom(
+          this.publicNoticeService.publicNoticeControllerRemove(this.publicNoticeResponse.id)
+        );
         this.router.navigate(['/a', this.projectId]);
       }
     });
