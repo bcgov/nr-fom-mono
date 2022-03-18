@@ -30,7 +30,7 @@
         <mat-accordion multi>
           <!-- Public Notices Summary List-->
           <div *ngFor="let pn of pNotices">
-            <mat-expansion-panel hideToggle [disabled]="requestError">
+            <mat-expansion-panel [disabled]="requestError">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   <div class="container" style="padding: 0;">
