@@ -10,7 +10,7 @@
                   (click)="goToPublicNotice()"
                   [disabled]="isDeleting"
                   style="margin-right: 8px;">
-            {{canEditPublicNotice() ? project.publicNoticeId?'Edit' : 'Add' + ' Online Public Notice' 
+            {{canEditPublicNotice() ? (project.publicNoticeId?'Edit' : 'Add') + ' Online Public Notice' 
                                     : 'View Online Public Notice'}}
           </button>
         </div>

@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
-import {map, of, Subject, switchMap} from 'rxjs';
+import {lastValueFrom, map, of, Subject, switchMap} from 'rxjs';
 
 import {RxFormBuilder} from '@rxweb/reactive-form-validators';
 import {StateService} from '../../../core/services/state.service';
@@ -8,7 +8,6 @@ import {User} from "@api-core/security/user";
 import {KeycloakService} from "../../../core/services/keycloak.service";
 import { FormGroup } from '@angular/forms';
 import { PublicNoticeForm } from './public-notice.form';
-// import { PublicNoticeService } from './public-notice.temp.service';
 import { ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse, PublicNoticeService, WorkflowStateEnum } from '@api-client';
 import { ModalService } from '@admin-core/services/modal.service';
 
@@ -41,6 +40,11 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   ngOnInit() {
+    this.projectId = this.route.snapshot.params.appId;
+    this.editMode = this.route.snapshot.url.filter(
+      (seg)=> seg.path.includes('edit')
+    ).length != 0;
+
     this.route.data
       .pipe(
         switchMap((resolverData) => {
@@ -56,10 +60,9 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
             );
         })
       )
-      .subscribe((data) => {
-        this.project = data['projectDetail'];
-        this.publicNoticeResponse = data.publicNotice;
-        // this.publicNoticeResponse = this.publicNoticeService.getMockData(this.projectId);
+      .subscribe((result) => {
+        this.project = result.data.projectDetail;
+        this.publicNoticeResponse = result.publicNotice;
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
 
@@ -69,11 +72,6 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
         this.onSameAsReviewIndToggled();
       }
     );
-    
-    this.projectId = this.route.snapshot.params.appId;
-    this.editMode = this.route.snapshot.url.filter(
-      (seg)=> seg.path.includes('edit')
-    ).length != 0;
   }
 
   get isLoading() {
@@ -117,7 +115,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
       if (confirm) {
         // this.isLoading = true; TODO: verify if isLoading/end isLoading from "stateSvc" really works 
         // TODO: delete Public Notice from backend.
-        // this.publicNoticeService.setMockData({});
+        // this.publicNoticeTempService.setMockData({});
         this.router.navigate(['/a', this.projectId]);
       }
     });
@@ -130,18 +128,17 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   async onSubmit() {
     if (this.editMode) {
       if (this.publicNoticeFormGroup.touched && this.publicNoticeFormGroup.valid) {
+        // TODO: check once again, only allowed to submit when state is 'INITIAL' (move this check to backend.)
+
         if (this.publicNoticeResponse) {
-          // TODO: update
+          // TODO: case - Do a PUT request to update Public Notice.
         }
         else {
-          await this.createNewPublicNotice();
+          // POST - Create Public Notice.
+         await lastValueFrom(this.createNewPublicNotice());
+         // TODO: this.publicNoticeTempService.setMockData(this.publicNoticeResponse); remove this later
         }
       }
-      // TODO: check if form touched and valid before further logic. Below is tempoary logic.
-      // TODO: check once again, only allowed to submit when state is 'INITIAL' (move this check to backend.)
-
-      // Object.assign(this.publicNoticeResponse, this.publicNoticeFormGroup.value);
-      // this.publicNoticeService.setMockData(this.publicNoticeResponse);
     }
     this.router.navigate(['/a', this.projectId]);
   }
@@ -155,10 +152,10 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     return null;
   }
 
-  private async createNewPublicNotice() {
-    const createBody: PublicNoticeCreateRequest = this.publicNoticeFormGroup.value;
-    createBody.projectId = this.projectId;
-    return this.publicNoticeService.publicNoticeControllerCreate(createBody as PublicNoticeCreateRequest);
+  private createNewPublicNotice() {
+    let createBody = this.publicNoticeFormGroup.value as PublicNoticeCreateRequest
+    createBody.projectId = this.project.id;
+    return this.publicNoticeService.publicNoticeControllerCreate(createBody);
   }
 
   ngAfterViewInit() {

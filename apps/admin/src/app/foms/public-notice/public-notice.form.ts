@@ -21,22 +21,22 @@ export class PublicNoticeForm {
   isReceiveCommentsSameAsReview: boolean = false;
   
   @required({
-    conditionalExpression:x => x.sameAsReviewInd === false,
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
     message: 'Address to Receive Comments is required.'
   })
   @notEmpty({
-    conditionalExpression:x => x.sameAsReviewInd === false,
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
     message: 'Address to Receive Comments can not be empty.'
   })
   @prop()
   receiveCommentsAddress: string;
 
   @required({
-    conditionalExpression:x => x.sameAsReviewInd === false,
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
     message: 'Business Hours to Receive Comments is required.'
   })
   @notEmpty({
-    conditionalExpression:x => x.sameAsReviewInd === false,
+    conditionalExpression:x => x.isReceiveCommentsSameAsReview === false,
     message: 'Business Hours to Receive Comments can not be empty.'
   })
   @prop()

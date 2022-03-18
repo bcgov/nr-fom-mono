@@ -4,7 +4,7 @@ import { Injectable } from "@angular/core";
 @Injectable({
   providedIn: 'root'
 })
-export class PublicNoticeService {
+export class PublicNoticeTempService {
 
   private mockData = {
       id: 135,
