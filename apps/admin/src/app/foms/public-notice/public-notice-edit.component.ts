@@ -69,10 +69,10 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
 
+        this.onSameAsReviewIndToggled();
         if (!this.editMode) {
           this.publicNoticeFormGroup.disable();
         }
-        this.onSameAsReviewIndToggled();
       }
     );
   }
@@ -104,7 +104,7 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   }
 
   canDelete() {
-    if (this.editMode && !this.publicNoticeResponse) {
+    if (this.isAddNewNotice()) {
       // Case of new Public Notice
       return false;
     }
