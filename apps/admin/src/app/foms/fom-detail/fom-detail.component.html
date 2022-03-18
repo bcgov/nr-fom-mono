@@ -9,6 +9,7 @@
           <button class="btn btn-light" type="button" title="Edit Online Public Notice"
                   (click)="goToPublicNotice()"
                   [disabled]="isDeleting"
+                  [hidden]="!canEditPublicNotice() && !project.publicNoticeId"
                   style="margin-right: 8px;">
             {{canEditPublicNotice() ? (project.publicNoticeId?'Edit' : 'Add') + ' Online Public Notice' 
                                     : 'View Online Public Notice'}}
