@@ -56,11 +56,7 @@ export class PublicNoticeResponse extends PublicNoticeUpdateRequest {
 
 }
 
-// DTO optimized for Public front-end
 export class PublicNoticePublicFrontEndResponse extends PublicNoticeCreateRequest {
-
-  // TODO: Add more columns (inherited from Project, or directly include ProjectResponse?)
-  // TODO: Consider adding ValidityEndDate to ProjectResponse
 
   @ApiProperty()
   project: ProjectResponse;

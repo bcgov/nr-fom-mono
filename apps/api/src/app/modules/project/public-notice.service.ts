@@ -34,15 +34,20 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
   private cache = new NodeCache({ useClones: false});
 
   // TODO: Use Cache for public front end list
-  // TODO: If a public notice already exists for a project then prevent a new one from being created.
 
   async isCreateAuthorized(dto: PublicNoticeCreateRequest, user?: User): Promise<boolean> {
     if (!user) {
       return false;
     }
     const projectResponse = await this.projectService.findOne(dto.projectId, user);
+     // If a public notice already exists for a project then prevent a new one from being created.
+    if (projectResponse.publicNoticeId) {
+      return false;
+    }
 
-    return user.isForestClient && user.isAuthorizedForClientId(projectResponse.forestClient.id);
+    if (WorkflowStateEnum.INITIAL == projectResponse.workflowState.code) {
+      return user.isForestClient && user.isAuthorizedForClientId(projectResponse.forestClient.id);
+    }
   }
   
   async isUpdateAuthorized(dto: PublicNoticeUpdateRequest, entity: PublicNotice, user?: User): Promise<boolean> {
@@ -57,6 +62,17 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
       return false;
     }
 
+    if (![WorkflowStateEnum.INITIAL].includes(
+      projectResponse.workflowState.code as WorkflowStateEnum)) 
+    {
+      return false;
+    }
+
+    // If isReceiveCommentsSameAsReview indicator is true, should not update 'receive' fields.
+    if (dto.isReceiveCommentsSameAsReview && 
+      (dto.receiveCommentsAddress || dto.receiveCommentsBusinessHours)) {
+        return false;
+    }
 
     // TODO: project Workflow states that are allowed to edit in. Reuse from ProjectService.isUpdateAuthorized... 
     // this.projectService.isUpdateAuthorized()
@@ -115,14 +131,12 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
   async isViewAuthorized(entity: PublicNotice, user?: User): Promise<boolean> {
     // TODO: Don't understand this clause - check in project.isViewAuthorized as well?
     if (!user) {
-      return true;
-    }
-    if (user.isMinistry) {
-      return true;
+      return false;
     }
 
     const projectResponse = await this.projectService.findOne(entity.projectId, user);
-    return user.isForestClient && user.isAuthorizedForClientId(projectResponse.forestClient.id);
+    return user.isMinistry || (user.isForestClient && 
+      user.isAuthorizedForClientId(projectResponse.forestClient.id));
   }
 
   async findForPublicFrontEnd():Promise<PublicNoticePublicFrontEndResponse[]> {
