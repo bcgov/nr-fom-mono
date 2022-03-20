@@ -62,7 +62,7 @@ export class PublicNoticeController {
   async remove(
     @UserRequiredHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
-    this.service.delete(id, user);
+    return this.service.delete(id, user);
   }
 
 }
