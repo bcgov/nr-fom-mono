@@ -8,9 +8,23 @@
 }
 
 .mat-expansion-panel-header {
-  padding-left: 10px;
+  height: auto;
+  padding: 5px 10px 5px 10px;
   .mat-expansion-panel-header-title {
     font-size: small;
+    text-align: center;
+  }
+  .header {
+    text-align: center;
+    font-weight: bold;
+    // font-size: smaller;
+  }
+}
+
+// conditional attribute selector: don't display header when panel expanded.
+.mat-expansion-panel-header[class*="mat-expanded"] {
+  .header {
+    display: none;
   }
 }
 

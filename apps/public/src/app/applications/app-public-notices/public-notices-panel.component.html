@@ -35,23 +35,29 @@
                 <mat-panel-title>
                   <div class="container" style="padding: 0;">
                     <div class="row">
-                      <div class="col-6 col-sm-3">
-                        <span matTooltip="{{pn.project.forestClient?.name}}">
+                      <div class="col-6 col-sm-3" style="padding-left: 2;">
+                        <div class="header">FOM Holder</div>
+                        <div matTooltip="{{pn.project.forestClient?.name}}">
                           {{pn.project.forestClient?.name | shorten: 25}}
-                        </span>
-                      </div>
-                      <div class="col-6 col-sm-4">
-                        <span matTooltip="{{pn.project.name}}">
-                          {{pn.project.name | shorten: 40}}
-                        </span>
+                        </div>
                       </div>
                       <div class="col-6 col-sm-3">
-                        <span matTooltip="{{pn.project.district?.name}}">
-                          {{pn.project.district?.name}}
-                        </span>
+                        <div class="header">FOM Name</div>
+                        <div matTooltip="{{pn.project.name}}">
+                          {{pn.project.name | shorten: 30}}
+                        </div>
                       </div>
-                      <div class="col-6 col-sm-2" style="padding-right: 0;">
-                        {{pn.project.commentingOpenDate | date: 'longDate'}}
+                      <div class="col-6 col-sm-3">
+                        <div class="header">District</div>
+                        <div matTooltip="{{pn.project.district?.name}}">
+                          {{pn.project.district?.name}}
+                        </div>
+                      </div>
+                      <div class="col-6 col-sm-3" style="padding-right: 0;">
+                        <div class="header">Commenting Open Date</div>
+                        <div>
+                          {{pn.project.commentingOpenDate | date: 'longDate'}}
+                        </div>
                       </div>
                     </div>
                   </div>
