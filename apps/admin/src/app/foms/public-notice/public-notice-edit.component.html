@@ -56,7 +56,7 @@
 
       <div class="form-row" >
         <div class="form-group col-md-12">
-          <label for="review-fom-address" [ngClass]="{'required': editMode}">Address to Review FOM</label>
+          <label for="review-fom-address" [ngClass]="{'required': editMode}">Physical address to review FOM</label>
           <textarea class="form-control mb" rows="3" 
             id="review-fom-address" name="review-fom-address"
             [placeholder]="editMode? '101-11234 West 12th Avenue &#10;Vancouver BC V6H 1L9': ''"
@@ -77,11 +77,11 @@
       
       <div class="form-row" >
         <div class="form-group col-md-6">
-          <label for="review-fom-hours" [ngClass]="{'required': editMode}">Business Hours to Review FOM</label>
+          <label for="review-fom-hours" [ngClass]="{'required': editMode}">Business Hours to physically review FOM</label>
           <input type="text"
             id="review-fom-hours" name="review-fom-hours"
             [placeholder]="editMode? 'Monday to Friday 8am-4pm, Saturday 10am - 2pm': ''"
-            maxlength="50"
+            maxlength="{{businessHoursLimit}}"
             class="form-control"
             formControlName="reviewBusinessHours"/>
           <div class="invalid-feedback" 
@@ -113,7 +113,7 @@
         <div class="form-group col-md-12">
           <label for="receive-fom-address"
             [ngClass]="{'required': !publicNoticeFormGroup.get('isReceiveCommentsSameAsReview').value && editMode}">
-            Address to Receive Comments
+            Physical address to submit comments
           </label>
           <textarea class="form-control mb" rows="3" 
             id="receive-fom-address" name="receive-fom-address"
@@ -137,12 +137,12 @@
         <div class="form-group col-md-6">
           <label for="receive-fom-hours"
             [ngClass]="{'required': !publicNoticeFormGroup.get('isReceiveCommentsSameAsReview').value && editMode}">
-            Business Hours to Receive Comments
+            Business hours to physically submit comments
           </label>
           <input type="text"
             id="receive-fom-hours" name="receive-fom-hours"
             [placeholder]="editMode? 'Monday to Friday 8am-4pm, Saturday 10am - 2pm': ''"
-            maxlength="50"
+            maxlength="{{businessHoursLimit}}"
             class="form-control"
             formControlName="receiveCommentsBusinessHours"/>
           <div class="invalid-feedback" 

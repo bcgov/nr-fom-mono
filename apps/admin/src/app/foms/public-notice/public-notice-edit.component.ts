@@ -1,31 +1,31 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {lastValueFrom, map, of, Subject, switchMap} from 'rxjs';
-
-import {RxFormBuilder} from '@rxweb/reactive-form-validators';
-import {StateService} from '../../../core/services/state.service';
-import {User} from "@api-core/security/user";
-import {KeycloakService} from "../../../core/services/keycloak.service";
-import { FormGroup } from '@angular/forms';
-import { PublicNoticeForm } from './public-notice.form';
-import { 
-  ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse, 
-  PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum 
-} from '@api-client';
 import { ModalService } from '@admin-core/services/modal.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
+  PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum
+} from '@api-client';
+import { User } from "@api-core/security/user";
+import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { lastValueFrom, map, of, Subject, switchMap } from 'rxjs';
+import { KeycloakService } from "../../../core/services/keycloak.service";
+import { StateService } from '../../../core/services/state.service';
+import { PublicNoticeForm } from './public-notice.form';
 
 @Component({
   selector: 'app-public-notice-edit',
   templateUrl: './public-notice-edit.component.html',
   styleUrls: ['./public-notice-edit.component.scss']
 })
-export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestroy {
+export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   user: User;
   project: ProjectResponse;
   projectId: number;
   publicNoticeResponse: PublicNoticeResponse;
   publicNoticeFormGroup: FormGroup;
-  addressLimit: number = 450;
+  addressLimit: number = 500;
+  businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
@@ -110,11 +110,9 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     }
     const workflowStateCode = this.project?.workflowState.code;
     if (WorkflowStateEnum.Initial === workflowStateCode) {
-      return this.user.isAuthorizedForClientId(this.project.forestClient.id);
+      return this.user.isForestClient && this.user.isAuthorizedForClientId(this.project.forestClient.id);
     }
-    else if (!this.user.isMinistry) {
-      return false;
-    }
+    return false;
   }
 
   async deletePublicNotice() {
@@ -139,13 +137,13 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   async onSubmit() {
     if (this.editMode && this.publicNoticeFormGroup.touched 
         && this.publicNoticeFormGroup.valid) {
-      // TODO: check once again, only allowed to submit when state is 'INITIAL' (move this check to backend.)
-      if (this.publicNoticeResponse) {
-        await lastValueFrom(this.updatePublicNotice());
-      }
-      else {
+
+      if (this.isAddNewNotice()) {
         // POST - Create Public Notice.
         await lastValueFrom(this.createNewPublicNotice());
+      }
+      else {
+        await lastValueFrom(this.updatePublicNotice());
       }
     }
     this.router.navigate(['/a', this.projectId]);
@@ -171,9 +169,6 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
     updateBody.projectId = this.project.id;
     updateBody.revisionCount = this.publicNoticeResponse.revisionCount;
     return this.publicNoticeService.publicNoticeControllerUpdate(this.publicNoticeResponse.id, updateBody);
-  }
-
-  ngAfterViewInit() {
   }
 
   ngOnDestroy() {

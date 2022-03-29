@@ -35,23 +35,29 @@
                 <mat-panel-title>
                   <div class="container" style="padding: 0;">
                     <div class="row">
-                      <div class="col-6 col-sm-3">
-                        <span matTooltip="{{pn.project.forestClient?.name}}">
+                      <div class="col-6 col-sm-3" style="padding-left: 2;">
+                        <div class="header">FOM Holder</div>
+                        <div matTooltip="{{pn.project.forestClient?.name}}">
                           {{pn.project.forestClient?.name | shorten: 25}}
-                        </span>
-                      </div>
-                      <div class="col-6 col-sm-4">
-                        <span matTooltip="{{pn.project.name}}">
-                          {{pn.project.name | shorten: 40}}
-                        </span>
+                        </div>
                       </div>
                       <div class="col-6 col-sm-3">
-                        <span matTooltip="{{pn.project.district?.name}}">
-                          {{pn.project.district?.name}}
-                        </span>
+                        <div class="header">FOM Name</div>
+                        <div matTooltip="{{pn.project.name}}">
+                          {{pn.project.name | shorten: 30}}
+                        </div>
                       </div>
-                      <div class="col-6 col-sm-2" style="padding-right: 0;">
-                        {{pn.project.commentingOpenDate | date: 'longDate'}}
+                      <div class="col-6 col-sm-3">
+                        <div class="header">District</div>
+                        <div matTooltip="{{pn.project.district?.name}}">
+                          {{pn.project.district?.name}}
+                        </div>
+                      </div>
+                      <div class="col-6 col-sm-3" style="padding-right: 0;">
+                        <div class="header">Commenting Open Date</div>
+                        <div>
+                          {{pn.project.commentingOpenDate | date: 'longDate'}}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -73,22 +79,22 @@
     <!-- Public Notice item display template -->
     <ng-template #pNotice_fields_template let-pn="pNotice">
       <div class="row">
-        <div class="col-5 col-sm-3 bold">FOM #: </div>
-        <div class="col-7 col-sm-3 no-padding">{{pn.projectId}}</div>
+        <div class="col-5 col-sm-1 bold">FOM #: </div>
+        <div class="col-7 col-sm-4 no-padding" style="text-align: left;">{{pn.projectId}}</div>
         <div class="col-5 col-sm-2 bold">FOM Holder: </div>
-        <div class="col-7 col-sm-4 no-padding">{{pn.project.forestClient?.name}}</div>
+        <div class="col-7 col-sm-5 no-padding" style="text-align: left;">{{pn.project.forestClient?.name}}</div>
       </div>
 
       <div class="row">
-        <div class="col-5 col-sm-3 bold">FSP ID: </div>
-        <div class="col-7 col-sm-3 no-padding">{{pn.project.fspId}}</div>
+        <div class="col-5 col-sm-1 bold">FSP ID: </div>
+        <div class="col-7 col-sm-4 no-padding">{{pn.project.fspId}}</div>
         <div class="col-5 col-sm-2 bold">District: </div>
-        <div class="col-7 col-sm-4 no-padding">{{pn.project.district?.name}}</div>
+        <div class="col-7 col-sm-5 no-padding">{{pn.project.district?.name}}</div>
       </div>
 
       <div class="row">
-        <div class="col-5 col-sm-3 bold">Email: </div>
-        <div class="col-7 col-sm-9 no-padding">{{pn.email}}</div>
+        <div class="col-5 col-sm-1 bold">Email: </div>
+        <div class="col-7 col-sm-11 no-padding">{{pn.email}}</div>
       </div>
 
       <div class="row no-padding">
@@ -119,26 +125,26 @@
 
       <div class="row">
         <div class="col-sm-4 bold">
-          {{pn.isReceiveCommentsSameAsReview == false? 'Address to Review FOM': 'Address to Review FOM and Receive Comments'}}:
+          {{pn.isReceiveCommentsSameAsReview == false? 'Physical address to review FOM': 'Physical address to review FOM and submit FOM comments'}}:
         </div>
         <div class="col-sm-8">{{pn.reviewAddress}}</div>
       </div>
 
       <div class="row">
         <div class="col-sm-4 bold">
-          {{pn.isReceiveCommentsSameAsReview == false? 'Business Hours to Review FOM': 'Business Hours to Review FOM and Receive Comments'}}:
+          {{pn.isReceiveCommentsSameAsReview == false? 'Business hours to physically review FOM': 'Business hours to physically review FOM and submit FOM comments'}}:
         </div>
         <div class="col-sm-8">{{pn.reviewBusinessHours}}</div>
       </div>
 
       <div *ngIf="pn.isReceiveCommentsSameAsReview != true">
         <div class="row">
-          <div class="col-sm-4 bold">Address to Receive Comments: </div>
+          <div class="col-sm-4 bold">Physical address to submit comments: </div>
           <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
         </div>
 
         <div class="row">
-          <div class="col-sm-4 bold">Business Hours to Receive Comments: </div>
+          <div class="col-sm-4 bold">Business hours to physically submit comments: </div>
           <div class="col-sm-8">{{pn.receiveCommentsBusinessHours}}</div>
         </div>
       </div>
