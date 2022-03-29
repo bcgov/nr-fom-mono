@@ -1,23 +1,20 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { getRepository, Repository, RepositoryNotTreeError, SelectQueryBuilder } from 'typeorm';
-import * as dayjs from 'dayjs';
-import { Project } from './project.entity';
-import { PinoLogger } from 'nestjs-pino';
-import { DataService } from 'apps/api/src/core/models/data.service';
-import { PublicNotice } from './public-notice.entity';
-import { PublicNoticeCreateRequest, PublicNoticeResponse, PublicNoticeUpdateRequest, PublicNoticePublicFrontEndResponse } from './public-notice.dto';
 import { User } from "@api-core/security/user";
+import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { DataService } from 'apps/api/src/core/models/data.service';
+import { PinoLogger } from 'nestjs-pino';
+import * as R from 'remeda';
+import { Repository } from 'typeorm';
+import { ProjectService } from './project.service';
+import { 
+  PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse, 
+  PublicNoticeResponse, PublicNoticeUpdateRequest 
+} from './public-notice.dto';
+import { PublicNotice } from './public-notice.entity';
+import { WorkflowStateEnum } from './workflow-state-code.entity';
 
 import NodeCache = require('node-cache');
 
-import { isNil } from 'lodash';
-import { DateTimeUtil } from '@api-core/dateTimeUtil';
-import { Cron } from '@nestjs/schedule';
-import { ProjectService } from './project.service';
-import { ProjectResponse } from './project.dto';
-import { WorkflowStateEnum } from './workflow-state-code.entity';
-import * as R from 'remeda';
 
 @Injectable()
 export class PublicNoticeService extends DataService<PublicNotice, Repository<PublicNotice>, PublicNoticeResponse> {
@@ -72,40 +69,6 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
         return false;
     }
 
-    // TODO: project Workflow states that are allowed to edit in. Reuse from ProjectService.isUpdateAuthorized... 
-    // this.projectService.isUpdateAuthorized()
-    /*
-    if (![WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED]
-        .includes(entity.workflowStateCode as WorkflowStateEnum)) {
-      this.logger.debug(`Not allowed to edit FOM in state other than INITIAL, COMMENT_OPEN and COMMENT_CLOSED.`);
-      return false;
-    }
-
-    // Cannot change commenting open date once state is commenting open (or later).
-    if (WorkflowStateEnum.INITIAL !== entity.workflowStateCode) {
-      if (entity.commentingOpenDate !== dto.commentingOpenDate) {
-        this.logger.debug(`Cannot change commenting open date once state is ${entity.workflowStateCode}.`);
-        return false;
-      }
-    }
-
-    // When commenting open, can change closed date but can't make it shorter.
-    if (WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode) {
-      if (DateTimeUtil.getBcDate(dto.commentingClosedDate).startOf('day').isBefore(
-          DateTimeUtil.getBcDate(entity.commentingOpenDate).startOf('day').add(30, 'day'))) {        
-        this.logger.debug(`Not allowed to make commenting closed date shorter.`);
-        return false;
-      }
-    }
-
-    // Cannot change commenting closed date when state is COMMENT_CLOSED.
-    if (WorkflowStateEnum.COMMENT_CLOSED == entity.workflowStateCode) {
-      if (entity.commentingClosedDate !== dto.commentingClosedDate) {
-        this.logger.debug(`Cannot change commenting closed date for state ${entity.workflowStateCode}.`);
-        return false;
-      }
-    }
-    */
     return true;
   }
 
