@@ -119,26 +119,26 @@
 
       <div class="row">
         <div class="col-sm-4 bold">
-          {{pn.isReceiveCommentsSameAsReview == false? 'Address to Review FOM': 'Address to Review FOM and Receive Comments'}}:
+          {{pn.isReceiveCommentsSameAsReview == false? 'Physical address to review FOM': 'Physical address to review FOM and submit FOM comments'}}:
         </div>
         <div class="col-sm-8">{{pn.reviewAddress}}</div>
       </div>
 
       <div class="row">
         <div class="col-sm-4 bold">
-          {{pn.isReceiveCommentsSameAsReview == false? 'Business Hours to Review FOM': 'Business Hours to Review FOM and Receive Comments'}}:
+          {{pn.isReceiveCommentsSameAsReview == false? 'Business hours to physically review FOM': 'Business hours to physically review FOM and submit FOM comments'}}:
         </div>
         <div class="col-sm-8">{{pn.reviewBusinessHours}}</div>
       </div>
 
       <div *ngIf="pn.isReceiveCommentsSameAsReview != true">
         <div class="row">
-          <div class="col-sm-4 bold">Address to Receive Comments: </div>
+          <div class="col-sm-4 bold">Physical address to submit comments: </div>
           <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
         </div>
 
         <div class="row">
-          <div class="col-sm-4 bold">Business Hours to Receive Comments: </div>
+          <div class="col-sm-4 bold">Business hours to physically submit comments: </div>
           <div class="col-sm-8">{{pn.receiveCommentsBusinessHours}}</div>
         </div>
       </div>
