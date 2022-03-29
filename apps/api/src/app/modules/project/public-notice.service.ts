@@ -62,9 +62,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
       return false;
     }
 
-    if (![WorkflowStateEnum.INITIAL].includes(
-      projectResponse.workflowState.code as WorkflowStateEnum)) 
-    {
+    if (![WorkflowStateEnum.INITIAL].includes(projectResponse.workflowState.code as WorkflowStateEnum)) {
       return false;
     }
 
@@ -129,7 +127,6 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
   }
 
   async isViewAuthorized(entity: PublicNotice, user?: User): Promise<boolean> {
-    // TODO: Don't understand this clause - check in project.isViewAuthorized as well?
     if (!user) {
       return false;
     }
