@@ -25,6 +25,17 @@ export class PublicNoticeController {
       return this.service.findForPublicFrontEnd();
   }
 
+  // TODO: load defaults from the last updated public notice for the same Forest Client.
+  /*
+  @Get()
+  @ApiResponse({ status: HttpStatus.OK, type: ? })
+  async findLastPublicNotice(
+    @UserHeader() user: User  
+    ): Promise<?> {
+      return this.service.findLastPublicNotice();
+  }
+  */
+
   @Get(':id')
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: PublicNoticeResponse })
