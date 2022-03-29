@@ -1,5 +1,5 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Project } from './project.entity';
 
 @Entity('public_notice', {schema: 'app_fom'})
@@ -14,7 +14,7 @@ export class PublicNotice extends ApiBaseEntity<PublicNotice> {
   @Column({name: 'project_id'})
   projectId: number;
 
-  @ManyToOne(() => Project)
+  @ManyToOne(() => Project, (project) => project.publicNotices, {onDelete: 'CASCADE', orphanedRowAction:'delete'})
   @JoinColumn({ name: 'project_id' })
   project: Project;
 
