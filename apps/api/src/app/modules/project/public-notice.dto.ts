@@ -3,7 +3,6 @@ import { IsBoolean, IsNumber, IsOptional, MaxLength } from 'class-validator';
 import { ProjectResponse } from './project.dto';
 
 export class PublicNoticeCreateRequest {
-  // TODO: Determine Max lengths
 
   @ApiProperty()
   @IsNumber()

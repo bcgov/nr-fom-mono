@@ -25,7 +25,8 @@ export class PublicNoticeEditComponent implements OnInit, AfterViewInit, OnDestr
   projectId: number;
   publicNoticeResponse: PublicNoticeResponse;
   publicNoticeFormGroup: FormGroup;
-  addressLimit: number = 450;
+  addressLimit: number = 500;
+  businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
