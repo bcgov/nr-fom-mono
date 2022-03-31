@@ -1810,6 +1810,41 @@
         ]
       }
     },
+    "/api/public-notice/latest/{forestClientId}": {
+      "get": {
+        "operationId": "PublicNoticeController_findLatestPublicNotice",
+        "parameters": [
+          {
+            "name": "forestClientId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicNoticeResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "public-notice"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
     "/api/public-notice/{id}": {
       "get": {
         "operationId": "PublicNoticeController_findOne",
