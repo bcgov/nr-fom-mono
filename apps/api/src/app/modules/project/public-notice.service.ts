@@ -1,5 +1,5 @@
 import { User } from "@api-core/security/user";
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataService } from 'apps/api/src/core/models/data.service';
@@ -140,6 +140,27 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     const ttl = 8*60*60; // 8 hours
     this.cache.set(this.cacheKey, results, ttl);
     return results;
+  }
+
+  async findLatestPublicNotice(forestClientId: string, user: User): Promise<PublicNoticeResponse> {
+    if (!user || !user.isAuthorizedForAdminSite() || !user.isAuthorizedForClientId(forestClientId)) {
+      throw new ForbiddenException();
+    }
+
+    const qResult = await this.repository.createQueryBuilder('pn')
+    .select('pn')
+    .addSelect(`greatest(pn.createTimestamp, pn.updateTimestamp)`, 'pn_timestamp')
+    .innerJoin('Project', 'pj', 'pj.id = pn.projectId')
+    .where('pj.forestClientId = :forestClientId ', {forestClientId})
+    .addOrderBy('pn_timestamp', 'DESC')
+    .limit(1)
+    .getOne() as Partial<PublicNotice>;
+
+    if (!qResult) {
+      return null;
+    }
+
+    return this.convertEntity(qResult as PublicNotice);
   }
 
   convertEntity(entity: PublicNotice): PublicNoticeResponse {
