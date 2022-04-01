@@ -22,6 +22,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   user: User;
   project: ProjectResponse;
   projectId: number;
+  isNewForm: boolean;
   publicNoticeResponse: PublicNoticeResponse;
   publicNoticeFormGroup: FormGroup;
   addressLimit: number = 500;
@@ -52,15 +53,25 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       .pipe(
         switchMap((resolverData) => {
           const publicNoticeId = resolverData['projectDetail'].publicNoticeId;
+          this.isNewForm = !publicNoticeId;
           if (!publicNoticeId) {
-            return of({data: resolverData, publicNotice: null});
+            return this.publicNoticeService
+              .publicNoticeControllerFindLatestPublicNotice(resolverData['projectDetail'].forestClient.id)
+              .pipe(
+                map(pn => {
+                  return {data: resolverData, publicNotice: pn}
+                })
+              );
           }
-          return this.publicNoticeService.publicNoticeControllerFindOne(publicNoticeId)
-            .pipe(
-              map(pn => {
-                return {data: resolverData, publicNotice: pn}
-              })
-            );
+          else {
+            return this.publicNoticeService
+              .publicNoticeControllerFindOne(publicNoticeId)
+              .pipe(
+                map(pn => {
+                  return {data: resolverData, publicNotice: pn}
+                })
+              );
+          }
         })
       )
       .subscribe((result) => {
@@ -82,7 +93,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   }
 
   isAddNewNotice() {
-    return this.editMode && !this.publicNoticeResponse;
+    return this.editMode && this.isNewForm;
   }
 
   onSameAsReviewIndToggled(): void {

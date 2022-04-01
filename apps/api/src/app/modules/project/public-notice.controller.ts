@@ -36,7 +36,6 @@ export class PublicNoticeController {
       return this.service.findLatestPublicNotice(forestClientId, user);
   }
 
-
   @Get(':id')
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: PublicNoticeResponse })
