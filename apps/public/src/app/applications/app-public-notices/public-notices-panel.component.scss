@@ -39,6 +39,20 @@
   font-size: 0.85rem;
 }
 
+.filter-panel {
+  @include flex-box();
+  @include flex-direction(row);
+  justify-content: space-between;
+  gap: 10px;
+  flex-flow: row wrap;
+  padding: 5px 1.5rem 0;
+
+  div {
+    @include flex(1 1 auto);
+
+  }
+}
+
 @media (max-width: 1023px) {
   .mat-expansion-panel-header {
     height: auto;
