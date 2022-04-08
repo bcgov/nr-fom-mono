@@ -13,9 +13,7 @@ import {
 } from './public-notice.dto';
 import { PublicNotice } from './public-notice.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
-
 import NodeCache = require('node-cache');
-
 
 @Injectable()
 export class PublicNoticeService extends DataService<PublicNotice, Repository<PublicNotice>, PublicNoticeResponse> {
@@ -32,7 +30,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
   private cache = new NodeCache({ useClones: false});
   readonly cacheKey = 'PublicNotices';
 
-  @Cron('46 9 * * * ') // Run at 9:46am UTC each day, shortly after the batch which runs at 9:00am UTC
+  @Cron('45 9 * * * ') // Run at 9:46am UTC each day, shortly after the batch which runs at 9:00am UTC
   async resetCache() {
     this.logger.info("Reseting cache for public notices...");
     this.cache.flushAll();
@@ -137,8 +135,9 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
       return response;
     });
 
-    const ttl = 8*60*60; // 8 hours
+    const ttl = 24*60*60; // 24 hours
     this.cache.set(this.cacheKey, results, ttl);
+    
     return results;
   }
 
