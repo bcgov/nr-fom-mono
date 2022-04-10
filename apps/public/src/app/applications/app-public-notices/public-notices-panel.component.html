@@ -19,7 +19,9 @@
   </div>
 
   <div>
-    <notices-filter-panel></notices-filter-panel>
+    <notices-filter-panel
+      [districtList]="districtList"
+      (filterPublicNoticesEvt)="handlePublicNoticesFilterUpdate($event)"></notices-filter-panel>
 
     <div class="flex-panel__scroll" style="padding-top: 5px">
       <section>

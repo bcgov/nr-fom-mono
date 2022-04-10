@@ -2,32 +2,56 @@
 <div class="filter-container">
   <div class="filter-panel">
     <div>
-      <label class="control-label">FOM Holder Name (or portion)</label>
+      <label class="control-label" for="forestClientNameInput">
+        FOM Holder Name (or portion)
+      </label>
       <input id="forestClientNameInput" type="text"
-            class="form-control"
+            name="forestClientName"
+            title="Filter by Holder"
+            class="form-control width-min-medium"
+            [(ngModel)]="filter.forestClientName.value"
             maxlength="80" />
     </div>
 
     <div>
-      <label class="control-label">District</label>
-      <input id="forestClientNameInput" type="text"
-            class="form-control"
-            maxlength="40"/>
+      <label class="control-label" for="postedAsOfInput">
+        Posted As Of
+      </label>
+      <div class="date-range__input">
+        <input id="postedAsOfInput" type="text"
+          class="form-control width-min-medium"
+          title="Filter by Posted As Of"
+          placeholder="YYYY-MM-DD"
+          bsDatepicker
+          [maxDate]="maxDate"
+          onkeydown="return false"
+          [(ngModel)]="filter.commentingOpenDate.value"
+          [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+          containerClass: 'theme-dark-blue', showWeekNumbers: false  }"
+        />
+      </div>
     </div>
 
     <div>
-      <label class="control-label">Posted As Of</label>
-      <div class="date-range__input">
-        <input
-          class="form-control"
-          type="text"
-          placeholder="YYYY-MM-DD"
-        />
-      </div>
+      <label class="control-label" for="districtInput">
+        District
+      </label>
+      <select id="districtInput" name="district"
+            class="form-control width-min-medium"
+            title="Filter by District"
+            [(ngModel)]="filter.districtName.value"
+            >
+        <option [value]="null" selected></option>
+        <option *ngFor="let district of districtList"
+                [value]="district"
+                [selected]="district === filter.districtName.value">
+                {{district}}</option>
+      </select>
     </div>
   </div>
   
   <div>
-    <button class="btn btn-primary btn-sm">Filter</button>
+    <button class="btn btn-primary btn-sm"
+      (click)="onFilterChange()">Filter</button>
   </div>
 </div>

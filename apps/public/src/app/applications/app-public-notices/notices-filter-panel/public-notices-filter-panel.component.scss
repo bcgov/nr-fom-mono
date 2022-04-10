@@ -17,5 +17,14 @@
     div {
       @include flex(1 1 auto);
     }
+
+    input {
+      height: 2.75rem;
+    }
   }
+}
+
+// use to force filter field to wrap.
+.width-min-medium {
+  min-width: 175px;
 }
