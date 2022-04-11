@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
 import { PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
 import { UrlService } from '@public-core/services/url.service';
@@ -12,7 +12,7 @@ import moment = require('moment');
   templateUrl: './public-notices-panel.component.html',
   styleUrls: ['./public-notices-panel.component.scss']
 })
-export class PublicNoticesPanelComponent implements OnDestroy, OnInit {
+export class PublicNoticesPanelComponent implements OnInit {
   @Output() update = new EventEmitter<IUpdateEvent>();
   @ViewChild(MatAccordion) accordion: MatAccordion;
   
@@ -91,12 +91,17 @@ export class PublicNoticesPanelComponent implements OnDestroy, OnInit {
     filterValue: string | Date, 
     comparFn = this.compareFn().equal) {
 
-    return function(data: PublicNoticePublicFrontEndResponse) {
-      return comparFn(_.get(data, key, null), filterValue);
+    if (typeof filterValue === 'string') {
+      filterValue = filterValue.toLowerCase();
     }
-  }
 
-  ngOnDestroy() {
+    return function(data: PublicNoticePublicFrontEndResponse) {
+      let dataValue = _.get(data, key, null);
+      if (typeof dataValue === 'string') {
+        dataValue = dataValue.toLowerCase();
+      }
+      return comparFn(dataValue, filterValue);
+    }
   }
 
 }
