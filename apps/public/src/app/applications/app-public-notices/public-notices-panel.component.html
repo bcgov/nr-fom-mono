@@ -18,10 +18,13 @@
     </h3>
   </div>
 
-  <div class="flex-panel__scroll">
-    <div>
+  <div>
+    <notices-filter-panel
+      [districtList]="districtList"
+      (filterPublicNoticesEvt)="handlePublicNoticesFilterUpdate($event)"></notices-filter-panel>
+
+    <div class="flex-panel__scroll" style="padding-top: 5px">
       <section>
- 
         <div class="expansion-button">
           <button class="btn btn-primary btn-sm" (click)="accordion.openAll()">Expand</button>
           <button class="btn btn-light btn-sm" (click)="accordion.closeAll()">Collapse</button>
@@ -74,6 +77,9 @@
           </div>
         </mat-accordion>
       </section>
+      <div class="validity-txt">
+        These FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road permit application, or the issuance of a Timber Sales License until the date three years after commencement of the public review and commenting period.
+      </div>
     </div>
 
     <!-- Public Notice item display template -->
@@ -90,11 +96,6 @@
         <div class="col-7 col-sm-4 no-padding">{{pn.project.fspId}}</div>
         <div class="col-5 col-sm-2 bold">District: </div>
         <div class="col-7 col-sm-5 no-padding">{{pn.project.district?.name}}</div>
-      </div>
-
-      <div class="row">
-        <div class="col-5 col-sm-1 bold">Email: </div>
-        <div class="col-7 col-sm-11 no-padding">{{pn.email}}</div>
       </div>
 
       <div class="row no-padding">
@@ -154,10 +155,10 @@
         <div class="col-sm-8">{{pn.mailingAddress}}</div>
       </div>
 
-      <!-- <div class="row">
-        <div class="col-sm-4 bold">Public Notice URL: </div>
-        <div class="col-sm-8">{{pn.publicNoticeURL}}</div>
-      </div> -->
+      <div class="row">
+        <div class="col-sm-4 bold">Email for Public Comment: </div>
+        <div class="col-sm-8">{{pn.email}}</div>
+      </div>
     </ng-template>
   </div>
 

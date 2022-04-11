@@ -26,6 +26,7 @@ import { PublicNoticesPanelComponent } from './app-public-notices/public-notices
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PublicNoticesFilterPanelComponent } from './app-public-notices/notices-filter-panel/public-notices-filter-panel.component';
 
 @NgModule({
   imports: [
@@ -52,6 +53,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     SplashModalComponent,
     ShapeInfoComponent,
     PublicNoticesPanelComponent,
+    PublicNoticesFilterPanelComponent,
     ShortenPipe
   ]
 })

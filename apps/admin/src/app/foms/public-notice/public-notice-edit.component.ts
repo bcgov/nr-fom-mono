@@ -8,7 +8,7 @@ import {
 } from '@api-client';
 import { User } from "@api-core/security/user";
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
-import { lastValueFrom, map, of, Subject, switchMap } from 'rxjs';
+import { lastValueFrom, map, Subject, switchMap } from 'rxjs';
 import { KeycloakService } from "../../../core/services/keycloak.service";
 import { StateService } from '../../../core/services/state.service';
 import { PublicNoticeForm } from './public-notice.form';
@@ -30,7 +30,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   editMode: boolean; // 'edit'/'view' mode.
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
-
+  
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -156,8 +156,8 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       else {
         await lastValueFrom(this.updatePublicNotice());
       }
+      this.router.navigate(['/a', this.projectId]);
     }
-    this.router.navigate(['/a', this.projectId]);
   }
 
   getErrorMessage(controlName: string, messageKey: string = null): string {
@@ -167,6 +167,11 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       if (messages) return messages.message;
     }
     return null;
+  }
+
+  fieldTouchedOrDirty(controlName: string): boolean {
+    const control = this.publicNoticeFormGroup.controls[controlName];
+    return control?.touched || control?.dirty;
   }
 
   private createNewPublicNotice() {

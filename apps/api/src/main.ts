@@ -11,6 +11,7 @@ import helmet from 'helmet';
 import { ProjectService } from '@api-modules/project/project.service';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 import { urlencoded, json } from 'express';
+import { PublicNoticeService } from '@api-modules/project/public-notice.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -119,6 +120,9 @@ async function postStartup(app: INestApplication) {
     // Preload cache for public summary default data.
     logger.log("Starting public summary cache pre-load...");
     await app.get(ProjectService).refreshCache();
+
+    logger.log("Starting public notices cache pre-load...");
+    await app.get(PublicNoticeService).findForPublicFrontEnd();
 
     logger.log("Done postStartup.");
   } catch (error) {

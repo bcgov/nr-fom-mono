@@ -17,14 +17,14 @@
         </button>
         <button
           class="btn btn-primary ml-1"
-          type="button"
+          form="publicNoticeForm"
+          type="submit"
           title="Create/Edit Public Notice"
-          [disabled]="!publicNoticeFormGroup.valid || isLoading"
-          *ngIf="editMode" 
-          (click)="onSubmit()">
+          [disabled]="isLoading"
+          *ngIf="editMode">
           {{ isLoading ? "Saving" : "Save" }}
           <em class="spinner rotating" [hidden]="!isLoading"></em>
-        </button>
+        </button> <!-- use 'form' attribute for submit button outside of html form -->
 
         <span class="vert-pipe" *ngIf="canDelete()">&nbsp;</span>
         <button class="btn btn-icon" title="Remove this Online Public Notice"
@@ -44,9 +44,11 @@
 <div class="bottom-container">
   <div class="container"
     *ngIf="publicNoticeFormGroup">
-    <form class="mb-3" 
+    <form id="publicNoticeForm"
+      class="mb-3" 
       [formGroup]="publicNoticeFormGroup"
-      (ngSubmit)="onSubmit()">
+      (ngSubmit)="onSubmit()"
+      #form="ngForm">
 
       <div class="row">
         <div class="col-md-2">
@@ -65,12 +67,9 @@
           </textarea>
           <small *ngIf="editMode">{{addressLimit-publicNoticeFormGroup.get('reviewAddress').value?.length}} characters remaining.</small>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewAddress', 'required')">
-            {{getErrorMessage('reviewAddress', 'required')}}
-          </div>
-          <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewAddress', 'notEmpty')">
-            {{getErrorMessage('reviewAddress', 'notEmpty')}}
+            *ngIf="(form.submitted || fieldTouchedOrDirty('reviewAddress')) && 
+              (getErrorMessage('reviewAddress', 'required') || getErrorMessage('reviewAddress', 'notEmpty'))">
+            {{getErrorMessage('reviewAddress', 'required') || getErrorMessage('reviewAddress', 'notEmpty')}}
           </div>
         </div>
       </div>
@@ -85,12 +84,9 @@
             class="form-control"
             formControlName="reviewBusinessHours"/>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewBusinessHours', 'required')">
-            {{getErrorMessage('reviewBusinessHours', 'required')}}
-          </div>
-          <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('reviewBusinessHours', 'notEmpty')">
-            {{getErrorMessage('reviewBusinessHours', 'notEmpty')}}
+            *ngIf="(form.submitted || fieldTouchedOrDirty('reviewBusinessHours')) && 
+              (getErrorMessage('reviewBusinessHours', 'required') || getErrorMessage('reviewBusinessHours', 'notEmpty'))">
+            {{getErrorMessage('reviewBusinessHours', 'required') || getErrorMessage('reviewBusinessHours', 'notEmpty')}}
           </div>
         </div>
       </div>
@@ -103,7 +99,7 @@
           formControlName="isReceiveCommentsSameAsReview"
           (change)="onSameAsReviewIndToggled()"/>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('isReceiveCommentsSameAsReview', 'required')">
+            *ngIf="form.submitted && getErrorMessage('isReceiveCommentsSameAsReview', 'required')">
             {{getErrorMessage('isReceiveCommentsSameAsReview', 'required')}}
           </div>
         </div>
@@ -123,12 +119,9 @@
           </textarea>
           <small *ngIf="editMode">{{addressLimit-publicNoticeFormGroup.get('receiveCommentsAddress').value?.length}} characters remaining.</small>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsAddress', 'required')">
-            {{getErrorMessage('receiveCommentsAddress', 'required')}}
-          </div>
-          <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsAddress', 'notEmpty')">
-            {{getErrorMessage('receiveCommentsAddress', 'notEmpty')}}
+            *ngIf="(form.submitted || fieldTouchedOrDirty('receiveCommentsAddress')) && 
+              (getErrorMessage('receiveCommentsAddress', 'required') || getErrorMessage('receiveCommentsAddress', 'notEmpty'))">
+            {{getErrorMessage('receiveCommentsAddress', 'required') || getErrorMessage('receiveCommentsAddress', 'notEmpty')}}
           </div>
         </div>
       </div>
@@ -146,12 +139,9 @@
             class="form-control"
             formControlName="receiveCommentsBusinessHours"/>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsBusinessHours', 'required')">
-            {{getErrorMessage('receiveCommentsBusinessHours', 'required')}}
-          </div>
-          <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('receiveCommentsBusinessHours', 'notEmpty')">
-            {{getErrorMessage('receiveCommentsBusinessHours', 'notEmpty')}}
+            *ngIf="(form.submitted || fieldTouchedOrDirty('receiveCommentsBusinessHours')) && 
+              (getErrorMessage('receiveCommentsBusinessHours', 'required') || getErrorMessage('receiveCommentsBusinessHours', 'notEmpty'))">
+            {{getErrorMessage('receiveCommentsBusinessHours', 'required') || getErrorMessage('receiveCommentsBusinessHours', 'notEmpty')}}
           </div>
         </div>
       </div>
@@ -167,19 +157,16 @@
           </textarea>
           <small *ngIf="editMode">{{addressLimit-publicNoticeFormGroup.get('mailingAddress').value?.length}} characters remaining.</small>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('mailingAddress', 'required')">
-            {{getErrorMessage('mailingAddress', 'required')}}
-          </div>
-          <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('mailingAddress', 'notEmpty')">
-            {{getErrorMessage('mailingAddress', 'notEmpty')}}
+            *ngIf="(form.submitted || fieldTouchedOrDirty('mailingAddress')) && 
+              (getErrorMessage('mailingAddress', 'required') || getErrorMessage('mailingAddress', 'notEmpty'))">
+            {{getErrorMessage('mailingAddress', 'required') || getErrorMessage('mailingAddress', 'notEmpty')}}
           </div>
         </div>
       </div>
 
       <div class="form-row" >
         <div class="form-group col-md-6">
-          <label for="email" [ngClass]="{'required': editMode}">Email</label>
+          <label for="email" [ngClass]="{'required': editMode}">Email for Public Comment</label>
           <input type="text"
             id="email" name="email"
             maxlength="50"
@@ -187,11 +174,11 @@
             class="form-control"
             formControlName="email"/>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('email', 'required')">
+            *ngIf="(form.submitted || fieldTouchedOrDirty('email')) && getErrorMessage('email', 'required')">
             {{getErrorMessage('email', 'required')}}
           </div>
           <div class="invalid-feedback" 
-            *ngIf="publicNoticeFormGroup.touched && getErrorMessage('email', 'email')">
+            *ngIf="(form.submitted || fieldTouchedOrDirty('email')) && getErrorMessage('email', 'email')">
             {{getErrorMessage('email', 'email')}}
           </div>
         </div>

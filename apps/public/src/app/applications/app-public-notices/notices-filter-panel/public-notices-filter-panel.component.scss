@@ -1,0 +1,30 @@
+@import "../../../../assets/styles/base/base.scss";
+
+
+.filter-container {
+  padding: 5px 1.5rem 0;
+  div {
+    padding-bottom: 5px;
+  }
+
+  .filter-panel {
+    @include flex-box();
+    @include flex-direction(row);
+    justify-content: space-between;
+    gap: 10px;
+    flex-flow: row wrap;
+  
+    div {
+      @include flex(1 1 auto);
+    }
+
+    input {
+      height: 2.75rem;
+    }
+  }
+}
+
+// use to force filter field to wrap.
+.width-min-medium {
+  min-width: 175px;
+}
