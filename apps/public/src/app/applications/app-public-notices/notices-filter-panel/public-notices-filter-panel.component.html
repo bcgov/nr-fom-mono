@@ -41,7 +41,7 @@
             title="Filter by District"
             [(ngModel)]="filter.districtName.value"
             >
-        <option [value]="null" selected></option>
+        <option [ngValue]="null" selected></option> <!-- use [ngValue], not [value] so model can get a undefined value -->
         <option *ngFor="let district of districtList"
                 [value]="district"
                 [selected]="district === filter.districtName.value">
