@@ -77,7 +77,7 @@ These are the steps to generate the client library used by the frontend componen
 
 Due to the minimal automated tests, the following should be done after major dependency changes:
 npm run build
-npm test-unit
+npm run test-unit
 npm run start:public
 npm run start:admin (ideally with keycloak and object storage enabled)
 npm run start:api
