@@ -1,15 +1,14 @@
-import { Component, OnDestroy, Output, EventEmitter, OnInit, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { WorkflowStateCode } from '@api-client';
+import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { UrlService } from '@public-core/services/url.service';
+import * as _ from 'lodash';
+import * as moment from 'moment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
-import { UrlService } from '@public-core/services/url.service';
-import { Filter, FilterUtils, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from '../utils/filter';
-import { Panel } from '../utils/panel.enum';
 import { IUpdateEvent } from '../projects.component';
-import * as _ from 'lodash';
-import { WorkflowStateCode } from '@api-client';
-import * as moment from 'moment';
-import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { Filter, FilterUtils, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from '../utils/filter';
+
 
 /**
  * Find side panel.

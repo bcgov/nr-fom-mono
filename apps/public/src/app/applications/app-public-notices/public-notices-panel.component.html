@@ -19,12 +19,15 @@
   </div>
 
   <div>
-    <notices-filter-panel
-      [districtList]="districtList"
-      (filterPublicNoticesEvt)="handlePublicNoticesFilterUpdate($event)"></notices-filter-panel>
-
     <div class="flex-panel__scroll" style="padding-top: 5px">
-      <section>
+
+      <section style="margin-bottom: 15px;">
+        <notices-filter-panel
+          [districtList]="districtList"
+          (filterPublicNoticesEvt)="handlePublicNoticesFilterUpdate($event)"></notices-filter-panel>
+      </section>
+
+      <section *ngIf="pNotices.length > 0 else no_notice_message">
         <div class="expansion-button">
           <button class="btn btn-primary btn-sm" (click)="accordion.openAll()">Expand</button>
           <button class="btn btn-light btn-sm" (click)="accordion.closeAll()">Collapse</button>
@@ -77,10 +80,15 @@
           </div>
         </mat-accordion>
       </section>
-      <div class="validity-txt">
+      <div class="validity-txt" *ngIf="pNotices.length > 0">
         These FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road permit application, or the issuance of a Timber Sales License until the date three years after commencement of the public review and commenting period.
       </div>
     </div>
+
+    <ng-template #no_notice_message >
+      <br/>
+      <h3 class="title">No public notices found.</h3>
+    </ng-template>
 
     <!-- Public Notice item display template -->
     <ng-template #pNotice_fields_template let-pn="pNotice">

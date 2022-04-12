@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { IFilterFields } from '../../utils/filter';
 import moment = require('moment');
 
@@ -7,7 +7,7 @@ import moment = require('moment');
   templateUrl: './public-notices-filter-panel.component.html',
   styleUrls: ['./public-notices-filter-panel.component.scss']
 })
-export class PublicNoticesFilterPanelComponent implements OnDestroy, OnInit {
+export class PublicNoticesFilterPanelComponent implements OnInit {
 
   filter: NoticeFilter;
   maxDate: Date = new Date();
@@ -26,8 +26,6 @@ export class PublicNoticesFilterPanelComponent implements OnDestroy, OnInit {
     this.filterPublicNoticesEvt.emit(this.filter);
   }
 
-  ngOnDestroy() {
-  }
 }
 export class NoticeFilter {
   forestClientName: IFilterFields<string> = { queryParam: 'forestClientName', value: null};
