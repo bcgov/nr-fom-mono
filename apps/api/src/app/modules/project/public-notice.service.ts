@@ -30,10 +30,14 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
   private cache = new NodeCache({ useClones: false});
   readonly cacheKey = 'PublicNotices';
 
-  @Cron('45 9 * * * ') // Run at 9:46am UTC each day, shortly after the batch which runs at 9:00am UTC
+  @Cron('55 9 * * * ') // Run at 09:55 UTC each day, after the batch to update states at 09:00 UTC, and shortly after the project cache refresh at 09:45 UTC.
   async resetCache() {
-    this.logger.info("Reseting cache for public notices...");
+    this.logger.info("Refresh cache for public notices...");
     this.cache.flushAll();
+    await this.refreshCache();
+  }
+
+  async refreshCache():Promise<any> {
     await this.findForPublicFrontEnd();
   }
 
@@ -177,9 +181,5 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     return response;
   }
 
-  // TODO: Evaluate
-  // protected getCommonRelations(): string[] {
-  //   return ['district', 'forestClient', 'workflowState'];
-  // }
 }
 

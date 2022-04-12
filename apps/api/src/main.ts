@@ -122,7 +122,7 @@ async function postStartup(app: INestApplication) {
     await app.get(ProjectService).refreshCache();
 
     logger.log("Starting public notices cache pre-load...");
-    await app.get(PublicNoticeService).findForPublicFrontEnd();
+    await app.get(PublicNoticeService).refreshCache();
 
     logger.log("Done postStartup.");
   } catch (error) {
