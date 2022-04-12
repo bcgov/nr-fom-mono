@@ -16,7 +16,6 @@ export class PublicNoticeController {
     private readonly logger: PinoLogger) {
   }
 
-  // TODO: Maybe change URL path?
   @Get()
   @ApiResponse({ status: HttpStatus.OK, type: [PublicNoticePublicFrontEndResponse] })
   async findListForPublicFrontEnd(

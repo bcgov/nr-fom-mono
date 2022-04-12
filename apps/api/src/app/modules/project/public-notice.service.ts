@@ -56,7 +56,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     }
   }
   
-  async isUpdateAuthorized(dto: PublicNoticeUpdateRequest, entity: PublicNotice, user?: User): Promise<boolean> {
+  async isUpdateAuthorized(_dto: PublicNoticeUpdateRequest, entity: PublicNotice, user?: User): Promise<boolean> {
     if (!user) {
       return false;
     }
