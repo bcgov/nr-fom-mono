@@ -89,7 +89,7 @@
     "leaflet.markercluster": "^1.5.3",
     "lodash": "^4.17.21",
     "minio": "^7.0.26",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "nestjs-pino": "^1.4.0",
     "ngx-bootstrap": "^7.1.2",
     "ngx-dropzone": "^3.0.0",
