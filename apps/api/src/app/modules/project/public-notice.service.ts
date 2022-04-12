@@ -61,7 +61,6 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
       return false;
     }
 
-    // TODO: Use dto or entity here?
     const projectResponse = await this.projectService.findOne(entity.projectId, user);
 
     if (!user.isForestClient || !user.isAuthorizedForClientId(projectResponse.forestClient.id)) {
@@ -70,12 +69,6 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
 
     if (![WorkflowStateEnum.INITIAL].includes(projectResponse.workflowState.code as WorkflowStateEnum)) {
       return false;
-    }
-
-    // If isReceiveCommentsSameAsReview indicator is true, should not update 'receive' fields.
-    if (dto.isReceiveCommentsSameAsReview && 
-      (dto.receiveCommentsAddress || dto.receiveCommentsBusinessHours)) {
-        return false;
     }
 
     return true;
@@ -139,6 +132,8 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
       return response;
     });
 
+    // Public notice data visible to public only changes daily with batch update process, so we let cached data persist for 24 hours, and have scheduled logic
+    // to reset the cache shortly after the batch runs.
     const ttl = 24*60*60; // 24 hours
     this.cache.set(this.cacheKey, results, ttl);
     
