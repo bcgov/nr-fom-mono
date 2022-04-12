@@ -69,7 +69,7 @@ async function bootstrap():Promise<INestApplication> {
     contentSecurityPolicy: true
   }));
 
-  let cacheMiddleware = (req, res, next) => {
+  let cacheMiddleware = (_req, res, next) => {
     // Disable caching entirely by default for all APIs.
     res.set('Cache-control', 'no-store, max-age=0');
     res.set('Pragma', 'no-cache');
@@ -78,7 +78,7 @@ async function bootstrap():Promise<INestApplication> {
   httpAdapter.use(cacheMiddleware);
 
   // Only meant for running locally, not accessible via /api route.
-  httpAdapter.get('/health-check', (req, res) => {
+  httpAdapter.get('/health-check', (_req, res) => {
     res.send('Health check passed');
   });
 
