@@ -41,5 +41,36 @@ export class SubmissionRequest {
   @ApiProperty()
   @IsNotEmpty()
   jsonSpatialSubmission: FomSpatialJson;
+}
 
+export type SubmissionSpatialObjectMetrics = {
+  id: number,
+  name: string,
+  spatialObjectCode: SpatialObjectCodeEnum,
+}
+
+export class SubmissionMetricsResponse {
+
+  @ApiProperty()
+  projectId: number;
+
+  @ApiProperty()
+  submissionId: number;
+
+  @ApiProperty({ 
+    enum: SubmissionTypeCodeEnum, 
+    enumName: 'SubmissionTypeCodeEnum',
+    example: SubmissionTypeCodeEnum.PROPOSED,
+    default: SubmissionTypeCodeEnum.PROPOSED
+  })
+  submissionTypeCode: SubmissionTypeCodeEnum;
+
+  @ApiProperty({type: () => [SubmissionMetricsResponse]})
+  cutblocks: Array<SubmissionSpatialObjectMetrics>;
+
+  @ApiProperty({type: () => [SubmissionMetricsResponse]})
+  roadSections: Array<SubmissionSpatialObjectMetrics>;
+
+  @ApiProperty({type: () => [SubmissionMetricsResponse]})
+  retentionAreas: Array<SubmissionSpatialObjectMetrics>;
 }
