@@ -146,8 +146,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   }
 
   async onSubmit() {
-    if (this.editMode && this.publicNoticeFormGroup.touched 
-        && this.publicNoticeFormGroup.valid) {
+    if (this.editMode && this.publicNoticeFormGroup.valid) {
 
       if (this.isAddNewNotice()) {
         // POST - Create Public Notice.
