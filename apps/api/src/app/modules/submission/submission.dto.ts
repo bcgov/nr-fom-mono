@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FeatureCollection } from 'geojson';
 import { IsEnum, IsNotEmpty } from 'class-validator';
+import { FeatureCollection } from 'geojson';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
 
 // Using GeoJSON types, won't have the API documentation but that's okay.
@@ -45,7 +45,7 @@ export class SubmissionRequest {
 
 export type SubmissionSpatialObjectMetrics = {
   id: number,
-  name: string,
+  name?: string,
   spatialObjectCode: SpatialObjectCodeEnum,
 }
 

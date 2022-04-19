@@ -6,7 +6,6 @@ import { SubmissionTypeCodeEnum } from "./submission-type-code.entity";
 import { SpatialObjectCodeEnum, SubmissionMetricsResponse, SubmissionRequest } from './submission.dto';
 import { SubmissionService } from './submission.service';
 
-
 @ApiTags('submission')
 @Controller('submission')
 export class SubmissionController {
@@ -42,9 +41,7 @@ export class SubmissionController {
     @UserRequiredHeader() user: User,
     @Param('submissionId', ParseIntPipe) submissionId: number,
     @Query('spatialObjectCode') spatialObjectCode: SpatialObjectCodeEnum) {
-      console.log("submissionId: ", submissionId)
-      console.log("spatialObjectCode: ", spatialObjectCode)
-    return this.service.removeSpatialSubmissionByType(submissionId, spatialObjectCode, user);
+    return this.service.removeSubmissionBySpatialObjectType(submissionId, spatialObjectCode, user);
   }
 
 }
