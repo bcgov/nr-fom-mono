@@ -26,6 +26,7 @@ export * from './responseCodeEnum';
 export * from './spatialFeatureBcgwResponse';
 export * from './spatialFeaturePublicResponse';
 export * from './spatialObjectCodeEnum';
+export * from './submissionMetricsResponse';
 export * from './submissionRequest';
 export * from './submissionTypeCode';
 export * from './submissionTypeCodeEnum';

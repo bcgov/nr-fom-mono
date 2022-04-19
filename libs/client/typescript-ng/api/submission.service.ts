@@ -17,6 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
+import { SubmissionMetricsResponse } from '../model/models';
 import { SubmissionRequest } from '../model/models';
 import { SubmissionTypeCode } from '../model/models';
 
@@ -86,6 +87,68 @@ export class SubmissionService {
     }
 
     /**
+     * @param projectId 
+     * @param submissionTypeCode 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<SubmissionMetricsResponse>;
+    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<SubmissionMetricsResponse>>;
+    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<SubmissionMetricsResponse>>;
+    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+        if (projectId === null || projectId === undefined) {
+            throw new Error('Required parameter projectId was null or undefined when calling submissionControllerFindSpatialSubmissionMetrics.');
+        }
+        if (submissionTypeCode === null || submissionTypeCode === undefined) {
+            throw new Error('Required parameter submissionTypeCode was null or undefined when calling submissionControllerFindSpatialSubmissionMetrics.');
+        }
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (submissionTypeCode !== undefined && submissionTypeCode !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>submissionTypeCode, 'submissionTypeCode');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'application/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.get<SubmissionMetricsResponse>(`${this.configuration.basePath}/api/submission/metrics/${encodeURIComponent(String(projectId))}`,
+            {
+                params: queryParameters,
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * @param submissionRequest 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -136,6 +199,67 @@ export class SubmissionService {
         return this.httpClient.post<any>(`${this.configuration.basePath}/api/submission`,
             submissionRequest,
             {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * @param submissionId 
+     * @param spatialObjectCode 
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public submissionControllerRemoveSpatialSubmissionByType(submissionId: number, spatialObjectCode: 'CUT_BLOCK' | 'ROAD_SECTION' | 'WTRA', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
+    public submissionControllerRemoveSpatialSubmissionByType(submissionId: number, spatialObjectCode: 'CUT_BLOCK' | 'ROAD_SECTION' | 'WTRA', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
+    public submissionControllerRemoveSpatialSubmissionByType(submissionId: number, spatialObjectCode: 'CUT_BLOCK' | 'ROAD_SECTION' | 'WTRA', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
+    public submissionControllerRemoveSpatialSubmissionByType(submissionId: number, spatialObjectCode: 'CUT_BLOCK' | 'ROAD_SECTION' | 'WTRA', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+        if (submissionId === null || submissionId === undefined) {
+            throw new Error('Required parameter submissionId was null or undefined when calling submissionControllerRemoveSpatialSubmissionByType.');
+        }
+        if (spatialObjectCode === null || spatialObjectCode === undefined) {
+            throw new Error('Required parameter spatialObjectCode was null or undefined when calling submissionControllerRemoveSpatialSubmissionByType.');
+        }
+
+        let queryParameters = new HttpParams({encoder: this.encoder});
+        if (spatialObjectCode !== undefined && spatialObjectCode !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>spatialObjectCode, 'spatialObjectCode');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (bearer) required
+        credential = this.configuration.lookupCredential('bearer');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/submission/${encodeURIComponent(String(submissionId))}`,
+            {
+                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
