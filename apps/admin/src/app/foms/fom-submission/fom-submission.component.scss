@@ -97,3 +97,31 @@ table thead {
 table tr:nth-child(even) {
   background-color: #ffffff;
 }
+
+.nv-list {
+  border-bottom: 1px dotted #ccc;
+
+  li {
+    @include flex-box();
+
+    // padding: 0.5rem 0;
+    border-top: 1px dotted #ccc;
+    background: #fff;
+  }
+
+  span.name {
+    @include flex(0 0 19rem);
+
+    margin: 0;
+  }
+
+  span.value1 {
+    @include flex(0 0 12rem);
+
+    margin: 0;
+  }
+
+  span.action {
+    @include flex(1 1 auto);
+  }
+}

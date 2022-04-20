@@ -86,8 +86,76 @@
           <div class="fileTypes"><em>Acceptable File Types: json, txt</em></div>
         </div>
       </fieldset>
-      <br/>
-      <app-submission-format-overview></app-submission-format-overview>
+
+      <fieldset class="no-margin no-border"
+        *ngIf="spatialSubmission?.cutblocks?.count > 0 
+            || spatialSubmission?.roadSections?.count > 0 
+            || spatialSubmission?.retentionAreas?.count > 0">
+        <legend> Submitted Spatial Objects </legend>
+        <ul class="nv-list">
+          <li *ngIf="spatialSubmission.cutblocks?.count > 0"
+              style="padding-bottom: 0">
+            <span class="name">Cut block submission - {{spatialSubmission.cutblocks.count}} blocks</span>
+            <span class="value1">{{spatialSubmission.cutblocks.dateSubmitted | date}}</span>
+            <span class="action">
+              <button class="btn btn-icon no-padding no-border" title="Remove Cutblocks"
+                type="button"
+                *ngIf="canDeleteSpatialSubmission()"
+                (click)="onDeleteSpatialSubmission(
+                  spatialSubmission.submissionId, 
+                  SpatialObjectCodeEnum.CutBlock
+                  )">
+                <em class="spinner rotating" [hidden]="!isLoading"></em>
+                <em class="material-icons" [hidden]="isLoading">
+                  delete
+                </em>
+              </button>
+            </span>
+          </li>
+          <li *ngIf="spatialSubmission.roadSections?.count > 0"
+              style="padding-bottom: 0">
+            <span class="name">Road section submission - {{spatialSubmission.roadSections.count}} sections</span>
+            <span class="value1">{{spatialSubmission.roadSections.dateSubmitted | date}}</span>
+            <span class="action">
+              <button class="btn btn-icon no-padding no-border" title="Remove Road Sections"
+                *ngIf="canDeleteSpatialSubmission()"
+                type="button"
+                (click)="onDeleteSpatialSubmission(
+                  spatialSubmission.submissionId, 
+                  SpatialObjectCodeEnum.RoadSection
+                  )">
+                  <em class="spinner rotating" [hidden]="!isLoading"></em>
+                  <em class="material-icons" [hidden]="isLoading">
+                    delete
+                  </em>
+              </button>
+            </span>
+          </li>
+          <li *ngIf="spatialSubmission.retentionAreas?.count > 0"
+              style="padding-bottom: 0">
+            <span class="name">Retention area submission - {{spatialSubmission.retentionAreas.count}} areas</span>
+            <span class="value1">{{spatialSubmission.retentionAreas.dateSubmitted | date}}</span>
+            <span class="action">
+              <button class="btn btn-icon no-padding no-border" title="Remove Retention Areas"
+                *ngIf="canDeleteSpatialSubmission()"
+                type="button"
+                (click)="onDeleteSpatialSubmission(
+                  spatialSubmission.submissionId, 
+                  SpatialObjectCodeEnum.Wtra
+                  )">
+                  <em class="spinner rotating" [hidden]="!isLoading"></em>
+                  <em class="material-icons" [hidden]="isLoading">
+                    delete
+                  </em>
+              </button>
+            </span>
+          </li>
+        </ul>
+      </fieldset>
+
+      <fieldset class="no-margin no-border">
+        <app-submission-format-overview></app-submission-format-overview>
+      </fieldset>
     </form>
   </div>
 </div>
