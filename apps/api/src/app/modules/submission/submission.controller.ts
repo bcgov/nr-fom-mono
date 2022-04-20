@@ -2,8 +2,7 @@ import { User } from "@api-core/security/user";
 import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UserHeader, UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { SubmissionTypeCodeEnum } from "./submission-type-code.entity";
-import { SpatialObjectCodeEnum, SubmissionMetricsResponse, SubmissionRequest } from './submission.dto';
+import { SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest } from './submission.dto';
 import { SubmissionService } from './submission.service';
 
 @ApiTags('submission')
@@ -22,15 +21,13 @@ export class SubmissionController {
     await this.service.processSpatialSubmission(dto, user);
   }
 
-  @Get('/metrics/:projectId')
+  @Get('/detail/:projectId')
   @ApiBearerAuth()
-  @ApiQuery({name: 'submissionTypeCode', type: 'string', enum: SubmissionTypeCodeEnum})
-  @ApiResponse({ status: HttpStatus.OK, type: SubmissionMetricsResponse })
-  async findSpatialSubmissionMetrics(
+  @ApiResponse({ status: HttpStatus.OK, type: SubmissionDetailResponse })
+  async findSubmissionDetailForCurrentSubmissionType(
     @UserHeader() user: User,
-    @Param('projectId', ParseIntPipe) projectId: number,
-    @Query('submissionTypeCode') submissionTypeCode: SubmissionTypeCodeEnum): Promise<SubmissionMetricsResponse> {
-    return this.service.findSpatialSubmissionMetrics(projectId, submissionTypeCode, user);
+    @Param('projectId', ParseIntPipe) projectId: number): Promise<SubmissionDetailResponse> {
+    return this.service.findSubmissionDetailForCurrentSubmissionType(projectId, user);
   }
 
   @Delete(':submissionId')

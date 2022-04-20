@@ -43,13 +43,12 @@ export class SubmissionRequest {
   jsonSpatialSubmission: FomSpatialJson;
 }
 
-export type SubmissionSpatialObjectMetrics = {
-  id: number,
-  name?: string,
-  spatialObjectCode: SpatialObjectCodeEnum,
+export type SubmissionSpatialObjectDetail = {
+  count: number
+  dateSubmitted: Date,
 }
 
-export class SubmissionMetricsResponse {
+export class SubmissionDetailResponse {
 
   @ApiProperty()
   projectId: number;
@@ -65,12 +64,12 @@ export class SubmissionMetricsResponse {
   })
   submissionTypeCode: SubmissionTypeCodeEnum;
 
-  @ApiProperty({type: () => [SubmissionMetricsResponse]})
-  cutblocks: Array<SubmissionSpatialObjectMetrics>;
+  @ApiProperty({type: SubmissionDetailResponse})
+  cutblocks: SubmissionSpatialObjectDetail; 
 
-  @ApiProperty({type: () => [SubmissionMetricsResponse]})
-  roadSections: Array<SubmissionSpatialObjectMetrics>;
+  @ApiProperty({type: SubmissionDetailResponse})
+  roadSections: SubmissionSpatialObjectDetail; 
 
-  @ApiProperty({type: () => [SubmissionMetricsResponse]})
-  retentionAreas: Array<SubmissionSpatialObjectMetrics>;
+  @ApiProperty({type: SubmissionDetailResponse})
+  retentionAreas: SubmissionSpatialObjectDetail; 
 }
