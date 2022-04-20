@@ -796,7 +796,7 @@
           "jsonSpatialSubmission"
         ]
       },
-      "SubmissionMetricsResponse": {
+      "SubmissionDetailResponse": {
         "type": "object",
         "properties": {
           "projectId": {
@@ -811,22 +811,13 @@
             "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
           },
           "cutblocks": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SubmissionMetricsResponse"
-            }
+            "$ref": "#/components/schemas/SubmissionDetailResponse"
           },
           "roadSections": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SubmissionMetricsResponse"
-            }
+            "$ref": "#/components/schemas/SubmissionDetailResponse"
           },
           "retentionAreas": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/SubmissionMetricsResponse"
-            }
+            "$ref": "#/components/schemas/SubmissionDetailResponse"
           }
         },
         "required": [
@@ -2343,9 +2334,9 @@
         ]
       }
     },
-    "/api/submission/metrics/{projectId}": {
+    "/api/submission/detail/{projectId}": {
       "get": {
-        "operationId": "SubmissionController_findSpatialSubmissionMetrics",
+        "operationId": "SubmissionController_findSubmissionDetailForCurrentSubmissionType",
         "parameters": [
           {
             "name": "projectId",
@@ -2353,18 +2344,6 @@
             "in": "path",
             "schema": {
               "type": "number"
-            }
-          },
-          {
-            "name": "submissionTypeCode",
-            "required": true,
-            "in": "query",
-            "schema": {
-              "enum": [
-                "PROPOSED",
-                "FINAL"
-              ],
-              "type": "string"
             }
           }
         ],
@@ -2374,7 +2353,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SubmissionMetricsResponse"
+                  "$ref": "#/components/schemas/SubmissionDetailResponse"
                 }
               }
             }

@@ -17,7 +17,7 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
-import { SubmissionMetricsResponse } from '../model/models';
+import { SubmissionDetailResponse } from '../model/models';
 import { SubmissionRequest } from '../model/models';
 import { SubmissionTypeCode } from '../model/models';
 
@@ -88,25 +88,15 @@ export class SubmissionService {
 
     /**
      * @param projectId 
-     * @param submissionTypeCode 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<SubmissionMetricsResponse>;
-    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<SubmissionMetricsResponse>>;
-    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<SubmissionMetricsResponse>>;
-    public submissionControllerFindSpatialSubmissionMetrics(projectId: number, submissionTypeCode: 'PROPOSED' | 'FINAL', observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public submissionControllerFindSubmissionDetailForCurrentSubmissionType(projectId: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<SubmissionDetailResponse>;
+    public submissionControllerFindSubmissionDetailForCurrentSubmissionType(projectId: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<SubmissionDetailResponse>>;
+    public submissionControllerFindSubmissionDetailForCurrentSubmissionType(projectId: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<SubmissionDetailResponse>>;
+    public submissionControllerFindSubmissionDetailForCurrentSubmissionType(projectId: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (projectId === null || projectId === undefined) {
-            throw new Error('Required parameter projectId was null or undefined when calling submissionControllerFindSpatialSubmissionMetrics.');
-        }
-        if (submissionTypeCode === null || submissionTypeCode === undefined) {
-            throw new Error('Required parameter submissionTypeCode was null or undefined when calling submissionControllerFindSpatialSubmissionMetrics.');
-        }
-
-        let queryParameters = new HttpParams({encoder: this.encoder});
-        if (submissionTypeCode !== undefined && submissionTypeCode !== null) {
-          queryParameters = this.addToHttpParams(queryParameters,
-            <any>submissionTypeCode, 'submissionTypeCode');
+            throw new Error('Required parameter projectId was null or undefined when calling submissionControllerFindSubmissionDetailForCurrentSubmissionType.');
         }
 
         let headers = this.defaultHeaders;
@@ -136,9 +126,8 @@ export class SubmissionService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<SubmissionMetricsResponse>(`${this.configuration.basePath}/api/submission/metrics/${encodeURIComponent(String(projectId))}`,
+        return this.httpClient.get<SubmissionDetailResponse>(`${this.configuration.basePath}/api/submission/detail/${encodeURIComponent(String(projectId))}`,
             {
-                params: queryParameters,
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,

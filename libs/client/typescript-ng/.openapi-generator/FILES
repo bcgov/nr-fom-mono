@@ -45,7 +45,7 @@ model/responseCodeEnum.ts
 model/spatialFeatureBcgwResponse.ts
 model/spatialFeaturePublicResponse.ts
 model/spatialObjectCodeEnum.ts
-model/submissionMetricsResponse.ts
+model/submissionDetailResponse.ts
 model/submissionRequest.ts
 model/submissionTypeCode.ts
 model/submissionTypeCodeEnum.ts

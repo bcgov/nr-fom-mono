@@ -12,12 +12,12 @@
 import { SubmissionTypeCodeEnum } from './submissionTypeCodeEnum';
 
 
-export interface SubmissionMetricsResponse { 
+export interface SubmissionDetailResponse { 
     projectId: number;
     submissionId: number;
     submissionTypeCode: SubmissionTypeCodeEnum;
-    cutblocks: Array<SubmissionMetricsResponse>;
-    roadSections: Array<SubmissionMetricsResponse>;
-    retentionAreas: Array<SubmissionMetricsResponse>;
+    cutblocks: SubmissionDetailResponse;
+    roadSections: SubmissionDetailResponse;
+    retentionAreas: SubmissionDetailResponse;
 }
 
