@@ -29,13 +29,13 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
 
   constructor(
     @InjectRepository(Submission)
-    public repository: Repository<Submission>,
-    public logger: PinoLogger,
+    repository: Repository<Submission>,
+    logger: PinoLogger,
     private projectService: ProjectService,
     private projectAuthService: ProjectAuthService
   ) {
-    dayjs.extend(customParseFormat);
     super(repository, new Submission(), logger);
+    dayjs.extend(customParseFormat);
   }
 
   /**
@@ -629,6 +629,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
         _.isEmpty(submission.retentionAreas)) {
       // No children, remove entire submission.
       await this.repository.remove(submission);
+      await this.updateProjectLocation(submission.projectId, user); // This will set geometry_latlong to null.
     }
     else {
       await this.saveAndUpdateSpatialSubmission(submission, spatialObjectCode, user);
