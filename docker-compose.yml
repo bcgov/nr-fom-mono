@@ -1,39 +1,44 @@
 version: '3.8'
 services:
-  api:
-    container_name: api
-    build:
-      context: .
-      dockerfile: ./docker/api/Dockerfile.local
-    restart: always
-    working_dir: /usr/src/app
-    environment:
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=test
-      - DB_NAME=fom
-      - DB_TYPE=postgres
-      - DB_HOST=localhost
-      - DB_SSL=false
-      - NODE_ENV=production
-    volumes:
-      - .:/usr/src/app
-      - /usr/app/node_modules
-    ports:
-      - '8081:3333'
-    tty: true
-    command: 'npm run start:api'
-    depends_on:
-      - db
-    networks:
-      - backend
-    links:
-      - 'db:database'
+  # api:
+  #   container_name: api
+  #   build:
+  #     context: .
+  #     dockerfile: ./docker/api/Dockerfile.local
+  #   restart: always
+  #   working_dir: /usr/src/app
+  #   environment:
+  #     - DB_USERNAME=postgres
+  #     - DB_PASSWORD=test
+  #     - DB_NAME=fom
+  #     - DB_TYPE=postgres
+  #     - DB_HOST=localhost
+  #     - DB_SSL=false
+  #     - NODE_ENV=production
+  #   volumes:
+  #     - .:/usr/src/app
+  #     - /usr/app/node_modules
+  #   ports:
+  #     - '8081:3333'
+  #   tty: true
+  #   command: 'npm run start:api'
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - backend
+  #   links:
+  #     - 'db:database'
   db:
     container_name: fom-db
-    build:
-      context: ./docker/db
-      dockerfile: ./Dockerfile.local
+    image: postgis/postgis:13-master
     restart: always
+    entrypoint:
+      - sh
+      - -c
+      - "grep -qxF 'CREATE EXTENSION IF NOT EXISTS pgcrypto'/docker-entrypoint-initdb.d/10_postgis.sh || \
+          sed -i '/postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;' \
+            /docker-entrypoint-initdb.d/10_postgis.sh && \
+          /usr/local/bin/docker-entrypoint.sh postgres"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
