@@ -796,6 +796,39 @@
           "jsonSpatialSubmission"
         ]
       },
+      "SubmissionDetailResponse": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number"
+          },
+          "submissionId": {
+            "type": "number"
+          },
+          "submissionTypeCode": {
+            "example": "PROPOSED",
+            "default": "PROPOSED",
+            "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
+          },
+          "cutblocks": {
+            "$ref": "#/components/schemas/SubmissionDetailResponse"
+          },
+          "roadSections": {
+            "$ref": "#/components/schemas/SubmissionDetailResponse"
+          },
+          "retentionAreas": {
+            "$ref": "#/components/schemas/SubmissionDetailResponse"
+          }
+        },
+        "required": [
+          "projectId",
+          "submissionId",
+          "submissionTypeCode",
+          "cutblocks",
+          "roadSections",
+          "retentionAreas"
+        ]
+      },
       "SubmissionTypeCode": {
         "type": "object",
         "properties": {
@@ -2286,6 +2319,82 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "submission"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/submission/detail/{projectId}": {
+      "get": {
+        "operationId": "SubmissionController_findSubmissionDetailForCurrentSubmissionType",
+        "parameters": [
+          {
+            "name": "projectId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubmissionDetailResponse"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "submission"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ]
+      }
+    },
+    "/api/submission/{submissionId}": {
+      "delete": {
+        "operationId": "SubmissionController_removeSpatialSubmissionByType",
+        "parameters": [
+          {
+            "name": "submissionId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "spatialObjectCode",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "enum": [
+                "CUT_BLOCK",
+                "ROAD_SECTION",
+                "WTRA"
+              ],
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": ""

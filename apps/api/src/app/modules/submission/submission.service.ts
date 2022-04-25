@@ -1,37 +1,40 @@
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import { User } from "@api-core/security/user";
+import { DataService } from '@core';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getConnection, Repository } from 'typeorm';
-import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import * as dayjs from 'dayjs';
-import * as customParseFormat  from 'dayjs/plugin/customParseFormat';
+import * as customParseFormat from 'dayjs/plugin/customParseFormat';
+import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import { PinoLogger } from 'nestjs-pino';
-
-import { Submission } from './submission.entity';
-import { FomSpatialJson, SpatialCoordSystemEnum, SpatialObjectCodeEnum, SubmissionRequest } from './submission.dto';
+import { getConnection, Repository } from 'typeorm';
+import { flatDeep } from '../../../core/utils';
+import { ProjectAuthService } from '../project/project-auth.service';
+import { ProjectResponse } from '../project/project.dto';
 import { ProjectService } from '../project/project.service';
-import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { CutBlock } from './cut-block.entity';
-import { RoadSection } from './road-section.entity';
 import { RetentionArea } from './retention-area.entity';
-import { ProjectResponse } from '../project/project.dto';
-import { flatDeep } from '../../../core/utils';
-import { User } from "@api-core/security/user";
-import { ProjectAuthService } from '../project/project-auth.service';
+import { RoadSection } from './road-section.entity';
+import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
+import { FomSpatialJson, SpatialCoordSystemEnum, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest } from './submission.dto';
+import { Submission } from './submission.entity';
+
 import _ = require('lodash');
-import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 type SpatialObject = CutBlock | RoadSection | RetentionArea;
 
 @Injectable()
-export class SubmissionService {
+export class SubmissionService extends DataService<Submission, Repository<Submission>, SubmissionDetailResponse> {
+
   constructor(
     @InjectRepository(Submission)
-    private repository: Repository<Submission>,
-    private logger: PinoLogger,
+    repository: Repository<Submission>,
+    logger: PinoLogger,
     private projectService: ProjectService,
     private projectAuthService: ProjectAuthService
   ) {
+    super(repository, new Submission(), logger);
     dayjs.extend(customParseFormat);
   }
 
@@ -75,11 +78,7 @@ export class SubmissionService {
       submission.retentionAreas = <RetentionArea[]>spatialObjects;
     }
 
-    const updatedSubmission = await this.repository.save(submission);
-
-    await this.updateProjectLocation(project.id, user);
-
-    await this.updateGeospatialAreaOrLength(dto.spatialObjectCode, updatedSubmission.id);
+    await this.saveAndUpdateSpatialSubmission(submission, dto.spatialObjectCode, user);
   }
 
   /**
@@ -108,6 +107,22 @@ export class SubmissionService {
     return submissionTypeCode;
   }
 
+  protected getCommonRelations(): string[] {
+    return ['project', 'cutBlocks', 'retentionAreas', 'roadSections'];
+  }
+
+  private async findEntityForSubmissionType(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum): Promise<Submission> {
+    const existingSubmissions: Submission[] = await this.repository.find({
+      where: { projectId: projectId, submissionTypeCode: submissionTypeCode },
+      relations: this.getCommonRelations(),
+    });
+
+    if (existingSubmissions.length == 0) {
+      return null;
+    }
+    return existingSubmissions[0];
+  }
+
   /**
    * Return existing Submisson for the Submission type if found or create new one (saved new record).
    * @param projectId submission.project_id
@@ -116,13 +131,10 @@ export class SubmissionService {
    */
   async obtainExistingOrNewSubmission(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum, user: User): Promise<Submission>  {
     // Obtain existing submission for the submission type
-    const existingSubmissions: Submission[] = await this.repository.find({
-      where: { projectId: projectId, submissionTypeCode: submissionTypeCode },
-      relations: ['cutBlocks', 'retentionAreas', 'roadSections'],
-    });
+    const existingSubmission: Submission = await this.findEntityForSubmissionType(projectId, submissionTypeCode);
 
     let submission: Submission;
-    if (existingSubmissions.length == 0) {
+    if (!existingSubmission) {
       // Save the submission first in order to populate primary key.
       // Populate fields
       submission = new Submission({             
@@ -133,7 +145,7 @@ export class SubmissionService {
       submission = await this.repository.save(submission);
 
     } else {
-      submission = existingSubmissions[0];
+      submission = existingSubmission;
       submission.updateUser = user.userName;
       // Saving update timestamp in UTC format is fine.
       submission.updateTimestamp = dayjs().toDate();
@@ -495,4 +507,142 @@ export class SubmissionService {
       throw new BadRequestException(`Failed on converting geometry: ${geometry} using spatial reference EPSG ${srid}: ${error}`);
     }
   }
+
+  async isViewAuthorized(entity: Submission, user?: User): Promise<boolean> {
+    if (!user) {
+      return false;
+    }
+
+    if (!(user.isMinistry || await this.projectAuthService.isForestClientUserAccess(entity.projectId, user))) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async isDeleteAuthorized(entity: Submission, user?: User): Promise<boolean> {
+    if (!entity) {
+      return false;
+    }
+
+    // Operation only allowed for forest client users with project in specific states.
+    if (!await this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
+      [WorkflowStateEnum.INITIAL, WorkflowStateEnum.COMMENT_CLOSED], user)) {
+      throw new ForbiddenException();
+    }
+    return true;
+  }
+
+  async findSubmissionDetailForCurrentSubmissionType(projectId: number, user: User): Promise<SubmissionDetailResponse> {
+    this.logger.debug(`${this.constructor.name}.findSubmissionDetailForCurrentSubmissionType
+      with projectId: ${projectId}`);
+    
+    const project: ProjectResponse = await this.projectService.findOne(projectId, user);
+    if (!project) {
+      return null;
+    }
+
+    const currentSubmissionTypeCode = this.getPermittedSubmissionTypeCode(project.workflowState.code);
+
+    const submission = await this.findEntityForSubmissionType(projectId, currentSubmissionTypeCode);
+    if (!submission) {
+      return null;
+    }
+
+    if (! await this.isViewAuthorized(submission, user)) {
+      throw new ForbiddenException();
+    }
+
+    return this.convertToSubmissionDetailResponse(submission);
+  }
+
+  private convertToSubmissionDetailResponse(entity: Submission): SubmissionDetailResponse {
+    const details = new SubmissionDetailResponse();
+    details.projectId = entity.projectId;
+    details.submissionId = entity.id;
+    details.submissionTypeCode = entity.submissionTypeCode as SubmissionTypeCodeEnum;
+
+    if (!_.isEmpty(entity.cutBlocks)) {
+      details.cutblocks = {
+        count: entity.cutBlocks.length,
+        dateSubmitted: entity.cutBlocks[0].createTimestamp
+      }
+    }
+
+    if (!_.isEmpty(entity.roadSections)) {
+      details.roadSections = {
+        count: entity.roadSections.length,
+        dateSubmitted: entity.roadSections[0].createTimestamp
+      }
+    }
+
+    if (!_.isEmpty(entity.retentionAreas)) {
+      details.retentionAreas = {
+        count: entity.retentionAreas.length,
+        dateSubmitted: entity.retentionAreas[0].createTimestamp
+      }
+    }
+    return details;
+  }
+
+  async removeSubmissionBySpatialObjectType(submissionId: number, spatialObjectCode: SpatialObjectCodeEnum, user: User): Promise<void> {
+    this.logger.debug(`${this.constructor.name}.removeSubmissionBySpatialObjectType with 
+      submissionId: ${submissionId}, spatialObjectCode: ${spatialObjectCode}`);
+      
+    const submission = await this.findEntityWithCommonRelations(submissionId);
+    
+    if (! await this.isDeleteAuthorized(submission, user)) {
+      throw new ForbiddenException();
+    }
+
+    const project = submission.project;
+    const permittedSubmissionTypeCode = this.getPermittedSubmissionTypeCode(project.workflowStateCode);
+    if (submission.submissionTypeCode !== permittedSubmissionTypeCode) {
+      throw new BadRequestException(`Removal of ${submission.submissionTypeCode} submission ${submissionId} is not permitted 
+        for current project ${project.id} status. `);
+    }
+
+    switch (spatialObjectCode) {
+      case SpatialObjectCodeEnum.CUT_BLOCK:
+        submission.cutBlocks = null;
+        break;
+
+      case SpatialObjectCodeEnum.ROAD_SECTION:
+        submission.roadSections = null;
+        break;
+
+      case SpatialObjectCodeEnum.WTRA:
+        submission.retentionAreas = null;
+        break;
+      
+      default:
+        throw new BadRequestException(`Failed on deleting spatila submission: ${submissionId} 
+          with GeoSpatial Object Type: ${spatialObjectCode}`);
+    }
+
+    submission.updateUser = user.userName;
+    submission.updateTimestamp = dayjs().toDate();
+    submission.revisionCount += 1;
+	
+    if (_.isEmpty(submission.cutBlocks) && 
+        _.isEmpty(submission.roadSections) && 
+        _.isEmpty(submission.retentionAreas)) {
+      // No children, remove entire submission.
+      await this.repository.remove(submission);
+      await this.updateProjectLocation(submission.projectId, user); // This will set geometry_latlong to null.
+    }
+    else {
+      await this.saveAndUpdateSpatialSubmission(submission, spatialObjectCode, user);
+    }
+  }
+
+  private async saveAndUpdateSpatialSubmission(
+    updatedSubmission: Submission, 
+    spatialObjectCode: SpatialObjectCodeEnum, 
+    user: User) {
+    await this.repository.save(updatedSubmission);
+    await this.updateProjectLocation(updatedSubmission.projectId, user);
+    await this.updateGeospatialAreaOrLength(spatialObjectCode, updatedSubmission.id);
+  }
+
 }
