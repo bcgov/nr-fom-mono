@@ -1,37 +1,54 @@
+---
 version: '3.8'
+
+networks:
+  backend:
+volumes:
+  postgres-data:
+
 services:
-  # api:
-  #   container_name: api
-  #   build:
-  #     context: .
-  #     dockerfile: ./docker/api/Dockerfile.local
-  #   restart: always
-  #   working_dir: /usr/src/app
-  #   environment:
-  #     - DB_USERNAME=postgres
-  #     - DB_PASSWORD=test
-  #     - DB_NAME=fom
-  #     - DB_TYPE=postgres
-  #     - DB_HOST=localhost
-  #     - DB_SSL=false
-  #     - NODE_ENV=production
-  #   volumes:
-  #     - .:/usr/src/app
-  #     - /usr/app/node_modules
-  #   ports:
-  #     - '8081:3333'
-  #   tty: true
-  #   command: 'npm run start:api'
-  #   depends_on:
-  #     - db
-  #   networks:
-  #     - backend
-  #   links:
-  #     - 'db:database'
+  api:
+    container_name: api
+    depends_on:
+      - db
+    entrypoint:
+      - "sh"
+      - "-c"
+      - "npm i & sleep 6000000"
+      #  && npm i -g @nestjs/cli @types/node ts-loader typeorm ts-node typescript webpack && npm run start:api"
+    environment:
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=test
+      - DB_NAME=fom
+      - DB_TYPE=postgres
+      # - DB_HOST=localhost
+      - DB_SSL=false
+      # - NODE_ENV=production
+      - KEYCLOAK_ENABLED='false'
+      - BYPASS_CORS='true'
+      - DB_TESTDATA='true'
+      - OBJECT_STORAGE_URL='nrs.objectstore.gov.bc.ca'
+      - OBJECT_STORAGE_ACCESS_ID=nr-fom-dev
+      - OBJECT_STORAGE_SECRET=D+DteSQ4ATuHhrRKZY3nLdKHEFdx3HS0Z5Xyta2b
+    image: node:14
+    ports:
+      - '8081:3333'
+    # stdin_open: true
+    # tty: true
+    networks:
+      - backend
+    links:
+      - 'db:database'
+    volumes:
+      - .:/app:z
+      - /app/node_modules
+    working_dir: "/app"
+
   db:
     container_name: fom-db
+    # Postgis with extensions (postgis_topology, fuzzystrmatch, postgis_tiger_geocoder)
     image: postgis/postgis:13-master
-    restart: always
+    # Add pgcrypto extension (sed) if not present (grep), then start normally (entrypoint)
     entrypoint:
       - sh
       - -c
@@ -46,15 +63,8 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PORT=5342
     volumes:
-      - ms-postgres-data:/var/lib/postgres/data
+      - postgres-data:/var/lib/postgres/data
     ports:
       - '5432:5432'
-      - '443:443'
-      - '80:80'
     networks:
       - backend
-networks:
-  backend:
-volumes:
-  ms-postgres-data:
-
