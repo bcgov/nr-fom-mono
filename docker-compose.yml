@@ -14,29 +14,22 @@ services:
     entrypoint:
       - "sh"
       - "-c"
-      - "npm i & sleep 6000000"
-      #  && npm i -g @nestjs/cli @types/node ts-loader typeorm ts-node typescript webpack && npm run start:api"
+      - npm ci && npm run start:api
     environment:
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=test
+      - DB_HOST=db
       - DB_NAME=fom
-      - DB_TYPE=postgres
-      # - DB_HOST=localhost
+      - DB_PASSWORD=test
       - DB_SSL=false
-      # - NODE_ENV=production
+      - DB_TESTDATA='true'
+      - DB_TYPE=postgres
+      - DB_USERNAME=postgres
       - KEYCLOAK_ENABLED='false'
       - BYPASS_CORS='true'
-      - DB_TESTDATA='true'
-      - OBJECT_STORAGE_URL='nrs.objectstore.gov.bc.ca'
+      - OBJECT_STORAGE_URL=nrs.objectstore.gov.bc.ca
       - OBJECT_STORAGE_ACCESS_ID=nr-fom-dev
-      - OBJECT_STORAGE_SECRET=D+DteSQ4ATuHhrRKZY3nLdKHEFdx3HS0Z5Xyta2b
     image: node:14
     ports:
-      - '8081:3333'
-    # stdin_open: true
-    # tty: true
-    networks:
-      - backend
+      - '3333:3333'
     links:
       - 'db:database'
     volumes:
@@ -66,5 +59,3 @@ services:
       - postgres-data:/var/lib/postgres/data
     ports:
       - '5432:5432'
-    networks:
-      - backend
