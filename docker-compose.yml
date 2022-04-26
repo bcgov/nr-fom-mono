@@ -13,6 +13,12 @@ services:
       - sh
       - -c
       - npm ci && npm i rxjs@^7.5.4 && npm run start:admin
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4200/admin"]
+      interval: 10s
+      retries: 3
+      start_period: 60s
+      timeout: 5s
     image: node:14
     ports:
       - 4200:4200
@@ -24,7 +30,8 @@ services:
   api:
     container_name: api
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     entrypoint:
       - sh
       - -c
@@ -43,10 +50,10 @@ services:
       - OBJECT_STORAGE_ACCESS_ID=nr-fom-dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3333/api"]
-      interval: 1m30s
-      timeout: 10s
+      interval: 10s
       retries: 3
-      start_period: 40s
+      start_period: 60s
+      timeout: 5s
     image: node:14
     ports:
       - 3333:3333
@@ -75,6 +82,12 @@ services:
       - POSTGRES_DB=fom
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PORT=5342
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      timeout: 5s
     volumes:
       - postgres-data:/var/lib/postgres/data
     ports:
@@ -88,6 +101,12 @@ services:
       - sh
       - -c
       - npm ci && npm run start:public
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4300/public"]
+      interval: 10s
+      retries: 3
+      start_period: 60s
+      timeout: 5s
     image: node:14
     ports:
       - 4300:4300
