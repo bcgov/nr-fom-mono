@@ -1,41 +1,61 @@
 ---
 version: '3.8'
 
-networks:
-  backend:
 volumes:
   postgres-data:
 
 services:
+  admin:
+    container_name: admin
+    depends_on:
+      - api
+    entrypoint:
+      - sh
+      - -c
+      - npm ci && npm i rxjs@^7.5.4 && npm run start:admin
+    image: node:14
+    ports:
+      - 4200:4200
+    volumes:
+      - .:/app:z
+      - /app/node_modules
+    working_dir: /app
+
   api:
     container_name: api
     depends_on:
       - db
     entrypoint:
-      - "sh"
-      - "-c"
+      - sh
+      - -c
       - npm ci && npm run start:api
     environment:
       - DB_HOST=db
       - DB_NAME=fom
       - DB_PASSWORD=test
       - DB_SSL=false
-      - DB_TESTDATA='true'
+      - DB_TESTDATA=true
       - DB_TYPE=postgres
       - DB_USERNAME=postgres
-      - KEYCLOAK_ENABLED='false'
-      - BYPASS_CORS='true'
+      - KEYCLOAK_ENABLED=false
+      - BYPASS_CORS=true
       - OBJECT_STORAGE_URL=nrs.objectstore.gov.bc.ca
       - OBJECT_STORAGE_ACCESS_ID=nr-fom-dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/api"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     image: node:14
     ports:
-      - '3333:3333'
+      - 3333:3333
     links:
-      - 'db:database'
+      - db:database
     volumes:
       - .:/app:z
       - /app/node_modules
-    working_dir: "/app"
+    working_dir: /app
 
   db:
     container_name: fom-db
@@ -58,4 +78,20 @@ services:
     volumes:
       - postgres-data:/var/lib/postgres/data
     ports:
-      - '5432:5432'
+      - 5432:5432
+
+  public:
+    container_name: public
+    depends_on:
+      - api
+    entrypoint:
+      - sh
+      - -c
+      - npm ci && npm run start:public
+    image: node:14
+    ports:
+      - 4300:4300
+    volumes:
+      - .:/app:z
+      - /app/node_modules
+    working_dir: /app
