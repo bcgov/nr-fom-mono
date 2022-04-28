@@ -31,6 +31,7 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
   public geoTypeValues: string[] = [];
   public contentFile: string;
   public maxSpatialFileSize: number = MAX_FILEUPLOAD_SIZE.SPATIAL;
+  public isSubmitting = false;
   readonly SpatialObjectCodeEnum = SpatialObjectCodeEnum;
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
@@ -152,13 +153,14 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
   submit() {
     const {projectId, submissionTypeCode, ...rest} = this.originalSubmissionRequest;
     let submissionRequest = {...rest, ...this.fg.value}
+    this.isSubmitting = true;
     this.submissionSvc.submissionControllerProcessSpatialSubmission(submissionRequest as SubmissionRequest)
         .subscribe(() => this.onSuccess(this.originalSubmissionRequest.projectId));
   }
 
   onSuccess(id: number) {
     this.router.navigate([`a/${id}`])
-
+    this.isSubmitting = false;
   }
 
   changeGeoType(e) {

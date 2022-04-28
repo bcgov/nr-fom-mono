@@ -108,7 +108,9 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   }
 
   protected getCommonRelations(): string[] {
-    return ['project', 'cutBlocks', 'retentionAreas', 'roadSections'];
+    // 'cutBlocks', 'retentionAreas', 'roadSections' are not necessary.
+    // Only provide option<FindOneOptions> to find method if child relations are needed to prevent performance issue.
+    return ['project'];
   }
 
   private async findEntityForSubmissionType(projectId: number, submissionTypeCode: SubmissionTypeCodeEnum): Promise<Submission> {
@@ -553,35 +555,60 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       throw new ForbiddenException();
     }
 
-    return this.convertToSubmissionDetailResponse(submission);
+    const spatilaObjectsCount = await this.getSpatialObjectsDetail(submission.id);
+
+    return this.convertToSubmissionDetailResponse(submission, spatilaObjectsCount);
   }
 
-  private convertToSubmissionDetailResponse(entity: Submission): SubmissionDetailResponse {
+  private async getSpatialObjectsDetail(submissionId: number) {
+    const results = await getConnection()
+    .query(
+      `
+      Select 
+        (select count(*) from app_fom.cut_block where submission_id = $1) as cbcount,
+        (select create_timestamp from app_fom.cut_block where submission_id = $1 limit 1) as cbdatesubmitted,
+
+        (select count(*) from app_fom.road_section where submission_id = $1) as rscount,
+        (select create_timestamp from app_fom.road_section where submission_id = $1 limit 1) as rsdatesubmitted,
+
+        (select count(*) from app_fom.retention_area where submission_id = $1) as racount,
+        (select create_timestamp from app_fom.retention_area where submission_id = $1 limit 1) as radatesubmitted
+      `, [submissionId]
+    ); // TypeORM does not seem to return camelCase alias, so use lower case instead.
+
+    return results[0]; // If none is found => [{:0,:null,;0,:null,:0,:null}] from raw query result.
+  }
+
+  private convertToSubmissionDetailResponse(
+    entity: Submission, 
+    spatialObjectsDetail: any
+  ): SubmissionDetailResponse {
     const details = new SubmissionDetailResponse();
     details.projectId = entity.projectId;
     details.submissionId = entity.id;
     details.submissionTypeCode = entity.submissionTypeCode as SubmissionTypeCodeEnum;
 
-    if (!_.isEmpty(entity.cutBlocks)) {
+    if (spatialObjectsDetail.cbcount > 0) {
       details.cutblocks = {
-        count: entity.cutBlocks.length,
-        dateSubmitted: entity.cutBlocks[0].createTimestamp
+        count: spatialObjectsDetail.cbcount,
+        dateSubmitted: new Date(spatialObjectsDetail.cbdatesubmitted)
       }
     }
 
-    if (!_.isEmpty(entity.roadSections)) {
+    if (spatialObjectsDetail.rscount > 0) {
       details.roadSections = {
-        count: entity.roadSections.length,
-        dateSubmitted: entity.roadSections[0].createTimestamp
+        count: spatialObjectsDetail.rscount,
+        dateSubmitted: new Date(spatialObjectsDetail.rsdatesubmitted)
       }
     }
 
-    if (!_.isEmpty(entity.retentionAreas)) {
+    if (spatialObjectsDetail.racount > 0) {
       details.retentionAreas = {
-        count: entity.retentionAreas.length,
-        dateSubmitted: entity.retentionAreas[0].createTimestamp
+        count: spatialObjectsDetail.racount,
+        dateSubmitted: new Date(spatialObjectsDetail.radatesubmitted)
       }
     }
+
     return details;
   }
 
@@ -590,7 +617,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       submissionId: ${submissionId}, spatialObjectCode: ${spatialObjectCode}`);
       
     const submission = await this.findEntityWithCommonRelations(submissionId);
-    
+
     if (! await this.isDeleteAuthorized(submission, user)) {
       throw new ForbiddenException();
     }
@@ -602,32 +629,36 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
         for current project ${project.id} status. `);
     }
 
+    let entityTarget: string; 
     switch (spatialObjectCode) {
       case SpatialObjectCodeEnum.CUT_BLOCK:
-        submission.cutBlocks = null;
+        entityTarget = CutBlock.name;
         break;
-
       case SpatialObjectCodeEnum.ROAD_SECTION:
-        submission.roadSections = null;
+        entityTarget = RoadSection.name;
         break;
-
       case SpatialObjectCodeEnum.WTRA:
-        submission.retentionAreas = null;
-        break;
-      
+        entityTarget = RetentionArea.name;
       default:
-        throw new BadRequestException(`Failed on deleting spatila submission: ${submissionId} 
-          with GeoSpatial Object Type: ${spatialObjectCode}`);
+        throw new BadRequestException("Unrecognized spatial object code.");
     }
+
+    // Delete with query instead of using entity cascade deletion to prevent performance issue.
+    await getConnection().createQueryBuilder()
+      .delete()
+      .from(entityTarget)
+      .where("submission_id = :submissionId", { submissionId })
+      .execute();
 
     submission.updateUser = user.userName;
     submission.updateTimestamp = dayjs().toDate();
     submission.revisionCount += 1;
 	
-    if (_.isEmpty(submission.cutBlocks) && 
-        _.isEmpty(submission.roadSections) && 
-        _.isEmpty(submission.retentionAreas)) {
-      // No children, remove entire submission.
+    const spatilaObjectsCount = await this.getSpatialObjectsDetail(submissionId);
+    if (spatilaObjectsCount.cbcount == 0 &&
+        spatilaObjectsCount.rscount == 0 &&
+        spatilaObjectsCount.racount == 0
+    ) {
       await this.repository.remove(submission);
       await this.updateProjectLocation(submission.projectId, user); // This will set geometry_latlong to null.
     }
