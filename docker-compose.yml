@@ -13,12 +13,10 @@ services:
     entrypoint:
       - sh
       - -c
-      - echo npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 &&
-        npm i &&
-        npm i --no-save express@^4.17.1 helmet@^4.6.0 rxjs@^7.5.4 rxjs-compat &&
+      - npm i -g express@^4.17.1 helmet@^4.6.0 &&
         npm run build:admin &&
         cp docker/admin/admin.js dist &&
-        node dist/admin.js || sleep 6000
+        node dist/admin.js
     environment:
       - FOM_ENV=dev
     healthcheck:
@@ -32,7 +30,6 @@ services:
       - 4200:4200
     volumes:
       - .:/app:z
-      - .volumes/node-admin:/app/node_modules:z
     working_dir: /app
 
   api:
@@ -43,7 +40,8 @@ services:
     entrypoint:
       - sh
       - -c
-      - npm i && npm run start:api
+      - npm i &&
+        npm run start:api
     environment:
       - DB_HOST=db
       - DB_NAME=fom
@@ -69,7 +67,6 @@ services:
       - db:database
     volumes:
       - .:/app:z
-      - .volumes/node-api:/app/node_modules:z
     working_dir: /app
 
   db:
@@ -80,10 +77,10 @@ services:
     entrypoint:
       - sh
       - -c
-      - "grep -qxF 'CREATE EXTENSION IF NOT EXISTS pgcrypto'/docker-entrypoint-initdb.d/10_postgis.sh || \
-          sed -i '/postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;' \
-            /docker-entrypoint-initdb.d/10_postgis.sh && \
-          /usr/local/bin/docker-entrypoint.sh postgres"
+      - grep -qxF 'CREATE EXTENSION IF NOT EXISTS pgcrypto'/docker-entrypoint-initdb.d/10_postgis.sh ||
+          sed -i '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;'
+            /docker-entrypoint-initdb.d/10_postgis.sh &&
+          /usr/local/bin/docker-entrypoint.sh postgres
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
@@ -109,8 +106,7 @@ services:
     entrypoint:
       - sh
       - -c
-      - npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 &&
-        npm i --no-save express@^4.17.1 helmet@^4.6.0 rxjs@^6.5.3 &&
+      - npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 &&
         npm run build:public &&
         cp docker/public/public.js dist &&
         node dist/public.js
@@ -127,5 +123,4 @@ services:
       - 4300:4300
     volumes:
       - .:/app:z
-      - .volumes/node-public:/app/node_modules:z
     working_dir: /app
