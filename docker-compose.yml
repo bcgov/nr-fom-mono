@@ -33,7 +33,6 @@ services:
     volumes:
       - .:/app:z
       - .volumes/node-admin:/app/node_modules:z
-      - .volumes/dist-admin:/app/dist:z
     working_dir: /app
 
   api:
@@ -71,7 +70,6 @@ services:
     volumes:
       - .:/app:z
       - .volumes/node-api:/app/node_modules:z
-      - .volumes/dist-api:/app/dist:z
     working_dir: /app
 
   db:
@@ -130,5 +128,4 @@ services:
     volumes:
       - .:/app:z
       - .volumes/node-public:/app/node_modules:z
-      - .volumes/dist-public:/app/dist:z
     working_dir: /app
