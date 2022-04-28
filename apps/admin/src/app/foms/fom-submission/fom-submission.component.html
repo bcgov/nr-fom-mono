@@ -10,8 +10,10 @@
           type="button"
           title="Cancel changes"
           (click)="cancelChanges()"
+          [disabled]="isSubmitting"
         >
           Cancel
+          <em class="spinner rotating" [hidden]="!isLoading"></em>
         </button>
         <button
           class="btn btn-primary ml-1"
@@ -19,8 +21,8 @@
           title="Upload your GeoJSON FOM File"
           (click)="submit()"
           [disabled]="!isSubmissionAllowed()"
-        >{{ isLoading ? "Submitting" : "Submit" }}
-          <em class="spinner rotating" [hidden]="!isLoading"></em>
+        >{{ isSubmitting ? "Submitting" : "Submit" }}
+          <em class="spinner rotating" [hidden]="!isSubmitting"></em>
         </button>
       </div>
     </div>
