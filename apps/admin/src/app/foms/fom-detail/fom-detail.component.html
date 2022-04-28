@@ -289,14 +289,14 @@
           </div>
         </div>
         <div *ngIf="canViewSubmission()" class="aside-card">
-          <h3 class="title">FOM Spatial Upload</h3>
+          <h3 class="title">FOM Spatial Submission</h3>
           <div class="body">
             <span  *ngIf="spatialDetail.length === 0" class="invalid-type-msg"> Proposed FOM Spatial Upload Required </span>
            <div class="btn-container">
               <button class="cta-btn btn btn-sm btn-outline-primary" type="button" title="Edit fom documents"
                       [disabled]="isDeleting"
                       [routerLink]="['/a', project.id, 'upload']">
-                Upload FOM Spatial File
+                Edit FOM Spatial File
               </button>
             </div>
           </div>
