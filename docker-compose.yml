@@ -8,11 +8,19 @@ services:
   admin:
     container_name: admin
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     entrypoint:
       - sh
       - -c
-      - npm ci && npm i rxjs@^7.5.4 && npm run start:admin
+      - echo npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 &&
+        npm i &&
+        npm i --no-save express@^4.17.1 helmet@^4.6.0 rxjs@^7.5.4 rxjs-compat &&
+        npm run build:admin &&
+        cp docker/admin/admin.js dist &&
+        node dist/admin.js || sleep 6000
+    environment:
+      - FOM_ENV=dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4200/admin"]
       interval: 10s
@@ -24,7 +32,8 @@ services:
       - 4200:4200
     volumes:
       - .:/app:z
-      - /app/node_modules
+      - .volumes/node-admin:/app/node_modules:z
+      - .volumes/dist-admin:/app/dist:z
     working_dir: /app
 
   api:
@@ -35,7 +44,7 @@ services:
     entrypoint:
       - sh
       - -c
-      - npm ci && npm run start:api
+      - npm i && npm run start:api
     environment:
       - DB_HOST=db
       - DB_NAME=fom
@@ -61,7 +70,8 @@ services:
       - db:database
     volumes:
       - .:/app:z
-      - /app/node_modules
+      - .volumes/node-api:/app/node_modules:z
+      - .volumes/dist-api:/app/dist:z
     working_dir: /app
 
   db:
@@ -96,11 +106,18 @@ services:
   public:
     container_name: public
     depends_on:
-      - api
+      api:
+        condition: service_healthy
     entrypoint:
       - sh
       - -c
-      - npm ci && npm run start:public
+      - npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 &&
+        npm i --no-save express@^4.17.1 helmet@^4.6.0 rxjs@^6.5.3 &&
+        npm run build:public &&
+        cp docker/public/public.js dist &&
+        node dist/public.js
+    environment:
+      - FOM_ENV=dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4300/public"]
       interval: 10s
@@ -112,5 +129,6 @@ services:
       - 4300:4300
     volumes:
       - .:/app:z
-      - /app/node_modules
+      - .volumes/node-public:/app/node_modules:z
+      - .volumes/dist-public:/app/dist:z
     working_dir: /app
