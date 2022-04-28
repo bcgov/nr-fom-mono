@@ -94,3 +94,6 @@ buck-out/
 ## Nested node_modules
 
 node_modules/
+
+## Docker/Podman volumes
+.volumes/
