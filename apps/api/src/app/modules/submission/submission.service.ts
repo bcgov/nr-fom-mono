@@ -639,6 +639,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
         break;
       case SpatialObjectCodeEnum.WTRA:
         entityTarget = RetentionArea.name;
+        break;
       default:
         throw new BadRequestException("Unrecognized spatial object code.");
     }
