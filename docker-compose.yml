@@ -14,9 +14,7 @@ services:
       - sh
       - -c
       - npm i -g express@^4.17.1 helmet@^4.6.0 &&
-        npm run build:admin &&
-        cp docker/admin/admin.js dist &&
-        node dist/admin.js
+        npm run start:admin
     environment:
       - FOM_ENV=dev
     healthcheck:
@@ -107,9 +105,7 @@ services:
       - sh
       - -c
       - npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 &&
-        npm run build:public &&
-        cp docker/public/public.js dist &&
-        node dist/public.js
+        npm run start:public
     environment:
       - FOM_ENV=dev
     healthcheck:
