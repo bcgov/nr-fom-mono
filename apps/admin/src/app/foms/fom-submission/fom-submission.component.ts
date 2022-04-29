@@ -155,7 +155,10 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
     let submissionRequest = {...rest, ...this.fg.value}
     this.isSubmitting = true;
     this.submissionSvc.submissionControllerProcessSpatialSubmission(submissionRequest as SubmissionRequest)
-        .subscribe(() => this.onSuccess(this.originalSubmissionRequest.projectId));
+        .subscribe({
+          next: () => this.onSuccess(this.originalSubmissionRequest.projectId),
+          error: () => this.isSubmitting = false
+        });
   }
 
   onSuccess(id: number) {

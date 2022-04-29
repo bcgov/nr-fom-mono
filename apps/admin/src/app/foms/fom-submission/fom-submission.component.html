@@ -108,7 +108,7 @@
                   SpatialObjectCodeEnum.CutBlock
                   )">
                 <em class="spinner rotating" [hidden]="!isLoading"></em>
-                <em class="material-icons" [hidden]="isLoading">
+                <em class="material-icons" [hidden]="isLoading || isSubmitting">
                   delete
                 </em>
               </button>
@@ -127,7 +127,7 @@
                   SpatialObjectCodeEnum.RoadSection
                   )">
                   <em class="spinner rotating" [hidden]="!isLoading"></em>
-                  <em class="material-icons" [hidden]="isLoading">
+                  <em class="material-icons" [hidden]="isLoading || isSubmitting">
                     delete
                   </em>
               </button>
@@ -146,7 +146,7 @@
                   SpatialObjectCodeEnum.Wtra
                   )">
                   <em class="spinner rotating" [hidden]="!isLoading"></em>
-                  <em class="material-icons" [hidden]="isLoading">
+                  <em class="material-icons" [hidden]="isLoading || isSubmitting">
                     delete
                   </em>
               </button>
