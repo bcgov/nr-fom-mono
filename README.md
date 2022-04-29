@@ -34,25 +34,52 @@ See ministry Confluence site: https://apps.nrs.gov.bc.ca/int/confluence/pages/vi
 
 ## Local Development
 
-### Run API Backend (directly from code base)
+Once set up, the stack can be access using the following paths on localhost:
 
-- Install node and docker desktop (with WSL2 on Windows 10)
-- npm install -g ts-node
-- npm install -g typeorm
-- git clone https://github.com/bcgov/nr-fom-api.git
-- npm install
-- docker-compose up -d db
-- ./localdev.ps1
-- Set environment variables OBJECT_STORAGE_ACCESS_ID and OBJECT_STORAGE_SECRET based on fom-object-storage-dev Secret in OpenShift dev.
-- npm run typeorm:migrate
-- npm run start:api
-- Navigate to http://localhost:3333/api
+- Postgres: localhost:5432
+- API: localhost:3333/api
+- Admin frontend: localhost:4200/admin
+- Public frontend: localhost:4300/public
 
-### Run API Backend as open-shift style container
 
-- docker build -f docker/api/Dockerfile.local -t api .
-- docker run -d --name api -p 3333:3333 -u 1001 --read-only -e DB_PASSWORD=test -e DB_NAME=fom -e DB_USERNAME=postgres -e DB_HOST=localhost -e DB_TYPE=postgres -e DB_PORT=5432 api
-- WARNING: Currently doesn't work - fails with Error: connect ECONNREFUSED 127.0.0.1:5432
+### Docker Compose
+
+- Install docker and docker-compose
+- Run `docker-compose up`
+
+Individual components can be started separately or daemonized.
+E.g. database in the background (daemonized), the api in the foreground:
+
+```
+docker-compose up -d db
+docker-compose up api
+```
+
+### Local / Bare Metal
+
+Fire up components using Docker Compose, but not the ones you want to work on locally.  Start commands are available in package.json.
+
+OBJECT_STORAGE_SECRET = object storage secret, available in the OpenShift dev secret `fom-object-storage-dev`
+
+Here's how to run only the public frontend locally:
+
+```
+# Database, api and admin in the background
+docker-compose up -d db api admin
+
+# Source local variables
+source ./localdev.env      # Linux, MacOS
+./localdev.env             # Windows
+
+# Object storage secret
+export OBJECT_STORAGE_SECRET=<hidden>
+
+# Install node modules
+npm i
+
+# Build and run the public frontend
+npm run start:public
+```
 
 ### Connect to local database:
 
