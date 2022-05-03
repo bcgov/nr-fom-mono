@@ -33,7 +33,7 @@ module.exports = class updateDistricts1651596845339 {
         `);
     }
 
-    async down(queryRunner) {
+    async down(_queryRunner) {
         // No reversion of this change - email addresses will remain changed, no adverse impact.
     }
 }
