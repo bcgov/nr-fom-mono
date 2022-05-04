@@ -1,0 +1,39 @@
+# RedHat UBI 8 with nodejs 14
+FROM registry.access.redhat.com/ubi8/ubi as builder
+RUN dnf module install -y nodejs:14
+
+# Install packages, build and keep only prod packages
+WORKDIR /app
+COPY . ./
+RUN npm ci && \
+    npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 && \
+    npm run build:public
+
+# Deployment container
+FROM registry.access.redhat.com/ubi8/ubi-micro
+
+# Vars - configured for local development
+ENV FOM_ENV=dev
+
+# Node packages and dependencies
+COPY --from=builder /usr/bin/node /usr/bin/
+COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
+COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/
+COPY --from=builder /usr/lib64/libbrotlienc.so.1 /usr/lib64/
+COPY --from=builder /usr/lib64/libcrypto.so.1.1 /usr/lib64/
+COPY --from=builder /usr/lib64/libssl.so.1.1 /usr/lib64/
+COPY --from=builder /usr/lib64/libstdc++.so.6 /usr/lib64/
+COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
+COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
+
+# Copy over app
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/apps ./apps
+
+# Expose port - mostly a convention, for readability
+EXPOSE 4300
+
+# Start up command
+ENTRYPOINT ["node", "./dist/public.js"]
