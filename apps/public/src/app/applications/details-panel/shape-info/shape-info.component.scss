@@ -79,6 +79,10 @@ mat-table {
   background-color:#ffffff;
 }
 
+.highlight{
+  background: linear-gradient(to right, rgba(63, 205, 63, 0), rgb(63, 205, 63, 1))!important;
+}
+
 // switching to list
 @media screen and (max-width: 600px) {
   #si-featureTable {

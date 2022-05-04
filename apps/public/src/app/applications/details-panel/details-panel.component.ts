@@ -1,15 +1,18 @@
-import { Component, OnDestroy, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
+  SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
+} from '@api-client';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { FeatureSelectService } from '@public-core/services/featureSelect.service';
+import { UrlService } from '@public-core/services/url.service';
+import { ConfigService } from '@utility/services/config.service';
+import * as _ from 'lodash';
 import { forkJoin, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
-
 import { CommentModalComponent } from '../../comment-modal/comment-modal.component';
-import { UrlService } from '@public-core/services/url.service';
 import { Filter } from '../utils/filter';
-import { AttachmentResponse, AttachmentService, ProjectResponse, ProjectService, 
-        SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode } from '@api-client';
-import * as _ from 'lodash';
-import { ConfigService } from '@utility/services/config.service';
+
 import moment = require('moment');
 
 /**
@@ -26,6 +29,9 @@ import moment = require('moment');
 })
 export class DetailsPanelComponent implements OnDestroy, OnInit {
   @Output() update = new EventEmitter();
+  @ViewChild('panelScrollContainer')
+  public panelScrollContainer: ElementRef;
+
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   public addCommentModal: NgbModalRef = null;
   public isAppLoading: boolean;
@@ -43,7 +49,8 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     public urlService: UrlService,
     private projectService: ProjectService,
     private spatialFeatureService: SpatialFeatureService,
-    private attachmentService: AttachmentService
+    private attachmentService: AttachmentService,
+    private fss: FeatureSelectService
   ) {}
 
   ngOnInit(): void {
@@ -65,6 +72,8 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
         this.getProjectDetails();
       }
     });
+
+    this.subscribeToFeatureSelectChange();
   }
 
   /**
@@ -80,19 +89,21 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
       attachments: this.attachmentService.attachmentControllerFind(projectId)
     })
     .pipe(takeUntil(this.ngUnsubscribe))
-    .subscribe((results) => {
-      this.project = results.project;
-      this.projectSpatialDetail = results.spatialDetail;
-      this.attachments = _.orderBy(results.attachments, ['attachmentType.code'],['asc']);
-      this.isAppLoading = false;
-      this.projectIdFilter.filter.value = this.project.id.toString();
-      this.saveQueryParameters();
-      this.update.emit(this.project);
-      this.validityPeriodEndDate = moment(this.project.commentingOpenDate).add(3, 'year').toDate();
-    },
-    (err) => {
-      console.error(err);
-      this.isAppLoading = false;
+    .subscribe({
+      next: (results) => {
+        this.project = results.project;
+        this.projectSpatialDetail = results.spatialDetail;
+        this.attachments = _.orderBy(results.attachments, ['attachmentType.code'],['asc']);
+        this.isAppLoading = false;
+        this.projectIdFilter.filter.value = this.project.id.toString();
+        this.saveQueryParameters();
+        this.update.emit(this.project);
+        this.validityPeriodEndDate = moment(this.project.commentingOpenDate).add(3, 'year').toDate();
+      },
+      error: (err) => {
+        console.error(err);
+        this.isAppLoading = false;
+      }
     });
   }
 
@@ -149,6 +160,19 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     this.projectIdFilter.reset();
   }
 
+  private subscribeToFeatureSelectChange(): void {
+    // Scroll to top map detail section when feature is selected from the list.
+    this.fss.$currentSelected
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(featureIndex => {
+        if (featureIndex) {
+          setTimeout(() => {
+            this.panelScrollContainer.nativeElement.scrollTop = 100;
+          }, 500);
+        }
+      });
+  }
+
   /**
    * On component destroy.
    * @memberof DetailsPanelComponent
@@ -157,7 +181,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     if (this.addCommentModal) {
       (this.addCommentModal.componentInstance as CommentModalComponent).dismiss('destroying');
     }
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }
