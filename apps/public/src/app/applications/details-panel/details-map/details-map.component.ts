@@ -1,23 +1,23 @@
-import { Component, OnDestroy, Input, ElementRef, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import * as L from 'leaflet';
-import { GeoJsonObject } from 'geojson';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
-import { MapLayers } from '../../app-map/map-layers';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { GeoJsonObject } from 'geojson';
+import * as L from 'leaflet';
+import "leaflet/dist/images/marker-icon-2x.png";
 /*
-  Leaflet has bug and would show these error on console: 
+  Leaflet has bug and would show these error on console:
   http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)
   http://localhost:4300/public/marker-shadow.png 404 (Not Found)
 
-  Add these import(s) to fix them. 
+  Add these import(s) to fix them.
   (ref: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env: answered by user9547708)
-  import "leaflet/dist/images/marker-shadow.png"; 
+  import "leaflet/dist/images/marker-shadow.png";
   import "leaflet/dist/images/marker-icon-2x.png";
 */
-import "leaflet/dist/images/marker-shadow.png"; 
-import "leaflet/dist/images/marker-icon-2x.png";
-import { takeUntil } from 'rxjs/operators';
+import "leaflet/dist/images/marker-shadow.png";
 import { Subject } from 'rxjs';
-import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { takeUntil } from 'rxjs/operators';
+import { MapLayers } from '../../app-map/map-layers';
 
 @Component({
   selector: 'app-details-map',
@@ -173,19 +173,12 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     if (spatialDetail.name) { 
       label += " " + spatialDetail.name;
     }
-    let markerCoords = spatialDetail.centroid['coordinates'];
-    if (spatialDetail.featureType.code == 'road_section') {
-      // Use middle of road, so that the label is next to the road 
-      // (because the centroid of a curving road can lie far away from the actual road segment)
-      const middle = Math.round(spatialDetail.geometry['coordinates'].length / 2);
-      markerCoords = spatialDetail.geometry['coordinates'][middle-1];
-    }
 
     // Remove last label first, so it does not stay when next one is added.
     this.projectFeatures.removeLayer(this.lastLabelMarker);
 
     // Opacity 0 hides marker so just label is visible.
-    this.lastLabelMarker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); 
+    this.lastLabelMarker = L.marker(args[1].latlng, { opacity: 0 }); 
     // Offset in pixels necessary to align with actual center location (unsure why leaflet has it not aligned by default)
     // See https://gis.stackexchange.com/questions/394960/marker-position-in-leaflet/395270#395270
     this.lastLabelMarker.bindTooltip(label, { permanent: true , offset: [-15, 25]}); 
@@ -229,7 +222,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.resetMap();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }
