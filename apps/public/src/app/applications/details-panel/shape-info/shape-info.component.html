@@ -54,7 +54,9 @@
   <!-- Feature details as list (small devices) -->
   <div id="sifeatureList">
     <ul class="shapefile-list">
-      <li class="shapefile-list__item" *ngFor="let feature of projectSpatialDetail">
+      <li class="shapefile-list__item" 
+        *ngFor="let feature of projectSpatialDetail"
+        (click)="onRowSelected(feature)">
         <label class="shapefile-list__id">Shape ID: {{feature.featureId}}</label>
         <ul class="meta-container">
           <li>

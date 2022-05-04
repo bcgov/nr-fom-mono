@@ -25,7 +25,7 @@ export class ShapeInfoComponent implements OnInit {
     // Deliberately empty
   }
 
-  onRowSelected(rowData) {
+  onRowSelected(rowData: SpatialFeaturePublicResponse) {
     this.selectedRowIndex = rowData.featureId + '-' + rowData.featureType.code; // Unique when featureType is included.
     this.fss.changeSelectedFeature(this.selectedRowIndex);
   }
