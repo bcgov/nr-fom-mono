@@ -237,7 +237,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
 
   public canEditFOM(): boolean {
     const userCanEdit = this.user.isAuthorizedForClientId(this.project.forestClient.id);
-    return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Finalized
+    return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Published
+      && this.project.workflowState.code !== WorkflowStateEnum.Finalized
       && this.project.workflowState.code !== WorkflowStateEnum.Expired);
   }
 

@@ -1,55 +1,122 @@
+---
 version: '3.8'
+
+volumes:
+  postgres-data:
+
 services:
+  admin:
+    container_name: admin
+    depends_on:
+      api:
+        condition: service_healthy
+    entrypoint:
+      - sh
+      - -c
+      - npm i -g express@^4.17.1 helmet@^4.6.0 &&
+        npm run start:admin
+    environment:
+      - FOM_ENV=dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4200/admin"]
+      interval: 10s
+      retries: 3
+      start_period: 60s
+      timeout: 5s
+    image: node:14
+    ports:
+      - 4200:4200
+    volumes:
+      - .:/app:z
+    working_dir: /app
+
   api:
     container_name: api
-    build:
-      context: .
-      dockerfile: ./docker/api/Dockerfile.local
-    restart: always
-    working_dir: /usr/src/app
-    environment:
-      - DB_USERNAME=postgres
-      - DB_PASSWORD=test
-      - DB_NAME=fom
-      - DB_TYPE=postgres
-      - DB_HOST=localhost
-      - DB_SSL=false
-      - NODE_ENV=production
-    volumes:
-      - .:/usr/src/app
-      - /usr/app/node_modules
-    ports:
-      - '8081:3333'
-    tty: true
-    command: 'npm run start:api'
     depends_on:
-      - db
-    networks:
-      - backend
+      db:
+        condition: service_healthy
+    entrypoint:
+      - sh
+      - -c
+      - npm i &&
+        npm run start:api
+    environment:
+      - DB_HOST=db
+      - DB_NAME=fom
+      - DB_PASSWORD=test
+      - DB_SSL=false
+      - DB_TESTDATA=true
+      - DB_TYPE=postgres
+      - DB_USERNAME=postgres
+      - KEYCLOAK_ENABLED=false
+      - BYPASS_CORS=true
+      - OBJECT_STORAGE_URL=nrs.objectstore.gov.bc.ca
+      - OBJECT_STORAGE_ACCESS_ID=nr-fom-dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3333/api"]
+      interval: 10s
+      retries: 3
+      start_period: 60s
+      timeout: 5s
+    image: node:14
+    ports:
+      - 3333:3333
     links:
-      - 'db:database'
+      - db:database
+    volumes:
+      - .:/app:z
+    working_dir: /app
+
   db:
     container_name: fom-db
-    build:
-      context: ./docker/db
-      dockerfile: ./Dockerfile.local
-    restart: always
+    # Postgis with extensions (postgis_topology, fuzzystrmatch, postgis_tiger_geocoder)
+    image: postgis/postgis:13-master
+    # Add pgcrypto extension (sed) if not present (grep), then start normally (entrypoint)
+    entrypoint:
+      - sh
+      - -c
+      - grep -qxF 'CREATE EXTENSION IF NOT EXISTS pgcrypto'/docker-entrypoint-initdb.d/10_postgis.sh ||
+          sed -i '/EXISTS postgis_tiger_geocoder;*/a CREATE EXTENSION IF NOT EXISTS pgcrypto;'
+            /docker-entrypoint-initdb.d/10_postgis.sh &&
+          /usr/local/bin/docker-entrypoint.sh postgres
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=fom
       - POSTGRES_HOST_AUTH_METHOD=trust
       - POSTGRES_PORT=5342
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      timeout: 5s
     volumes:
-      - ms-postgres-data:/var/lib/postgres/data
+      - postgres-data:/var/lib/postgres/data
     ports:
-      - '5432:5432'
-      - '443:443'
-      - '80:80'
-    networks:
-      - backend
-networks:
-  backend:
-volumes:
-  ms-postgres-data:
+      - 5432:5432
 
+  public:
+    container_name: public
+    depends_on:
+      api:
+        condition: service_healthy
+    entrypoint:
+      - sh
+      - -c
+      - npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 &&
+        npm run start:public
+    environment:
+      - FOM_ENV=dev
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4300/public"]
+      interval: 10s
+      retries: 3
+      start_period: 60s
+      timeout: 5s
+    image: node:14
+    ports:
+      - 4300:4300
+    volumes:
+      - .:/app:z
+    working_dir: /app
