@@ -6,12 +6,12 @@ export class MapLayers {
 
   public static MAX_ZOOM_LEVEL = 18; // Maximum zoom level supported
 
-  private baseLayers = {};
-  private overlayLayers = {};
+  private baseLayers: { [key: string]: TileLayer } = {};
+  private overlayLayers: { [key: string]: TileLayer } = {};
 
   private defaultOverlays:TileLayer[] = [];
 
-  private activeBaseLayerName;
+  private activeBaseLayerName: string;
 
   constructor() {
     const worldImageryLayerName = 'Satellite';
