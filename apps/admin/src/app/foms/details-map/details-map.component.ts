@@ -1,6 +1,7 @@
-import { Component, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
 import { MapLayers } from '@utility/models/map-layers';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
 /*
@@ -15,20 +16,25 @@ import * as L from 'leaflet';
 */
 import "leaflet/dist/images/marker-icon-2x.png";
 import "leaflet/dist/images/marker-shadow.png";
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-details-map',
   templateUrl: './details-map.component.html',
   styleUrls: ['./details-map.component.scss']
 })
-export class DetailsMapComponent implements OnChanges, OnDestroy {
+export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() 
   projectSpatialDetail: SpatialFeaturePublicResponse[];
-
+  
   public map: L.Map;
   public projectFeatures: L.FeatureGroup; // group of layers for the features of a FOM project.
   private lastLabelMarker: L.Marker; // global variable to keep track latest layer added (as labeling popup for onClick)
+  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  
+  // Key for the map is: (spatialDetail.featureId + '-' + spatialDetail.featureType.code) so it is unique.
+  private indexedFeatureLayers = new Map();
 
   // custom reset view control
   public resetViewControl = L.Control.extend({
@@ -51,7 +57,14 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     }
   });
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(
+    private elementRef: ElementRef,
+    private fss: FeatureSelectService
+  ) {}
+
+  ngOnInit(): void {
+    this.subscribeToFeatureSelectChange();
+  }
 
   public ngOnChanges(changes: SimpleChanges) {
     // Note, when Angular first onChange is triggered, the value is undefined.
@@ -136,6 +149,11 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
             style.fillColor = '#7CFF87';
           }
           layer.setStyle(style);
+
+          this.indexedFeatureLayers.set((spatialDetail.featureId + '-' +spatialDetail.featureType.code), {
+            layer: layer,
+            detail: spatialDetail
+          });
         });
       });
       this.map.addLayer(this.projectFeatures);
@@ -191,7 +209,25 @@ export class DetailsMapComponent implements OnChanges, OnDestroy {
     }
   }
 
+  private subscribeToFeatureSelectChange(): void {
+    this.fss.$currentSelected
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(featureIndex => {
+        const feature = this.indexedFeatureLayers.get(featureIndex);
+        if (featureIndex && feature) {
+          setTimeout(() => {
+            const layer = feature.layer;
+            const bound = layer.getBounds()
+            this.map.fitBounds(bound, { padding: [20, 20] });
+            layer.bringToFront();
+          }, 700);
+        }
+      });
+  }
+  
   ngOnDestroy() {
     this.resetMap();
+    this.ngUnsubscribe.next(null);
+    this.ngUnsubscribe.complete();
   }
 }
