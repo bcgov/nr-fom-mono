@@ -1,7 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
-import { FeatureSelectService } from '@public-core/services/featureSelect.service';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
 import "leaflet/dist/images/marker-icon-2x.png";
@@ -240,8 +240,10 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
         const feature = this.indexedFeatureLayers.get(featureIndex);
         if (featureIndex && feature) {
           setTimeout(() => {
-            const bound = feature.layer.getBounds()
+            const layer = feature.layer;
+            const bound = layer.getBounds()
             this.map.fitBounds(bound, { padding: [20, 20] });
+            layer.bringToFront();
           }, 700);
         }
       });

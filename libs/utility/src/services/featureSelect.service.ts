@@ -7,7 +7,7 @@ import { BehaviorSubject } from "rxjs";
 })
 export class FeatureSelectService {
 
-  private _featureSelected = new BehaviorSubject(null);
+  private _featureSelected = new BehaviorSubject<string | null>(null);
   $currentSelected = this._featureSelected.asObservable();
 
   

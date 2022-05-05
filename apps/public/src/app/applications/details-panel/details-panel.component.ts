@@ -4,9 +4,9 @@ import {
   SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
 } from '@api-client';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { FeatureSelectService } from '@public-core/services/featureSelect.service';
 import { UrlService } from '@public-core/services/url.service';
 import { ConfigService } from '@utility/services/config.service';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import * as _ from 'lodash';
 import { forkJoin, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';

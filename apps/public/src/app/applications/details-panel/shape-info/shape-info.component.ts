@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 import { SpatialFeaturePublicResponse } from '@api-client';
-import { FeatureSelectService } from '@public-core/services/featureSelect.service';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
 
 @Component({
   selector: 'app-shape-info',

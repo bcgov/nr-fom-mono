@@ -1,6 +1,6 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "../../libs/utility/src/services/featureSelect.service.ts"],
   "compilerOptions": {
     "types": ["jest", "node"]
   }
