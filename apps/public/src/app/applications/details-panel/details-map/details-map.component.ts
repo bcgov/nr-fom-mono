@@ -2,9 +2,9 @@ import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChang
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
+import { MapLayers } from '@utility/models/map-layers';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
-import "leaflet/dist/images/marker-icon-2x.png";
 /*
   Leaflet has bug and would show these error on console:
   http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)
@@ -15,10 +15,10 @@ import "leaflet/dist/images/marker-icon-2x.png";
   import "leaflet/dist/images/marker-shadow.png";
   import "leaflet/dist/images/marker-icon-2x.png";
 */
+import "leaflet/dist/images/marker-icon-2x.png";
 import "leaflet/dist/images/marker-shadow.png";
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { MapLayers } from '../../app-map/map-layers';
 
 @Component({
   selector: 'app-details-map',

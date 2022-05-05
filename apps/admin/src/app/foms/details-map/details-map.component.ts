@@ -1,11 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
+import { MapLayers } from '@utility/models/map-layers';
 import { GeoJsonObject } from 'geojson';
-/*
- There seems to be issue for leaflet initialization if 'MapLayers' import first.
- For now, do not reorganize them, 'leaflet' has to be imported first before 'MapLayers' to resolve issue.
- This needs to be investigated further later on the true cause.
-*/
 import * as L from 'leaflet';
 /*
   Leaflet has bug and would show these error on console:
@@ -17,9 +13,8 @@ import * as L from 'leaflet';
   import "leaflet/dist/images/marker-shadow.png";
   import "leaflet/dist/images/marker-icon-2x.png";
 */
-import "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/images/marker-icon-2x.png";
-import { MapLayers } from 'apps/public/src/app/applications/app-map/map-layers';
+import "leaflet/dist/images/marker-shadow.png";
 
 @Component({
   selector: 'app-details-map',
