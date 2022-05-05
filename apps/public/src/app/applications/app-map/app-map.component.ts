@@ -1,29 +1,17 @@
 import {
-  Component,
-  AfterViewInit,
-  OnChanges,
-  OnDestroy,
-  Input,
-  Output,
-  EventEmitter,
-  ApplicationRef,
-  ElementRef,
-  SimpleChanges,
-  Injector,
-  ComponentFactoryResolver,
-  OnInit
+  AfterViewInit, ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EventEmitter, Injector, Input, OnChanges,
+  OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
-import { Subject } from 'rxjs';
-import 'leaflet';
+import { ProjectPublicSummaryResponse } from '@api-client';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { MapLayers } from '@utility/models/map-layers';
+import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import * as _ from 'lodash';
-
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { UrlService } from '../../../core/services/url.service';
 import { MarkerPopupComponent } from './marker-popup/marker-popup.component';
-import { ProjectPublicSummaryResponse } from '@api-client';
-import { MapLayers } from './map-layers';
-import { takeUntil } from 'rxjs/operators';
-import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 
 
 declare module 'leaflet' {
@@ -32,8 +20,6 @@ declare module 'leaflet' {
     dispositionId: number;
   }
 }
-
-const L = window['L'];
 
 const markerIcon = L.icon({
   iconUrl: 'assets/images/baseline-location-24px.svg',
@@ -264,7 +250,7 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     if (this.map) {
       this.map.remove();
     }
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
+import { MapLayers } from '@utility/models/map-layers';
 import { BehaviorSubject } from "rxjs";
-import { MapLayers } from "../../app/applications/app-map/map-layers";
 
 export const OverlayAction = {
   Add: 'ADD',
