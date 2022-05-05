@@ -5,7 +5,6 @@ import {
 import { ProjectPublicSummaryResponse } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 import { MapLayers } from '@utility/models/map-layers';
-import 'leaflet';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import * as _ from 'lodash';
