@@ -34,7 +34,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   
   // Key for the map is: (spatialDetail.featureId + '-' + spatialDetail.featureType.code) so it is unique.
-  private indexedFeatureLayers = new Map();
+  private featureToLayerMap = new Map();
 
   // custom reset view control
   public resetViewControl = L.Control.extend({
@@ -150,7 +150,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
           }
           layer.setStyle(style);
 
-          this.indexedFeatureLayers.set((spatialDetail.featureId + '-' +spatialDetail.featureType.code), {
+          this.featureToLayerMap.set((spatialDetail.featureId + '-' +spatialDetail.featureType.code), {
             layer: layer,
             detail: spatialDetail
           });
@@ -213,14 +213,14 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     this.fss.$currentSelected
       .pipe(takeUntil(this.ngUnsubscribe))
       .subscribe(featureIndex => {
-        const feature = this.indexedFeatureLayers.get(featureIndex);
+        const feature = this.featureToLayerMap.get(featureIndex);
         if (featureIndex && feature) {
           setTimeout(() => {
             const layer = feature.layer;
             const bound = layer.getBounds()
-            this.map.fitBounds(bound, { padding: [20, 20] });
+            this.map.flyToBounds(bound, { padding: [20, 20] });
             layer.bringToFront();
-          }, 700);
+          }, 700); // Delay zoom timing for page scolling to top for user experience.
         }
       });
   }

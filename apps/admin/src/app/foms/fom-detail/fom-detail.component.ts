@@ -361,7 +361,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         if (featureIndex) {
           setTimeout(() => {
             this.scrollContainer.nativeElement.scrollTop = 200;
-          }, 500);
+          }, 500); // Delay scroll to top timing for seeing highted row for user experience.
         }
       });
   }

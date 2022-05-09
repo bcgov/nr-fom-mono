@@ -168,7 +168,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
         if (featureIndex) {
           setTimeout(() => {
             this.panelScrollContainer.nativeElement.scrollTop = 100;
-          }, 500);
+          }, 500); // Delay scroll to top timing for seeing highted row for user experience.
         }
       });
   }
