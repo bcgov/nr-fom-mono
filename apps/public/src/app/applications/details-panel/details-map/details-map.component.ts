@@ -1,6 +1,7 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { MapLayers } from '@utility/models/map-layers';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
@@ -35,6 +36,9 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   private mapLayers: MapLayers = new MapLayers();
 
+  // Key for the map is: (spatialDetail.featureId + '-' + spatialDetail.featureType.code) so it is unique.
+  private featureToLayerMap = new Map();
+
   // custom reset view control
   public resetViewControl = L.Control.extend({
     options: {
@@ -57,16 +61,14 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   });
 
   constructor(
-    private elementRef: ElementRef, 
-    private mapLayersService: MapLayersService
+    private elementRef: ElementRef,
+    private mapLayersService: MapLayersService,
+    private fss: FeatureSelectService
   ) { }
 
   ngOnInit(): void {
-    this.mapLayersService.$mapLayersChange
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(() => {
-        this.updateOnLayersChange();
-    });
+    this.subscribeToMapLayersChange();
+    this.subscribeToFeatureSelectChange();
   }
 
   public ngOnChanges(changes: SimpleChanges) {
@@ -144,22 +146,25 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
         const layer = L.geoJSON(<GeoJsonObject>spatialDetail['geometry']);
         layer.on('click', L.Util.bind(this.onSpatialFeatureClick, this, spatialDetail));
         this.projectFeatures.addLayer(layer);
-        this.map.on('zoomend', () => {
-          var style: L.PathOptions = {};
-          style.weight = 5; 
-          style.fillOpacity = 0.25;
-          if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
-            style.dashArray = '10,10';
-          }
-          if (spatialDetail.featureType.code == 'road_section') {
-            style.color = 'yellow';
-            style.opacity = 1;
-          }
-          if (spatialDetail.featureType.code == 'retention_area') {
-            style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
-            style.fillColor = '#7CFF87';
-          }
-          layer.setStyle(style);
+        var style: L.PathOptions = {};
+        style.weight = 5; 
+        style.fillOpacity = 0.25;
+        if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
+          style.dashArray = '10,10';
+        }
+        if (spatialDetail.featureType.code == 'road_section') {
+          style.color = 'yellow';
+          style.opacity = 1;
+        }
+        if (spatialDetail.featureType.code == 'retention_area') {
+          style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
+          style.fillColor = '#7CFF87';
+        }
+        layer.setStyle(style);
+
+        this.featureToLayerMap.set((spatialDetail.featureId + '-' +spatialDetail.featureType.code), {
+          layer: layer,
+          detail: spatialDetail
         });
       });
       this.map.addLayer(this.projectFeatures);
@@ -216,8 +221,32 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   
-  private updateOnLayersChange() {
+  private updateOnLayersChange(): void {
     this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
+  }
+
+  private subscribeToMapLayersChange(): void {
+    this.mapLayersService.$mapLayersChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.updateOnLayersChange();
+    });
+  }
+
+  private subscribeToFeatureSelectChange(): void {
+    this.fss.$currentSelected
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(featureIndex => {
+        const feature = this.featureToLayerMap.get(featureIndex);
+        if (featureIndex && feature) {
+          setTimeout(() => {
+            const layer = feature.layer;
+            const bound = layer.getBounds()
+            this.map.flyToBounds(bound, { padding: [20, 20] });
+            layer.bringToFront();
+          }, 700); // Delay zoom timing for page scolling to top for user experience.
+        }
+      });
   }
 
   ngOnDestroy() {

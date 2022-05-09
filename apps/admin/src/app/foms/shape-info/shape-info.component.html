@@ -8,7 +8,11 @@
             The actual rendered columns are set as a property on the row definition" -->
       <ng-container matColumnDef="shape_id">
         <mat-header-cell *matHeaderCellDef> <strong>ID</strong> </mat-header-cell>
-        <mat-cell *matCellDef="let feature"> {{feature.featureId}} </mat-cell>
+        <mat-cell *matCellDef="let feature">
+          <a href="javascript:void(0)" title="Zoom To Feature">
+            {{feature.featureId}}
+          </a>
+        </mat-cell>
       </ng-container>
     
       <ng-container matColumnDef="type">
@@ -45,14 +49,21 @@
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+      <mat-row *matRowDef="let rowData; columns: displayedColumns;"
+        [ngClass]="{'highlight': selectedRowIndex == rowData.featureId + '-' + rowData.featureType.code}" 
+        (click)="onRowSelected(rowData)">
+
+      </mat-row>
     </mat-table>
   </div>
 
   <!-- Feature details as list (small devices) -->
   <div id="sifeatureList">
     <ul class="shapefile-list">
-      <li class="shapefile-list__item" *ngFor="let feature of projectSpatialDetail">
+      <li class="shapefile-list__item" 
+        *ngFor="let feature of projectSpatialDetail"
+        [ngClass]="{'highlight': selectedRowIndex == feature.featureId + '-' + feature.featureType.code}" 
+        (click)="onRowSelected(feature)">
         <label class="shapefile-list__id">Shape ID: {{feature.featureId}}</label>
         <ul class="meta-container">
           <li>

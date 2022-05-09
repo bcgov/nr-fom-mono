@@ -54,6 +54,7 @@ section {
 
   .meta-container {
     margin-bottom: 0.5rem;
+    padding: 0 0 0 5px;
   }
 }
 
@@ -77,6 +78,17 @@ mat-table {
 
 .mat-row:nth-child(odd){
   background-color:#ffffff;
+}
+
+.highlight {
+  background-color: $gray6 !important;
+  mat-cell, div, a, label {
+    color: $color-inverted;
+  }
+}
+
+li.highlight {
+  padding-left: 5px;
 }
 
 // switching to list
