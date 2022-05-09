@@ -15,6 +15,9 @@ on:
   push:
     branches:
       - master
+      - main
+      - release-FOM-111
+      - feature/codeql
   pull_request:
     types: [opened, synchronize, reopened]
   schedule:

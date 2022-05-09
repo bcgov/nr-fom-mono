@@ -97,3 +97,4 @@ node_modules/
 
 ## Docker/Podman volumes
 .volumes/
+.env
