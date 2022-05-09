@@ -58,6 +58,7 @@
     <ul class="shapefile-list">
       <li class="shapefile-list__item" 
         *ngFor="let feature of projectSpatialDetail"
+        [ngClass]="{'highlight': selectedRowIndex == feature.featureId + '-' + feature.featureType.code}" 
         (click)="onRowSelected(feature)">
         <label class="shapefile-list__id">Shape ID: {{feature.featureId}}</label>
         <ul class="meta-container">

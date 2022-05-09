@@ -83,7 +83,10 @@ table {
 }
 
 .highlight{
-  background: linear-gradient(to right, rgba(63, 205, 63, 0), rgb(63, 205, 63, 1))!important;
+  background-color: $gray6 !important;
+  mat-cell, div, a, label {
+    color: $color-inverted;
+  }
 }
 
 // switching to table
