@@ -1,0 +1,41 @@
+name: Cleanup
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+env:
+  NAME: gfp
+  REPONAME: greenfield-template
+
+jobs:
+  cleanup-openshift:
+    name: Cleanup OpenShift
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - uses: actions/checkout@v2
+      - name: Remove OpenShift artifacts
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.NAMESPACE }}
+
+          # Remove old build runs, build pods and deployment pods
+          oc delete all,pvc,secret -l app=${{ env.NAME }}-${{ github.event.number }}
+
+  cleanup-ghcr:
+    name: Cleanup ghcr.io
+    runs-on: ubuntu-latest
+    steps:
+      # https://github.com/marketplace/actions/ghcr-io-container-cleanup
+      - name: Delete old packages
+        uses: davahome/ghcr-cleanup@v1
+        with:
+          token: ${{ secrets.DELETE_PACKAGES_TOKEN }}
+          package: ${{ env.REPONAME }}
+          owner: orgs/bcgov
+          skip_tags: prod,test
