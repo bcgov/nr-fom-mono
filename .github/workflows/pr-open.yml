@@ -71,7 +71,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GHTOKEN }}
 
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v2
