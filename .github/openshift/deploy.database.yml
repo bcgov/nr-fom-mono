@@ -142,6 +142,8 @@ objects:
                 periodSeconds: 15
                 timeoutSeconds: 1
               env:
+                - name: PGDATA
+                  value: /tmp/var/lib/postgresql/data
                 - name: POSTGRES_DATABASE
                   valueFrom:
                     secretKeyRef:
