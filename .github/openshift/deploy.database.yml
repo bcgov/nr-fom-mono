@@ -142,7 +142,7 @@ objects:
                 timeoutSeconds: 1
               env:
                 - name: PGDATA
-                  value: /tmp/var/lib/postgresql/data
+                  value: /var/lib/postgresql/data
                 - name: POSTGRES_USER
                   value: postgres
                 - name: POSTGRES_DATABASE
