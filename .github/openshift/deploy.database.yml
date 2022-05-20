@@ -114,46 +114,23 @@ objects:
               ports:
                 - containerPort: 5432
                   protocol: TCP
+              livenessProbe:
+                initialDelaySeconds: 30
+                tcpSocket:
+                  port: 5432
+                timeoutSeconds: 1
+              livenessProbe:
+                exec:
+                  command:
+                    - /bin/bash
+                    - '-c'
+                    - >-
+                      psql -q -d $POSTGRES_DB -U $POSTGRES_USER -c 'SELECT 1'
+                failureThreshold: 5
+                initialDelaySeconds: 30
+                periodSeconds: 15
+                timeoutSeconds: 1
               readinessProbe:
-                exec:
-                  command:
-                    - /usr/bin/env
-                    - bash
-                    - '-c'
-                    - >-
-                      psql -q -d
-                      $POSTGRES_DATABASE -c 'SELECT 1'
-                failureThreshold: 5
-                initialDelaySeconds: 30
-                periodSeconds: 15
-                timeoutSeconds: 1
-              livenessProbe:
-                exec:
-                  command:
-                    - /usr/bin/env
-                    - bash
-                    - '-c'
-                    - >-
-                      psql -q -d
-                      $POSTGRES_DATABASE -c 'SELECT 1'
-                failureThreshold: 5
-                initialDelaySeconds: 30
-                periodSeconds: 15
-                timeoutSeconds: 1
-              env:
-                - name: POSTGRES_USER
-                  value: "1007290000"
-                - name: POSTGRES_DB
-                  value: postgres
-                - name: POSTGRES_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-password
-              volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}
-                  mountPath: /var/lib/postgresql
-              livenessProbe:
                 initialDelaySeconds: 30
                 tcpSocket:
                   port: 5432
@@ -163,9 +140,22 @@ objects:
                   command:
                     - /bin/bash
                     - -c
-                    - pg_isready -h localhost -p 5432
+                    - pg_isready -h localhost -p 5432 -d $POSTGRES_DB -U $POSTGRES_USER
                 initialDelaySeconds: 20
                 timeoutSeconds: 15
+              env:
+                - name: POSTGRES_USER
+                  value: "1007290000"
+                - name: POSTGRES_DB
+                  value: "1007290000"
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-password
+              volumeMounts:
+                - name: ${NAME}-${ZONE}-${COMPONENT}
+                  mountPath: /var/lib/postgresql
               terminationMessagePath: "/dev/termination-log"
               terminationMessagePolicy: File
               imagePullPolicy: Always
