@@ -19,16 +19,16 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: POSTGRES_USER
-    description: Postgres user
-    value: "1007290000"
   - name: POSTGRES_DB
-    description: Postgres database
+    description: Postgres database name
     value: fom
-  - description: Password for the PostgreSQL connection user.
+  - name: POSTGRES_PASSWORD
+    description: Password for the PostgreSQL connection user.
     from: "[a-zA-Z0-9]{16}"
     generate: expression
-    name: DB_PASSWORD
+  - name: POSTGRES_USER
+    description: Postgres user
+    value: postgres
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Database Volume Capacity
     name: DB_PVC_SIZE
@@ -47,8 +47,9 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
     stringData:
-      database-name: ${NAME}
-      database-password: ${DB_PASSWORD}
+      database-db: ${POSTGRES_DB}
+      database-password: ${POSTGRES_PASSWORD}
+      database-user: ${POSTGRES_USER}
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -129,15 +130,14 @@ objects:
                 exec:
                   command:
                     - /bin/bash
-                    - '-c'
-                    - >-
-                      psql -q -d ${POSTGRES_DB} -U ${POSTGRES_USER} -c 'SELECT 1;'
+                    - -c
+                    - pg_isready -q -h localhost -p 5432 -d ${POSTGRES_DB} -U ${POSTGRES_USER}
                 failureThreshold: 5
                 initialDelaySeconds: 30
                 periodSeconds: 15
                 timeoutSeconds: 1
               readinessProbe:
-                initialDelaySeconds: 30
+                initialDelaySeconds: 20
                 tcpSocket:
                   port: 5432
                 timeoutSeconds: 1
@@ -146,19 +146,25 @@ objects:
                   command:
                     - /bin/bash
                     - -c
-                    - pg_isready -h localhost -p 5432 -d ${POSTGRES_DB} -U ${POSTGRES_USER}
+                    - psql -q -d ${POSTGRES_DB} -U ${POSTGRES_USER} -c 'SELECT 1;'
                 initialDelaySeconds: 20
                 timeoutSeconds: 15
               env:
-                - name: POSTGRES_USER
-                  value: ${POSTGRES_USER}
                 - name: POSTGRES_DB
-                  value: ${POSTGRES_DB}
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-db
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-password
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: ${NAME}-${ZONE}-${COMPONENT}
+                      key: database-user
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
                   mountPath: /var/lib/postgresql
