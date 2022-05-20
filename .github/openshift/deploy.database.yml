@@ -19,6 +19,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: DB_USER
+    description: Db user, also used for db name, since they must match
+    value: "1007290000"
   - description: Password for the PostgreSQL connection user.
     from: "[a-zA-Z0-9]{16}"
     generate: expression
@@ -145,9 +148,9 @@ objects:
                 timeoutSeconds: 15
               env:
                 - name: POSTGRES_USER
-                  value: "1007290000"
+                  value: ${DB_USER}
                 - name: POSTGRES_DB
-                  value: "1007290000"
+                  value: ${DB_USER}
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
