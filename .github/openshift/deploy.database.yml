@@ -141,15 +141,10 @@ objects:
                 periodSeconds: 15
                 timeoutSeconds: 1
               env:
-                - name: PGDATA
-                  value: /var/lib/postgresql/data
                 - name: POSTGRES_USER
+                  value: "1007290000"
+                - name: POSTGRES_DB
                   value: postgres
-                - name: POSTGRES_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-name
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
@@ -157,7 +152,7 @@ objects:
                       key: database-password
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
-                  mountPath: "/var/lib/pgsql/data"
+                  mountPath: /var/lib/postgresql
               livenessProbe:
                 initialDelaySeconds: 30
                 tcpSocket:
