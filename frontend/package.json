@@ -1,7 +1,7 @@
 {
   "name": "greenfield-template",
   "version": "0.0.1",
-  "description": "BCGov greenfield template. For reference, testing and new projects.",
+  "description": "Natural Resources - Forestry Operations Map.",
   "main": "index.js",
   "scripts": {
     "prebuild": "rimraf dist",
@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bcgov/greenfield-template.git"
+    "url": "git+https://github.com/bcgov/nr-fom-mono.git"
   },
   "keywords": [
     "openshift",
@@ -36,9 +36,9 @@
   "author": "Derek Roberts",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/bcgov/greenfield-template/issues"
+    "url": "https://github.com/bcgov/nr-fom-mono/issues"
   },
-  "homepage": "https://github.com/bcgov/greenfield-template#readme",
+  "homepage": "https://github.com/bcgov/nr-fom-mono#readme",
   "dependencies": {
     "@nestjs/cli": "^8.2.5",
     "@nestjs/common": "^8.4.4",
