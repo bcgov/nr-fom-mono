@@ -19,9 +19,12 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: DB_USER
-    description: Db user, also used for db name, since they must match
+  - name: POSTGRES_USER
+    description: Postgres user
     value: "1007290000"
+  - name: POSTGRES_DB
+    description: Postgres database
+    value: fom
   - description: Password for the PostgreSQL connection user.
     from: "[a-zA-Z0-9]{16}"
     generate: expression
@@ -128,7 +131,7 @@ objects:
                     - /bin/bash
                     - '-c'
                     - >-
-                      psql -q -d $POSTGRES_DB -U $POSTGRES_USER -c 'SELECT 1'
+                      psql -q -d ${POSTGRES_DB} -U ${POSTGRES_USER} -c 'SELECT 1;'
                 failureThreshold: 5
                 initialDelaySeconds: 30
                 periodSeconds: 15
@@ -143,14 +146,14 @@ objects:
                   command:
                     - /bin/bash
                     - -c
-                    - pg_isready -h localhost -p 5432 -d $POSTGRES_DB -U $POSTGRES_USER
+                    - pg_isready -h localhost -p 5432 -d ${POSTGRES_DB} -U ${POSTGRES_USER}
                 initialDelaySeconds: 20
                 timeoutSeconds: 15
               env:
                 - name: POSTGRES_USER
-                  value: ${DB_USER}
+                  value: ${POSTGRES_USER}
                 - name: POSTGRES_DB
-                  value: ${DB_USER}
+                  value: ${POSTGRES_DB}
                 - name: POSTGRES_PASSWORD
                   valueFrom:
                     secretKeyRef:
