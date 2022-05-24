@@ -11,19 +11,6 @@ RUN npm ci && \
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
 
-# Vars - configured for local development
-ENV DB_HOST=localhost
-ENV DB_NAME=fom
-ENV DB_PASSWORD=test
-ENV DB_SSL=false
-ENV DB_TESTDATA=true
-ENV DB_TYPE=postgres
-ENV DB_USERNAME=postgres
-ENV KEYCLOAK_ENABLED=false
-ENV BYPASS_CORS=true
-ENV OBJECT_STORAGE_URL=nrs.objectstore.gov.bc.ca
-ENV OBJECT_STORAGE_ACCESS_ID=nr-fom-dev
-
 # Node packages and dependencies
 COPY --from=builder /usr/bin/node /usr/bin/
 COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
