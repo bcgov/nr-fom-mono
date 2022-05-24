@@ -32,4 +32,4 @@ COPY --from=builder /app/apps ./apps
 EXPOSE 3333
 
 # Start up command
-ENTRYPOINT ["node", "./dist/main.js"]
+ENTRYPOINT ["node", "./dist/apps/api/main.js"]
