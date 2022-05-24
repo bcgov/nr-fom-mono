@@ -1,20 +1,38 @@
+# Git
 .git
 .github
+
+# Dev
 .vscode
 coverage
-azure-pipelines.yml
+*.sarif
+.eslint*
+.prettier*
+
+# Testing
+test
+
+# Pipeline and containers
+.pipeline
+docker
+openshift
+Dockerfile
+Containerfile
+docker-compose.y*ml
+
+# Docs
 *.md
-.prettierrc
-nodemon*.json
-# Secrets
+
+# Environments and secrets
 .env
-# Node Files
+.ps1
+
+# Node
 node_modules
+nodemon*.json
 npm-debug.log
 npm-debug.log.*
-# Source files
-src
-test
+
+# Generated/transpiled files
+dist
 .dist
-.vscode
-scripts
