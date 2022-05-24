@@ -10,7 +10,7 @@ on:
 
 
 env:
-  NAME: gfp
+  NAME: fom
   REPONAME: greenfield-template
 
 jobs:
