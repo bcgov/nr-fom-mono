@@ -1,3 +1,5 @@
+@import "../abstracts/mixins.scss";
+
 html,
 body {
   min-height: 100%;
@@ -221,4 +223,10 @@ hr {
 
 .bold {
   font-weight: bold;
+}
+
+input, textarea {
+  @include placeholder {
+      color: $gray4;
+  }
 }

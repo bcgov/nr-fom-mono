@@ -1,0 +1,70 @@
+@import "../../../assets/styles/base/base.scss";
+
+.expansion-button {
+  padding: 10px 0;
+  button {
+    margin-right: 7px;
+  }
+}
+
+.mat-expansion-panel-header {
+  height: auto;
+  padding: 5px 10px 5px 10px;
+  .mat-expansion-panel-header-title {
+    font-size: small;
+    text-align: center;
+  }
+  .header {
+    text-align: center;
+    font-weight: bold;
+    // font-size: smaller;
+  }
+}
+
+// conditional attribute selector: don't display header when panel expanded.
+.mat-expansion-panel-header[class*="mat-expanded"] {
+  .header {
+    display: none;
+  }
+}
+
+.mat-card {
+  .row {
+      padding-bottom: 0.25rem;
+  }
+}
+
+.validity-txt {
+  margin-top: 2rem;
+  font-size: 0.85rem;
+}
+
+.filter-panel {
+  @include flex-box();
+  @include flex-direction(row);
+  justify-content: space-between;
+  gap: 10px;
+  flex-flow: row wrap;
+  padding: 5px 1.5rem 0;
+
+  div {
+    @include flex(1 1 auto);
+
+  }
+}
+
+@media (max-width: 1023px) {
+  .mat-expansion-panel-header {
+    height: auto;
+    div { padding: 5px 0px 5px 10px}
+    .mat-expansion-panel-header-title {
+      font-size: smaller;
+    }
+  }
+
+  .mat-card {
+    .row {
+        padding-bottom: 0.5rem;
+    }
+  }
+}

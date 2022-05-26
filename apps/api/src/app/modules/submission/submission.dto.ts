@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FeatureCollection } from 'geojson';
 import { IsEnum, IsNotEmpty } from 'class-validator';
+import { FeatureCollection } from 'geojson';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
 
 // Using GeoJSON types, won't have the API documentation but that's okay.
@@ -41,5 +41,35 @@ export class SubmissionRequest {
   @ApiProperty()
   @IsNotEmpty()
   jsonSpatialSubmission: FomSpatialJson;
+}
 
+export type SubmissionSpatialObjectDetail = {
+  count: number
+  dateSubmitted: Date,
+}
+
+export class SubmissionDetailResponse {
+
+  @ApiProperty()
+  projectId: number;
+
+  @ApiProperty()
+  submissionId: number;
+
+  @ApiProperty({ 
+    enum: SubmissionTypeCodeEnum, 
+    enumName: 'SubmissionTypeCodeEnum',
+    example: SubmissionTypeCodeEnum.PROPOSED,
+    default: SubmissionTypeCodeEnum.PROPOSED
+  })
+  submissionTypeCode: SubmissionTypeCodeEnum;
+
+  @ApiProperty({type: SubmissionDetailResponse})
+  cutblocks: SubmissionSpatialObjectDetail; 
+
+  @ApiProperty({type: SubmissionDetailResponse})
+  roadSections: SubmissionSpatialObjectDetail; 
+
+  @ApiProperty({type: SubmissionDetailResponse})
+  retentionAreas: SubmissionSpatialObjectDetail; 
 }

@@ -8,6 +8,7 @@ import {ReviewCommentsComponent} from './review-comments/review-comments.compone
 import {FomSubmissionComponent} from "./fom-submission/fom-submission.component";
 import { InteractionsComponent } from './interactions/interactions.component';
 import { SummaryComponent } from './summary/summary.component';
+import { PublicNoticeEditComponent } from './public-notice/public-notice-edit.component';
 
 const routes: Routes = [
   {
@@ -45,7 +46,21 @@ const routes: Routes = [
   {
     path: 'a/:appId/summary',
     component: SummaryComponent
-  }
+  },
+  {
+    path: 'publicNotice/:appId',
+    component: PublicNoticeEditComponent,
+    resolve: {
+      projectDetail: ProjectDetailResolver
+    }
+  },
+  {
+    path: 'publicNotice/:appId/edit',
+    component: PublicNoticeEditComponent,
+    resolve: {
+      projectDetail: ProjectDetailResolver
+    }
+  },
 ];
 
 @NgModule({

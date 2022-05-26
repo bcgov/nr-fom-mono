@@ -7,6 +7,8 @@ import { RouterModule } from '@angular/router';
 // Modules
 import { SharedModule } from '../shared.module';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCardModule } from '@angular/material/card';
 
 // Components
 import { ProjectsComponent } from './projects.component';
@@ -20,6 +22,11 @@ import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { MatTableModule } from '@angular/material/table'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.component';
+import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
+import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PublicNoticesFilterPanelComponent } from './app-public-notices/notices-filter-panel/public-notices-filter-panel.component';
 
 @NgModule({
   imports: [
@@ -27,9 +34,13 @@ import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.compon
     FormsModule, 
     NgbModule, 
     RouterModule, 
-    SharedModule, 
+    SharedModule,
+    BrowserAnimationsModule,
     MatTableModule, 
-    MatSlideToggleModule, 
+    MatSlideToggleModule,
+    MatExpansionModule,
+    MatCardModule,
+    MatTooltipModule,
     BsDatepickerModule.forRoot()],
   declarations: [
     ProjectsComponent,
@@ -40,7 +51,10 @@ import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.compon
     DateInputComponent,
     FindPanelComponent,
     SplashModalComponent,
-    ShapeInfoComponent
+    ShapeInfoComponent,
+    PublicNoticesPanelComponent,
+    PublicNoticesFilterPanelComponent,
+    ShortenPipe
   ]
 })
 export class ProjectsModule {}

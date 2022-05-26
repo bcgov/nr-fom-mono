@@ -32,6 +32,7 @@ import {AttachmentResolverSvc} from "../../core/services/AttachmentResolverSvc";
 import { MatSelectModule } from '@angular/material/select';
 import { SubmissionFormatOverviewComponent } from './fom-submission/submission-format-overview.component';
 import { EnddateChangeModalComponent } from './fom-detail/enddate-change-modal/enddate-change-modal.component';
+import { PublicNoticeEditComponent } from './public-notice/public-notice-edit.component';
 
 @NgModule({
     imports: [
@@ -65,7 +66,8 @@ import { EnddateChangeModalComponent } from './fom-detail/enddate-change-modal/e
     InteractionDetailComponent,
     SummaryComponent,
     CommentsSummaryComponent,
-    InteractionsSummaryComponent
+    InteractionsSummaryComponent,
+    PublicNoticeEditComponent
   ],
   exports: [
     FomDetailComponent,

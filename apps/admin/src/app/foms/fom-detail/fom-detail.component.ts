@@ -1,15 +1,14 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, takeUntil } from 'rxjs';
-import { AttachmentResponse, WorkflowStateEnum, ProjectWorkflowStateChangeRequest, ProjectResponse, ProjectService, 
-          SpatialFeaturePublicResponse, ProjectMetricsResponse 
-        } from "@api-client";
-import { KeycloakService } from '@admin-core/services/keycloak.service';
-import { User } from "@api-core/security/user";
-import { ModalService } from '@admin-core/services/modal.service';
-import * as moment from 'moment';
 import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
+import { KeycloakService } from '@admin-core/services/keycloak.service';
+import { ModalService } from '@admin-core/services/modal.service';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AttachmentResponse, ProjectMetricsResponse, ProjectResponse, ProjectService, ProjectWorkflowStateChangeRequest, SpatialFeaturePublicResponse, WorkflowStateEnum } from "@api-client";
+import { User } from "@api-core/security/user";
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
+import * as moment from 'moment';
+import { Subject, takeUntil } from 'rxjs';
 import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
 
 @Component({
@@ -18,6 +17,10 @@ import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-chan
   styleUrls: ['./fom-detail.component.scss']
 })
 export class FomDetailComponent implements OnInit, OnDestroy {
+
+  @ViewChild('scrollContainer')
+  public scrollContainer: ElementRef;
+  
   public changeEndDateModal : NgbModalRef = null;
   public isPublishing = false;
   public isDeleting = false;
@@ -46,6 +49,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     public attachmentResolverSvc: AttachmentResolverSvc,
     private keycloakService: KeycloakService,
     private ngbModalService: NgbModal,
+    private fss: FeatureSelectService
   ) {
     this.user = this.keycloakService.getUser();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
@@ -86,6 +90,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
         });
       });
     }
+
+    this.subscribeToFeatureSelectChange();
   }
 
   public deleteAttachment(id: number) {
@@ -171,6 +177,15 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     }
   }
 
+  public goToPublicNotice() {
+    if (this.canEditPublicNotice()) {
+      this.router.navigate([`publicNotice/${this.project.id}/edit`])
+    }
+    else {
+      this.router.navigate([`publicNotice/${this.project.id}`])
+    }
+  }
+
   public async setCommentClassification() {
     this.isSettingCommentClassification = true;
     try {
@@ -183,7 +198,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       .toPromise();
 
       // in this case trigger 'this.project' update locally instead of using // this.onSuccess(); which refresh whole page.
-      this.projectUpdateTriggered$.next();
+      this.projectUpdateTriggered$.next(null);
     } 
     catch(error) {
       console.error(error);
@@ -228,8 +243,19 @@ export class FomDetailComponent implements OnInit, OnDestroy {
 
   public canEditFOM(): boolean {
     const userCanEdit = this.user.isAuthorizedForClientId(this.project.forestClient.id);
-    return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Finalized
+    return userCanEdit && (this.project.workflowState.code !== WorkflowStateEnum.Published
+      && this.project.workflowState.code !== WorkflowStateEnum.Finalized
       && this.project.workflowState.code !== WorkflowStateEnum.Expired);
+  }
+
+  public canEditPublicNotice(): boolean {
+    const userCanEdit = this.user.isAuthorizedForClientId(this.project.forestClient.id);
+    return userCanEdit && this.project.workflowState.code === WorkflowStateEnum.Initial;
+  }
+
+  public canViewPublicNotice(): boolean {
+    return this.user.isAuthorizedForClientId(this.project.forestClient.id)
+            || this.user.isMinistry;
   }
 
   public canViewSubmission(): boolean {
@@ -274,7 +300,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
           (result) => {
             // check result
             if (result.projectUpdated) {
-              this.projectUpdateTriggered$.next();
+              this.projectUpdateTriggered$.next(null);
             }
             this.changeEndDateModal = null;
           },
@@ -285,7 +311,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 
@@ -325,5 +351,18 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       this.modalSvc.openWarningDialog('Comment Start Date must be at least one day after "Publish" is pushed.');
     }
     return ready;
+  }
+
+  private subscribeToFeatureSelectChange(): void {
+    // Scroll to top map detail section when feature is selected from the list.
+    this.fss.$currentSelected
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(featureIndex => {
+        if (featureIndex) {
+          setTimeout(() => {
+            this.scrollContainer.nativeElement.scrollTop = 200;
+          }, 500); // Delay scroll to top timing for seeing highted row for user experience.
+        }
+      });
   }
 }

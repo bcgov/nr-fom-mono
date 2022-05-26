@@ -142,7 +142,8 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   public canEditFOM(project: ProjectResponse): boolean {
     const userCanEdit = this.user.isAuthorizedForClientId(project.forestClient.id);
-    return userCanEdit && (project.workflowState.code !== WorkflowStateEnum.Finalized
+    return userCanEdit && (project.workflowState.code !== WorkflowStateEnum.Published
+      && project.workflowState.code !== WorkflowStateEnum.Finalized
       && project.workflowState.code !== WorkflowStateEnum.Expired);
   }
 

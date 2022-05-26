@@ -15,6 +15,7 @@ import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { takeUntil } from 'rxjs/operators';
+import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
 
 /**
  * Object emitted by child panel on update.
@@ -52,6 +53,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   @ViewChild('appmap', { static: false }) appmap: AppMapComponent;
   @ViewChild('findPanel', { static: false }) findPanel: FindPanelComponent;
   @ViewChild('detailsPanel', { static: false }) detailsPanel: DetailsPanelComponent;
+  @ViewChild('publicNoticesPanel', { static: false }) publicNoticesPanel: PublicNoticesPanelComponent;
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   private splashModal: NgbModalRef = null;
@@ -90,10 +92,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
           case Panel.find:
             this.closeSplashModal();
             this.activePanel = Panel.find;
-            break;
-          case Panel.Explore:
-            this.closeSplashModal();
-            this.activePanel = Panel.Explore;
             break;
           case Panel.details:
             this.closeSplashModal();
@@ -161,7 +159,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     const commentStatusFilters = fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
     const commentOpenParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0].value;
     const commentClosedParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_CLOSED)[0].value;
-    const openedOnOrAfterParam = (fomFilters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>).filter.value?.toISOString().substr(0, 10);
+    const openedOnOrAfterParam = (fomFilters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>).filter.value?.toISOString().substring(0, 10);
 
     this.loading = true;
     this.projectService
@@ -204,6 +202,13 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       this.closeSidePanel();
     }
   }
+
+  public handlePublicNoticesUpdate(updateEvent: IUpdateEvent) {
+    if (updateEvent.hidePanel) {
+      this.closeSidePanel();
+    }
+  }
+  
 
   /**
    * Toggles active panel and its corresponding url fragment.

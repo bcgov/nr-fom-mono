@@ -1,23 +1,24 @@
-import { Component, OnDestroy, Input, ElementRef, OnChanges, SimpleChanges, OnInit } from '@angular/core';
-import * as L from 'leaflet';
-import { GeoJsonObject } from 'geojson';
+import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
-import { MapLayers } from '../../app-map/map-layers';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
+import { MapLayers } from '@utility/models/map-layers';
+import { GeoJsonObject } from 'geojson';
+import * as L from 'leaflet';
 /*
-  Leaflet has bug and would show these error on console: 
+  Leaflet has bug and would show these error on console:
   http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)
   http://localhost:4300/public/marker-shadow.png 404 (Not Found)
 
-  Add these import(s) to fix them. 
+  Add these import(s) to fix them.
   (ref: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env: answered by user9547708)
-  import "leaflet/dist/images/marker-shadow.png"; 
+  import "leaflet/dist/images/marker-shadow.png";
   import "leaflet/dist/images/marker-icon-2x.png";
 */
-import "leaflet/dist/images/marker-shadow.png"; 
 import "leaflet/dist/images/marker-icon-2x.png";
-import { takeUntil } from 'rxjs/operators';
+import "leaflet/dist/images/marker-shadow.png";
 import { Subject } from 'rxjs';
-import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-details-map',
@@ -34,6 +35,9 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   private lastLabelMarker: L.Marker; // global variable to keep track latest layer added (as labeling popup for onClick)
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   private mapLayers: MapLayers = new MapLayers();
+
+  // Key for the map is: (spatialDetail.featureId + '-' + spatialDetail.featureType.code) so it is unique.
+  private featureToLayerMap = new Map();
 
   // custom reset view control
   public resetViewControl = L.Control.extend({
@@ -57,16 +61,14 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   });
 
   constructor(
-    private elementRef: ElementRef, 
-    private mapLayersService: MapLayersService
+    private elementRef: ElementRef,
+    private mapLayersService: MapLayersService,
+    private fss: FeatureSelectService
   ) { }
 
   ngOnInit(): void {
-    this.mapLayersService.$mapLayersChange
-      .pipe(takeUntil(this.ngUnsubscribe))
-      .subscribe(() => {
-        this.updateOnLayersChange();
-    });
+    this.subscribeToMapLayersChange();
+    this.subscribeToFeatureSelectChange();
   }
 
   public ngOnChanges(changes: SimpleChanges) {
@@ -144,22 +146,25 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
         const layer = L.geoJSON(<GeoJsonObject>spatialDetail['geometry']);
         layer.on('click', L.Util.bind(this.onSpatialFeatureClick, this, spatialDetail));
         this.projectFeatures.addLayer(layer);
-        this.map.on('zoomend', () => {
-          var style: L.PathOptions = {};
-          style.weight = 5; 
-          style.fillOpacity = 0.25;
-          if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
-            style.dashArray = '10,10';
-          }
-          if (spatialDetail.featureType.code == 'road_section') {
-            style.color = 'yellow';
-            style.opacity = 1;
-          }
-          if (spatialDetail.featureType.code == 'retention_area') {
-            style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
-            style.fillColor = '#7CFF87';
-          }
-          layer.setStyle(style);
+        var style: L.PathOptions = {};
+        style.weight = 5; 
+        style.fillOpacity = 0.25;
+        if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
+          style.dashArray = '10,10';
+        }
+        if (spatialDetail.featureType.code == 'road_section') {
+          style.color = 'yellow';
+          style.opacity = 1;
+        }
+        if (spatialDetail.featureType.code == 'retention_area') {
+          style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
+          style.fillColor = '#7CFF87';
+        }
+        layer.setStyle(style);
+
+        this.featureToLayerMap.set((spatialDetail.featureId + '-' +spatialDetail.featureType.code), {
+          layer: layer,
+          detail: spatialDetail
         });
       });
       this.map.addLayer(this.projectFeatures);
@@ -173,19 +178,12 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     if (spatialDetail.name) { 
       label += " " + spatialDetail.name;
     }
-    let markerCoords = spatialDetail.centroid['coordinates'];
-    if (spatialDetail.featureType.code == 'road_section') {
-      // Use middle of road, so that the label is next to the road 
-      // (because the centroid of a curving road can lie far away from the actual road segment)
-      const middle = Math.round(spatialDetail.geometry['coordinates'].length / 2);
-      markerCoords = spatialDetail.geometry['coordinates'][middle-1];
-    }
 
     // Remove last label first, so it does not stay when next one is added.
     this.projectFeatures.removeLayer(this.lastLabelMarker);
 
     // Opacity 0 hides marker so just label is visible.
-    this.lastLabelMarker = L.marker(L.latLng(markerCoords[1], markerCoords[0]), { opacity: 0 }); 
+    this.lastLabelMarker = L.marker(args[1].latlng, { opacity: 0 }); 
     // Offset in pixels necessary to align with actual center location (unsure why leaflet has it not aligned by default)
     // See https://gis.stackexchange.com/questions/394960/marker-position-in-leaflet/395270#395270
     this.lastLabelMarker.bindTooltip(label, { permanent: true , offset: [-15, 25]}); 
@@ -223,13 +221,37 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
   
-  private updateOnLayersChange() {
+  private updateOnLayersChange(): void {
     this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
+  }
+
+  private subscribeToMapLayersChange(): void {
+    this.mapLayersService.$mapLayersChange
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(() => {
+        this.updateOnLayersChange();
+    });
+  }
+
+  private subscribeToFeatureSelectChange(): void {
+    this.fss.$currentSelected
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe(featureIndex => {
+        const feature = this.featureToLayerMap.get(featureIndex);
+        if (featureIndex && feature) {
+          setTimeout(() => {
+            const layer = feature.layer;
+            const bound = layer.getBounds()
+            this.map.flyToBounds(bound, { padding: [20, 20] });
+            layer.bringToFront();
+          }, 700); // Delay zoom timing for page scolling to top for user experience.
+        }
+      });
   }
 
   ngOnDestroy() {
     this.resetMap();
-    this.ngUnsubscribe.next();
+    this.ngUnsubscribe.next(null);
     this.ngUnsubscribe.complete();
   }
 }

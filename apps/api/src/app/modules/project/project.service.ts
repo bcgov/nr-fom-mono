@@ -206,6 +206,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
     if (entity.commentingOpenDate) {
       response.commentingOpenDate = dayjs(entity.commentingOpenDate).format(this.DATE_FORMAT);
+      response.validityEndDate = dayjs(entity.commentingOpenDate).add(3, 'year').format(this.DATE_FORMAT);
     }
     response.createTimestamp = entity.createTimestamp.toISOString();
     response.description = entity.description;
@@ -221,12 +222,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     response.revisionCount = entity.revisionCount;
     response.workflowState = entity.workflowState;
     response.commentClassificationMandatory = entity.commentClassificationMandatory;
-
+    if (entity.publicNotices && entity.publicNotices.length > 0) {
+      response.publicNoticeId = entity.publicNotices[0].id; // Currently one public notice for a project.
+    }
     return response;
   }
 
   protected getCommonRelations(): string[] {
-    return ['district', 'forestClient', 'workflowState'];
+    return ['district', 'forestClient', 'workflowState', 'publicNotices'];
   }
 
   @Cron('45 9 * * * ') // Run at 9:45am UTC each day, shortly after the batch which runs at 9:00am UTC

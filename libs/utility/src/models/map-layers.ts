@@ -1,17 +1,15 @@
-import { TileLayer, Map } from 'leaflet';
-
-const L = window['L'];
+import * as L from 'leaflet';
 
 export class MapLayers {
 
   public static MAX_ZOOM_LEVEL = 18; // Maximum zoom level supported
 
-  private baseLayers = {};
-  private overlayLayers = {};
+  private baseLayers: { [key: string]: L.TileLayer } = {};
+  private overlayLayers: { [key: string]: L.TileLayer } = {};
 
-  private defaultOverlays:TileLayer[] = [];
+  private defaultOverlays:L.TileLayer[] = [];
 
-  private activeBaseLayerName;
+  private activeBaseLayerName: string;
 
   constructor() {
     const worldImageryLayerName = 'Satellite';
@@ -44,15 +42,15 @@ export class MapLayers {
     return this.activeBaseLayerName;
   }
 
-  getActiveBaseLayer() : TileLayer {
+  getActiveBaseLayer() : L.TileLayer {
     return this.baseLayers[this.getActiveBaseLayerName()];
   }
 
-  getBaseLayerByName(name: string) : TileLayer {
+  getBaseLayerByName(name: string) : L.TileLayer {
     return this.baseLayers[name];
   }
 
-  getOverlayByName(name: string): TileLayer {
+  getOverlayByName(name: string): L.TileLayer {
     return this.overlayLayers[name];
   }
 
@@ -60,23 +58,23 @@ export class MapLayers {
     return Object.keys(this.overlayLayers);
   }
 
-  getAllLayers():TileLayer[] {
+  getAllLayers():L.TileLayer[] {
     return [ this.baseLayers[this.activeBaseLayerName], ...this.defaultOverlays];
   }
 
-  addLayerControl(map: Map) {
+  addLayerControl(map: L.Map) {
     L.control.layers(this.baseLayers, this.overlayLayers, { position: 'topright' }).addTo(map);
 
   }
 
-  private createBaseLayer(name: string, url: string, attribution: string, maxZoom: number):TileLayer {
+  private createBaseLayer(name: string, url: string, attribution: string, maxZoom: number):L.TileLayer {
     // Supplied max zoom is the maximum supported by the layer, we allow leaflet to scale it up to the maximum zoom level allowed.
     const layer = L.tileLayer(url, { attribution: attribution, maxNativeZoom: maxZoom, maxZoom: MapLayers.MAX_ZOOM_LEVEL, noWrap: true});
     this.baseLayers[name] = layer;
     return layer;
   }
 
-  private createOverlay(name: string, url: string, attribution: string, maxZoom: number): TileLayer {
+  private createOverlay(name: string, url: string, attribution: string, maxZoom: number): L.TileLayer {
     // Supplied max zoom is the maximum supported by the layer, we allow leaflet to scale it up to the maximum zoom level allowed.
     const layer = L.tileLayer(url, { attribution: attribution, maxNativeZoom: maxZoom, maxZoom: MapLayers.MAX_ZOOM_LEVEL, noWrap: true});
     this.overlayLayers[name] = layer;

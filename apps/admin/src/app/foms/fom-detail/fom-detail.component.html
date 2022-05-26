@@ -5,11 +5,21 @@
         <h1>FOM ID: {{project.id}}</h1>
       </div>
       <div class="title-container__actions">
+        <div class="btn-container">
+          <button class="btn btn-light" type="button" title="Edit Online Public Notice"
+                  (click)="goToPublicNotice()"
+                  [disabled]="isDeleting"
+                  [hidden]="!canEditPublicNotice() && !project.publicNoticeId"
+                  style="margin-right: 8px;">
+            {{canEditPublicNotice() ? (project.publicNoticeId?'Edit' : 'Add') + ' Online Public Notice' 
+                                    : 'View Online Public Notice'}}
+          </button>
+        </div>
         <div class="btn-container" *ngIf="canEditFOM()">
           <button class="btn btn-light" type="button" title="Edit FOM"
                   [routerLink]="['/a', project.id, 'edit']"
                   [disabled]="isDeleting">
-            Edit
+            Edit FOM
           </button>
           <span title="You cannot edit a finalized/expired project"></span>
         </div>
@@ -51,7 +61,7 @@
   </div>
 </div>
 
-<div class="bottom-container">
+<div class="bottom-container" #scrollContainer>
   <div class="container">
     <div class="row">
       <div class="col-md-8">
@@ -98,6 +108,13 @@
                       <span
                         class="value">
                         {{project.district ? project.district?.name : 'A district has not been specified'}}
+                      </span>
+                    </li>
+                    <li>
+                      <span class="name">Online Public Notice:</span>
+                      <span
+                        class="value">
+                        {{project.publicNoticeId? 'Yes' : 'No'}}
                       </span>
                     </li>
                   </ul>
@@ -272,14 +289,14 @@
           </div>
         </div>
         <div *ngIf="canViewSubmission()" class="aside-card">
-          <h3 class="title">FOM Spatial Upload</h3>
+          <h3 class="title">FOM Spatial Submission</h3>
           <div class="body">
             <span  *ngIf="spatialDetail.length === 0" class="invalid-type-msg"> Proposed FOM Spatial Upload Required </span>
            <div class="btn-container">
               <button class="cta-btn btn btn-sm btn-outline-primary" type="button" title="Edit fom documents"
                       [disabled]="isDeleting"
                       [routerLink]="['/a', project.id, 'upload']">
-                Upload FOM Spatial File
+                Edit FOM Spatial Submission
               </button>
             </div>
           </div>

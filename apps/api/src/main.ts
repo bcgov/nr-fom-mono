@@ -11,6 +11,7 @@ import helmet from 'helmet';
 import { ProjectService } from '@api-modules/project/project.service';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 import { urlencoded, json } from 'express';
+import { PublicNoticeService } from '@api-modules/project/public-notice.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -68,7 +69,7 @@ async function bootstrap():Promise<INestApplication> {
     contentSecurityPolicy: true
   }));
 
-  let cacheMiddleware = (req, res, next) => {
+  let cacheMiddleware = (_req, res, next) => {
     // Disable caching entirely by default for all APIs.
     res.set('Cache-control', 'no-store, max-age=0');
     res.set('Pragma', 'no-cache');
@@ -77,7 +78,7 @@ async function bootstrap():Promise<INestApplication> {
   httpAdapter.use(cacheMiddleware);
 
   // Only meant for running locally, not accessible via /api route.
-  httpAdapter.get('/health-check', (req, res) => {
+  httpAdapter.get('/health-check', (_req, res) => {
     res.send('Health check passed');
   });
 
@@ -119,6 +120,9 @@ async function postStartup(app: INestApplication) {
     // Preload cache for public summary default data.
     logger.log("Starting public summary cache pre-load...");
     await app.get(ProjectService).refreshCache();
+
+    logger.log("Starting public notices cache pre-load...");
+    await app.get(PublicNoticeService).refreshCache();
 
     logger.log("Done postStartup.");
   } catch (error) {
