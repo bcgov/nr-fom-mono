@@ -89,8 +89,6 @@ objects:
                   value: "true"
                 - name: DB_TESTDATA
                   value: "false"
-                - name: DB_TYPE
-                  value: postgres
                 - name: DB_NAME
                   valueFrom:
                     secretKeyRef:
@@ -106,14 +104,14 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-database
                       key: database-user
-                - name: KEYCLOAD_ENABLED
+                - name: KEYCLOAK_ENABLED
                   value: "true"
                 - name: OBJECT_STORAGE_URL
                   value: nrs.objectstore.gov.bc.ca
                 - name: OBJECT_STORAGE_ACCESS
                   value: nr-fom-dev
               ports:
-                - containerPort: 3000
+                - containerPort: 3333
                   protocol: TCP
               resources:
                 requests:
@@ -121,8 +119,8 @@ objects:
                   memory: ${MEMORY_REQUEST}
               readinessProbe:
                 httpGet:
-                  path: /
-                  port: 3000
+                  path: /api/
+                  port: 3333
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 15
@@ -131,8 +129,8 @@ objects:
                 successThreshold: 1
                 failureThreshold: 3
                 httpGet:
-                  path: /
-                  port: 3000
+                  path: /api/
+                  port: 3333
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 30
@@ -145,10 +143,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 3000-tcp
+        - name: 3333-tcp
           protocol: TCP
           port: 80
-          targetPort: 3000
+          targetPort: 3333
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -160,7 +158,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 3000-tcp
+        targetPort: 3333-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}
