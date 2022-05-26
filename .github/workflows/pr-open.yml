@@ -8,8 +8,8 @@ on:
 env:
   REGISTRY: ghcr.io
   TRIGGERS: ('frontend/' 'backend/' '.github/openshift' '.github/workflows')
-#  NAME: gfp
-  NAME: ${{ github.event.repository.name }}
+  NAME: nr-fom-mono
+  #NAME: ${{ github.event.repository.name }}
 
 jobs:
   check:
@@ -72,7 +72,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GHTOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v2
@@ -112,7 +112,7 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GHTOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Frontend Docker image
         uses: docker/build-push-action@v2
@@ -350,7 +350,7 @@ jobs:
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GHTOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           message: |
             [Prod - Backend](https://${{ env.NAME }}-prod-backend.apps.silver.devops.gov.bc.ca/) available

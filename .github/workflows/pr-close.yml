@@ -8,9 +8,9 @@ on:
       - main
 
 env:
-#  NAME: gfp
-#  REPONAME: greenfield-template
-   REPONAME: ${{ github.event.repository.name }}
+  NAME: nr-fom-mono
+  REPONAME: nr-fom-mono
+  # REPONAME: ${{ github.event.repository.name }}
 
 jobs:
   cleanup-openshift:
@@ -26,7 +26,7 @@ jobs:
           oc project ${{ secrets.NAMESPACE }}
 
           # Remove old build runs, build pods and deployment pods
-          oc delete all,pvc,secret -l app=${{ env.REPONAME }}-${{ github.event.number }}
+          oc delete all,pvc,secret -l app=${{ env.NAME }}-${{ github.event.number }}
 
   cleanup-ghcr:
     name: Cleanup ghcr.io
