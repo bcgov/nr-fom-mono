@@ -167,7 +167,7 @@ jobs:
     name: Deploy-Dev
     needs:
       - build-db
-      # - build-api
+      - build-api
       # - build-admin
       # - build-public
     runs-on: ubuntu-latest
@@ -184,6 +184,9 @@ jobs:
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-db -w
+          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-api -w
