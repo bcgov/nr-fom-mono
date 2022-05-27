@@ -19,6 +19,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: DB_TESTDATA
+    description: Whether to load test data
+    value: "false"
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_REQUEST
@@ -45,7 +48,7 @@ objects:
         - name: ${ZONE}-api
           from:
             kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}:${ZONE}-api
+            name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
   - apiVersion: v1
@@ -84,25 +87,25 @@ objects:
                 - name: BYPASS_CORS
                   value: "false"
                 - name: DB_HOST
-                  value: ${NAME}-${ZONE}-database
+                  value: ${NAME}-${ZONE}-db
                 - name: DB_SSL
                   value: "true"
                 - name: DB_TESTDATA
-                  value: "false"
+                  value: ${DB_TESTDATA}
                 - name: DB_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-db
                       key: database-db
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-db
                       key: database-password
                 - name: DB_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-database
+                      name: ${NAME}-${ZONE}-db
                       key: database-user
                 - name: KEYCLOAK_ENABLED
                   value: "true"

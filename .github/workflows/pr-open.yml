@@ -177,6 +177,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
+          set -eux
+
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.NAMESPACE }}
@@ -184,8 +186,9 @@ jobs:
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api | oc apply -f -
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
+            | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-db -w

@@ -15,7 +15,7 @@ parameters:
     value: fom
   - name: COMPONENT
     description: Component name
-    value: database
+    value: db
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
@@ -66,9 +66,9 @@ objects:
   - kind: ImageStream
     apiVersion: v1
     metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
         app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       lookupPolicy:
         local: false
@@ -76,7 +76,7 @@ objects:
       - name: ${ZONE}-db
         from:
           kind: DockerImage
-          name: ${REGISTRY}/${PROMOTE}:${ZONE}-db
+          name: ${REGISTRY}/${PROMOTE}
         referencePolicy:
           type: Local
   - kind: DeploymentConfig
