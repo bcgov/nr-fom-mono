@@ -6,8 +6,9 @@ RUN dnf module install -y nodejs:14
 WORKDIR /app
 COPY . ./
 RUN npm ci && \
-    npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 && \
-    npm run build:admin
+    npm run build:admin && \
+    rm -rf node_modules && \
+    npm i @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
@@ -27,13 +28,13 @@ COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 # Copy over app
-WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/apps ./apps
+COPY --from=builder /admin/server.js .
 
 # Expose port - mostly a convention, for readability
 EXPOSE 4200
 
 # Start up command
-ENTRYPOINT ["node", "./dist/admin.js"]
+ENTRYPOINT ["node", "server.js"]
