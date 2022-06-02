@@ -19,6 +19,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: ENV
+    description: Deployment environment (local, dev, test, prod)
+    value: dev
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_REQUEST
@@ -48,6 +51,14 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
+  - kind: ConfigMap
+    apiVersion: v1
+    data:
+      env.js: |-
+        window.localStorage.setItem('fom_environment_name', '${ENV}');
+        window.localStorage.setItem('fom_api_base_url', 'https://fom-${ZONE}-api.apps.silver.devops.gov.bc.ca');
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -94,24 +105,31 @@ objects:
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
-              # readinessProbe:
-              #   httpGet:
-              #     path: /admin/
-              #     port: 4200
-              #     scheme: HTTP
-              #   initialDelaySeconds: 15
-              #   periodSeconds: 15
-              #   timeoutSeconds: 1
-              # livenessProbe:
-              #   successThreshold: 1
-              #   failureThreshold: 3
-              #   httpGet:
-              #     path: /admin/
-              #     port: 4200
-              #     scheme: HTTP
-              #   initialDelaySeconds: 15
-              #   periodSeconds: 30
-              #   timeoutSeconds: 5
+              readinessProbe:
+                httpGet:
+                  path: /admin/
+                  port: 4200
+                  scheme: HTTP
+                initialDelaySeconds: 15
+                periodSeconds: 15
+                timeoutSeconds: 1
+              livenessProbe:
+                successThreshold: 1
+                failureThreshold: 3
+                httpGet:
+                  path: /admin/
+                  port: 4200
+                  scheme: HTTP
+                initialDelaySeconds: 15
+                periodSeconds: 30
+                timeoutSeconds: 5
+              volumeMounts:
+                - mountPath: /app/dist/admin/assets/env
+                  name: env-config
+          volumes:
+            - name: env-config
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: v1
     kind: Service
     metadata:
