@@ -19,9 +19,31 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - description: Environment corresponding to namespace (dev/test/prod).
+    displayName: Environment
+    name: ENV
+    value: dev
+  - name: PORT
+    value: "3333"
   - name: DB_TESTDATA
     description: Whether to load test data
     value: "false"
+  - description: SMTP Server URL for sending emails
+    displayName: SMTP Server URL
+    name: SMTP_SERVER
+    value: "smtp://apps.smtp.gov.bc.ca/?port=25&ignoreTLS=true&secure=false"
+  - description: URL of Keycloak Server to use for authentication.
+    displayName: Keycloak Server URL
+    name: KEYCLOAK_URL
+    value: "https://dev.oidc.gov.bc.ca/auth"
+  - description: URL of SiteMinder Server used for logout (with BCeID)
+    displayName: SiteMinder Server URL
+    name: SITEMINDER_URL
+    value: "https://logontest7.gov.bc.ca"
+  - description: URL of Object Storage Service.
+    displayName: Object Storage URL
+    name: OBJECT_STORAGE_URL
+    value: "nrs.objectstore.gov.bc.ca"
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CPU_REQUEST
@@ -107,14 +129,37 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-db
                       key: database-user
+                - name: ENV
+                  value: "${ENV}"
+                - name: PORT
+                  value: "${PORT}"
                 - name: KEYCLOAK_ENABLED
                   value: "true"
+                - name: KEYCLOAK_URL
+                  value: "${KEYCLOAK_URL}"
+                - name: SITEMINDER_URL
+                  value: "${SITEMINDER_URL}"
+                - name: SMTP_SERVER
+                  value: "${SMTP_SERVER}"
+                - name: OBJECT_STORAGE_ACCESS_ID
+                  valueFrom:
+                    secretKeyRef:
+                      key: access_id
+                      name: fom-object-storage
+                - name: OBJECT_STORAGE_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      key: bucket
+                      name: fom-object-storage
+                - name: OBJECT_STORAGE_SECRET
+                  valueFrom:
+                    secretKeyRef:
+                      key: secret
+                      name: fom-object-storage
                 - name: OBJECT_STORAGE_URL
-                  value: nrs.objectstore.gov.bc.ca
-                - name: OBJECT_STORAGE_ACCESS
-                  value: nr-fom-dev
+                  value: ${OBJECT_STORAGE_URL}
               ports:
-                - containerPort: 3333
+                - containerPort: ${{PORT}}
                   protocol: TCP
               resources:
                 requests:
@@ -123,7 +168,7 @@ objects:
               readinessProbe:
                 httpGet:
                   path: /api/
-                  port: 3333
+                  port: ${{PORT}}
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 15
@@ -133,7 +178,7 @@ objects:
                 failureThreshold: 3
                 httpGet:
                   path: /api/
-                  port: 3333
+                  port: ${{PORT}}
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 30
@@ -146,10 +191,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 3333-tcp
+        - name: ${PORT}-tcp
           protocol: TCP
           port: 80
-          targetPort: 3333
+          targetPort: ${{PORT}}
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -161,7 +206,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 3333-tcp
+        targetPort: ${PORT}-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}
