@@ -3,7 +3,7 @@ kind: Template
 metadata:
   name: ${NAME}
   annotations:
-    description: "Greenfield Template"
+    description: "Forest Operations Map"
     tags: "fom"
     iconClass: icon-js
 labels:

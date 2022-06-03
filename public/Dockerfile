@@ -6,8 +6,9 @@ WORKDIR /app
 COPY . ./
 USER root
 RUN npm ci && \
-    npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 && \
-    npm run build:public
+    npm run build:public && \
+    rm -rf node_modules && \
+    npm i @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
@@ -31,10 +32,11 @@ WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/apps ./apps
+COPY --from=builder /app/public/server.js .
 
 # Expose port - mostly a convention, for readability
 EXPOSE 4300
 
 # Start up command
 USER 1001
-ENTRYPOINT ["node", "./dist/public.js"]
+ENTRYPOINT ["node", "server.js"]
