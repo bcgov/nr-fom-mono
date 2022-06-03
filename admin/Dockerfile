@@ -1,13 +1,14 @@
 # RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/ubi as builder
-RUN dnf module install -y nodejs:14
+FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 as builder
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
+USER root
 RUN npm ci && \
-    npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 && \
-    npm run build:admin
+    npm run build:admin && \
+    rm -rf node_modules && \
+    npm i @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
@@ -16,6 +17,7 @@ FROM registry.access.redhat.com/ubi8/ubi-micro
 ENV FOM_ENV=dev
 
 # Node packages and dependencies
+WORKDIR /app
 COPY --from=builder /usr/bin/node /usr/bin/
 COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/
@@ -27,13 +29,14 @@ COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 # Copy over app
-WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/apps ./apps
+COPY --from=builder /app/admin/server.js .
 
 # Expose port - mostly a convention, for readability
 EXPOSE 4200
 
 # Start up command
-ENTRYPOINT ["node", "./dist/admin.js"]
+USER 1001
+ENTRYPOINT ["node", "server.js"]
