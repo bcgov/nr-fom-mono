@@ -111,7 +111,7 @@ objects:
                 - name: DB_HOST
                   value: ${NAME}-${ZONE}-db
                 - name: DB_SSL
-                  value: "true"
+                  value: "false"
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 - name: DB_NAME

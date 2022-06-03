@@ -1,10 +1,10 @@
 # RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/ubi as builder
-RUN dnf module install -y nodejs:14
+FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 as builder
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
+USER root
 RUN npm ci && \
     npm run build:api
 
@@ -26,10 +26,10 @@ COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/apps ./apps
 
 # Expose port - mostly a convention, for readability
 EXPOSE 3333
 
 # Start up command
+USER 1001
 ENTRYPOINT ["node", "./dist/apps/api/main.js"]
