@@ -17,7 +17,6 @@ FROM registry.access.redhat.com/ubi8/ubi-micro
 ENV FOM_ENV=dev
 
 # Node packages and dependencies
-WORKDIR /app
 COPY --from=builder /usr/bin/node /usr/bin/
 COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/
@@ -29,6 +28,7 @@ COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 # Copy over app
+WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/apps ./apps

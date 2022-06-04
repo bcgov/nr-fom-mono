@@ -15,7 +15,7 @@ parameters:
     value: fom
   - name: COMPONENT
     description: Component name
-    value: admin
+    value: public
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
@@ -99,7 +99,7 @@ objects:
                 - name: fom_api_base_url
                   value: fom-${ZONE}-api
               ports:
-                - containerPort: 4200
+                - containerPort: 4300
                   protocol: TCP
               resources:
                 requests:
@@ -108,7 +108,7 @@ objects:
               readinessProbe:
                 httpGet:
                   path: /${COMPONENT}/
-                  port: 4200
+                  port: 4300
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 15
@@ -118,7 +118,7 @@ objects:
                 failureThreshold: 3
                 httpGet:
                   path: /${COMPONENT}/
-                  port: 4200
+                  port: 4300
                   scheme: HTTP
                 initialDelaySeconds: 15
                 periodSeconds: 30
@@ -138,10 +138,10 @@ objects:
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       ports:
-        - name: 4200-tcp
+        - name: 4300-tcp
           protocol: TCP
           port: 80
-          targetPort: 4200
+          targetPort: 4300
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
@@ -153,7 +153,7 @@ objects:
     spec:
       host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
       port:
-        targetPort: 4200-tcp
+        targetPort: 4300-tcp
       to:
         kind: Service
         name: ${NAME}-${ZONE}-${COMPONENT}

@@ -3,7 +3,7 @@ const express = require('express');
 const helmet = require('helmet');
 const path = require('path');  
 
-const port = 4200;
+const port = 4300;
 const app = express();
 
 app.disable("x-powered-by");
@@ -19,7 +19,6 @@ app.use(helmet({
       connectSrc: ["'self'", "https://*.gov.bc.ca"],  // Add "*" if testing locally, will also need to bypass CORS in the API. 
       formAction: ["'self'"],
       imgSrc: ["'self'", "https://server.arcgisonline.com data:", "https://services.arcgisonline.com data:", "https://maps.gov.bc.ca"],
-      frameSrc: ["'self'", "https://*.gov.bc.ca"], // gov.bc.ca is for keycloak.
     },
   },
   }));
@@ -35,9 +34,10 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 //Any routes will be redirected to the angular app
 app.get('*', function(req, res) {
-    res.sendFile(path.join(__dirname, 'dist/admin/index.html'));
+    res.sendFile(path.join(__dirname, 'dist/public/index.html'));
 });
 
 app.listen(port, () => {
   console.log(`Server listening on the port::${port}`);
 });
+
