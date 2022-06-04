@@ -151,7 +151,8 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${NAME}-${ZONE}.${DOMAIN}
+      path: /${COMPONENT}
       port:
         targetPort: 4300-tcp
       to:

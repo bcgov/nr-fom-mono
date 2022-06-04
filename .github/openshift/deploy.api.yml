@@ -132,7 +132,7 @@ objects:
                 - name: ENV
                   value: ${ENV}
                 - name: HOSTNAME
-                  value: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+                  value: ${NAME}-${ZONE}.${DOMAIN}/${COMPONENT}
                 - name: PORT
                   value: "${PORT}"
                 - name: KEYCLOAK_ENABLED
@@ -216,7 +216,8 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
+      host: ${NAME}-${ZONE}.${DOMAIN}
+      path: /${COMPONENT}
       port:
         targetPort: ${PORT}-tcp
       to:
