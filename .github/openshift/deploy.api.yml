@@ -106,41 +106,43 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: BYPASS_CORS
-                  value: "false"
+                # - name: BYPASS_CORS
+                #   value: 'false'
                 - name: DB_HOST
                   value: ${NAME}-${ZONE}-db
-                - name: DB_SSL
-                  value: "false"
+                # - name: DB_SSL
+                #   value: 'false'
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 - name: DB_NAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-db
                       key: database-db
+                      name: ${NAME}-${ZONE}-db
                 - name: DB_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-db
                       key: database-password
+                      name: ${NAME}-${ZONE}-db
                 - name: DB_USERNAME
                   valueFrom:
                     secretKeyRef:
-                      name: ${NAME}-${ZONE}-db
                       key: database-user
+                      name: ${NAME}-${ZONE}-db
                 - name: ENV
-                  value: "${ENV}"
+                  value: ${ENV}
+                - name: HOSTNAME
+                  value: ${NAME}-${ZONE}-${COMPONENT}.${DOMAIN}
                 - name: PORT
                   value: "${PORT}"
                 - name: KEYCLOAK_ENABLED
                   value: "true"
                 - name: KEYCLOAK_URL
-                  value: "${KEYCLOAK_URL}"
+                  value: ${KEYCLOAK_URL}
                 - name: SITEMINDER_URL
-                  value: "${SITEMINDER_URL}"
+                  value: ${SITEMINDER_URL}
                 - name: SMTP_SERVER
-                  value: "${SMTP_SERVER}"
+                  value: ${SMTP_SERVER}
                 - name: OBJECT_STORAGE_ACCESS_ID
                   valueFrom:
                     secretKeyRef:
@@ -165,6 +167,16 @@ objects:
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
+              startupProbe:
+                httpGet:
+                  path: /health-check
+                  port: ${{PORT}}
+                  scheme: HTTP
+                initialDelaySeconds: 30
+                timeoutSeconds: 30
+                periodSeconds: 15
+                successThreshold: 1
+                failureThreshold: 30
               readinessProbe:
                 httpGet:
                   path: /api/
