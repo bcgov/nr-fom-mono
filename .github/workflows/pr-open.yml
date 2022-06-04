@@ -168,8 +168,8 @@ jobs:
     needs:
       - build-db
       - build-api
-      # - build-admin
-      # - build-public
+      - build-admin
+      - build-public
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -189,7 +189,15 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
             | oc apply -f -
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ github.event.number }} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
+            | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-db -w
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-api -w
+          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-admin -w
+          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-public -w
