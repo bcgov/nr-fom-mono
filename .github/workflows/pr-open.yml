@@ -190,10 +190,10 @@ jobs:
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin -p DB_TESTDATA=true \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
             | oc apply -f -
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public -p DB_TESTDATA=true \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
