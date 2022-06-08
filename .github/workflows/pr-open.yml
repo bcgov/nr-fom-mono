@@ -296,8 +296,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.4.0
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           target: https://${{ env.NAME }}-${{ github.event.number }}-backend.apps.silver.devops.gov.bc.ca/
           cmd_options: "-a"
           allow_issue_writing: false
@@ -315,6 +316,7 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
+          token: ${{ secrets.GITHUB_TOKEN }}
           target: https://${{ env.NAME }}-${{ github.event.number }}-frontend.apps.silver.devops.gov.bc.ca/
           cmd_options: "-a"
           allow_issue_writing: false
