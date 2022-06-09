@@ -73,12 +73,12 @@ objects:
       lookupPolicy:
         local: false
       tags:
-      - name: ${ZONE}-db
-        from:
-          kind: DockerImage
-          name: ${REGISTRY}/${PROMOTE}
-        referencePolicy:
-          type: Local
+        - name: ${ZONE}-db
+          from:
+            kind: DockerImage
+            name: ${REGISTRY}/${PROMOTE}
+          referencePolicy:
+            type: Local
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
@@ -88,15 +88,15 @@ objects:
     spec:
       replicas: 1
       triggers:
-      - type: ConfigChange
-      - type: ImageChange
-        imageChangeParams:
-          automatic: true
-          containerNames:
-          - ${NAME}
-          from:
-            kind: ImageStreamTag
-            name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
+        - type: ConfigChange
+        - type: ImageChange
+          imageChangeParams:
+            automatic: true
+            containerNames:
+              - ${NAME}
+            from:
+              kind: ImageStreamTag
+              name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       strategy:
@@ -122,33 +122,19 @@ objects:
                 - containerPort: 5432
                   protocol: TCP
               livenessProbe:
-                initialDelaySeconds: 30
-                tcpSocket:
-                  port: 5432
-                timeoutSeconds: 1
-              livenessProbe:
-                exec:
-                  command:
-                    - /bin/bash
-                    - -c
-                    - pg_isready -q -h localhost -p 5432 -d ${POSTGRES_DB} -U ${POSTGRES_USER}
                 failureThreshold: 5
                 initialDelaySeconds: 30
                 periodSeconds: 15
-                timeoutSeconds: 1
-              readinessProbe:
-                initialDelaySeconds: 20
                 tcpSocket:
                   port: 5432
                 timeoutSeconds: 1
               readinessProbe:
-                exec:
-                  command:
-                    - /bin/bash
-                    - -c
-                    - psql -q -d ${POSTGRES_DB} -U ${POSTGRES_USER} -c 'SELECT 1;'
+                failureThreshold: 5
                 initialDelaySeconds: 20
-                timeoutSeconds: 15
+                periodSeconds: 15
+                tcpSocket:
+                  port: 5432
+                timeoutSeconds: 1
               env:
                 - name: POSTGRES_DB
                   valueFrom:
