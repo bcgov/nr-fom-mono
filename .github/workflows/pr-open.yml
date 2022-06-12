@@ -4,7 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - release-*
 
 env:
   REGISTRY: ghcr.io
@@ -182,6 +181,11 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.NAMESPACE }}
+
+          # Init (db secret), only if necessary
+          oc process -f .github/openshift/init.database.yml -p ZONE=${{ github.even.number }} \
+            | oc create -f - || \
+            echo "Already initialized"
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
