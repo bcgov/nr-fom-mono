@@ -3,13 +3,8 @@ kind: Template
 metadata:
   name: ${NAME}
   annotations:
-<<<<<<< HEAD
     description: "Forest Operations Map"
     tags: "fom"
-=======
-    description: "Greenfield Template"
-    tags: "gfp"
->>>>>>> 5638a06 (Initial commit)
     iconClass: icon-js
 labels:
   app: ${NAME}-${ZONE}
@@ -17,7 +12,6 @@ labels:
 parameters:
   - name: NAME
     description: Product name
-<<<<<<< HEAD
     value: fom
   - name: COMPONENT
     description: Component name
@@ -25,51 +19,17 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-=======
-    value: gfp
-  - name: COMPONENT
-    description: Component name
-    value: database
-  - name: ZONE
-    description: Deployment zone, e.g. pr-### or prod
-    required: true
-  - name: IMAGE_TAG
-    description: Image tag to use
-    value: latest
-  - description: Password for the PostgreSQL connection user.
-    from: "[a-zA-Z0-9]{16}"
-    generate: expression
-    name: DB_PASSWORD
->>>>>>> 5638a06 (Initial commit)
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Database Volume Capacity
     name: DB_PVC_SIZE
     required: true
     value: 1Gi
   - name: REGISTRY
-<<<<<<< HEAD
     value: ghcr.io
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     value: bcgov/nr-fom-api
 objects:
-=======
-    value: image-registry.openshift-image-registry.svc:5000
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    value: openshift/postgresql:12
-objects:
-  - apiVersion: v1
-    kind: Secret
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
-    stringData:
-      database-name: ${NAME}
-      database-password: ${DB_PASSWORD}
-      database-user: ${NAME}
->>>>>>> 5638a06 (Initial commit)
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
@@ -86,34 +46,19 @@ objects:
   - kind: ImageStream
     apiVersion: v1
     metadata:
-<<<<<<< HEAD
       labels:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
-=======
-      name: ${NAME}-${ZONE}-${COMPONENT}
-      labels:
-        app: ${NAME}-${ZONE}
->>>>>>> 5638a06 (Initial commit)
     spec:
       lookupPolicy:
         local: false
       tags:
-<<<<<<< HEAD
         - name: ${ZONE}-db
           from:
             kind: DockerImage
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
-=======
-      - name: ${IMAGE_TAG}
-        from:
-          kind: DockerImage
-          name: ${REGISTRY}/${PROMOTE}
-        referencePolicy:
-          type: Local
->>>>>>> 5638a06 (Initial commit)
   - kind: DeploymentConfig
     apiVersion: v1
     metadata:
@@ -123,7 +68,6 @@ objects:
     spec:
       replicas: 1
       triggers:
-<<<<<<< HEAD
         - type: ConfigChange
         - type: ImageChange
           imageChangeParams:
@@ -133,17 +77,6 @@ objects:
             from:
               kind: ImageStreamTag
               name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
-=======
-      - type: ConfigChange
-      - type: ImageChange
-        imageChangeParams:
-          automatic: true
-          containerNames:
-          - ${NAME}
-          from:
-            kind: ImageStreamTag
-            name: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
->>>>>>> 5638a06 (Initial commit)
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       strategy:
@@ -164,7 +97,6 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-<<<<<<< HEAD
               image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
               ports:
                 - containerPort: 5432
@@ -190,78 +122,18 @@ objects:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-db
                 - name: POSTGRES_PASSWORD
-=======
-              image: ${NAME}-${ZONE}-${COMPONENT}:${IMAGE_TAG}
-              ports:
-                - containerPort: 5432
-                  protocol: TCP
-              readinessProbe:
-                exec:
-                  command:
-                    - /usr/bin/env
-                    - bash
-                    - '-c'
-                    - >-
-                      psql -q -d
-                      $POSTGRESQL_DATABASE -c 'SELECT 1'
-                failureThreshold: 5
-                initialDelaySeconds: 30
-                periodSeconds: 15
-                timeoutSeconds: 1
-              livenessProbe:
-                exec:
-                  command:
-                    - /usr/bin/env
-                    - bash
-                    - '-c'
-                    - >-
-                      psql -q -d
-                      $POSTGRESQL_DATABASE -c 'SELECT 1'
-                failureThreshold: 5
-                initialDelaySeconds: 30
-                periodSeconds: 15
-                timeoutSeconds: 1
-              env:
-                - name: POSTGRESQL_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-name
-                - name: POSTGRESQL_PASSWORD
->>>>>>> 5638a06 (Initial commit)
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-password
-<<<<<<< HEAD
                 - name: POSTGRES_USER
-=======
-                - name: POSTGRESQL_USER
->>>>>>> 5638a06 (Initial commit)
                   valueFrom:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-user
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
-<<<<<<< HEAD
                   mountPath: /var/lib/postgresql
-=======
-                  mountPath: "/var/lib/pgsql/data"
-              livenessProbe:
-                initialDelaySeconds: 30
-                tcpSocket:
-                  port: 5432
-                timeoutSeconds: 1
-              readinessProbe:
-                exec:
-                  command:
-                    - /bin/bash
-                    - -c
-                    - pg_isready -h localhost -p 5432
-                initialDelaySeconds: 20
-                timeoutSeconds: 15
->>>>>>> 5638a06 (Initial commit)
               terminationMessagePath: "/dev/termination-log"
               terminationMessagePolicy: File
               imagePullPolicy: Always
