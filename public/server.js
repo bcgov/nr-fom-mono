@@ -16,7 +16,7 @@ app.use(helmet({
   contentSecurityPolicy: {
     useDefaults: true,
     directives: {
-      connectSrc: ["'self'", "https://*.gov.bc.ca"],  // Add "*" if testing locally, will also need to bypass CORS in the API. 
+      connectSrc: ["'self'", "https://*.gov.bc.ca", "http://*.gov.bc.ca"],  // Add "*" if testing locally, will also need to bypass CORS in the API. 
       formAction: ["'self'"],
       imgSrc: ["'self'", "https://server.arcgisonline.com data:", "https://services.arcgisonline.com data:", "https://maps.gov.bc.ca"],
     },
