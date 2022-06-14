@@ -106,12 +106,10 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                # - name: BYPASS_CORS
-                #   value: 'false'
+                - name: BYPASS_CORS
+                  value: "true"
                 - name: DB_HOST
                   value: ${NAME}-${ZONE}-db
-                # - name: DB_SSL
-                #   value: 'false'
                 - name: DB_TESTDATA
                   value: ${DB_TESTDATA}
                 - name: DB_NAME
