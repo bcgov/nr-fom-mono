@@ -213,7 +213,7 @@ jobs:
         with:
           message: |
             [Dev - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
-            [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
+            [Dev - admin](https://${{ env.NAME }}.apps.silver.devops.gov.bc.ca/${{ github.event.number }}/admin) available
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
 
           allow-repeats: false
