@@ -52,7 +52,7 @@ async function bootstrap():Promise<INestApplication> {
   app.use(urlencoded({ extended: true, limit: MAX_CONTENT_LIMIT }));
 
   console.log("Env 'BYPASS_CORS' value: ", process.env.BYPASS_CORS); // TODO: remove this, temporary logging check.
-  if (process.env.BYPASS_CORS) {
+  if (process.env.BYPASS_CORS === "true") {
     console.log("BYPASS CORS: true"); // TODO: remove this, temporary logging check.
     // For local development only, leave env var undefined within OpenShift deployments.
     app.enableCors({
