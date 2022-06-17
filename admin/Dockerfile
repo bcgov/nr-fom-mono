@@ -11,8 +11,7 @@ RUN npm ci && \
     npm i @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
 
 # Deployment container
-# FROM registry.access.redhat.com/ubi8/ubi-micro
-FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492
+FROM registry.access.redhat.com/ubi8/ubi-micro
 
 # Vars - configured for local development
 ENV FOM_ENV=dev

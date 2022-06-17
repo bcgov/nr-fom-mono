@@ -9,8 +9,7 @@ RUN npm ci && \
     npm run build:api
 
 # Deployment container
-# FROM registry.access.redhat.com/ubi8/ubi-micro
-FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492
+FROM registry.access.redhat.com/ubi8/ubi-micro
 
 # Node packages and dependencies
 COPY --from=builder /usr/bin/node /usr/bin/
