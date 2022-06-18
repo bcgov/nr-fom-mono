@@ -266,3 +266,5 @@ jobs:
             [prod - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
             [prod - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
             [prod - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
+            
+          allow-repeats: false
