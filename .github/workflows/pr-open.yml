@@ -241,15 +241,15 @@ jobs:
             echo "Already initialized"
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${ZONE}-db | oc apply -f -
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${ZONE}-api -p DB_TESTDATA=true \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${ZONE}-admin \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
             | oc apply -f -
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${ZONE}-public \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
             | oc apply -f -
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${ZONE}-db -w
