@@ -217,3 +217,54 @@ jobs:
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
 
           allow-repeats: false
+
+  deploy-prod:
+    name: Deploy-Prod
+    needs:
+      - deploy-dev
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    env:
+      ZONE: prod
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          set -eux
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.NAMESPACE }}
+          # Init (db secret), only if necessary
+          oc process -f .github/openshift/init.database.yml -p ZONE=${ZONE} \
+            | oc create -f - || \
+            echo "Already initialized"
+          # Process and apply deployment templates
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${ZONE} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
+            | oc apply -f -
+          # Follow any active rollouts (see deploymentconfigs)
+          oc rollout status dc/${{ env.NAME }}-${ZONE}-db -w
+          oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
+          oc rollout status dc/${{ env.NAME }}-${ZONE}-admin -w
+          oc rollout status dc/${{ env.NAME }}-${ZONE}-public -w
+
+      - name: Deployment update
+        uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          message: |
+            [prod - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
+            [prod - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
+            [prod - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
+            
+          allow-repeats: false
