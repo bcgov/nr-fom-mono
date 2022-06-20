@@ -107,7 +107,7 @@ objects:
               name: ${NAME}
               env:
                 - name: BYPASS_CORS
-                  value: "true"
+                  value: "false"
                 - name: DB_HOST
                   value: ${NAME}-${ZONE}-db
                 - name: DB_TESTDATA
