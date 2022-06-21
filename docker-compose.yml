@@ -38,7 +38,8 @@ services:
     entrypoint:
       - sh
       - -c
-      - npm i &&
+      - cd api &&
+        npm i &&
         npm run start:api
     environment:
       - DB_HOST=db
