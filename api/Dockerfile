@@ -32,4 +32,4 @@ EXPOSE 3333
 
 # Start up command
 USER 1001
-ENTRYPOINT ["node", "./dist/apps/api/main.js"]
+ENTRYPOINT ["node", "./dist/api/src/main.js"]
