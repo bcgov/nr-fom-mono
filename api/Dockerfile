@@ -26,6 +26,8 @@ COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src/migrations/main ./dist/api/src/migrations/main
+COPY --from=builder /app/src/migrations/test ./dist/api/src/migrations/test
 
 # Expose port - mostly a convention, for readability
 EXPOSE 3333
