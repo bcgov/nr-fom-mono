@@ -11,9 +11,21 @@ import { maxFileSizeBytes } from '../attachment/attachment.controller';
 import { validate } from 'class-validator';
 import _ = require('lodash');
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
-import dayjs = require('dayjs');
-import * as utc from 'dayjs/plugin/utc';
+import { User } from "@api-core/security/user";
+import { BadRequestException, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { validate } from 'class-validator';
 import * as timezone from 'dayjs/plugin/timezone';
+import * as utc from 'dayjs/plugin/utc';
+import { PinoLogger } from 'nestjs-pino';
+import fetch from 'node-fetch';
+import { UserRequiredHeader } from 'src/core/security/auth.service';
+import { maxFileSizeBytes } from '../attachment/attachment.controller';
+import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
+import { InteractionService } from './interaction.service';
+import _ = require('lodash');
+import dayjs = require('dayjs');
 // initialize dayjs extensions
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -111,7 +123,7 @@ export class InteractionController {
   async create(
     @UserRequiredHeader() user: User,
     @UploadedFile('file') file: Express.Multer.File,
-    @Req() request: Request): Promise<InteractionResponse> {
+    @Req() request: fetch.Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
@@ -156,7 +168,7 @@ export class InteractionController {
     @UserRequiredHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile('file') file: Express.Multer.File,
-    @Req() request: Request): Promise<InteractionResponse> {
+    @Req() request: fetch.Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
