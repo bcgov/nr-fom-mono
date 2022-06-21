@@ -272,7 +272,7 @@ jobs:
   deploy-prod:
     name: Deploy-Prod
     needs:
-      - deploy-dev
+      - deploy-test
     runs-on: ubuntu-latest
     environment:
       name: prod
