@@ -46,6 +46,8 @@ docker-compose up api
 
 ### Local / Bare Metal
 
+Run npm install for each of the components.
+
 Fire up components using Docker Compose, but not the ones you want to work on locally.  Start commands are available in package.json.
 
 OBJECT_STORAGE_SECRET = object storage secret, available in the OpenShift dev secret `fom-object-storage-dev`
