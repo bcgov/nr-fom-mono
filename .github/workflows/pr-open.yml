@@ -263,10 +263,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           message: |
-            [test - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
-            [test - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
-            [test - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
-            
+            [test - api](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/api) available
+            [test - admin](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/admin) available
+            [test - public](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/public) available
+
           allow-repeats: false
 
   deploy-prod:
@@ -314,8 +314,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           message: |
-            [prod - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
-            [prod - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
-            [prod - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
-            
+            [prod - api](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/api) available
+            [prod - admin](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/admin) available
+            [prod - public](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/public) available
+
           allow-repeats: false
