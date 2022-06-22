@@ -9,7 +9,7 @@ import { AttachmentCreateRequest, AttachmentFileResponse, AttachmentResponse } f
 import { User } from "@api-core/security/user";
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
-import { minioClient } from 'src/minio';
+import { minioClient } from '../../../minio';
 import { Stream } from 'node:stream';
 
 @Injectable()

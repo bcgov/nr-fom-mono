@@ -9,7 +9,7 @@ import { PublicNotice } from './public-notice.entity';
 
 import { DistrictModule } from '../district/district.module';
 import { ForestClientModule } from '../forest-client/forest-client.module';
-import { SecurityModule } from 'src/core/security/security.module';
+import { SecurityModule } from '@api-core/security/security.module';
 import { WorkflowStateCodeController } from './workflow-state-code.controller';
 import { WorkflowStateCodeService } from './workflow-state-code.service';
 import { WorkflowStateCode } from './workflow-state-code.entity';
@@ -18,7 +18,7 @@ import { PublicNoticeService } from './public-notice.service';
 import { PublicNoticeController } from './public-notice.controller';
 import { AttachmentModule } from '@api-modules/attachment/attachment.module';
 import { PublicCommentModule } from '../public-comment/public-comment.module';
-import { MailModule } from 'src/core/mail/mail.module';
+import { MailModule } from '@api-core/mail/mail.module';
 
 @Module({
   imports: [

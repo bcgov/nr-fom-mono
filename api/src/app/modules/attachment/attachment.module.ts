@@ -6,7 +6,7 @@ import { AttachmentService } from './attachment.service';
 import {
   AttachmentController
 } from './attachment.controller';
-import { SecurityModule } from 'src/core/security/security.module';
+import { SecurityModule } from '@api-core/security/security.module';
 import { AttachmentTypeCode } from './attachment-type-code.entity';
 import { AttachmentTypeCodeService } from './attachment-type-code.service';
 import { AttachmentTypeCodeController } from './attachment-type-code.controller';

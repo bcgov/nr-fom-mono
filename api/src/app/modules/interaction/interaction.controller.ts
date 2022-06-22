@@ -8,7 +8,7 @@ import * as timezone from 'dayjs/plugin/timezone';
 import * as utc from 'dayjs/plugin/utc';
 import { PinoLogger } from 'nestjs-pino';
 import fetch from 'node-fetch';
-import { UserRequiredHeader } from 'src/core/security/auth.service';
+import { UserRequiredHeader } from '@api-core/security/auth.service';
 import { maxFileSizeBytes } from '../attachment/attachment.controller';
 import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
 import { InteractionService } from './interaction.service';

@@ -23,7 +23,7 @@
       "@api-core/*": ["src/core/*"],
       "@controllers": ["src/core/controllers"],
       "@entities": ["src/core/entities"],
-      "@api-modules/*": ["src/app/modules/*"],
+      "@api-modules/*": ["src/app/modules/*"]
     },
     "incremental": true
   }

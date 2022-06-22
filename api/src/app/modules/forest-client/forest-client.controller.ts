@@ -5,7 +5,7 @@ import { BaseReadOnlyController } from '@controllers';
 import { ForestClientService } from './forest-client.service';
 import { ForestClient } from './forest-client.entity';
 import { ForestClientResponse } from './forest-client.dto';
-import { UserRequiredHeader } from 'src/core/security/auth.service';
+import { UserRequiredHeader } from '@api-core/security/auth.service';
 import { User } from "@api-core/security/user";
 
 @ApiTags('forest-client')
