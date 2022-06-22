@@ -187,6 +187,11 @@ jobs:
             | oc create -f - || \
             echo "Already initialized"
 
+          # Clear stale images for import/replacement
+          if [ $(oc get is -l app=${{ env.NAME }}-${{ github.event.number }} -o name | wc -l) -gt 0 ]; then
+            echo oc delete is -l app=${{ env.NAME }}-${{ github.event.number }}
+          fi
+
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
@@ -239,6 +244,11 @@ jobs:
           oc process -f .github/openshift/init.database.yml -p ZONE=${ZONE} \
             | oc create -f - || \
             echo "Already initialized"
+
+          # Clear stale images for import/replacement
+          if [ $(oc get is -l app=${{ env.NAME }}-${ZONE} -o name | wc -l) -gt 0 ]; then
+            echo oc delete is -l app=${{ env.NAME }}-${ZONE}
+          fi
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
@@ -293,6 +303,11 @@ jobs:
           oc process -f .github/openshift/init.database.yml -p ZONE=${ZONE} \
             | oc create -f - || \
             echo "Already initialized"
+
+          # Clear stale images for import/replacement
+          if [ $(oc get is -l app=${{ env.NAME }}-${ZONE} -o name | wc -l) -gt 0 ]; then
+            echo oc delete is -l app=${{ env.NAME }}-${ZONE}
+          fi
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
