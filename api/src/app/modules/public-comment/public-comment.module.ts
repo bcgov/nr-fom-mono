@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PublicComment } from './public-comment.entity';
 import { PublicCommentService } from './public-comment.service';
 import { PublicCommentController } from './public-comment.controller';
-import { SecurityModule } from 'apps/api/src/core/security/security.module';
+import { SecurityModule } from '@api-core/security/security.module';
 import { CommentScopeCodeController } from './comment-scope-code.controller';
 import { CommentScopeCodeService } from './comment-scope-code.service';
 import { CommentScopeCode } from './comment-scope-code.entity';

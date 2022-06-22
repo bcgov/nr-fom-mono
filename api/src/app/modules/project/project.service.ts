@@ -17,7 +17,7 @@ import { SubmissionTypeCodeEnum } from '../submission/submission-type-code.entit
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { PublicCommentService } from '../public-comment/public-comment.service';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
-import { MailService } from 'apps/api/src/core/mail/mail.service';
+import { MailService } from '@api-core/mail/mail.service';
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { Cron } from '@nestjs/schedule';
 import { PublicComment } from '@api-modules/public-comment/public-comment.entity';
