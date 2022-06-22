@@ -22,15 +22,12 @@ export class ConfigService {
     // populated from mounted ConfigMap in OpenShift. This file sets window.localStorage settings
     // Locally if empty the local default will be used.
 
+    // environmentDisplay adds white text in a green circle to the frontends
     const envName = window.localStorage.getItem('fom_environment_name');
-    if (envName == 'prod') {
+    if (envName == undefined || envName.length == 0 || envName == 'prod' ) {
       this.environmentDisplay = undefined;
-    } else if (envName == 'test') {
-      this.environmentDisplay = 'test';
-    } else if (envName == undefined || envName.length == 0 || envName == 'local') {
-      this.environmentDisplay = 'local';
     } else {
-      this.environmentDisplay = 'dev'
+      this.environmentDisplay = envName;
     }
 
     this.apiBasePath = retrieveApiBasePath();
