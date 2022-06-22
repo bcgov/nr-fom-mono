@@ -23,9 +23,14 @@ export class ConfigService {
     // Locally if empty the local default will be used.
 
     const envName = window.localStorage.getItem('fom_environment_name');
-    this.environmentDisplay = (envName == undefined || envName.length == 0) ? 'local' : envName;
-    if (this.environmentDisplay == 'prod') {
+    if (envName == 'prod') {
       this.environmentDisplay = undefined;
+    } else if (envName == 'test') {
+      this.environmentDisplay = 'test';
+    } else if (envName == undefined || envName.length == 0 || envName == 'local') {
+      this.environmentDisplay = 'local';
+    } else {
+      this.environmentDisplay = 'dev'
     }
 
     this.apiBasePath = retrieveApiBasePath();
