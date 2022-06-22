@@ -19,8 +19,6 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: ENV
-    description: Deployment environment (local, dev, test, prod)
     value: dev
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
@@ -55,7 +53,7 @@ objects:
     apiVersion: v1
     data:
       env.js: |-
-        window.localStorage.setItem('fom_environment_name', '${ENV}');
+        window.localStorage.setItem('fom_environment_name', '${ZONE}');
         window.localStorage.setItem('fom_api_base_url', 'https://fom-${ZONE}.apps.silver.devops.gov.bc.ca');
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}

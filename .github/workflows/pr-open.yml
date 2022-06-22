@@ -211,12 +211,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          allow-repeats: false
           message: |
             [Dev - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
             [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
-
-          allow-repeats: false
 
   deploy-test:
     name: Deploy-Test
@@ -235,15 +234,18 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.NAMESPACE }}
+
           # Init (db secret), only if necessary
           oc process -f .github/openshift/init.database.yml -p ZONE=${ZONE} \
             | oc create -f - || \
             echo "Already initialized"
+
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
+            -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
@@ -251,6 +253,7 @@ jobs:
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
             | oc apply -f -
+
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${ZONE}-db -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
@@ -262,12 +265,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          allow-repeats: false
           message: |
             [test - api](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/api) available
             [test - admin](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/admin) available
             [test - public](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/public) available
-
-          allow-repeats: false
 
   deploy-prod:
     name: Deploy-Prod
@@ -286,15 +288,18 @@ jobs:
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.NAMESPACE }}
+
           # Init (db secret), only if necessary
           oc process -f .github/openshift/init.database.yml -p ZONE=${ZONE} \
             | oc create -f - || \
             echo "Already initialized"
+
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
+            -p KEYCLOAK_URL="https://prod.oidc.gov.bc.ca/auth" -p DB_TESTDATA=false \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
@@ -302,6 +307,7 @@ jobs:
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
             | oc apply -f -
+
           # Follow any active rollouts (see deploymentconfigs)
           oc rollout status dc/${{ env.NAME }}-${ZONE}-db -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
@@ -313,9 +319,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          allow-repeats: false
           message: |
             [prod - api](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/api) available
             [prod - admin](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/admin) available
             [prod - public](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/public) available
-
-          allow-repeats: false
