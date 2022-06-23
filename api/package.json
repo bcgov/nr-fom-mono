@@ -7,7 +7,6 @@
     "start:batch": "nest start -- -batch",
     "build:api": "nest build",
     "gen:client-api:ng": "openapi-generator-cli generate -g typescript-angular -i openapi/swagger-spec.json -o ../libs/client/typescript-ng",
-    "debug:api": "nodemon --config nodemon.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "db:migrate-main": "npm run typeorm migration:run -- -f ./src/migrations/ormconfig-migration-main.ts",
     "db:migrate-main:revert": "npm run typeorm migration:revert -- -f ./src/migrations/ormconfig-migration-main.ts",
