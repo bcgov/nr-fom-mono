@@ -189,7 +189,7 @@ jobs:
 
           # Clear stale images for import/replacement
           if [ $(oc get is -l app=${{ env.NAME }}-${{ github.event.number }} -o name | wc -l) -gt 0 ]; then
-            echo oc delete is -l app=${{ env.NAME }}-${{ github.event.number }}
+            oc delete is -l app=${{ env.NAME }}-${{ github.event.number }}
           fi
 
           # Process and apply deployment templates
@@ -247,7 +247,7 @@ jobs:
 
           # Clear stale images for import/replacement
           if [ $(oc get is -l app=${{ env.NAME }}-${ZONE} -o name | wc -l) -gt 0 ]; then
-            echo oc delete is -l app=${{ env.NAME }}-${ZONE}
+            oc delete is -l app=${{ env.NAME }}-${ZONE}
           fi
 
           # Process and apply deployment templates
@@ -306,7 +306,7 @@ jobs:
 
           # Clear stale images for import/replacement
           if [ $(oc get is -l app=${{ env.NAME }}-${ZONE} -o name | wc -l) -gt 0 ]; then
-            echo oc delete is -l app=${{ env.NAME }}-${ZONE}
+            oc delete is -l app=${{ env.NAME }}-${ZONE}
           fi
 
           # Process and apply deployment templates
