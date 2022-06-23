@@ -11,7 +11,7 @@ import { AttachmentService } from '../attachment/attachment.service';
 import { AttachmentCreateRequest } from '../attachment/attachment.dto';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { User } from "@api-core/security/user";
-import { DataService } from 'apps/api/src/core/models/data.service';
+import { DataService } from '@core';
 import { ProjectService } from '@api-modules/project/project.service';
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 

@@ -1,15 +1,3 @@
-import { Controller, Get, Post, Put, Param, HttpStatus, Query, ParseIntPipe, UseInterceptors, BadRequestException, Req, UploadedFile, Delete } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
-
-import { InteractionService } from './interaction.service';
-import { PinoLogger } from 'nestjs-pino';
-import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
-import { UserRequiredHeader } from 'apps/api/src/core/security/auth.service';
-import { User } from "@api-core/security/user";
-import { FileInterceptor } from '@nestjs/platform-express';
-import { maxFileSizeBytes } from '../attachment/attachment.controller';
-import { validate } from 'class-validator';
-import _ = require('lodash');
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { User } from "@api-core/security/user";
 import { BadRequestException, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';

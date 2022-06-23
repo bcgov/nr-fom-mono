@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly.service';
+import { DataReadOnlyService } from '@core';
 
 @Controller()
 export class BaseReadOnlyController<E, C> {

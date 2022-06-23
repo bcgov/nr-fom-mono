@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { SubmissionTypeCode } from './submission-type-code.entity';
-import { CodeTableService } from 'apps/api/src/core/models/code-table.service';
+import { CodeTableService } from '@core';
 import { PinoLogger } from 'nestjs-pino';
 
 @Injectable()

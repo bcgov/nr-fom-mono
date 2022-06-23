@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Attachment } from './attachment.entity';
-import { DataService } from 'apps/api/src/core/models/data.service';
+import { DataService } from '@core';
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { AttachmentCreateRequest, AttachmentFileResponse, AttachmentResponse } from './attachment.dto';

@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository, UpdateResult } from 'typeorm';
 import { PublicComment } from './public-comment.entity';
-import { DataService } from 'apps/api/src/core/models/data.service';
+import { DataService } from '@core';
 import { PinoLogger } from 'nestjs-pino';
 import { User } from "@api-core/security/user";
 import { DeepPartial } from '@entities';

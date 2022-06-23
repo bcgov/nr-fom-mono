@@ -4,7 +4,7 @@ import { getRepository, Repository, SelectQueryBuilder } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Project } from './project.entity';
 import { PinoLogger } from 'nestjs-pino';
-import { DataService } from 'apps/api/src/core/models/data.service';
+import { DataService } from '@core';
 import { ProjectCreateRequest, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, 
          ProjectWorkflowStateChangeRequest, ProjectMetricsResponse, ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest } from './project.dto';
 import { DistrictService } from '../district/district.service';

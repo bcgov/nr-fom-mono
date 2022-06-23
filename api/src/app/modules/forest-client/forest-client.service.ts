@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ForestClient } from './forest-client.entity';
-import { DataReadOnlyService } from 'apps/api/src/core/models/data-readonly.service';
+import { DataReadOnlyService } from '@core';
 import { PinoLogger } from 'nestjs-pino';
 import { ForestClientResponse } from './forest-client.dto';
 
