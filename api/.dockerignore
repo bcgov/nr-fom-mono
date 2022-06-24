@@ -1,0 +1,38 @@
+# Git
+.git
+.github
+
+# Dev
+.vscode
+coverage
+*.sarif
+.eslint*
+.prettier*
+
+# Testing
+test
+
+# Pipeline and containers
+.pipeline
+docker
+openshift
+Dockerfile
+Containerfile
+docker-compose.y*ml
+
+# Docs
+*.md
+
+# Environments and secrets
+.env
+.ps1
+
+# Node
+node_modules
+nodemon*.json
+npm-debug.log
+npm-debug.log.*
+
+# Generated/transpiled files
+dist
+.dist
