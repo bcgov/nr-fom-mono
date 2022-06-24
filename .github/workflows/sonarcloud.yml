@@ -1,3 +1,5 @@
+name: SonarCloud
+
 on:
   push:
     branches:
@@ -20,3 +22,5 @@ jobs:
         with:
           args: >
             -Dsonar.exclusions=.github/**/*
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.projectKey=bcgov_nr-fom
