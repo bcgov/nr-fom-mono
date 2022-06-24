@@ -3,7 +3,7 @@ name: SonarCloud
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     types: [opened, synchronize, reopened]
 jobs:
@@ -23,4 +23,4 @@ jobs:
           args: >
             -Dsonar.exclusions=.github/**/*
             -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.projectKey=bcgov_nr-fom
+            -Dsonar.projectKey=bcgov
