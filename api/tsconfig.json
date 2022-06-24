@@ -1,0 +1,30 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "module": "commonjs",
+    "lib": ["es2017", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "importHelpers": true,
+    "target": "es2015",
+    "sourceMap": true,
+    "outDir": "./dist/api",
+    "types": ["jest", "node"],
+    "baseUrl": ".",
+    "paths": {
+      "@core": ["src/core"],
+      "@api-core/*": ["src/core/*"],
+      "@controllers": ["src/core/controllers"],
+      "@entities": ["src/core/entities"],
+      "@api-modules/*": ["src/app/modules/*"]
+    },
+    "incremental": true
+  }
+}
