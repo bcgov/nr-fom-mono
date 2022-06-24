@@ -9,12 +9,7 @@ FOM projects (proposals for logging, essentially) are submitted to FOM and made 
 
 Technology Stack: Angular, Node.js with Nest/TypeORM framework, PostgresSQL with PostGIS running in OCP v4
 
-This is a monorepo that includes the API backend and the two Angular front-ends.
-
-## Third-Party Products/Libraries used and the licenses they are covered by
-
-<!--- product/library and path to the LICENSE --->
-<!--- Example: <library_name> - [![GitHub](<shield_icon_link>)](<path_to_library_LICENSE>) --->
+This is a repo that includes the API backend and the two Angular front-ends.
 
 ## Documentation
 
@@ -44,38 +39,10 @@ docker-compose up -d db
 docker-compose up api
 ```
 
-### Local / Bare Metal
-
-Run npm install for each of the components.
-
-Fire up components using Docker Compose, but not the ones you want to work on locally.  Start commands are available in package.json.
-
-OBJECT_STORAGE_SECRET = object storage secret, available in the OpenShift dev secret `fom-object-storage-dev`
-
-Here's how to run only the public frontend locally:
-
-```
-# Database, api and admin in the background
-docker-compose up -d db api admin
-
-# Source local variables
-source ./localdev.env      # Linux, MacOS
-./localdev.env             # Windows
-
-# Object storage secret
-export OBJECT_STORAGE_SECRET=<hidden>
-
-# Install node modules
-npm i
-
-# Build and run the public frontend
-npm run start:public
-```
-
 ### Connect to local database:
 
 - Install dbeaver or pgadmin
-- Ensure database is running (docker-compose up -d db && npm run typeorm:migrate)
+- Ensure database is running (docker-compose up -d db && cd api && npm run typeorm:migrate)
 - Create PostGRES connection to local database using connection information as defined in docker-compose.yml
 
 ### To rebuild local database from scratch
@@ -86,47 +53,42 @@ To explicitly delete database:
 - docker-compose down
 - docker volume rm nr-fom-api_ms-postgres-data
 
+### Database Migrations Setup
+- See [API Backend - Database Migrations Setup](./api/README.md)
+
 ## Application Specific Setup:
 
 <!--- instruction on setup local environment and dependencies.. --->
-
-This project uses the Nest API framework and the Nx monorepo platform / cli tools.
-Nx is used to manage this repository and generate Nest components.
-See FRAMEWORK.md for nrwl nx documentation.
+- API Backend - See setup at [API Backend Readme](./api/README.md).
+<!-- TODO: link to two frontends README.md -->
 
 ## Client Library Generation
-These are the steps to generate the client library used by the frontend components (Admin + Public)
-- Code changes to the API that are documented in Swagger using Swagger annotations like @ApiTags, @ApiProperty 
-- Start the API component (npm run start:api) and access http://localhost:3333/api-json. Copy this content to '/apps/api/openapi/swagger-spec.json'
-- Remove the existing generated client library files. Delete the directories /libs/client/typescript-ng/{api|models}.
-- Generate the client library using 'npm run gen:client-api:ng'. Generated files will be placed into '/libs/client/typescript-ng'
-- Copy the client library into the Admin and Public components in /src/core/api
+- See Client Library Generation at [API Backend Readme](./api/README.md).
 
 ## Upgrading 3rd party dependencies
 
 Due to the minimal automated tests, the following should be done after major dependency changes:
-npm run build
-npm run test-unit
-npm run start:public
-npm run start:admin (ideally with keycloak and object storage enabled)
-npm run start:api
-Test both front-ends.
+- (API Backend): npm run build:api
+- (API Backend): npm run test-unit
+- (Public Frontend): npm run start:public
+- (Admin Frontend): npm run start:admin (ideally with keycloak and object storage enabled)
+- (API Backend): npm run start:api
+- Test both front-ends.
 
-To assess the need for upgrades:
-npx dep-check
-npm audit
-
+<!-- TODO
 ## Deployment (OpenShift)
 
 See [OpenShift Readme](./openshift/README.md)
 
-<!--- Best to include details in a openshift/README.md --->
+<!--- Best to include details in a openshift/README.md --- >
+-->
 
+<!---
 ## Getting Help or Reporting an Issue
 
-<!--- Example below, modify accordingly --->
-
+<!-- TODO: where to report???
 To report bugs/issues/feature requests, please file an [issue](../../issues).
+-->
 
 ## How to Contribute
 
@@ -136,17 +98,4 @@ Please note that this project is released with a [Contributor Code of Conduct](.
 By participating in this project you agree to abide by its terms.
 
 ## License
-
-    Copyright 2021 Province of British Columbia
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+- See [LICENSE](./LICENSE.md)
