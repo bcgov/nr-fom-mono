@@ -37,7 +37,6 @@ Here's how to run only the api locally:
 ```
 # Source local variables
 source ./localdev.env      # Linux, MacOS
-./localdev.env             # Windows
 
 # Object storage secret
 export OBJECT_STORAGE_SECRET=<hidden>
