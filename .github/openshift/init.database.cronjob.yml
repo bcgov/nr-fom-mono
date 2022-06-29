@@ -1,132 +1,97 @@
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 kind: Template
-labels:
-  template: fom-batch-deploy
-  app-component: ${NAME}
-  suffix: fom${SUFFIX}
-  app.kubernetes.io/part-of: fom
 metadata:
-  name: fom-batch-deploy
+  name: ${NAME}-batch
+  annotations:
+    description: "Forest Operations Map"
+    tags: "fom"
+    iconClass: icon-js
+labels:
+  app: ${NAME}-${ZONE}
+  app.kubernetes.io/part-of: ${NAME}-${ZONE}
 parameters:
-  - description: OpenShift namespace
-    displayName: OpenShift namespace
-    name: NAMESPACE
+  - name: NAME
+    description: Product name
+    value: fom
+  - name: COMPONENT
+    description: Component name
+    value: api
+  - name: ZONE
+    description: Deployment zone, e.g. pr-### or prod
     required: true
-  - description: API Image Version to use
-    displayName: API Image Version
-    name: IMAGE_STREAM_VERSION
-    required: true
-  - description: Suffix specifying the release/build/environment. Can be blank (for production).
-    displayName: Suffix
-    name: SUFFIX
-    required: true
-  - description: Environment corresponding to namespace (dev/test/prod).
+  - description: Environment corresponding to namespace (dev/test/prod)
     displayName: Environment
     name: ENV
     value: dev
-    required: true
-  - name: DATABASE_SERVICE_NAME
-    displayName: Database Service Name
-    description: The name of the database service.
-    required: true
-  # Optional parameters with defaults
-  - description: Request for CPU resources measured in cpu units, e.g. 200m
-    displayName: CPU resource request
-    name: REQUEST_CPU
-    required: false
+  - description: URL of Object Storage Service.
+    displayName: Object Storage URL
+    name: OBJECT_STORAGE_URL
+    value: "nrs.objectstore.gov.bc.ca"
+  - name: CPU_REQUEST
     value: 50m
-  - description: Limit for CPU resources measured in cpu units, e.g. 200m
-    displayName: CPU resource limit
-    name: LIMIT_CPU
-    required: false
-    value: 200m
-  - description: Request for memory resources measured in bytes, e.g. 512Mi, 1Gi.
-    displayName: Memory resource request
-    name: REQUEST_MEMORY
-    required: false
+  - name: MEMORY_REQUEST
     value: 50Mi
-  - description: Limit for memory resources measured in bytes, e.g. 512Mi, 1Gi.
-    displayName: Memory resource limit
-    name: LIMIT_MEMORY
-    required: false
-    value: 1Gi
-  # Hardcoded parameters, no need to pass in or change.
-  - description: Name of the application component being deployed.
-    displayName: Name
-    name: NAME
-    value: fom-batch
-  - description: Name of the database component used by the batch.
-    displayName: Database Name
-    name: DB_NAME
-    value: fom-db-ha
+  - name: CRON_MINUTES
+    description: Random number, 0-60, for scheduling cronjobs
+    from: "[0-5]{1}[0-9]{1}"
+    generate: expression
 objects:
   - kind: CronJob
     apiVersion: batch/v1beta1
     metadata:
-      name: ${NAME}${SUFFIX}
+      name: ${NAME}-${ZONE}
     spec:
       concurrencyPolicy: Replace
-      # Timezone used for Cron schedule appears to be UTC. We want this process to run early morning BC time, which is -7 UTC ignoring daylights savings. So 9am UTC should be good enough.
-      schedule: "0 9 * * * " # Run at 9:00am UTC each day.
+      schedule: "${CRON_MINUTES} 9 * * * " # Run daily at 9:xx AM UTC
       jobTemplate:
         spec:
           template:
             metadata:
               labels:
-                cronjob: ${NAME}${SUFFIX}
+                cronjob: ${NAME}-${ZONE}
             spec:
               restartPolicy: OnFailure
               containers:
                 - name: batch
-                  # Cron Jobs don't support ImageChangeTriggers, so we explicitly specify the image with a pull always policy to ensure always up to date.
-                  # Need to use image-registry.../${NAMESPACE}/ prefix due to OpenShift defect https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: "image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/fom-api:${IMAGE_STREAM_VERSION}"
+                  image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
                   imagePullPolicy: Always
                   args: ["-batch"]
                   env:
-                    - name: DB_PASSWORD
-                      valueFrom:
-                        secretKeyRef:
-                          key: app-db-password
-                          name: ${DB_NAME}${SUFFIX}
-                    - name: DB_USERNAME
-                      valueFrom:
-                        secretKeyRef:
-                          key: app-db-username
-                          name: ${DB_NAME}${SUFFIX}
+                    - name: DB_HOST
+                      value: ${NAME}-${ZONE}-db
                     - name: DB_NAME
                       valueFrom:
                         secretKeyRef:
-                          key: app-db-name
-                          name: ${DB_NAME}${SUFFIX}
-                    - name: DB_HOST
-                      value: "${DATABASE_SERVICE_NAME}"
-                    - name: OBJECT_STORAGE_URL
-                      valueFrom:
-                        configMapKeyRef:
-                          key: object-storage-url
-                          name: fom-api${SUFFIX}
-                    - name: OBJECT_STORAGE_BUCKET
+                          key: database-db
+                          name: ${NAME}-${ZONE}-db
+                    - name: DB_PASSWORD
                       valueFrom:
                         secretKeyRef:
-                          key: bucket
-                          name: fom-object-storage-${ENV}
+                          key: database-password
+                          name: ${NAME}-${ZONE}-db
+                    - name: DB_USERNAME
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-user
+                          name: ${NAME}-${ZONE}-db
                     - name: OBJECT_STORAGE_ACCESS_ID
                       valueFrom:
                         secretKeyRef:
                           key: access_id
+                          name: fom-object-storage-${ENV}
+                    - name: OBJECT_STORAGE_BUCKET
+                      valueFrom:
+                        secretKeyRef:
+                          key: bucket
                           name: fom-object-storage-${ENV}
                     - name: OBJECT_STORAGE_SECRET
                       valueFrom:
                         secretKeyRef:
                           key: secret
                           name: fom-object-storage-${ENV}
-                    # We don't supply the data encryption key because the batch process doesn't need to interact with encrypted data.
-                    # We don't supply keycloak configuration because the batch process doesn't need to interact with Keycloak.
+                    - name: OBJECT_STORAGE_URL
+                      value: ${OBJECT_STORAGE_URL}
                   resources:
                     requests:
-                      cpu: ${REQUEST_CPU}
-                      memory: ${REQUEST_MEMORY}
-                    limits:
-                      cpu: ${LIMIT_CPU}
-                      memory: ${LIMIT_MEMORY}
+                      cpu: ${CPU_REQUEST}
+                      memory: ${MEMORY_REQUEST}
