@@ -4,5 +4,6 @@
     "outDir": "dist/public",
     "types": []
   },
+  "exclude": ["**/*.spec.ts"],
   "files": ["src/main.ts", "src/polyfills.ts"]
 }
