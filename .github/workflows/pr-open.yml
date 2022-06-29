@@ -249,9 +249,8 @@ jobs:
         if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
         name: Review status
         run: |
-          echo "Please verify at least one approving review and/or address requested changes"
-          echo
-          echo "Then retry this step"
+          echo -e "\nPipeline stopped until approving review and/or requested changes are addressed."
+          echo -e "\nThen retry this step.\n"
           exit 1
 
   deploy-test:
