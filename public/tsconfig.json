@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
+    // "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -13,12 +13,18 @@
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@api-client": ["../libs/client/typescript-ng"],
-      "@utility/*": ["../libs/utility/src/*"],
-      "@public-core/*": ["src/core/*"]
-    }
+    "outDir": "dist/public",
+    // "baseUrl": ".",
+    // "paths": {
+    //   "@public-core/*": ["core/*"]
+    // },
+    // "typeRoots": ["./node_modules/@types/"]
   },
-  "exclude": ["node_modules", "tmp"]
+  "exclude": ["node_modules", "tmp"],
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
+  }
 }
