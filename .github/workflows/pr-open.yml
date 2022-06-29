@@ -197,6 +197,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
@@ -268,6 +269,7 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
             -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
@@ -327,6 +329,7 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
             -p KEYCLOAK_URL="https://prod.oidc.gov.bc.ca/auth" -p DB_TESTDATA=false \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
