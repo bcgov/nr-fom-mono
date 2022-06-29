@@ -3,13 +3,11 @@ kind: Template
 labels:
   template: fom-batch-deploy
   app-component: ${NAME}
-  # Need prefix for suffix in case it starts with a dash or is empty. Label values aren't allowed to start with a dash.
   suffix: fom${SUFFIX}
   app.kubernetes.io/part-of: fom
 metadata:
   name: fom-batch-deploy
 parameters:
-  # Mandatory parameters to be supplied.
   - description: OpenShift namespace
     displayName: OpenShift namespace
     name: NAMESPACE
@@ -132,20 +130,3 @@ objects:
                     limits:
                       cpu: ${LIMIT_CPU}
                       memory: ${LIMIT_MEMORY}
-  ### Network Policy - App to DB Traffic
-  - kind: NetworkPolicy
-    apiVersion: networking.k8s.io/v1
-    metadata:
-      name: app-to-db-allow-${NAME}${SUFFIX}
-    spec:
-      podSelector:
-        matchLabels:
-          statefulset: ${DB_NAME}${SUFFIX}
-      ingress:
-        - from:
-            - podSelector:
-                matchLabels:
-                  cronjob: ${NAME}${SUFFIX}
-          ports:
-            - protocol: TCP
-              port: 5432
