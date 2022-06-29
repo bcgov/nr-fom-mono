@@ -240,6 +240,8 @@ jobs:
     needs:
       - deploy-dev
     runs-on: ubuntu-latest
+    environment:
+      name: test
     steps:
       - id: "reviews"
         uses: jrylan/github-action-reviews-counter@main
