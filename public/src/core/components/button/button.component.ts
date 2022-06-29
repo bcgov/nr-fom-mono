@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { StateService } from '@public-core/services/state.service';
+import { StateService } from '../../../core/services/state.service';
 
 @Component({
   selector: 'app-button',

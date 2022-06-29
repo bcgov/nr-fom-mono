@@ -2,11 +2,11 @@ import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChi
 import {
   AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
   SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
-} from '@api-client';
+} from '../../../../../libs/client/typescript-ng';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { UrlService } from '@public-core/services/url.service';
-import { ConfigService } from '@utility/services/config.service';
-import { FeatureSelectService } from '@utility/services/featureSelect.service';
+import { UrlService } from '../../../core/services/url.service';
+import { ConfigService } from '../../../../../libs/utility/src/services/config.service';
+import { FeatureSelectService } from '../../../../../libs/utility/src/services/featureSelect.service';
 import * as _ from 'lodash';
 import { forkJoin, Subject } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';

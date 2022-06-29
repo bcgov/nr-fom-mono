@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
 import { MatAccordion } from '@angular/material/expansion';
-import { PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
-import { UrlService } from '@public-core/services/url.service';
+import { PublicNoticePublicFrontEndResponse, PublicNoticeService } from '../../../../../libs/client/typescript-ng';
+import { UrlService } from '../../../core/services/url.service';
 import * as _ from 'lodash';
 import { IUpdateEvent } from '../projects.component';
 import { Panel } from '../utils/panel.enum';

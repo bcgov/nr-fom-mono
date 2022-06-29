@@ -2,9 +2,9 @@ import {
   AfterViewInit, ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EventEmitter, Injector, Input, OnChanges,
   OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
-import { ProjectPublicSummaryResponse } from '@api-client';
-import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
-import { MapLayers } from '@utility/models/map-layers';
+import { ProjectPublicSummaryResponse } from '../../../../../libs/client/typescript-ng';
+import { MapLayersService, OverlayAction } from '../../../../src/core/services/mapLayers.service';
+import { MapLayers } from '../../../../../libs/utility/src/models/map-layers';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import * as _ from 'lodash';
@@ -135,10 +135,10 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.map.addLayer(this.markerClusterGroup);
 
     this.mapLayers.getAllLayers().forEach( layer => {
-      this.map.addLayer(layer);
+      this.map.addLayer(layer as any);
     })
 
-    this.mapLayers.addLayerControl(this.map);
+    this.mapLayers.addLayerControl(this.map as any);
 
     // map attribution
     L.control.attribution({ position: 'bottomright' }).addTo(this.map);
@@ -392,7 +392,7 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   }
 
   private updateOnLayersChange() {
-    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
+    this.mapLayersService.mapLayersUpdate(this.map as any, this.mapLayers);
   }
 }
 

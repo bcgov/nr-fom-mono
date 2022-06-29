@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
-import { StateService } from '@public-core/services/state.service';
+import { StateService } from '../../core/services/state.service';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { DialogComponent } from '@public-core/components/dialog/dialog.component';
-import { ModalService } from '@public-core/services/modal.service';
+import { DialogComponent } from '../../core/components/dialog/dialog.component';
+import { ModalService } from '../../core/services/modal.service';
 
 @Injectable({
   providedIn: 'root',

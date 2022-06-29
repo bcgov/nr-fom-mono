@@ -1,10 +1,11 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
-import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
-import { FeatureSelectService } from '@utility/services/featureSelect.service';
-import { MapLayers } from '@utility/models/map-layers';
+import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '../../../../../../libs/client/typescript-ng';
+import { MapLayersService, OverlayAction } from '../../../../core/services/mapLayers.service';
+import { FeatureSelectService } from '../../../../../../libs/utility/src/services/featureSelect.service';
+import { MapLayers } from '../../../../../../libs/utility/src/models/map-layers';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
+
 /*
   Leaflet has bug and would show these error on console:
   http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)
@@ -91,7 +92,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   public createBasicMap() {
     this.projectFeatures = L.featureGroup();   
     this.map = L.map('map', {
-      layers: this.mapLayers.getAllLayers(),
+      layers: this.mapLayers.getAllLayers() as any[],
       zoomControl: false, // will be added manually below
       attributionControl: true, 
       scrollWheelZoom: false, // not desired in thumbnail
@@ -103,7 +104,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
       maxBounds: L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180)) // restrict view to "the world"
     });
 
-    this.mapLayers.addLayerControl(this.map);
+    this.mapLayers.addLayerControl(this.map as any);
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
       if (e.name != this.mapLayers.getActiveBaseLayerName()) {
         this.mapLayers.setActiveBaseLayerName(e.name);
@@ -118,7 +119,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     // Initialize current app-map layers state (for the first time when this component map is shown)
-    this.mapLayersService.applyCurrentMapLayers(this.map, this.mapLayers);
+    this.mapLayersService.applyCurrentMapLayers(this.map as any, this.mapLayers);
   }
 
   public addScale() {
@@ -222,7 +223,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   }
   
   private updateOnLayersChange(): void {
-    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
+    this.mapLayersService.mapLayersUpdate(this.map as any, this.mapLayers);
   }
 
   private subscribeToMapLayersChange(): void {

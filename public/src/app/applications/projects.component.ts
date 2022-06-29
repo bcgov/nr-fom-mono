@@ -9,11 +9,11 @@ import { AppMapComponent } from './app-map/app-map.component';
 import { FindPanelComponent } from './find-panel/find-panel.component';
 import { DetailsPanelComponent } from './details-panel/details-panel.component';
 import { SplashModalComponent } from './splash-modal/splash-modal.component';
-import { UrlService } from '@public-core/services/url.service';
+import { UrlService } from '../../../src/core/services/url.service';
 import { Panel } from './utils/panel.enum';
-import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
+import { ProjectPublicSummaryResponse, ProjectService } from '../../../../libs/client/typescript-ng/';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
-import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '../../../src/core/services/fomFilters.service';
 import { takeUntil } from 'rxjs/operators';
 import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
 

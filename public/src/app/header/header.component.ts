@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { ConfigService } from '@utility/services/config.service';
+import { ConfigService } from '../../../../libs/utility/src/services/config.service';
 
 @Component({
   selector: 'app-header',

@@ -1,4 +1,4 @@
-import { DistrictResponse, ResponseCode, WorkflowStateCode } from '@api-client';
+import { DistrictResponse, ResponseCode, WorkflowStateCode } from '../../../../libs/client/typescript-ng';
 
 export interface CodeTables {
   responseCode: ResponseCode[],
