@@ -32,7 +32,7 @@ jobs:
         id: del-keycroak
         with:
           add_delete: "del"
-          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin
+          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
           secret: ${{ secrets.KC_SECRET }}
           clientid: ${{ secrets.KC_CLIENTID }}
           clientid_2: "fom"

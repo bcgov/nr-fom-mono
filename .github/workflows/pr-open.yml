@@ -217,7 +217,7 @@ jobs:
         id: add-keycroak
         with:
           add_delete: "add"
-          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin
+          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
           secret: ${{ secrets.KC_SECRET }}
           clientid: ${{ secrets.KC_CLIENTID }}
           clientid_2: "fom"
@@ -284,6 +284,12 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${ZONE}-admin -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-public -w
 
+          # Remove completed build runs, build pods and deployment pods
+          for p in $(oc get po | grep "Completed" | awk '{print $1}')
+          do
+            oc delete po ${p}
+          done
+
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
         env:
@@ -343,6 +349,12 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-admin -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-public -w
+
+          # Remove completed build runs, build pods and deployment pods
+          for p in $(oc get po | grep "Completed" | awk '{print $1}')
+          do
+            oc delete po ${p}
+          done
 
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
