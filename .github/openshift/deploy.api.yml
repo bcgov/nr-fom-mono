@@ -19,7 +19,11 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - description: Environment corresponding to namespace (dev/test/prod).
+    # https://bugzilla.redhat.com/show_bug.cgi?id=2000216
+  - name: NAMESPACE
+    description: Current namespace (required for image pull bug)
+    required: true
+  - description: Environment corresponding to namespace (dev/test/prod)
     displayName: Environment
     name: ENV
     value: dev
@@ -40,7 +44,7 @@ parameters:
     displayName: SiteMinder Server URL
     name: SITEMINDER_URL
     value: "https://logontest7.gov.bc.ca"
-  - description: URL of Object Storage Service.
+  - description: URL of Object Storage Service
     displayName: Object Storage URL
     name: OBJECT_STORAGE_URL
     value: "nrs.objectstore.gov.bc.ca"
@@ -56,6 +60,10 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
+  - name: CRON_MINUTES
+    description: Random number, 0-60, for scheduling cronjobs
+    from: "[0-5]{1}[0-9]{1}"
+    generate: expression
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -225,3 +233,63 @@ objects:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
+  - kind: CronJob
+    apiVersion: batch/v1
+    metadata:
+      name: ${NAME}-${ZONE}
+    spec:
+      concurrencyPolicy: Replace
+      schedule: "${CRON_MINUTES} 9 * * * " # Run daily at 9:xx AM UTC
+      jobTemplate:
+        spec:
+          template:
+            metadata:
+              labels:
+                cronjob: ${NAME}-${ZONE}
+            spec:
+              restartPolicy: OnFailure
+              containers:
+                - name: ${NAME}-batch
+                  # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
+                  image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+                  imagePullPolicy: Always
+                  args: ["-batch"]
+                  env:
+                    - name: DB_HOST
+                      value: ${NAME}-${ZONE}-db
+                    - name: DB_NAME
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-db
+                          name: ${NAME}-${ZONE}-db
+                    - name: DB_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-password
+                          name: ${NAME}-${ZONE}-db
+                    - name: DB_USERNAME
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-user
+                          name: ${NAME}-${ZONE}-db
+                    - name: OBJECT_STORAGE_ACCESS_ID
+                      valueFrom:
+                        secretKeyRef:
+                          key: access_id
+                          name: fom-object-storage-${ENV}
+                    - name: OBJECT_STORAGE_BUCKET
+                      valueFrom:
+                        secretKeyRef:
+                          key: bucket
+                          name: fom-object-storage-${ENV}
+                    - name: OBJECT_STORAGE_SECRET
+                      valueFrom:
+                        secretKeyRef:
+                          key: secret
+                          name: fom-object-storage-${ENV}
+                    - name: OBJECT_STORAGE_URL
+                      value: ${OBJECT_STORAGE_URL}
+                  resources:
+                    requests:
+                      cpu: ${CPU_REQUEST}
+                      memory: ${MEMORY_REQUEST}
