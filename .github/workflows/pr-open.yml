@@ -235,8 +235,8 @@ jobs:
             [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
 
-  review-check:
-    name: Review-Check
+  gatekeeper:
+    name: Gatekeeper
     needs:
       - deploy-dev
     runs-on: ubuntu-latest
@@ -251,6 +251,7 @@ jobs:
         if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
         name: Review status
         run: |
+          echo -e "\nGatekept namespace: ${{ secrets.NAMESPACE }}"
           echo -e "\nPipeline stopped until approving review and/or requested changes are addressed."
           echo -e "\nThen retry this step.\n"
           exit 1
