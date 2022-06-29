@@ -235,10 +235,29 @@ jobs:
             [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
 
+  review-check:
+    name: Review-Check
+    needs:
+      - deploy-dev
+    runs-on: ubuntu-latest
+    steps:
+      - id: "reviews"
+        uses: jrylan/github-action-reviews-counter@main
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+      - # Conditionally run the next step
+        if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
+        name: Review status
+        run: |
+          echo "Please verify at least one approving review and/or address requested changes"
+          echo
+          echo "Then retry this step"
+          exit 1
+
   deploy-test:
     name: Deploy-Test
     needs:
-      - deploy-dev
+      - review-check
     runs-on: ubuntu-latest
     environment:
       name: test
