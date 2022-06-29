@@ -25,11 +25,11 @@ import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
 
 // services
-import { UrlService } from '../core/services/url.service';
-import { ApiModule, Configuration } from '../../../libs/client/typescript-ng'; 
-import { ErrorInterceptor } from '../core/interceptors/http-error.interceptor';
-import { FOMFiltersService } from '../../src/core/services/fomFilters.service';
-import { ConfigService, retrieveApiBasePath } from '../../../libs/utility/src/services/config.service';
+import { UrlService } from '@public-core/services/url.service';
+import { ApiModule, Configuration } from '@api-client'; 
+import { ErrorInterceptor } from '@public-core/interceptors/http-error.interceptor';
+import { FOMFiltersService } from '@public-core/services/fomFilters.service';
+import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
 
 const apiConfig = new Configuration({
   basePath: retrieveApiBasePath()

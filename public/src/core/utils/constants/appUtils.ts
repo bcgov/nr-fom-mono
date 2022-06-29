@@ -1,4 +1,4 @@
-import { SpatialObjectCodeEnum } from '../../../../../libs/client/typescript-ng';
+import { SpatialObjectCodeEnum } from '@api-client';
 
 export const DELIMITER = {
   PIPE: '|'

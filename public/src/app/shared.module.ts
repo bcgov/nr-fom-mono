@@ -3,12 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
-import { OrderByPipe } from '../core/pipes/order-by.pipe';
-import { NewlinesPipe } from '../core/pipes/newlines.pipe';
-import { ObjectFilterPipe } from '../core/pipes/object-filter.pipe';
-import { LinkifyPipe } from '../core/pipes/linkify.pipe';
+import { OrderByPipe } from '@public-core/pipes/order-by.pipe';
+import { NewlinesPipe } from '@public-core/pipes/newlines.pipe';
+import { ObjectFilterPipe } from '@public-core/pipes/object-filter.pipe';
+import { LinkifyPipe } from '@public-core/pipes/linkify.pipe';
 import { MatDialogModule } from '@angular/material/dialog';
-import { DialogComponent } from '../core/components/dialog/dialog.component';
+import { DialogComponent } from '@public-core/components/dialog/dialog.component';
 
 @NgModule({
   imports: [BrowserModule, MatProgressBarModule, MatSnackBarModule, MatDialogModule],

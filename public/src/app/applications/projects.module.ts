@@ -23,7 +23,7 @@ import { MatTableModule } from '@angular/material/table'
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ShapeInfoComponent } from './details-panel/shape-info/shape-info.component';
 import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
-import { ShortenPipe } from '../../core/pipes/shorten.pipe';
+import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PublicNoticesFilterPanelComponent } from './app-public-notices/notices-filter-panel/public-notices-filter-panel.component';

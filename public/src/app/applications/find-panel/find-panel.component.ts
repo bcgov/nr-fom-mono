@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { WorkflowStateCode } from '../../../../../libs/client/typescript-ng';
-import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '../../../core/services/fomFilters.service';
-import { UrlService } from '../../../core/services/url.service';
+import { WorkflowStateCode } from '@api-client';
+import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';

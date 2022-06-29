@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AppUtils } from '../../core/utils/constants/appUtils';
+import { AppUtils } from '@public-core/utils/constants/appUtils';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from '../../app/applications/utils/filter';
 

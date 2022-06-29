@@ -1,8 +1,8 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '../../../../../../libs/client/typescript-ng';
-import { MapLayersService, OverlayAction } from '../../../../core/services/mapLayers.service';
-import { FeatureSelectService } from '../../../../../../libs/utility/src/services/featureSelect.service';
-import { MapLayers } from '../../../../../../libs/utility/src/models/map-layers';
+import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
+import { MapLayers } from '@utility/models/map-layers';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
 

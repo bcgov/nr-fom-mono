@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UrlService } from '../../../../../src/core/services/url.service';
 import { Panel } from '../../../applications/utils/panel.enum';
-import { ProjectPublicSummaryResponse } from '../../../../../../libs/client/typescript-ng';
+import { ProjectPublicSummaryResponse } from '@api-client';
 import { StateService } from '../../../../../src/core/services/state.service';
 import * as _ from 'lodash';
 

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { UrlService } from '../../../core/services/url.service';
+import { UrlService } from '@public-core/services/url.service';
 
 export enum SplashModalResult {
   Dismissed,
