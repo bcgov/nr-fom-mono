@@ -263,7 +263,7 @@ jobs:
   deploy-test:
     name: Deploy-Test
     needs:
-      - review-check
+      - gatekeeper
     runs-on: ubuntu-latest
     environment:
       name: test
