@@ -243,9 +243,9 @@ jobs:
     environment:
       name: test
     steps:
-      - name: Namespace check
+      - name: Obtain approval for TEST and/or PROD deployment
         run: |
-          echo -e "\Checking access to namespace: ${{ secrets.NAMESPACE }}"
+          echo -e "\Checking access for namespace: ${{ secrets.NAMESPACE }}"
 
       - id: "reviews"
         uses: jrylan/github-action-reviews-counter@main
@@ -256,8 +256,8 @@ jobs:
         if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
         name: Review status
         run: |
-          echo -e "\nPipeline stopped until approving review and/or requested changes are addressed."
-          echo -e "\nThen retry this step.\n"
+          echo -e "\nPipeline stopped due to missing code review or outstanding change requests."
+          echo -e "\nPlease resolve before retrying this step.\n"
           exit 1
 
   deploy-test:
