@@ -92,7 +92,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   public createBasicMap() {
     this.projectFeatures = L.featureGroup();   
     this.map = L.map('map', {
-      layers: this.mapLayers.getAllLayers() as any[],
+      layers: this.mapLayers.getAllLayers(),
       zoomControl: false, // will be added manually below
       attributionControl: true, 
       scrollWheelZoom: false, // not desired in thumbnail
@@ -104,7 +104,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
       maxBounds: L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180)) // restrict view to "the world"
     });
 
-    this.mapLayers.addLayerControl(this.map as any);
+    this.mapLayers.addLayerControl(this.map);
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
       if (e.name != this.mapLayers.getActiveBaseLayerName()) {
         this.mapLayers.setActiveBaseLayerName(e.name);
@@ -119,7 +119,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     // Initialize current app-map layers state (for the first time when this component map is shown)
-    this.mapLayersService.applyCurrentMapLayers(this.map as any, this.mapLayers);
+    this.mapLayersService.applyCurrentMapLayers(this.map, this.mapLayers);
   }
 
   public addScale() {
@@ -223,7 +223,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
   }
   
   private updateOnLayersChange(): void {
-    this.mapLayersService.mapLayersUpdate(this.map as any, this.mapLayers);
+    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
   }
 
   private subscribeToMapLayersChange(): void {

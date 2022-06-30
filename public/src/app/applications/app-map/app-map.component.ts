@@ -135,10 +135,10 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.map.addLayer(this.markerClusterGroup);
 
     this.mapLayers.getAllLayers().forEach( layer => {
-      this.map.addLayer(layer as any);
+      this.map.addLayer(layer);
     })
 
-    this.mapLayers.addLayerControl(this.map as any);
+    this.mapLayers.addLayerControl(this.map);
 
     // map attribution
     L.control.attribution({ position: 'bottomright' }).addTo(this.map);
@@ -392,7 +392,7 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   }
 
   private updateOnLayersChange() {
-    this.mapLayersService.mapLayersUpdate(this.map as any, this.mapLayers);
+    this.mapLayersService.mapLayersUpdate(this.map, this.mapLayers);
   }
 }
 
