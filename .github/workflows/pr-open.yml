@@ -235,6 +235,7 @@ jobs:
             [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
 
+  # TEST and/or PROD GitHub Environments need "Required reviewers" configured for this to work
   gatekeeper:
     name: Gatekeeper
     needs:
@@ -252,12 +253,22 @@ jobs:
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
 
-      - # Conditionally run the next step
+      - name: Deployment update
         if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
+        uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          allow-repeats: true
+          message: |
+            Pipeline stopped due to missing code review and/or outstanding change requests.
+            Please resolve before retrying the Gatekeeper job.
+
+      - if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
         name: Review status
         run: |
-          echo -e "\nPipeline stopped due to missing code review or outstanding change requests."
-          echo -e "\nPlease resolve before retrying this step.\n"
+          echo -e "\nPipeline stopped due to missing code review and/or outstanding change requests."
+          echo -e "\nPlease resolve before retrying this job.\n"
           exit 1
 
   deploy-test:
