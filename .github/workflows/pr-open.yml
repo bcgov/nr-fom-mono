@@ -243,15 +243,19 @@ jobs:
     environment:
       name: test
     steps:
+      - name: Namespace check
+        run: |
+          echo -e "\Checking access to namespace: ${{ secrets.NAMESPACE }}"
+
       - id: "reviews"
         uses: jrylan/github-action-reviews-counter@main
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
       - # Conditionally run the next step
         if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
         name: Review status
         run: |
-          echo -e "\nGatekept namespace: ${{ secrets.NAMESPACE }}"
           echo -e "\nPipeline stopped until approving review and/or requested changes are addressed."
           echo -e "\nThen retry this step.\n"
           exit 1
