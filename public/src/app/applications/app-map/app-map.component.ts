@@ -3,7 +3,7 @@ import {
   OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
 import { ProjectPublicSummaryResponse } from '@api-client';
-import { MapLayersService, OverlayAction } from '../../../../src/core/services/mapLayers.service';
+import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 import { MapLayers } from '@utility/models/map-layers';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
