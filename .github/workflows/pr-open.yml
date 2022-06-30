@@ -245,34 +245,6 @@ jobs:
     env:
       ZONE: test
     steps:
-      - name: Obtain approval for TEST and/or PROD deployment
-        run: |
-          echo -e "\Checking access for namespace: ${{ secrets.NAMESPACE }}"
-
-      - id: "reviews"
-        uses: jrylan/github-action-reviews-counter@main
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-
-      - name: Deployment update
-        if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
-        uses: mshick/add-pr-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          allow-repeats: true
-          message: |
-            Pipeline stopped due to missing code review and/or outstanding change requests.
-            Please resolve before retrying the Gatekeeper job.
-
-      # GitHub Environment's "Required reviewers" must be configured for this to work
-      - if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
-        name: Review status
-        run: |
-          echo -e "\nPipeline stopped due to missing code review and/or outstanding change requests."
-          echo -e "\nPlease resolve before retrying this job.\n"
-          exit 1
-
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
@@ -328,6 +300,30 @@ jobs:
             [test - api](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/api) available
             [test - admin](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/admin) available
             [test - public](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/public) available
+
+      - id: "reviews"
+        uses: jrylan/github-action-reviews-counter@main
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Deployment update
+        if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
+        uses: mshick/add-pr-comment@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          allow-repeats: true
+          message: |
+            Pipeline stopped due to missing code review and/or outstanding change requests.
+            Please resolve before retrying the Gatekeeper job.
+
+      # GitHub Environment's "Required reviewers" must be configured for this to work
+      - if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
+        name: Review status
+        run: |
+          echo -e "\nPipeline stopped due to missing code review and/or outstanding change requests."
+          echo -e "\nPlease resolve before retrying this job.\n"
+          exit 1
 
   deploy-prod:
     name: Deploy-Prod
