@@ -235,14 +235,15 @@ jobs:
             [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
 
-  # TEST and/or PROD GitHub Environments need "Required reviewers" configured for this to work
-  gatekeeper:
-    name: Gatekeeper
+  deploy-test:
+    name: Deploy-Test
     needs:
       - deploy-dev
     runs-on: ubuntu-latest
     environment:
       name: test
+    env:
+      ZONE: test
     steps:
       - name: Obtain approval for TEST and/or PROD deployment
         run: |
@@ -264,6 +265,7 @@ jobs:
             Pipeline stopped due to missing code review and/or outstanding change requests.
             Please resolve before retrying the Gatekeeper job.
 
+      # GitHub Environment's "Required reviewers" must be configured for this to work
       - if: "steps.reviews.outputs.approved == 0 || steps.reviews.outputs.changes_requested > 0"
         name: Review status
         run: |
@@ -271,16 +273,6 @@ jobs:
           echo -e "\nPlease resolve before retrying this job.\n"
           exit 1
 
-  deploy-test:
-    name: Deploy-Test
-    needs:
-      - gatekeeper
-    runs-on: ubuntu-latest
-    environment:
-      name: test
-    env:
-      ZONE: test
-    steps:
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
