@@ -5,7 +5,8 @@ FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 as builder
 WORKDIR /app
 COPY . ./
 USER root
-RUN cd public && \
+RUN npm ci && \
+    cd public && \
     npm ci && \
     npm run build:public && \
     rm -rf node_modules && \
