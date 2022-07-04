@@ -5,7 +5,8 @@ FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 as builder
 WORKDIR /app
 COPY . ./
 USER root
-RUN npm ci && \
+RUN cd public && \
+    npm ci && \
     npm run build:public && \
     rm -rf node_modules && \
     npm i typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
@@ -29,8 +30,8 @@ COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 # Copy over app
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/public/node_modules ./node_modules
+COPY --from=builder /app/public/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/public/server.js .
 
