@@ -31,6 +31,7 @@
     "jquery": "^3.5.1",
     "leaflet": "~1.7.1",
     "leaflet.markercluster": "~1.5.3",
+    "linkify-it": "^3.0.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
     "ngx-bootstrap": "^7.1.2",
