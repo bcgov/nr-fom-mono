@@ -5,7 +5,8 @@ FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 as builder
 WORKDIR /app
 COPY . ./
 USER root
-RUN npm ci && \
+RUN dnf install -y ca-certificates && \
+    npm ci && \
     npm run build:api
 
 # Deployment container
@@ -21,6 +22,7 @@ COPY --from=builder /usr/lib64/libssl.so.1.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libstdc++.so.6 /usr/lib64/
 COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
+COPY --from=builder /etc/pki /etc/pki
 
 # Copy over app
 WORKDIR /app

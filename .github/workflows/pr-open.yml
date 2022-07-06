@@ -197,6 +197,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
@@ -210,6 +211,18 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-api -w
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-admin -w
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-public -w
+
+      - name: Add KeyCroak Redirect URL for Admin
+        uses: bcgov/nr-keycloak-redirect@main
+        id: add-keycroak
+        with:
+          add_delete: "add"
+          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+          secret: ${{ secrets.KC_SECRET }}
+          clientid: ${{ secrets.KC_CLIENTID }}
+          clientid_2: "fom"
+          realm: ${{ secrets.KC_REALM }}
+          host: ${{ secrets.KC_HOST }}
 
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
@@ -256,6 +269,7 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
             -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
@@ -269,6 +283,12 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-admin -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-public -w
+
+          # Remove completed build runs, build pods and deployment pods
+          for p in $(oc get po | grep "Completed" | awk '{print $1}')
+          do
+            oc delete po ${p}
+          done
 
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
@@ -315,6 +335,7 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
             -p KEYCLOAK_URL="https://prod.oidc.gov.bc.ca/auth" -p DB_TESTDATA=false \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
@@ -328,6 +349,12 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-admin -w
           oc rollout status dc/${{ env.NAME }}-${ZONE}-public -w
+
+          # Remove completed build runs, build pods and deployment pods
+          for p in $(oc get po | grep "Completed" | awk '{print $1}')
+          do
+            oc delete po ${p}
+          done
 
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
