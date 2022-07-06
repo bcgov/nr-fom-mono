@@ -25,9 +25,9 @@ import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
 
 // services
-import { UrlService } from '../core/services/url.service';
+import { UrlService } from '@public-core/services/url.service';
 import { ApiModule, Configuration } from '@api-client'; 
-import { ErrorInterceptor } from '../core/interceptors/http-error.interceptor';
+import { ErrorInterceptor } from '@public-core/interceptors/http-error.interceptor';
 import { FOMFiltersService } from '@public-core/services/fomFilters.service';
 import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
 

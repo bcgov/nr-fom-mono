@@ -5,6 +5,7 @@ import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { MapLayers } from '@utility/models/map-layers';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
+
 /*
   Leaflet has bug and would show these error on console:
   http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)

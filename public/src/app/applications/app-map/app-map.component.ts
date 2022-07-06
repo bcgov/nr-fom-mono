@@ -10,7 +10,7 @@ import 'leaflet.markercluster';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UrlService } from '../../../core/services/url.service';
+import { UrlService } from '@public-core/services/url.service';
 import { MarkerPopupComponent } from './marker-popup/marker-popup.component';
 
 

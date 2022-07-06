@@ -3,8 +3,8 @@ import { Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { StateService } from '../core/services/state.service';
-import { ModalService } from '../core/services/modal.service';
+import { StateService } from '@public-core/services/state.service';
+import { ModalService } from '@public-core/services/modal.service';
 
 @Component({
   selector: 'app-root',
