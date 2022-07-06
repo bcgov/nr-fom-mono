@@ -26,7 +26,7 @@ $(function () {
 });
 
 // Collapse Menu when navigating to route
-$(document).on('click', '.navbar-collapse.show', function (e) {
+$(document).on('click', '.navbar-collapse.show', function (_e) {
     $(this).collapse('hide');
 });
 

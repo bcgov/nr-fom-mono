@@ -48,7 +48,6 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     maxClusterRadius: 40, // NB: change to 0 to disable clustering
     iconCreateFunction: this.clusterCreate
   });
-  // private oldZoom: number = null;
   private isMapReady = false;
   private doNotify = true; // whether to emit notification
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
@@ -113,14 +112,6 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.map.whenReady(() => (this.isMapReady = true));
 
     // map state change events
-    this.map.on(
-      'zoomstart',
-      () => {
-        // this.oldZoom = this.map.getZoom();
-      },
-      this
-    );
-
     // NB: moveend is called after zoomstart, movestart and resize
     // NB: fitBounds() also ends up here
     this.map.on('moveend', () => {
