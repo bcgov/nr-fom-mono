@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+env:
+  REGISTRY: ghcr.io
+  NAME: fom
+
 jobs:
   codeql:
     name: CodeQL
@@ -93,3 +97,155 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results.sarif"
+
+  deploy-test:
+    name: TEST Deployment
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+    env:
+      ZONE: test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          set -eux
+
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.NAMESPACE }}
+
+          # Clear stale images for import/replacement
+          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
+            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
+          fi
+
+          # Process and apply deployment templates
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api -p DB_TESTDATA=true \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-public \
+            | oc apply -f -
+
+          # Follow any active rollouts (see deploymentconfigs)
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
+
+          # Remove completed build runs, build pods and deployment pods
+          for p in $(oc get po | grep "Completed" | awk '{print $1}')
+          do
+            oc delete po ${p}
+          done
+
+  zap-backend:
+    name: Backend Pen Tests
+    needs:
+      - deploy-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.3.0
+        with:
+          target: https://${{ env.NAME }}-test-backend.apps.silver.devops.gov.bc.ca/
+          cmd_options: "-a"
+          allow_issue_writing: false
+          fail_action: false
+
+  zap-frontend:
+    name: Frontend Pen Tests
+    needs:
+      - deploy-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.4.0
+        with:
+          target: https://${{ env.NAME }}-test-frontend.apps.silver.devops.gov.bc.ca/
+          cmd_options: "-a"
+          allow_issue_writing: false
+          fail_action: false
+
+  deploy-prod:
+    name: PROD Deployment
+    needs:
+      - zap-backend
+      - zap-frontend
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    env:
+      ZONE: prod
+      PREV: test
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          set -eux
+
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.NAMESPACE }}
+
+          # Clear stale images for import/replacement
+          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
+            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
+          fi
+
+          # Process and apply deployment templates
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-api \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-public \
+            | oc apply -f -
+
+          # Follow any active rollouts (see deploymentconfigs)
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
+
+          # Remove completed build runs, build pods and deployment pods
+          for p in $(oc get po | grep "Completed" | awk '{print $1}')
+          do
+            oc delete po ${p}
+          done
+
+      - name: Promote Backend Image to PROD
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          target: ${{ env.PREV }}-backend
+          tags: |
+            prod-backend
+
+      - name: Promote Frontend Image to PROD
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          target: ${{ env.PREV }}-frontend
+          tags: |
+            prod-frontend

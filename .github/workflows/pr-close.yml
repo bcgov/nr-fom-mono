@@ -1,4 +1,4 @@
-name: Cleanup
+name: Pull Request Closed
 
 on:
   pull_request:
@@ -12,33 +12,6 @@ env:
   REPONAME: greenfield-template
 
 jobs:
-  cleanup-openshift:
-    name: Cleanup OpenShift
-    runs-on: ubuntu-latest
-    environment:
-      name: dev
-    steps:
-      - uses: actions/checkout@v2
-      - name: Remove OpenShift artifacts
-        run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.NAMESPACE }}
-
-          # Remove old build runs, build pods and deployment pods
-          oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ github.event.number }}
-
-      - name: Remove KeyCroak Redirect URL for Admin
-        uses: bcgov/nr-keycloak-redirect@main
-        id: del-keycroak
-        with:
-          add_delete: "del"
-          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
-          secret: ${{ secrets.KC_SECRET }}
-          clientid: ${{ secrets.KC_CLIENTID }}
-          clientid_2: "fom"
-          realm: ${{ secrets.KC_REALM }}
-          host: ${{ secrets.KC_HOST }}
-
   promote-images:
     name: Promote DEV images to TEST
     runs-on: ubuntu-latest
@@ -91,3 +64,30 @@ jobs:
           message: |
             Your Pull Request code is being promoted!  Please follow the link below.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+  cleanup-openshift:
+    name: Cleanup OpenShift
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - uses: actions/checkout@v2
+      - name: Remove OpenShift artifacts
+        run: |
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.NAMESPACE }}
+
+          # Remove old build runs, build pods and deployment pods
+          oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ github.event.number }}
+
+      - name: Remove KeyCroak Redirect URL for Admin
+        uses: bcgov/nr-keycloak-redirect@main
+        id: del-keycroak
+        with:
+          add_delete: "del"
+          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+          secret: ${{ secrets.KC_SECRET }}
+          clientid: ${{ secrets.KC_CLIENTID }}
+          clientid_2: "fom"
+          realm: ${{ secrets.KC_REALM }}
+          host: ${{ secrets.KC_HOST }}
