@@ -1,9 +1,10 @@
 name: Main Merge
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
+  pull_request:
 
 env:
   REGISTRY: ghcr.io
@@ -146,7 +147,7 @@ jobs:
             oc delete po ${p}
           done
 
-  zap-backend:
+  zap-api:
     name: Backend Pen Tests
     needs:
       - deploy-test
