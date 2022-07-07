@@ -15,7 +15,7 @@
     "db:migrate-test:revert": "npm run typeorm migration:revert -- -f ./src/migrations/ormconfig-migration-test.ts",
     "db:migrate-test:show": "npm run typeorm migration:show -- -f ./src/migrations/ormconfig-migration-test.ts",
     "perf-test:gen-data": "node src/perftest/generate-data.js",
-    "test-unit": "set LOG_LEVEL=warn && jest --testPathIgnorePatterns='e2e'",
+    "test-unit": "set LOG_LEVEL=warn && jest --coverage --testPathIgnorePatterns='e2e'",
     "test-unit-watch": "set LOG_LEVEL=warn && jest --testPathIgnorePatterns='e2e' --watch=true",
     "test-e2e": "set LOG_LEVEL=warn && jest --testNamePattern='e2e'",
     "test:cov": "jest --coverage"
@@ -72,5 +72,34 @@
     "ts-jest": "^27.1.3",
     "ts-node": "~9.1.1",
     "typescript": "~4.1.6"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/test/"
+    ],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "cobertura",
+      "jest-badges"
+    ],
+    "testEnvironment": "node",
+    "testResultsProcessor": "jest-sonar-reporter"
   }
 }
