@@ -201,7 +201,7 @@ jobs:
           title: API coverage report
           delete-old-comments: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: ./coverage/lcov.info
+          lcov-file: ./coverage/api/lcov.info
 
   sonarcloud:
     name: Static Analysis
