@@ -148,7 +148,7 @@ jobs:
           done
 
   zap-api:
-    name: Backend Pen Tests
+    name: API Pen Tests
     needs:
       - deploy-test
     runs-on: ubuntu-latest
@@ -159,13 +159,13 @@ jobs:
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
-          target: https://${{ env.NAME }}-test-backend.apps.silver.devops.gov.bc.ca/
+          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/api
           cmd_options: "-a"
           allow_issue_writing: false
           fail_action: false
 
-  zap-frontend:
-    name: Frontend Pen Tests
+  zap-admin:
+    name: Admin Pen Tests
     needs:
       - deploy-test
     runs-on: ubuntu-latest
@@ -174,9 +174,26 @@ jobs:
         uses: actions/checkout@v2
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
+        uses: zaproxy/action-full-scan@v0.3.0
         with:
-          target: https://${{ env.NAME }}-test-frontend.apps.silver.devops.gov.bc.ca/
+          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/admin
+          cmd_options: "-a"
+          allow_issue_writing: false
+          fail_action: false
+
+  zap-public:
+    name: Publid Pen Tests
+    needs:
+      - deploy-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.3.0
+        with:
+          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/public
           cmd_options: "-a"
           allow_issue_writing: false
           fail_action: false
@@ -184,8 +201,9 @@ jobs:
   deploy-prod:
     name: PROD Deployment
     needs:
-      - zap-backend
-      - zap-frontend
+      - zap-api
+      - zap-admin
+      - zap-public
     runs-on: ubuntu-latest
     environment:
       name: prod
