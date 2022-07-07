@@ -96,10 +96,8 @@
     "coverageReporters": [
       "text",
       "lcov",
-      "cobertura",
-      "jest-badges"
+      "cobertura"
     ],
-    "testEnvironment": "node",
     "testResultsProcessor": "jest-sonar-reporter"
   }
 }
