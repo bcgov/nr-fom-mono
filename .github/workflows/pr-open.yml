@@ -162,14 +162,66 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  tests-api:
+    name: API Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+      - uses: actions/cache@v3
+        id: npm-cache-api # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Cache for test results
+        id: cache-api
+        uses: actions/cache@v3
+        with:
+          path: coverage
+          key: coverage-api-${{ github.run_number }}
+          restore-keys: |
+            coverage-api-
+
+      - name: Tests
+        run: |
+          cd api
+          npm ci
+          npm run test-unit
+      - name: Report code coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: API coverage report
+          delete-old-comments: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.info
+
   sonarcloud:
     name: Static Analysis
+    needs:
+      - tests-api
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         # Disable shallow clone for SonarCloud analysis
         with:
           fetch-depth: 0
+
+      - name: Cache for api test results
+        id: cache-backend
+        uses: actions/cache@v3
+        with:
+          path: coverage
+          key: coverage-api-${{ github.run_number }}
+          restore-keys: |
+            coverage-api-
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
@@ -179,6 +231,7 @@ jobs:
         with:
           args: >
             -Dsonar.exclusions=**/test/**,.github/**/*
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.project.monorepo.enabled=true
             -Dsonar.projectKey=nr-fom
