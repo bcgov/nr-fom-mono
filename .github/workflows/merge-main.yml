@@ -77,6 +77,70 @@ jobs:
             -Dsonar.projectKey=nr-fom
 
   # https://github.com/marketplace/actions/aqua-security-trivy
+  trivy-api:
+    name: API Image Report
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Backend container scan
+      - name: Trivy Image Scan
+        uses: aquasecurity/trivy-action@0.3.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-api
+          ignore-unfixed: true
+          severity: CRITICAL
+          format: "sarif"
+          output: "trivy-results-backend.sarif"
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "trivy-results-backend.sarif"
+
+  # https://github.com/marketplace/actions/aqua-security-trivy
+  trivy-admin:
+    name: Admin Image Report
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Backend container scan
+      - name: Trivy Image Scan
+        uses: aquasecurity/trivy-action@0.3.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-admin
+          ignore-unfixed: true
+          severity: CRITICAL
+          format: "sarif"
+          output: "trivy-results-backend.sarif"
+
+  # https://github.com/marketplace/actions/aqua-security-trivy
+  trivy-public:
+    name: Public Image Report
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Backend container scan
+      - name: Trivy Image Scan
+        uses: aquasecurity/trivy-action@0.3.0
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-public
+          ignore-unfixed: true
+          severity: CRITICAL
+          format: "sarif"
+          output: "trivy-results-backend.sarif"
+
+      - name: Upload Trivy results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "trivy-results-backend.sarif"
+
+  # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-repo:
     name: Repository Report
     runs-on: ubuntu-18.04
@@ -94,6 +158,29 @@ jobs:
           severity: "CRITICAL"
 
       - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        with:
+          sarif_file: "trivy-results.sarif"
+
+  # https://github.com/marketplace/actions/aqua-security-trivy
+  trivy-rhel-ubi:
+    name: Base Image Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Trivy Vulnerability Scan
+        uses: aquasecurity/trivy-action@0.3.0
+        with:
+          image-ref: registry.access.redhat.com/ubi8/nodejs-14
+          ignore-unfixed: true
+          severity: CRITICAL
+          format: "sarif"
+          output: "trivy-results.sarif"
+
+      - name: Upload Trivy results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: "trivy-results.sarif"
