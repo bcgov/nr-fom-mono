@@ -207,6 +207,10 @@ jobs:
     name: Static Analysis
     needs:
       - tests-api
+      - build-db
+      - build-api
+      - build-admin
+      - build-public
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -243,6 +247,7 @@ jobs:
       - build-api
       - build-admin
       - build-public
+      - tests-api
     runs-on: ubuntu-latest
     environment:
       name: dev
