@@ -11,45 +11,6 @@ env:
   NAME: fom
 
 jobs:
-  # TODO: Remove this!
-  promote-images:
-    name: Promote DEV images to TEST
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
-    steps:
-      - name: Promote Database Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-db
-          tags: |
-            test-db
-      - name: Promote API Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-api
-          tags: |
-            test-api
-      - name: Promote Admin Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-admin
-          tags: |
-            test-admin
-      - name: Promote Public Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-public
-          tags: |
-            test-public
-  # TODO: Remote this!
   codeql:
     name: CodeQL
     runs-on: ubuntu-latest
@@ -266,13 +227,13 @@ jobs:
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
+            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-api \
             -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
+            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-admin \
             | oc apply -f -
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-public \
@@ -290,20 +251,35 @@ jobs:
             oc delete po ${p}
           done
 
-      - name: Promote Backend Image to PROD
+      - name: Promote Database Image to PROD
         uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}
-          target: ${{ env.PREV }}-backend
+          target: test-db
           tags: |
-            prod-backend
-
-      - name: Promote Frontend Image to PROD
+            prod-db
+      - name: Promote API Image to PROD
         uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}
-          target: ${{ env.PREV }}-frontend
+          target: test-api
           tags: |
-            prod-frontend
+            prod-api
+      - name: Promote Admin Image to PROD
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          target: test-admin
+          tags: |
+            prod-admin
+      - name: Promote Public Image to PROD
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          target: test-public
+          tags: |
+            prod-public
