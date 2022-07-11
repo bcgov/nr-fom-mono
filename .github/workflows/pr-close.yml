@@ -4,8 +4,11 @@ on:
   pull_request:
     types:
       - closed
-    branches:
-      - main
+    paths-ignore:
+      - ".**"
+      - "**.md"
+      - "**.yml"
+      - "**.yaml"
 
 env:
   NAME: fom
@@ -15,7 +18,7 @@ jobs:
   promote-images:
     name: Promote DEV images to TEST
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
       - name: Promote Database Image to TEST
         uses: shrink/actions-docker-registry-tag@v2
@@ -53,7 +56,7 @@ jobs:
   merge-notification:
     name: Merge Notification
     runs-on: ubuntu-latest
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
       - name: Pre-merge update
         uses: mshick/add-pr-comment@v1
