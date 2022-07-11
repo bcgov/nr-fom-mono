@@ -403,7 +403,7 @@ jobs:
       - build-admin
       - build-public
     if:
-      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' || \
+      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     steps:
@@ -443,7 +443,7 @@ jobs:
       - build-public
       - tests-api
     if:
-      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' || \
+      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     environment:
