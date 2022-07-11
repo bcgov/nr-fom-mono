@@ -1,5 +1,5 @@
 import { SpatialObjectCodeEnum } from '@api-client';
-import { SpatialFeaturePublicResponse } from 'libs/client/typescript-ng/model/spatialFeaturePublicResponse';
+import { SpatialFeaturePublicResponse } from '@api-client';
 import { CommentScopeOpt, COMMENT_SCOPE_CODE, SpatialTypeMap } from './constants/constantUtils';
 
 export class CommonUtil {

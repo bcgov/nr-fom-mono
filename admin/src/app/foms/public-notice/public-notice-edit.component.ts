@@ -6,8 +6,8 @@ import {
   ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
   PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum
 } from '@api-client';
-import { User } from "@api-core/security/user";
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { User } from "@utility/security/user";
 import { lastValueFrom, map, Subject, switchMap } from 'rxjs';
 import { KeycloakService } from "../../../core/services/keycloak.service";
 import { StateService } from '../../../core/services/state.service';

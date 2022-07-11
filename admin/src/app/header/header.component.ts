@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {animate, state, style, transition, trigger} from '@angular/animations';
-import {Router} from '@angular/router';
-import {KeycloakService} from '../../core/services/keycloak.service';
-import {User} from "@api-core/security/user";
+import { animate, state, style, transition, trigger } from '@angular/animations';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { User } from "@utility/security/user";
 import { ConfigService } from '@utility/services/config.service';
+import { KeycloakService } from '../../core/services/keycloak.service';
 
 @Component({
   selector: 'app-header',

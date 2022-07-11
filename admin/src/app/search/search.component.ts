@@ -1,15 +1,15 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from '@angular/material/snack-bar';
-import {ActivatedRoute, ParamMap, Params, Router} from '@angular/router';
-import {Location} from '@angular/common';
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
-import {ProjectService, WorkflowStateEnum, ProjectResponse} from "@api-client";
-import { StateService } from '../../core/services/state.service';
-import { KeycloakService } from '../../core/services/keycloak.service';
-import { User } from "@api-core/security/user";
+import { Location } from '@angular/common';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { ProjectResponse, ProjectService, WorkflowStateEnum } from "@api-client";
+import { User } from "@utility/security/user";
 import { isNil } from 'lodash';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { KeycloakService } from '../../core/services/keycloak.service';
 import { ModalService } from '../../core/services/modal.service';
+import { StateService } from '../../core/services/state.service';
 
 @Component({
   selector: 'app-search',

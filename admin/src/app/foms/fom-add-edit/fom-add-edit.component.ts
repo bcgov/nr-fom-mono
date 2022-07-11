@@ -1,29 +1,27 @@
-import {AfterViewInit, Component, OnDestroy, OnInit} from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 
-import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from '@angular/material/snack-bar';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Observable, of, Subject, switchMap, takeUntil, tap} from 'rxjs';
+import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
+import { Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
-import {
-  DistrictResponse,
-  ProjectResponse,
-  ProjectService,
-  ForestClientResponse,
-  ForestClientService,
-  ProjectCreateRequest, WorkflowStateEnum, AttachmentResponse
-} from '@api-client';
-import {RxFormBuilder, RxFormGroup} from '@rxweb/reactive-form-validators';
-import { DatePipe } from '@angular/common';
-import {FomAddEditForm} from './fom-add-edit.form';
-import {StateService} from '../../../core/services/state.service';
-import {ModalService} from '../../../core/services/modal.service';
-import {AttachmentUploadService} from "../../../core/utils/attachmentUploadService";
-import { AttachmentTypeEnum } from "../../../core/models/attachmentTypeEnum";
-import {User} from "@api-core/security/user";
-import {KeycloakService} from "../../../core/services/keycloak.service";
-import {AttachmentResolverSvc} from "../../../core/services/AttachmentResolverSvc";
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
+import { DatePipe } from '@angular/common';
+import {
+  AttachmentResponse, DistrictResponse, ForestClientResponse,
+  ForestClientService,
+  ProjectCreateRequest, ProjectResponse,
+  ProjectService, WorkflowStateEnum
+} from '@api-client';
+import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
+import { User } from "@utility/security/user";
+import { AttachmentTypeEnum } from "../../../core/models/attachmentTypeEnum";
+import { AttachmentResolverSvc } from "../../../core/services/AttachmentResolverSvc";
+import { KeycloakService } from "../../../core/services/keycloak.service";
+import { ModalService } from '../../../core/services/modal.service';
+import { StateService } from '../../../core/services/state.service';
+import { AttachmentUploadService } from "../../../core/utils/attachmentUploadService";
+import { FomAddEditForm } from './fom-add-edit.form';
 
 type ApplicationPageType = 'create' | 'edit';
 

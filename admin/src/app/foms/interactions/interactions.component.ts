@@ -1,11 +1,11 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { InteractionResponse, InteractionService, ProjectResponse, WorkflowStateEnum } from '@api-client';
-import { KeycloakService } from '../../../core/services/keycloak.service';
-import { ModalService } from '../../../core/services/modal.service';
-import { User } from "@api-core/security/user";
+import { User } from "@utility/security/user";
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { KeycloakService } from '../../../core/services/keycloak.service';
+import { ModalService } from '../../../core/services/modal.service';
 import { InteractionDetailComponent } from './interaction-detail/interaction-detail.component';
 import { InteractionRequest } from './interaction-detail/interaction-detail.form';
 

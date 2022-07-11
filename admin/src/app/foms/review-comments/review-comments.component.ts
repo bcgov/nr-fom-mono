@@ -9,7 +9,7 @@ import {StateService} from '../../../core/services/state.service';
 import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 import { map, takeUntil } from 'rxjs/operators';
 import { KeycloakService } from '../../../core/services/keycloak.service';
-import { User } from "@api-core/security/user";
+import { User } from "@utility/security/user";
 import * as _ from 'lodash';
 import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
 import { CommonUtil } from '@admin-core/utils/commonUtil';

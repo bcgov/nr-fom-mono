@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { User } from "@api-core/security/user";
-import { JwtHelperService } from "@auth0/angular-jwt";
-import { ConfigService } from '@utility/services/config.service';
 import { HttpClient } from "@angular/common/http";
-import { getFakeUser } from './mock-user';
+import { Injectable } from '@angular/core';
 import { KeycloakConfig } from '@api-client';
+import { JwtHelperService } from "@auth0/angular-jwt";
+import { User } from "@utility/security/user";
+import { ConfigService } from '@utility/services/config.service';
+import { Observable } from 'rxjs';
+import { getFakeUser } from './mock-user';
 
 declare var Keycloak: any;
 
