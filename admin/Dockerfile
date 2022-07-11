@@ -5,10 +5,13 @@ FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 as builder
 WORKDIR /app
 COPY . ./
 USER root
-RUN npm ci && \
+RUN cd libs && \
+    npm ci && \
+    cd ../admin && \
+    npm ci && \
     npm run build:admin && \
     rm -rf node_modules && \
-    npm i @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
+    npm i typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
@@ -29,9 +32,9 @@ COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 # Copy over app
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/apps ./apps
+COPY --from=builder /app/admin/node_modules ./node_modules
+COPY --from=builder /app/admin/dist ./dist
+COPY --from=builder /app/admin ./admin
 COPY --from=builder /app/admin/server.js .
 
 # Expose port - mostly a convention, for readability
