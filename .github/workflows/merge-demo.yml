@@ -85,7 +85,7 @@ jobs:
       - name: Build and push API Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./api
+          context: .
           file: ${{ env.COMPONENT }}/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
