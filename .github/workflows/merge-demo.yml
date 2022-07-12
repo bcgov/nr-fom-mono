@@ -183,7 +183,7 @@ jobs:
       - build-public
     runs-on: ubuntu-latest
     environment:
-      name: test
+      name: demo
     env:
       ZONE: demo
     steps:

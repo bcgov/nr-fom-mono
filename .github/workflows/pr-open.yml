@@ -101,7 +101,7 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('admin/' 'libs/' 'apps/admin', 'apps/admin-e2e')
+      TRIGGERS: ('admin/' 'libs/')
       TARGET: admin
     runs-on: ubuntu-latest
     steps:
