@@ -8,8 +8,187 @@ env:
   NAME: fom
 
 jobs:
+  check-db:
+    name: Check Database
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('db/')
+      TARGET: db
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
+  check-api:
+    name: Check API
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('api/' 'libs/')
+      TARGET: api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
+  check-admin:
+    name: Check Admin
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('admin/' 'libs/' 'apps/admin', 'apps/admin-e2e')
+      TARGET: admin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
+  check-public:
+    name: Check Public
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('public/' 'libs/')
+      TARGET: public
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
   build-db:
     name: Database Image Build
+    needs:
+      - check-db
+    if: needs.check-db.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -48,6 +227,9 @@ jobs:
 
   build-api:
     name: API Image Build
+    needs:
+      - check-api
+    if: needs.check-api.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -86,6 +268,9 @@ jobs:
 
   build-public:
     name: Public Image Build
+    needs:
+      - check-public
+    if: needs.check-public.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -124,6 +309,9 @@ jobs:
 
   build-admin:
     name: Admin Image Build
+    needs:
+      - check-admin
+    if: needs.check-admin.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -162,6 +350,9 @@ jobs:
 
   tests-api:
     name: API Unit Tests
+    needs:
+      - check-api
+    if: needs.check-api.outputs.build == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -209,6 +400,9 @@ jobs:
       - build-api
       - build-admin
       - build-public
+    if:
+      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
+      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -246,6 +440,9 @@ jobs:
       - build-admin
       - build-public
       - tests-api
+    if:
+      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
+      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     environment:
       name: dev
