@@ -211,6 +211,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api -p DB_TESTDATA=true \
+            -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" -p DB_TESTDATA=false \
             -p NAMESPACE=${{ secrets.NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} \
