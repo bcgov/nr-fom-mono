@@ -1,19 +1,19 @@
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import { ProjectService } from '@api-modules/project/project.service';
+import { DataService } from '@core';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Interaction } from './interaction.entity';
+import { User } from "@utility/security/user";
 import { PinoLogger } from 'nestjs-pino';
+import { Repository } from 'typeorm';
+import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
+import { AttachmentCreateRequest } from '../attachment/attachment.dto';
+import { AttachmentService } from '../attachment/attachment.service';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
 import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
+import { Interaction } from './interaction.entity';
 import _ = require('lodash');
-import { AttachmentService } from '../attachment/attachment.service';
-import { AttachmentCreateRequest } from '../attachment/attachment.dto';
-import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
-import { User } from "@api-core/security/user";
-import { DataService } from '@core';
-import { ProjectService } from '@api-modules/project/project.service';
-import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 @Injectable()
 export class InteractionService extends DataService<Interaction, Repository<Interaction>, InteractionResponse> {

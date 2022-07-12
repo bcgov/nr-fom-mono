@@ -6,7 +6,7 @@ import { Multer } from 'multer'; // This is needed, don't know why Visual Studio
 import { AttachmentService } from './attachment.service';
 import { AttachmentCreateRequest, AttachmentResponse } from './attachment.dto';
 import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
-import { User } from "@api-core/security/user";
+import { User } from "@utility/security/user";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
 
