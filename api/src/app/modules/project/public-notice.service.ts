@@ -1,8 +1,8 @@
-import { User } from "@api-core/security/user";
+import { DataService } from '@core';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataService } from '@core';
+import { User } from "@utility/security/user";
 import { PinoLogger } from 'nestjs-pino';
 import * as R from 'remeda';
 import { Repository } from 'typeorm';

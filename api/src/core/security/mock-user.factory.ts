@@ -1,4 +1,4 @@
-import { User } from "./user";
+import { User } from "@utility/security/user";
 
 export function createFakeMinistryUser(): User {
     const user = new User();
