@@ -404,6 +404,8 @@ jobs:
       always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
+    environment:
+      name: dev
     steps:
       - uses: actions/checkout@v2
         # Disable shallow clone for SonarCloud analysis
