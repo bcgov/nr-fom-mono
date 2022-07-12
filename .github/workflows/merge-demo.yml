@@ -1,0 +1,234 @@
+name: Demo Merge
+
+on:
+  push:
+    branches:
+      - demo
+
+env:
+  REGISTRY: ghcr.io
+  NAME: fom
+
+jobs:
+  build-db:
+    name: Database Image Build
+    env:
+      COMPONENT: db
+      TARGET: demo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{ env.COMPONENT }}/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-api:
+    name: API Image Build
+    env:
+      COMPONENT: api
+      TARGET: demo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push API Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: ./api
+          file: ${{ env.COMPONENT }}/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-public:
+    name: Public Image Build
+    env:
+      COMPONENT: public
+      TARGET: demo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push Public Frontend Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{ env.COMPONENT }}/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  build-admin:
+    name: Admin Image Build
+    env:
+      COMPONENT: admin
+      TARGET: demo
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push Admin Frontend Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ${{ env.COMPONENT }}/Dockerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-test:
+    name: DEMO Deployment
+    needs:
+      - build-db
+      - build-api
+      - build-admin
+      - build-public
+    runs-on: ubuntu-latest
+    environment:
+      name: test
+    env:
+      ZONE: demo
+    steps:
+      - uses: actions/checkout@v2
+      - name: Deploy
+        run: |
+          set -eux
+
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.NAMESPACE }}
+
+          # Init (db secret), only if necessary
+          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
+            | oc create -f - || \
+            echo "Already initialized"
+
+          # Clear stale images for import/replacement
+          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
+            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
+          fi
+
+          # Process and apply deployment templates
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api -p DB_TESTDATA=true \
+            -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
+            -p NAMESPACE=${{ secrets.NAMESPACE }} \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
+            | oc apply -f -
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-public \
+            | oc apply -f -
+
+          # Follow any active rollouts (see deploymentconfigs)
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
+          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
+
+          # Remove completed build runs, build pods and deployment pods
+          for p in $(oc get po | grep "Completed" | awk '{print $1}')
+          do
+            oc delete po ${p}
+          done
