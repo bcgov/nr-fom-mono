@@ -28,7 +28,7 @@ COPY --from=builder /etc/pki /etc/pki
 # Copy over app
 WORKDIR /app
 COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/api/dist ./dist
 COPY --from=builder /app/api/src/migrations/main ./dist/api/api/src/migrations/main
 COPY --from=builder /app/api/src/migrations/test ./dist/api/api/src/migrations/test
 
