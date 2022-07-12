@@ -1,6 +1,12 @@
+const config = {
+  verbose: true,
+};
+
+module.exports = config;
+
 module.exports = {
   displayName: 'admin',
-  preset: '../jest.preset.js',
+  preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   globals: {
     'ts-jest': {

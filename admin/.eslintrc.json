@@ -3,6 +3,9 @@
   "ignorePatterns": [
     "projects/**/*"
   ],
+  "parserOptions": {
+    "ecmaVersion": 2017
+  },
   "overrides": [
     {
       "files": [
