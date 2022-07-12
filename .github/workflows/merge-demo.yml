@@ -196,6 +196,11 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.NAMESPACE }}
 
+          # Init (db secret), only if necessary
+          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
+            | oc create -f - || \
+            echo "Already initialized"
+
           # Clear stale images for import/replacement
           if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
             oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
