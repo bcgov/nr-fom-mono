@@ -75,7 +75,7 @@ export class ModalService {
   }
 
   openConfirmationDialog(message: string, title: string): MatDialogRef<any> {
-    const dialogRef = this.openDialog({
+    return this.openDialog({
       data: {
         message: message,
         title: title,
@@ -84,7 +84,6 @@ export class ModalService {
         buttons: {confirm: {text: 'OK'}, cancel: { text: 'Cancel' }}
       }
     });
-    return dialogRef;
   }
 
   updateDialogRefSubject(ref: MatDialogRef<any>): void {

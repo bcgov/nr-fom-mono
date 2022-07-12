@@ -124,8 +124,7 @@ export class FileRowComponent implements OnInit {
 
   get icon() {
     const fileExt = FileTypeFns.fileExt(this.fileName);
-    const icon = FileTypeFns.fileType(fileExt);
-    return icon;
+    return FileTypeFns.fileType(fileExt);
   }
 
   ngOnInit(): void {

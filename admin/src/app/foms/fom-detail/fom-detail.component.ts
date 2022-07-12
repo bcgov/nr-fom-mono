@@ -148,7 +148,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
             }
         )
         .subscribe(
-          (result)=> {
+          (_result)=> {
             this.isFinalizing = false;
             this.onSuccess();
           },

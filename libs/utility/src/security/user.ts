@@ -24,7 +24,7 @@ export class User {
       const user = new User();
       user.userName = jwt['username'];
       user.displayName = jwt['displayName'];
-      var roles: string[];
+      let roles: string[];
       if (jwt['resource_access'] && jwt['resource_access']['fom']) {
         roles = jwt['resource_access']['fom']['roles'];
       }
@@ -37,7 +37,7 @@ export class User {
             user.isForestClient = true;
             const clientStartIndex = 'fom_forest_client_'.length;
             if (role.length > clientStartIndex) {
-              const clientId = role.substr(clientStartIndex);
+              const clientId = role.substring(clientStartIndex);
               user.clientIds.push(clientId);
             }
           }

@@ -105,7 +105,7 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
                .pipe(filterData(this.selectedScope));
   }
 
-  onScopeOptionChanged(selection: CommentScopeOpt) {
+  onScopeOptionChanged(_selection: CommentScopeOpt) {
     this.triggered$.next();
   }
 

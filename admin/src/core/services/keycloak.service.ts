@@ -7,7 +7,7 @@ import { ConfigService } from '@utility/services/config.service';
 import { Observable } from 'rxjs';
 import { getFakeUser } from './mock-user';
 
-declare var Keycloak: any;
+declare let Keycloak: any;
 
 @Injectable()
 export class KeycloakService {
@@ -38,8 +38,8 @@ export class KeycloakService {
 
     // Cannot call AuthService.authControllerGetKeycloakConfig because this introduces a circular dependency when autowired in the constructor because
     // AuthSerivce needs tokenInterceptor, tokenInterceptor needs KeycloakService. Therefore we just use the HttpClient directly in this init method.
-    var url:string = this.configService.getApiBasePath()+"/api/keycloakConfig";
-    var data = await this.http.get(url, { observe: "body", responseType: "json"}).toPromise(); 
+    let url:string = this.configService.getApiBasePath()+"/api/keycloakConfig";
+    let data = await this.http.get(url, { observe: "body", responseType: "json"}).toPromise(); 
     this.config = data as KeycloakConfig;
 
     console.log('Using keycloak config = ' + JSON.stringify(this.config));

@@ -43,7 +43,7 @@ export class DialogComponent {
     }
   }
 
-  clicked(evt: any) {
+  clicked(_evt: any) {
     this.dialogRef.close(true);
   }
 }

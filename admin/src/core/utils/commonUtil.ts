@@ -1,5 +1,4 @@
-import { SpatialObjectCodeEnum } from '@api-client';
-import { SpatialFeaturePublicResponse } from '@api-client';
+import { SpatialFeaturePublicResponse, SpatialObjectCodeEnum } from '@api-client';
 import { CommentScopeOpt, COMMENT_SCOPE_CODE, SpatialTypeMap } from './constants/constantUtils';
 
 export class CommonUtil {
