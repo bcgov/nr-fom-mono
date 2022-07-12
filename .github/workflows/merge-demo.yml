@@ -175,12 +175,17 @@ jobs:
           cache-to: type=gha,mode=max
 
   deploy-test:
-    name: TEST Deployment
+    name: DEMO Deployment
+    needs:
+      - build-db
+      - build-api
+      - build-admin
+      - build-public
     runs-on: ubuntu-latest
     environment:
       name: test
     env:
-      ZONE: test
+      ZONE: demo
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
