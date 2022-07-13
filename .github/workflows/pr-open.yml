@@ -488,6 +488,18 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-admin -w
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-public -w
 
+          # Deployment verification
+          fomUrl="https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca"
+          curlApiRsponseCode=$(curl -s -o /dev/null -w "%{http_code}" "$fomUrl/api/district")
+          curlAdminRsponseCode=$(curl -s -o /dev/null -w "%{http_code}" "$fomUrl/admin")
+          curlPublicRsponseCode=$(curl -s -o /dev/null -w "%{http_code}" "$fomUrl/public")
+
+          if [[ $curlApiRsponseCode == 200 ]]; then echo "Api pass"; else echo "Api fail"; fi
+
+          if [[ $curlAdminRsponseCode == 200 ]]; then echo "Admin pass"; else echo "Admin fail"; fi
+
+          if [[ $curlPublicRsponseCode == 200 ]]; then echo "Public pass"; else echo "Public fail"; fi
+
       - name: Add KeyCroak Redirect URL for Admin
         uses: bcgov/nr-keycloak-redirect@main
         id: add-keycroak
