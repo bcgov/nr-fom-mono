@@ -85,7 +85,7 @@ jobs:
       - name: Build and push API Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./api
+          context: .
           file: ${{ env.COMPONENT }}/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
@@ -194,7 +194,7 @@ jobs:
 
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.NAMESPACE }}
+          oc project ${{ secrets.OC_NAMESPACE }}
 
           # Init (db secret), only if necessary
           oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
@@ -212,7 +212,7 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api -p DB_TESTDATA=true \
             -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
-            -p NAMESPACE=${{ secrets.NAMESPACE }} \
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \

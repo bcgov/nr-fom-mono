@@ -456,7 +456,7 @@ jobs:
 
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.NAMESPACE }}
+          oc project ${{ secrets.OC_NAMESPACE }}
 
           # Init (db secret), only if necessary
           oc process -f .github/openshift/init.database.yml -p ZONE=${{ github.event.number }} \
@@ -473,7 +473,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
-            -p NAMESPACE=${{ secrets.NAMESPACE }} \
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
