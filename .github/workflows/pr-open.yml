@@ -491,8 +491,8 @@ jobs:
           # Deployment verification
           fomUrl="https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca"
           curlApiRsponseCode=$(curl -s -o /dev/null -w "%{http_code}" "$fomUrl/api/district")
-          curlAdminRsponseCode=$(curl -s -o /dev/null -w "%{http_code}" "$fomUrl/admin")
-          curlPublicRsponseCode=$(curl -s -o /dev/null -w "%{http_code}" "$fomUrl/public")
+          curlAdminRsponseCode=$(curl -L --max-redirs 5 -s -o /dev/null -w "%{http_code}" "$fomUrl/admin/")
+          curlPublicRsponseCode=$(curl -s -o /dev/null -w "%{http_code}" "$fomUrl/public/")
 
           if [[ $curlApiRsponseCode == 200 ]]; then echo "Api pass"; else echo "Api fail"; fi
 
