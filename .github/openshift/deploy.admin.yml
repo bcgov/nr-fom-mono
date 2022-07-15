@@ -22,6 +22,9 @@ parameters:
     value: dev
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
+  - name: CERTBOT
+    description: Is certbot handling these certs [true/false]?
+    value: "true"
   - name: CPU_REQUEST
     value: 100m
   - name: MEMORY_REQUEST
@@ -147,6 +150,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
+        certbot-managed: ${CERTBOT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       host: ${NAME}-${ZONE}.${DOMAIN}

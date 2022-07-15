@@ -472,14 +472,14 @@ jobs:
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api  -p CERTBOT="false" \
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin -p CERTBOT="false" \
             | oc apply -f -
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public -p CERTBOT="false" \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
@@ -487,6 +487,18 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-api -w
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-admin -w
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-public -w
+
+      - name: Add KeyCroak Redirect URL for Admin
+        uses: bcgov/nr-keycloak-redirect@main
+        id: add-keycroak
+        with:
+          add_delete: "add"
+          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+          secret: ${{ secrets.KC_SECRET }}
+          clientid: ${{ secrets.KC_CLIENTID }}
+          clientid_2: "fom"
+          realm: ${{ secrets.KC_REALM }}
+          host: ${{ secrets.KC_HOST }}
 
       - name: Deployment Verification
         run: |
@@ -502,18 +514,6 @@ jobs:
           fi
 
           echo "Deployment verification passed"
-
-      - name: Add KeyCroak Redirect URL for Admin
-        uses: bcgov/nr-keycloak-redirect@main
-        id: add-keycroak
-        with:
-          add_delete: "add"
-          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
-          secret: ${{ secrets.KC_SECRET }}
-          clientid: ${{ secrets.KC_CLIENTID }}
-          clientid_2: "fom"
-          realm: ${{ secrets.KC_REALM }}
-          host: ${{ secrets.KC_HOST }}
 
       - name: Deployment update
         uses: mshick/add-pr-comment@v1

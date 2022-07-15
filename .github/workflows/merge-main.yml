@@ -234,9 +234,9 @@ jobs:
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN}} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api -p DB_TESTDATA=true \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api \
             -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN}} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
@@ -250,6 +250,9 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
+
+          # Run certbot with one-off job
+          oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
           # Remove completed build runs, build pods and deployment pods
           for p in $(oc get po | grep "Completed" | awk '{print $1}')
