@@ -52,7 +52,7 @@ parameters:
     value: apps.silver.devops.gov.bc.ca
   - name: CERTBOT
     description: Is certbot handling these certs [true/false]?
-    value: true
+    value: "true"
   - name: CPU_REQUEST
     value: 100m
   - name: MEMORY_REQUEST
