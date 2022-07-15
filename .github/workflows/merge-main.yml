@@ -205,7 +205,7 @@ jobs:
           minimum_days: 14
           package: ${{ github.event.repository.name }}
           owner: orgs/bcgov
-          skip_tags: prod-api,prod-admin,prod-public
+          skip_tags: prod-db,prod-api,prod-admin,prod-public
 
   deploy-test:
     name: TEST Deployment
