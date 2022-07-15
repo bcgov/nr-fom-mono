@@ -472,14 +472,14 @@ jobs:
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api  -p CERTBOT="false" \
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin -p CERTBOT="false" \
             | oc apply -f -
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public -p CERTBOT="false" \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
