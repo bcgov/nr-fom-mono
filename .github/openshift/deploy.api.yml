@@ -220,6 +220,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
+        certbot-managed: true
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       host: ${NAME}-${ZONE}.${DOMAIN}
