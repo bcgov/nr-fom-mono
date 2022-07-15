@@ -488,6 +488,18 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-admin -w
           oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-public -w
 
+      - name: Add KeyCroak Redirect URL for Admin
+        uses: bcgov/nr-keycloak-redirect@main
+        id: add-keycroak
+        with:
+          add_delete: "add"
+          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+          secret: ${{ secrets.KC_SECRET }}
+          clientid: ${{ secrets.KC_CLIENTID }}
+          clientid_2: "fom"
+          realm: ${{ secrets.KC_REALM }}
+          host: ${{ secrets.KC_HOST }}
+
       - name: Deployment Verification
         run: |
           # Deployment verification
@@ -502,18 +514,6 @@ jobs:
           fi
 
           echo "Deployment verification passed"
-
-      - name: Add KeyCroak Redirect URL for Admin
-        uses: bcgov/nr-keycloak-redirect@main
-        id: add-keycroak
-        with:
-          add_delete: "add"
-          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
-          secret: ${{ secrets.KC_SECRET }}
-          clientid: ${{ secrets.KC_CLIENTID }}
-          clientid_2: "fom"
-          realm: ${{ secrets.KC_REALM }}
-          host: ${{ secrets.KC_HOST }}
 
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
