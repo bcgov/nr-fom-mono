@@ -35,7 +35,7 @@ parameters:
     displayName: Replica Count
     name: REPLICA_COUNT
     required: false
-    value: '2'
+    value: '1'
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -79,7 +79,6 @@ objects:
           timeoutSeconds: 600
           maxUnavailable: 25%
           maxSurge: 25%
-      resources: {}
       activeDeadlineSeconds: 21600
       triggers:
         - type: ConfigChange
