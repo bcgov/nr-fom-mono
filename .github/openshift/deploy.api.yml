@@ -71,7 +71,7 @@ parameters:
     displayName: Replica Count
     name: REPLICA_COUNT
     required: false
-    value: '1'
+    value: '3'
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -96,7 +96,7 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      replicas: ${{REPLICA_COUNT}}
+      replicas: ${REPLICA_COUNT}
       revisionHistoryLimit: 10
       test: false
       strategy:
