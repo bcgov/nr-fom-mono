@@ -346,10 +346,10 @@ jobs:
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
             -p KEYCLOAK_URL="https://prod.oidc.gov.bc.ca/auth" \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} \
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-admin \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} \
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-public \
             | oc apply -f -
 

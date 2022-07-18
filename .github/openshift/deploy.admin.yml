@@ -19,7 +19,6 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-    value: dev
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
   - name: CERTBOT
@@ -62,7 +61,7 @@ objects:
     data:
       env.js: |-
         window.localStorage.setItem('fom_environment_name', '${ZONE}');
-        window.localStorage.setItem('fom_api_base_url', 'https://fom-${ZONE}.apps.silver.devops.gov.bc.ca');
+        window.localStorage.setItem('fom_api_base_url', 'https://fom-${ZONE}.${DOMAIN}');
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: v1

@@ -39,7 +39,7 @@ parameters:
   - description: URL of Keycloak Server to use for authentication.
     displayName: Keycloak Server URL
     name: KEYCLOAK_URL
-    value: "https://dev.oidc.gov.bc.ca/auth"
+    value: "https://prod.oidc.gov.bc.ca/auth"
   - description: URL of SiteMinder Server used for logout (with BCeID)
     displayName: SiteMinder Server URL
     name: SITEMINDER_URL
