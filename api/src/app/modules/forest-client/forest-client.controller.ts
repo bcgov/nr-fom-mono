@@ -1,12 +1,12 @@
 import { Controller, Get, HttpStatus, Param, ParseIntPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { BaseReadOnlyController } from '@controllers';
-import { ForestClientService } from './forest-client.service';
-import { ForestClient } from './forest-client.entity';
-import { ForestClientResponse } from './forest-client.dto';
 import { UserRequiredHeader } from '@api-core/security/auth.service';
-import { User } from "@api-core/security/user";
+import { BaseReadOnlyController } from '@controllers';
+import { User } from "@utility/security/user";
+import { ForestClientResponse } from './forest-client.dto';
+import { ForestClient } from './forest-client.entity';
+import { ForestClientService } from './forest-client.service';
 
 @ApiTags('forest-client')
 @Controller('forest-client')

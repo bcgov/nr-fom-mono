@@ -50,6 +50,9 @@ parameters:
     value: "nrs.objectstore.gov.bc.ca"
   - name: DOMAIN
     value: apps.silver.devops.gov.bc.ca
+  - name: CERTBOT
+    description: Is certbot handling these certs [true/false]?
+    value: "true"
   - name: CPU_REQUEST
     value: 100m
   - name: MEMORY_REQUEST
@@ -236,6 +239,7 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
+        certbot-managed: ${CERTBOT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       host: ${NAME}-${ZONE}.${DOMAIN}
@@ -252,7 +256,9 @@ objects:
   - kind: CronJob
     apiVersion: batch/v1
     metadata:
-      name: ${NAME}-${ZONE}
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-batch
     spec:
       concurrencyPolicy: Replace
       schedule: "${CRON_MINUTES} 9 * * * " # Run daily at 9:xx AM UTC
@@ -261,7 +267,8 @@ objects:
           template:
             metadata:
               labels:
-                cronjob: ${NAME}-${ZONE}
+                app: ${NAME}-${ZONE}
+                cronjob: ${NAME}-${ZONE}-batch
             spec:
               restartPolicy: OnFailure
               containers:

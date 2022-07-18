@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/libs",
+    "experimentalDecorators":true,
+    "declaration": true,
+    "declarationMap": true,
+    "composite": true,
+    "skipLibCheck": true,
+    "module": "commonjs",
+    "target": "es2015",
+    "noImplicitThis": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["**/*.spec.ts"],
+  "references": []
+}

@@ -1,10 +1,10 @@
-import { Injectable, ExecutionContext, createParamDecorator, ForbiddenException } from '@nestjs/common';
-import { PinoLogger } from 'nestjs-pino';
+import { createParamDecorator, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { decode, verify } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
+import { PinoLogger } from 'nestjs-pino';
 
-import { User } from './user';
+import { User } from '@utility/security/user';
 
 
 // Both of these decorators requires the global AuthInterceptor to add the User object to the request. If no bearer token is provided, the user object will be null.
