@@ -35,6 +35,11 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
+  - description: Number of replicas
+    displayName: Replica Count
+    name: REPLICA_COUNT
+    required: false
+    value: '1'
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -67,7 +72,18 @@ objects:
         app: ${NAME}-${ZONE}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      replicas: 1
+      replicas: ${{REPLICA_COUNT}}
+      revisionHistoryLimit: 10
+      test: false
+      strategy:
+        type: Rolling
+        rollingParams:
+          updatePeriodSeconds: 1
+          intervalSeconds: 1
+          timeoutSeconds: 600
+          maxUnavailable: 25%
+          maxSurge: 25%
+      activeDeadlineSeconds: 21600
       triggers:
         - type: ConfigChange
         - type: ImageChange
