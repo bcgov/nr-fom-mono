@@ -446,6 +446,8 @@ jobs:
       always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
+    env:
+      ZONE: ${{ github.event.number }}
     environment:
       name: dev
     steps:
@@ -459,7 +461,7 @@ jobs:
           oc project ${{ secrets.OC_NAMESPACE }}
 
           # Init (db secret), only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${{ github.event.number }} \
+          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
             | oc create -f - || \
             echo "Already initialized"
 
@@ -469,17 +471,18 @@ jobs:
           fi
 
           # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api  -p CERTBOT="false" \
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
+            -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin -p CERTBOT="false" \
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public -p CERTBOT="false" \
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
+            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-public \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
