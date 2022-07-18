@@ -1,13 +1,13 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from "@utility/security/user";
+import { LoggerModule } from 'nestjs-pino';
 import * as request from 'supertest';
 import { AppModule } from '../app/app.module';
-import { KeycloakConfig } from '../core/security/auth.service';
-import { User } from "@api-core/security/user";
 import { ProjectResponse } from '../app/modules/project/project.dto';
-import { LoggerModule } from 'nestjs-pino';
-import { createFakeMinistryUser, createFakeForestryUser } from '../core/security/mock-user.factory';
 import { SpatialFeatureBcgwResponse } from '../app/modules/spatial-feature/spatial-feature.dto';
+import { KeycloakConfig } from '../core/security/auth.service';
+import { createFakeForestryUser, createFakeMinistryUser } from '../core/security/mock-user.factory';
 
 process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
 

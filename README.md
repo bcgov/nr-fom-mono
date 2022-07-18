@@ -9,7 +9,7 @@ FOM projects (proposals for logging, essentially) are submitted to FOM and made 
 
 Technology Stack: Angular, Node.js with Nest/TypeORM framework, PostgresSQL with PostGIS running in OCP v4
 
-This is a repo that includes the API backend and the two Angular front-ends.
+This is a repo that includes the API backend and the two Angular front-ends with a shared 'libs'.
 
 ## Documentation
 

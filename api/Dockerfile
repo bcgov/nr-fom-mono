@@ -6,7 +6,8 @@ WORKDIR /app
 COPY . ./
 USER root
 RUN dnf install -y ca-certificates && \
-    npm ci && \
+    cd libs && npm ci && \
+    cd ../api && npm ci && \
     npm run build:api
 
 # Deployment container
@@ -26,10 +27,10 @@ COPY --from=builder /etc/pki /etc/pki
 
 # Copy over app
 WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/src/migrations/main ./dist/api/src/migrations/main
-COPY --from=builder /app/src/migrations/test ./dist/api/src/migrations/test
+COPY --from=builder /app/api/node_modules ./node_modules
+COPY --from=builder /app/api/dist ./dist
+COPY --from=builder /app/api/src/migrations/main ./dist/api/src/migrations/main
+COPY --from=builder /app/api/src/migrations/test ./dist/api/src/migrations/test
 
 # Expose port - mostly a convention, for readability
 EXPOSE 3333

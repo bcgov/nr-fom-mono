@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "rootDir": ".",
     "module": "commonjs",
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
@@ -15,7 +14,7 @@
     "importHelpers": true,
     "target": "es2015",
     "sourceMap": true,
-    "outDir": "./dist/api",
+    "outDir": "./dist",
     "types": ["jest", "node"],
     "baseUrl": ".",
     "paths": {
@@ -23,8 +22,8 @@
       "@api-core/*": ["src/core/*"],
       "@controllers": ["src/core/controllers"],
       "@entities": ["src/core/entities"],
-      "@api-modules/*": ["src/app/modules/*"]
-    },
-    "incremental": true
+      "@api-modules/*": ["src/app/modules/*"],
+      "@utility/*": ["../libs/utility/src/*"]
+    }
   }
 }

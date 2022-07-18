@@ -1,7 +1,7 @@
-import { User } from "@api-core/security/user";
+import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
 import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
+import { User } from "@utility/security/user";
 import { SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest } from './submission.dto';
 import { SubmissionService } from './submission.service';
 

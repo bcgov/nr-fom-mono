@@ -2,16 +2,193 @@ name: Pull Request
 
 on:
   pull_request:
-    branches:
-      - main
 
 env:
   REGISTRY: ghcr.io
   NAME: fom
 
 jobs:
+  check-db:
+    name: Check Database
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('db/')
+      TARGET: db
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
+  check-api:
+    name: Check API
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('api/' 'libs/')
+      TARGET: api
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
+  check-admin:
+    name: Check Admin
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('admin/' 'libs/')
+      TARGET: admin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
+  check-public:
+    name: Check Public
+    outputs:
+      build: ${{ steps.check.outputs.build }}
+    env:
+      TRIGGERS: ('public/' 'libs/')
+      TARGET: public
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Check and process modified files
+        id: check
+        run: |
+          # Fetch main to diff against
+          git fetch origin main:refs/remotes/origin/master
+
+          # Trigger build if diff matches any triggers
+          TRIGGERS=${{ env.TRIGGERS }}
+          while read -r check
+          do
+              for t in "${TRIGGERS[@]}"; do
+                  if [[ "${check}" =~ "${t}" ]]
+                  then
+                      # Output build=true for next steps
+                      echo "::set-output name=build::true"
+                      echo -e "${t}\n --> ${check}\n"
+                      exit 0
+                  fi
+              done
+          done < <(git diff origin/main --name-only)
+          echo "Container build not required"
+
+      - name: Recycle/retag PROD Image
+        if: steps.check.outputs.build != 'true'
+        uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          repository: ${{ github.repository }}
+          target: prod-${{ env.TARGET }}
+          tags: |
+            ${{ github.event.number }}-${{ env.TARGET }}
+
   build-db:
-    name: Build-DB
+    name: Database Image Build
+    needs:
+      - check-db
+    if: needs.check-db.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -49,7 +226,10 @@ jobs:
           cache-to: type=gha,mode=max
 
   build-api:
-    name: Build-API
+    name: API Image Build
+    needs:
+      - check-api
+    if: needs.check-api.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -79,7 +259,7 @@ jobs:
       - name: Build and push API Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./api
+          context: .
           file: api/Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-api
@@ -87,7 +267,10 @@ jobs:
           cache-to: type=gha,mode=max
 
   build-public:
-    name: Build-Public
+    name: Public Image Build
+    needs:
+      - check-public
+    if: needs.check-public.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -125,7 +308,10 @@ jobs:
           cache-to: type=gha,mode=max
 
   build-admin:
-    name: Build-Admin
+    name: Admin Image Build
+    needs:
+      - check-admin
+    if: needs.check-admin.outputs.build == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -162,13 +348,103 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy-dev:
-    name: Deploy-Dev
+  tests-api:
+    name: API Unit Tests
+    needs:
+      - check-api
+    if: needs.check-api.outputs.build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+      - uses: actions/cache@v3
+        id: npm-cache-api # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Cache for test results
+        id: cache-api
+        uses: actions/cache@v3
+        with:
+          path: coverage
+          key: coverage-api-${{ github.run_number }}
+          restore-keys: |
+            coverage-api-
+
+      - name: Tests
+        run: |
+          cd api
+          npm ci
+          npm run test-unit
+      - name: Report code coverage
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          title: API coverage report
+          delete-old-comments: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/api/lcov.info
+
+  sonarcloud:
+    name: Static Analysis
     needs:
       - build-db
       - build-api
       - build-admin
       - build-public
+      - tests-api
+    if:
+      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
+      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    steps:
+      - uses: actions/checkout@v2
+        # Disable shallow clone for SonarCloud analysis
+        with:
+          fetch-depth: 0
+
+      - name: Cache for api test results
+        id: cache-backend
+        uses: actions/cache@v3
+        with:
+          path: coverage
+          key: coverage-api-${{ github.run_number }}
+          restore-keys: |
+            coverage-api-
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.exclusions=**/test/**,.github/**/*
+            -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info
+            -Dsonar.organization=bcgov-sonarcloud
+            -Dsonar.project.monorepo.enabled=true
+            -Dsonar.projectKey=nr-fom
+
+  deploy-dev:
+    name: DEV Deployment
+    needs:
+      - build-db
+      - build-api
+      - build-admin
+      - build-public
+      - tests-api
+    if:
+      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
+      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     environment:
       name: dev
@@ -180,7 +456,7 @@ jobs:
 
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.NAMESPACE }}
+          oc project ${{ secrets.OC_NAMESPACE }}
 
           # Init (db secret), only if necessary
           oc process -f .github/openshift/init.database.yml -p ZONE=${{ github.event.number }} \
@@ -196,14 +472,14 @@ jobs:
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ github.event.number }} \
             -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api -p DB_TESTDATA=true \
-            -p NAMESPACE=${{ secrets.NAMESPACE }} \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api  -p CERTBOT="false" \
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin -p CERTBOT="false" \
             | oc apply -f -
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ github.event.number }} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
+            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public -p CERTBOT="false" \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
@@ -224,6 +500,21 @@ jobs:
           realm: ${{ secrets.KC_REALM }}
           host: ${{ secrets.KC_HOST }}
 
+      - name: Deployment Verification
+        run: |
+          # Deployment verification
+          FOM_URL="https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca"
+
+          if [ $(curl -s -o /dev/null -w "%{http_code}" "${FOM_URL}/api/district") -ne 200 ] || \
+            [ $(curl -L --max-redirs 5 -s -o /dev/null -w "%{http_code}" "${FOM_URL}/admin/") -ne 200 ] || \
+            [ $(curl -s -o /dev/null -w "%{http_code}" "${FOM_URL}/public/") -ne 200 ]
+          then
+            echo Deployment verification failed
+            exit 1
+          fi
+
+          echo "Deployment verification passed"
+
       - name: Deployment update
         uses: mshick/add-pr-comment@v1
         env:
@@ -234,135 +525,3 @@ jobs:
             [Dev - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
             [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
             [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
-
-  deploy-test:
-    name: Deploy-Test
-    needs:
-      - deploy-dev
-    runs-on: ubuntu-latest
-    environment:
-      name: test
-    env:
-      ZONE: test
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy
-        run: |
-          set -eux
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.NAMESPACE }}
-
-          # Init (db secret), only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${ZONE} \
-            | oc create -f - || \
-            echo "Already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${ZONE} -o name | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${ZONE}
-          fi
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
-            -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true \
-            -p NAMESPACE=${{ secrets.NAMESPACE }} \
-            | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
-            | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-db -w
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-public -w
-
-          # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
-
-      - name: Deployment update
-        uses: mshick/add-pr-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          allow-repeats: false
-          message: |
-            [test - api](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/api) available
-            [test - admin](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/admin) available
-            [test - public](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/public) available
-
-  deploy-prod:
-    name: Deploy-Prod
-    needs:
-      - deploy-test
-    runs-on: ubuntu-latest
-    environment:
-      name: prod
-    env:
-      ZONE: prod
-    steps:
-      - uses: actions/checkout@v2
-      - name: Deploy
-        run: |
-          set -eux
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.NAMESPACE }}
-
-          # Init (db secret), only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${ZONE} \
-            | oc create -f - || \
-            echo "Already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${ZONE} -o name | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${ZONE}
-          fi
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-api \
-            -p KEYCLOAK_URL="https://prod.oidc.gov.bc.ca/auth" -p DB_TESTDATA=false \
-            -p NAMESPACE=${{ secrets.NAMESPACE }} \
-            | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-admin \
-            | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${ZONE} \
-            -p PROMOTE=${{ github.repository }}:${{ github.event.number }}-public \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-db -w
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-api -w
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${ZONE}-public -w
-
-          # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
-
-      - name: Deployment update
-        uses: mshick/add-pr-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          allow-repeats: false
-          message: |
-            [prod - api](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/api) available
-            [prod - admin](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/admin) available
-            [prod - public](https://${{ env.NAME }}-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca/public) available

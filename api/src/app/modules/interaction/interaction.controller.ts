@@ -1,14 +1,14 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
-import { User } from "@api-core/security/user";
+import { UserRequiredHeader } from '@api-core/security/auth.service';
 import { BadRequestException, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from "@utility/security/user";
 import { validate } from 'class-validator';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as utc from 'dayjs/plugin/utc';
 import { PinoLogger } from 'nestjs-pino';
 import fetch from 'node-fetch';
-import { UserRequiredHeader } from '@api-core/security/auth.service';
 import { maxFileSizeBytes } from '../attachment/attachment.controller';
 import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest } from './interaction.dto';
 import { InteractionService } from './interaction.service';
