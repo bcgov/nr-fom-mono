@@ -233,15 +233,15 @@ jobs:
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN}} \
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api \
             -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN}} \
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN}} \
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-public \
             | oc apply -f -
 
@@ -323,6 +323,7 @@ jobs:
     env:
       ZONE: prod
       PREV: test
+      DOMAIN: silver.devops.gov.bc.ca
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
@@ -341,15 +342,15 @@ jobs:
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-api
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
+            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-api \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
             -p KEYCLOAK_URL="https://prod.oidc.gov.bc.ca/auth" \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-admin \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false \
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-public \
             | oc apply -f -
 
