@@ -71,7 +71,7 @@ parameters:
     displayName: Replica Count
     name: REPLICA_COUNT
     required: false
-    value: '3'
+    value: "3"
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -120,8 +120,6 @@ objects:
               name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-      strategy:
-        type: Rolling
       template:
         metadata:
           labels:

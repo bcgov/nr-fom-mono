@@ -328,7 +328,7 @@ jobs:
     env:
       ZONE: prod
       PREV: test
-      DOMAIN: silver.devops.gov.bc.ca
+      DOMAIN: apps.silver.devops.gov.bc.ca
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
