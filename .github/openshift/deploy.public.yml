@@ -19,8 +19,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-  - name: DOMAIN
-    value: apps.silver.devops.gov.bc.ca
+  - name: URL
+    description: Deployment URL, e.g. fom-123.apps.silver.devops.gov.bc.ca or fom.nrs.gov.bc.ca
+    required: true
   - name: CERTBOT
     description: Is certbot handling these certs [true/false]?
     value: "true"
@@ -38,7 +39,7 @@ parameters:
     displayName: Replica Count
     name: REPLICA_COUNT
     required: false
-    value: '3'
+    value: "3"
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -61,7 +62,7 @@ objects:
     data:
       env.js: |-
         window.localStorage.setItem('fom_environment_name', '${ZONE}');
-        window.localStorage.setItem('fom_api_base_url', 'https://fom-${ZONE}.${DOMAIN}');
+        window.localStorage.setItem('fom_api_base_url', 'https://${URL}');
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: v1
@@ -95,8 +96,6 @@ objects:
               name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
-      strategy:
-        type: Rolling
       template:
         metadata:
           labels:
@@ -168,7 +167,7 @@ objects:
         certbot-managed: ${CERTBOT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}.${DOMAIN}
+      host: ${URL}
       path: /${COMPONENT}
       port:
         targetPort: 4300-tcp
