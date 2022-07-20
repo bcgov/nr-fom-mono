@@ -166,17 +166,17 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: access_id
-                      name: fom-object-storage-${ZONE}
+                      name: fom-object-storage
                 - name: OBJECT_STORAGE_BUCKET
                   valueFrom:
                     secretKeyRef:
                       key: bucket
-                      name: fom-object-storage-${ZONE}
+                      name: fom-object-storage
                 - name: OBJECT_STORAGE_SECRET
                   valueFrom:
                     secretKeyRef:
                       key: secret
-                      name: fom-object-storage-${ZONE}
+                      name: fom-object-storage
                 - name: OBJECT_STORAGE_URL
                   value: ${OBJECT_STORAGE_URL}
               ports:
@@ -293,17 +293,17 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           key: access_id
-                          name: fom-object-storage-${ZONE}
+                          name: fom-object-storage
                     - name: OBJECT_STORAGE_BUCKET
                       valueFrom:
                         secretKeyRef:
                           key: bucket
-                          name: fom-object-storage-${ZONE}
+                          name: fom-object-storage
                     - name: OBJECT_STORAGE_SECRET
                       valueFrom:
                         secretKeyRef:
                           key: secret
-                          name: fom-object-storage-${ZONE}
+                          name: fom-object-storage
                     - name: OBJECT_STORAGE_URL
                       value: ${OBJECT_STORAGE_URL}
                   resources:
