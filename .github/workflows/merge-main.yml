@@ -241,6 +241,7 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api \
             -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
+            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
@@ -350,7 +351,6 @@ jobs:
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-api \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            -p KEYCLOAK_URL="https://prod.oidc.gov.bc.ca/auth" \
             | oc apply -f -
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
             -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-admin \
