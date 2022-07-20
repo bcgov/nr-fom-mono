@@ -212,8 +212,8 @@ jobs:
     environment:
       name: test
     env:
-      IMG: ${{ github.repository }}:${{ github.event.number }}
-      URL: fom-${{ github.event.number }}.nrs.gov.bc.ca
+      IMG: ${{ github.repository }}:test
+      URL: fom-test.nrs.gov.bc.ca
       ZONE: test
     steps:
       - uses: actions/checkout@v2
