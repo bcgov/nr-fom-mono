@@ -7,10 +7,6 @@ on:
       - ".github/graphics/**"
       - ".github/ISSUE_TEMPLATE/**"
       - "**.md"
-    paths-ignore:
-      - ".github/graphics/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - "**.md"
 
 env:
   REGISTRY: ghcr.io
