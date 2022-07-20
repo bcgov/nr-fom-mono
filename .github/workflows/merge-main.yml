@@ -3,7 +3,10 @@ name: Main Merge
 on:
   push:
     branches:
-      - main
+    paths-ignore:
+      - ".github/graphics/**"
+      - ".github/ISSUE_TEMPLATE/**"
+      - "**.md"
     paths-ignore:
       - ".github/graphics/**"
       - ".github/ISSUE_TEMPLATE/**"
