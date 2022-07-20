@@ -23,10 +23,6 @@ parameters:
   - name: NAMESPACE
     description: Current namespace (required for image pull bug)
     required: true
-  - description: Environment corresponding to namespace (dev/test/prod)
-    displayName: Environment
-    name: ENV
-    value: dev
   - name: PORT
     value: "3333"
   - name: DB_TESTDATA
@@ -170,17 +166,17 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: access_id
-                      name: fom-object-storage
+                      name: fom-object-storage-${ZONE}
                 - name: OBJECT_STORAGE_BUCKET
                   valueFrom:
                     secretKeyRef:
                       key: bucket
-                      name: fom-object-storage
+                      name: fom-object-storage-${ZONE}
                 - name: OBJECT_STORAGE_SECRET
                   valueFrom:
                     secretKeyRef:
                       key: secret
-                      name: fom-object-storage
+                      name: fom-object-storage-${ZONE}
                 - name: OBJECT_STORAGE_URL
                   value: ${OBJECT_STORAGE_URL}
               ports:
@@ -297,17 +293,17 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           key: access_id
-                          name: fom-object-storage-${ENV}
+                          name: fom-object-storage-${ZONE}
                     - name: OBJECT_STORAGE_BUCKET
                       valueFrom:
                         secretKeyRef:
                           key: bucket
-                          name: fom-object-storage-${ENV}
+                          name: fom-object-storage-${ZONE}
                     - name: OBJECT_STORAGE_SECRET
                       valueFrom:
                         secretKeyRef:
                           key: secret
-                          name: fom-object-storage-${ENV}
+                          name: fom-object-storage-${ZONE}
                     - name: OBJECT_STORAGE_URL
                       value: ${OBJECT_STORAGE_URL}
                   resources:
