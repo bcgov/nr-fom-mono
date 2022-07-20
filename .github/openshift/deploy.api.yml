@@ -254,9 +254,7 @@ objects:
   - kind: CronJob
     apiVersion: batch/v1
     metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-batch
+      name: ${NAME}-${ZONE}
     spec:
       concurrencyPolicy: Replace
       schedule: "${CRON_MINUTES} 9 * * * " # Run daily at 9:xx AM UTC
@@ -265,8 +263,7 @@ objects:
           template:
             metadata:
               labels:
-                app: ${NAME}-${ZONE}
-                cronjob: ${NAME}-${ZONE}-batch
+                cronjob: ${NAME}-${ZONE}
             spec:
               restartPolicy: OnFailure
               containers:
