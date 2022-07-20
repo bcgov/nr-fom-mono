@@ -57,7 +57,7 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('api/' 'libs/')
+      TRIGGERS: ('api/' 'libs/' '.github/openshift/deploy.api.yml')
       TARGET: api
     runs-on: ubuntu-latest
     steps:
@@ -101,7 +101,7 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('admin/' 'libs/')
+      TRIGGERS: ('admin/' 'libs/' '.github/openshift/deploy.admin.yml')
       TARGET: admin
     runs-on: ubuntu-latest
     steps:
@@ -145,7 +145,7 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('public/' 'libs/')
+      TRIGGERS: ('public/' 'libs/' '.github/openshift/deploy.public.yml')
       TARGET: public
     runs-on: ubuntu-latest
     steps:
@@ -475,6 +475,7 @@ jobs:
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p CERTBOT=false -p REPLICA_COUNT=1 \
             -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api \
+            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" \
             | oc apply -f -
