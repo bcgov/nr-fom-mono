@@ -1,5 +1,6 @@
-# Caddy's configuration file to serve up frontend.
+# Caddy's configuration file to serve up frontend. (Require Caddy installed/downloaded in system)
 # Local: Place this Caddyfile into build directory 'dist/public' same with index.html; run command "caddy run --watch" at console.
+#        Then access local frontend app: http://localhost:4300/public/projects
 
 :4300 {
     log {
