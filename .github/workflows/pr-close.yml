@@ -5,10 +5,9 @@ on:
     types:
       - closed
     paths-ignore:
-      - ".**"
+      - ".github/graphics/**"
+      - ".github/ISSUE_TEMPLATE/**"
       - "**.md"
-      - "**.yml"
-      - "**.yaml"
 
 env:
   NAME: fom

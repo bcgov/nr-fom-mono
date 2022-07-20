@@ -57,7 +57,7 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('api/' 'libs/')
+      TRIGGERS: ('api/' 'libs/' '.github/openshift/deploy.api.yml')
       TARGET: api
     runs-on: ubuntu-latest
     steps:
@@ -101,7 +101,7 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('admin/' 'libs/')
+      TRIGGERS: ('admin/' 'libs/' '.github/openshift/deploy.admin.yml')
       TARGET: admin
     runs-on: ubuntu-latest
     steps:
@@ -145,7 +145,7 @@ jobs:
     outputs:
       build: ${{ steps.check.outputs.build }}
     env:
-      TRIGGERS: ('public/' 'libs/')
+      TRIGGERS: ('public/' 'libs/' '.github/openshift/deploy.public.yml')
       TARGET: public
     runs-on: ubuntu-latest
     steps:
