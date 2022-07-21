@@ -1,5 +1,5 @@
 # Caddy's configuration file to serve up frontend. (Require Caddy installed/downloaded in system)
-# Local: Place this Caddyfile into build directory 'dist/public' same with index.html; run command "caddy run --watch" at console.
+# Local: Assume local build is ready at './dist/public'; run command "caddy run --watch" at console.
 #        Then access local frontend app: http://localhost:4300/public/projects
 
 :4300 {
@@ -12,7 +12,7 @@
     # Good practice to compress responses.
     encode zstd gzip
 
-    root /* ./
+    root /* ./dist/public
 
    # 'handle_path' does the match of the path and stripping the matched prefix out.
     handle_path /public/* {
