@@ -186,7 +186,7 @@ jobs:
       name: demo
     env:
       IMG: ${{ github.repository }}:demo
-      URL: fom-demo.apps.silver.devops.gov.bc.ca
+      URL: fom-demo.apps.silver.devops.gov.bc.ca 
       ZONE: demo
     steps:
       - uses: actions/checkout@v2
