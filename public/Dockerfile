@@ -14,7 +14,7 @@ RUN cd libs && \
     npm i typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
 
 # Deployment container
-# TODO (ask if it is ok to use caddy:2 image or whatelse we can do to install caddy). FROM registry.access.redhat.com/ubi8/ubi-micro
+# FROM registry.access.redhat.com/ubi8/ubi-micro
 FROM caddy:2
 
 # Vars - configured for local development
@@ -36,15 +36,11 @@ WORKDIR /app
 COPY --from=builder /app/public/node_modules ./node_modules
 COPY --from=builder /app/public/dist ./dist
 COPY --from=builder /app/public ./public
-# TODO (remove this) COPY --from=builder /app/public/server.js .
 COPY --from=builder /app/public/Caddyfile .
 
 # Expose port - mostly a convention, for readability
 EXPOSE 4300 2019
 
 # Start up command
-USER root
-# TODO (remove this) ENTRYPOINT ["node", "server.js"]
+USER 1001 
 ENTRYPOINT ["caddy", "run"]
-# TODO (ask if it is ok to have USER move to after ENTRYPOINT)
-# USER 1001 
