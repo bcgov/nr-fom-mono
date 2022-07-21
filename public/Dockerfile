@@ -46,4 +46,4 @@ EXPOSE 4300 2019
 # TODO (remove this) ENTRYPOINT ["node", "server.js"]
 ENTRYPOINT ["caddy", "run"]
 # TODO (ask if it is ok to have USER move to after ENTRYPOINT)
-USER 1001 
+# USER 1001 
