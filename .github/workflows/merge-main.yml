@@ -212,7 +212,8 @@ jobs:
     environment:
       name: test
     env:
-      DOMAIN: nrs.gov.bc.ca
+      IMG: ${{ github.repository }}:test
+      URL: fom-test.nrs.gov.bc.ca
       ZONE: test
     steps:
       - uses: actions/checkout@v2
@@ -235,19 +236,21 @@ jobs:
           fi
 
           # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-api \
-            -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" \
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
+            | oc apply -f -
+
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
+            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
+            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-admin \
+
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
+            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-public \
+
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
+            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
@@ -328,7 +331,9 @@ jobs:
     env:
       ZONE: prod
       PREV: test
-      DOMAIN: apps.silver.devops.gov.bc.ca
+      IMG: ${{ github.repository }}:prod
+      # TODO: Change URL=...nrs... and CERTBOT=true for final PROD deployment
+      URL: fom-prod.apps.silver.devops.gov.bc.ca
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
@@ -345,17 +350,21 @@ jobs:
           fi
 
           # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-db | oc apply -f -
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-api \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} \
+          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-admin \
+
+          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
+            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=false \
+            -p SITEMINDER_URL="https://logon7.gov.bc.ca" -p KEYCLOAK_URL="https://oidc.gov.bc.ca/auth" \
             | oc apply -f -
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p DOMAIN=${{ env.DOMAIN }} -p CERTBOT=false \
-            -p PROMOTE=${{ github.repository }}:${{ env.PREV }}-public \
+
+          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
+            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
+            | oc apply -f -
+
+          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
+            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)

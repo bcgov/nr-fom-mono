@@ -44,8 +44,9 @@ parameters:
     displayName: Object Storage URL
     name: OBJECT_STORAGE_URL
     value: "nrs.objectstore.gov.bc.ca"
-  - name: DOMAIN
-    value: apps.silver.devops.gov.bc.ca
+  - name: URL
+    description: Deployment URL, e.g. fom-123.apps.silver.devops.gov.bc.ca or fom.nrs.gov.bc.ca
+    required: true
   - name: CERTBOT
     description: Is certbot handling these certs [true/false]?
     value: "true"
@@ -151,7 +152,7 @@ objects:
                 - name: ENV
                   value: ${ENV}
                 - name: HOSTNAME
-                  value: ${NAME}-${ZONE}.${DOMAIN}/${COMPONENT}
+                  value: ${URL}/${COMPONENT}
                 - name: PORT
                   value: "${PORT}"
                 - name: KEYCLOAK_ENABLED
@@ -236,7 +237,7 @@ objects:
         certbot-managed: ${CERTBOT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
-      host: ${NAME}-${ZONE}.${DOMAIN}
+      host: ${URL}
       path: /${COMPONENT}
       port:
         targetPort: ${PORT}-tcp
