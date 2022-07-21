@@ -43,6 +43,7 @@ COPY --from=builder /app/public/Caddyfile .
 EXPOSE 4300 2019
 
 # Start up command
+USER root
 # TODO (remove this) ENTRYPOINT ["node", "server.js"]
 ENTRYPOINT ["caddy", "run"]
 # TODO (ask if it is ok to have USER move to after ENTRYPOINT)
