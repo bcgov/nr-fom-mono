@@ -35,6 +35,7 @@
     "ngx-dropzone": "^3.0.0",
     "remeda": "^0.0.32",
     "rxjs": "~7.5.5",
+    "tslib": "^2.3.1",
     "zone.js": "^0.11.4"
   },
   "devDependencies": {
