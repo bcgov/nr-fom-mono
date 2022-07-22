@@ -30,7 +30,6 @@
     "@nestjs/schedule": "^1.0.2",
     "@nestjs/swagger": "^4.8.2",
     "@nestjs/typeorm": "^7.1.5",
-    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "dayjs": "^1.10.8",
     "dotenv": "^16.0.0",
@@ -43,15 +42,11 @@
     "minio": "^7.0.26",
     "nestjs-pino": "^1.4.0",
     "node-cache": "^5.1.2",
-    "object-hash": "^3.0.0",
     "pg": "^8.5.1",
-    "popper.js": "^1.16.1",
-    "reflect-metadata": "^0.1.13",
     "remeda": "^0.0.32",
     "rxjs": "^7.5.4",
     "swagger-ui-express": "^4.3.0",
     "tslib": "^2.3.1",
-    "tsutils": "^3.21.0",
     "typeorm": "^0.2.34"
   },
   "devDependencies": {
