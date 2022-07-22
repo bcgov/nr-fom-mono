@@ -42,5 +42,5 @@ COPY --from=builder /app/public/Caddyfile .
 EXPOSE 4300 2019
 
 # Start up command
-USER 1001 
+# USER 1001 
 ENTRYPOINT ["caddy", "run"]
