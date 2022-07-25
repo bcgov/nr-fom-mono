@@ -20,7 +20,7 @@
         Cross-Origin-Resource-Policy "cross-origin"
         Cross-Origin-Opener-Policy "unsafe-none"
         Cross-Origin-Embedder-Policy "unsafe-none"
-        Content-Security-Policy "default-src 'self'; base-uri 'self'; block-all-mixed-content; font-src 'self' https: data:; form-action 'self'; frame-ancestors 'self'; img-src 'self' https://server.arcgisonline.com data: https://services.arcgisonline.com data: https://maps.gov.bc.ca; object-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' https: 'unsafe-inline'; upgrade-insecure-requests; connect-src 'self' https://*.gov.bc.ca http://*.gov.bc.ca;"
+        Content-Security-Policy "default-src 'self'; base-uri 'self'; block-all-mixed-content; font-src 'self' https: data:; form-action 'self'; frame-ancestors 'self'; img-src 'self' https://server.arcgisonline.com data: https://services.arcgisonline.com data: https://maps.gov.bc.ca; object-src 'none'; script-src 'self'; style-src 'self' https: 'unsafe-inline'; upgrade-insecure-requests; connect-src 'self' https://*.gov.bc.ca http://*.gov.bc.ca;"
         
         # For connect-src: add "*" if testing locally, will also need to bypass CORS in the API.
     }
@@ -47,3 +47,5 @@
 #      uri strip_prefix /public
 #      try_files {path} {path}/ {file} /index.html
 # }
+
+# Multi-lines for header's Content-Security-Policy won't work, it has to be enclosed in double quote as one line.
