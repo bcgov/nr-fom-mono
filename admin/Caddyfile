@@ -1,0 +1,38 @@
+# Caddy's configuration file to serve up frontend. (Require Caddy installed/downloaded in system)
+# Local: Assume local build is ready at './dist/admin'; at root working directory run command "caddy run --watch" at console.
+#        Then access local frontend app: http://localhost:4300/admin/
+
+:4200 {
+    log {
+        level DEBUG
+        format json
+        output stdout
+    }
+
+    # Good practice to compress responses.
+    encode zstd gzip
+
+    root /* ./dist/admin
+
+   # 'handle_path' does the match of the path and stripping the matched prefix out.
+    handle_path /admin/* {
+        try_files {path} {path}/ {file} /index.html
+    }
+
+    file_server
+}
+
+##################
+# Some Notes.
+##################
+
+# If 'root' directive is used, it has to be before other directives such as 'try_files'.
+
+# Below only work for general, it does not work for subfolder files access; e.g., /admin/assets
+# try_files {path} {path}/ {file} /index.html
+
+# This is similar like handle_path above and works as well for try_files subfolders.
+# route /admin/* {
+#      uri strip_prefix /admin
+#      try_files {path} {path}/ {file} /index.html
+# }
