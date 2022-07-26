@@ -19,7 +19,7 @@
         Cache-Control "public, max-age=300"
         Content-Security-Policy "connect-src 'self' https://*.gov.bc.ca http://*.gov.bc.ca;form-action 'self';img-src 'self' https://server.arcgisonline.com data: https://services.arcgisonline.com data: https://maps.gov.bc.ca;default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';object-src 'none';script-src 'self';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
         
-        # For connect-src: add "*" if testing locally, will also need to bypass CORS in the API.
+        # For connect-src (Content-Security-Policy): add "*" if testing locally, will also need to bypass CORS in the API.
     }
 
    # 'handle_path' does the match of the path and stripping the matched prefix out.
@@ -37,7 +37,7 @@
 # If 'root' directive is used, it has to be before other directives such as 'try_files'.
 
 # Below only work for general, it does not work for subfolder files access; e.g., /public/assets
-# try_files {path} {path}/ {file} /index.html
+# try_files {path} {path}/ /index.html
 
 # This is similar like handle_path above and works as well for try_files subfolders.
 # route /public/* {
