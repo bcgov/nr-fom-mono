@@ -37,7 +37,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/public/Caddyfile .
 
 # Expose port - mostly a convention, for readability
-EXPOSE 4300 2019 80 443
+EXPOSE 4300
 
 # Start up command
 USER 1001 
