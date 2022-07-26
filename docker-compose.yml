@@ -15,7 +15,6 @@ services:
       - -c
       - cd libs && npm ci &&
         cd ../admin && npm ci &&
-        npm i -g express@^4.17.1 helmet@^4.6.0 &&
         npm run start:admin
     environment:
       - FOM_ENV=dev
@@ -109,12 +108,11 @@ services:
       - -c
       - cd libs && npm ci &&
         cd ../public && npm ci &&
-        npm i -g @nestjs/cli@^7.6.0 typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0 &&
         npm run start:public
     environment:
       - FOM_ENV=dev
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4300/public"]
+      test: ["CMD", "curl", "-f", "http://localhost:4300/public/"]
       interval: 10s
       retries: 3
       start_period: 60s
