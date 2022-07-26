@@ -32,7 +32,6 @@ COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 # Copy over app
 WORKDIR /app
-COPY --from=builder /app/admin/node_modules ./node_modules
 COPY --from=builder /app/admin/dist ./dist
 COPY --from=builder /app/admin ./admin
 COPY --from=builder /app/admin/Caddyfile .
