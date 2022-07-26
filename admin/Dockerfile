@@ -10,8 +10,7 @@ RUN cd libs && \
     cd ../admin && \
     npm ci && \
     npm run build:admin && \
-    rm -rf node_modules && \
-    npm i typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
+    rm -rf node_modules
 
 # Deployment container
 # FROM registry.access.redhat.com/ubi8/ubi-micro

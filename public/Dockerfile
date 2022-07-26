@@ -10,8 +10,7 @@ RUN cd libs && \
     cd ../public && \
     npm ci && \
     npm run build:public && \
-    rm -rf node_modules && \
-    npm i typescript@~4.1.6 express@^4.17.1 helmet@^4.6.0
+    rm -rf node_modules
 
 # Deployment container
 # FROM registry.access.redhat.com/ubi8/ubi-micro
@@ -33,7 +32,6 @@ COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 
 # Copy over app
 WORKDIR /app
-COPY --from=builder /app/public/node_modules ./node_modules
 COPY --from=builder /app/public/dist ./dist
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/public/Caddyfile .
