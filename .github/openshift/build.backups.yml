@@ -10,7 +10,7 @@ parameters:
     required: true
   - name: COMPONENT
     description: Component name
-    value: backup
+    value: backup-container
 metadata:
   name: ${NAME}-build-template
 objects:

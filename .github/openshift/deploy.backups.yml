@@ -3,7 +3,7 @@
 kind: "Template"
 apiVersion: template.openshift.io/v1
 metadata:
-  name: "{$JOB_NAME}-cronjob-template"
+  name: "${NAME}-${ZONE}-${COMPONENT}-cronjob-template"
   annotations:
     description: "Scheduled Task to perform a Database Backup"
     tags: "cronjob,backup"
@@ -13,7 +13,7 @@ parameters:
     value: fom
   - name: COMPONENT
     description: Component name
-    value: api
+    value: backup-container
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
@@ -31,7 +31,7 @@ parameters:
     displayName: "Source Image Name"
     description: "The name of the image to use for this resource."
     required: true
-    value: "backup-postgres"
+    value: ${NAME}-${ZONE}-${COMPONENT}
   - name: "IMAGE_REGISTRY"
     description: "The base OpenShift docker registry"
     displayName: "Docker Image Registry"
@@ -115,8 +115,24 @@ parameters:
     displayName: "Job Backoff Limit"
     description: "The number of attempts to try for a successful job outcome"
     value: "0"
-    required: false
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Volume Capacity
+    name: PVC_SIZE
+    value: 1Gi
 objects:
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: "${PVC_SIZE}"
+      storageClassName: netapp-file-standard
   - kind: ConfigMap
     apiVersion: v1
     metadata:
@@ -134,16 +150,16 @@ objects:
       RETENTION.DAILY_BACKUPS: "${DAILY_BACKUPS}"
       RETENTION.WEEKLY_BACKUPS: "${WEEKLY_BACKUPS}"
       RETENTION.MONTHLY_BACKUPS: "${MONTHLY_BACKUPS}"
-  - kind: "CronJob"
+  - kind: CronJob
     apiVersion: "batch/v1"
     metadata:
-      name: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}
       labels:
         app: ${NAME}-${ZONE}
         cronjob: ${NAME}-${ZONE}
     spec:
       schedule: "${SCHEDULE}"
-      concurrencyPolicy: "Forbid"
+      concurrencyPolicy: "Replace"
       successfulJobsHistoryLimit: "${{SUCCESS_JOBS_HISTORY_LIMIT}}"
       failedJobsHistoryLimit: "${{FAILED_JOBS_HISTORY_LIMIT}}"
       jobTemplate:
@@ -230,7 +246,7 @@ objects:
               volumes:
                 - name: backup
                   persistentVolumeClaim:
-                    claimName: "${JOB_PERSISTENT_STORAGE_NAME}"
+                    claimName: ${NAME}-${ZONE}-${COMPONENT}
               restartPolicy: "Never"
               terminationGracePeriodSeconds: 30
               activeDeadlineSeconds: 1600
