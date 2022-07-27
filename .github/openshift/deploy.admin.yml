@@ -40,6 +40,11 @@ parameters:
     name: REPLICA_COUNT
     required: false
     value: "3"
+  - description: Volume space available for data.
+    displayName: Caddy /data Volume Capacity
+    name: CADDY_DATA_PVC_SIZE
+    required: true
+    value: 22Mi
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -141,10 +146,19 @@ objects:
               volumeMounts:
                 - mountPath: /app/dist/${COMPONENT}/assets/env
                   name: env-config
+                - mountPath: /data
+                  name: caddy-data
+                - mountPath: /config
+                  name: caddy-config
           volumes:
             - name: env-config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
+            - name: caddy-data
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}-caddy-data
+            - name: caddy-config
+              emptyDir: {}
   - apiVersion: v1
     kind: Service
     metadata:
@@ -178,3 +192,16 @@ objects:
       tls:
         termination: edge
         insecureEdgeTerminationPolicy: Redirect
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}-caddy-data
+      labels:
+        app: ${NAME}-${ZONE}
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: "${CADDY_DATA_PVC_SIZE}"
+      storageClassName: netapp-file-standard
