@@ -44,7 +44,7 @@ parameters:
     displayName: Caddy /data Volume Capacity
     name: CADDY_DATA_PVC_SIZE
     required: true
-    value: 20Mi
+    value: 22Mi
 objects:
   - apiVersion: v1
     kind: ImageStream
