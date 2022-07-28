@@ -100,6 +100,9 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
     spec:
+      metadata:
+        labels:
+          app: ${NAME}-${ZONE}
       triggers:
         - type: ImageChange
         - type: ConfigChange
