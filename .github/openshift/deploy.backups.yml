@@ -106,7 +106,7 @@ objects:
       source:
         type: Git
         git:
-          uri: https://github.com/BCDevOps/backups.git
+          uri: https://github.com/BCDevOps/backup-container.git
           ref: master
         contextDir: /docker
       strategy:
