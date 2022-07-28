@@ -510,12 +510,14 @@ jobs:
 
       - name: Deployment Verification
         run: |
+          set -eux
+
           # Deployment verification
           FOM_URL="https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca"
 
           if [ $(curl -s -o /dev/null -w "%{http_code}" "${FOM_URL}/api/district") -ne 200 ] || \
-            [ $(curl -L --max-redirs 5 -s -o /dev/null -w "%{http_code}" "${FOM_URL}/admin") -ne 200 ] || \
-            [ $(curl -s -o /dev/null -w "%{http_code}" "${FOM_URL}/public") -ne 200 ]
+            [ $(curl -L --max-redirs 5 -s -o /dev/null -w "%{http_code}" "${FOM_URL}/admin/") -ne 200 ] || \
+            [ $(curl -s -o /dev/null -w "%{http_code}" "${FOM_URL}/public/") -ne 200 ]
           then
             echo Deployment verification failed
             exit 1
