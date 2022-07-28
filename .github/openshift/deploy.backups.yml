@@ -17,9 +17,6 @@ parameters:
   - name: COMPONENT
     description: Component name
     value: backups
-  - name: "SCHEDULE"
-    description: "Cron Schedule to Execute the Job (using local cluster system TZ)"
-    value: "0 8 * * *"
   - name: "IMAGE_REGISTRY"
     description: "The base OpenShift docker registry"
     value: "image-registry.openshift-image-registry.svc:5000"
@@ -85,6 +82,10 @@ parameters:
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     name: PVC_SIZE
     value: 1Gi
+  - name: CRON_MINUTES
+    description: Random number, 0-60, for scheduling cronjobs
+    from: "[0-5]{1}[0-9]{1}"
+    generate: expression
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -157,7 +158,7 @@ objects:
         app: ${NAME}-${ZONE}
         cronjob: ${NAME}-${ZONE}
     spec:
-      schedule: "${SCHEDULE}"
+      schedule: "${CRON_MINUTES} 9 * * *" # Run daily at 9:xx AM UTC
       concurrencyPolicy: "Replace"
       successfulJobsHistoryLimit: "${{SUCCESS_JOBS_HISTORY_LIMIT}}"
       failedJobsHistoryLimit: "${{FAILED_JOBS_HISTORY_LIMIT}}"
