@@ -262,12 +262,6 @@ jobs:
           # Run certbot with one-off job
           oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
-          # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
-
   zap-api:
     name: API Pen Tests
     needs:
