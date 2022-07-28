@@ -27,11 +27,6 @@ parameters:
     description: "Cron Schedule to Execute the Job (using local cluster system TZ)"
     value: "0 8 * * *"
     required: true
-  - name: "SOURCE_IMAGE_NAME"
-    displayName: "Source Image Name"
-    description: "The name of the image to use for this resource."
-    required: true
-    value: ${NAME}-${ZONE}-${COMPONENT}
   - name: "IMAGE_REGISTRY"
     description: "The base OpenShift docker registry"
     displayName: "Docker Image Registry"
@@ -177,7 +172,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}
-                  image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${SOURCE_IMAGE_NAME}:${TAG_NAME}"
+                  image: "${IMAGE_REGISTRY}/${IMAGE_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}"
                   command:
                     - "/bin/bash"
                     - "-c"
