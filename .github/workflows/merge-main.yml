@@ -262,12 +262,6 @@ jobs:
           # Run certbot with one-off job
           oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
-          # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
-
   zap-api:
     name: API Pen Tests
     needs:
@@ -374,10 +368,7 @@ jobs:
           oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
 
           # Remove completed build runs, build pods and deployment pods
-          for p in $(oc get po | grep "Completed" | awk '{print $1}')
-          do
-            oc delete po ${p}
-          done
+          oc delete po --field-selector=status.phase==Succeeded
 
       - name: Promote Database Image to PROD
         uses: shrink/actions-docker-registry-tag@v2
