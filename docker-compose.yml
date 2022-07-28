@@ -112,7 +112,7 @@ services:
     environment:
       - FOM_ENV=dev
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4300/public/"]
+      test: ["CMD", "curl", "-f", "http://localhost:4300/public"]
       interval: 10s
       retries: 3
       start_period: 60s

@@ -3,6 +3,8 @@
 #        Then access local frontend app: http://localhost:4300/admin/
 
 :4200 {
+    redir /admin /admin/
+
     log {
         level ERROR
         format json
@@ -13,7 +15,7 @@
     encode zstd gzip
 
     # If 'root' directive is used, it has to be before other directives such as 'try_files'.
-    root /* ./dist/admin
+    root ./dist/admin
 
     header {
         # allow caching for 5 minutes, for refreshing after deployments.
