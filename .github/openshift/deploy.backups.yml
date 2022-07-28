@@ -114,7 +114,7 @@ objects:
         dockerStrategy:
           from:
             kind: DockerImage
-            name: docker.io/centos/postgresql-12-centos7:20200917-804ef01
+            name: docker.io/centos/postgresql-13-centos7:20210722-70dc4d3
           dockerfilePath: Dockerfile
       output:
         to:
