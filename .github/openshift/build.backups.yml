@@ -47,4 +47,4 @@ objects:
       output:
         to:
           kind: ImageStreamTag
-          name: ${NAME}-${ZONE}-${COMPONENT}:latest
+          name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}
