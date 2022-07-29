@@ -180,6 +180,11 @@ objects:
                       name: fom-object-storage
                 - name: OBJECT_STORAGE_URL
                   value: ${OBJECT_STORAGE_URL}
+                - name: DATA_ENCRYPTION_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: data-encryption-key
+                      name: ${NAME}-${ZONE}-${COMPONENT}
               ports:
                 - containerPort: ${{PORT}}
                   protocol: TCP

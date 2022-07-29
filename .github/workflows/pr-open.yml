@@ -462,16 +462,21 @@ jobs:
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
 
-          # Init (db secret), only if necessary
+          # Init database secret, only if necessary
           oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
             | oc create -f - || \
             echo "Database secret already initialized"
 
-          # Db backups cronjob, only if necessary
+          # Init database backups cronjob, only if necessary
           oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
             -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
             | oc create -f - || \
             echo "Database backup cronjob already initialized"
+
+          # Init API data encryption key, only if necessary
+          oc process -f .github/openshift/init.api.yml -p ZONE=${{ env.ZONE }} \
+            | oc create -f - || \
+            echo "API secret already initialized"
 
           # Clear stale images for import/replacement
           if [ $(oc get is -l app=${{ env.NAME }}-${{ github.event.number }} -o name | wc -l) -gt 0 ]; then
