@@ -337,8 +337,7 @@ jobs:
       ZONE: prod
       PREV: test
       IMG: ${{ github.repository }}:prod
-      # TODO: Change URL=...nrs... and CERTBOT=true for final PROD deployment
-      URL: fom-prod.apps.silver.devops.gov.bc.ca
+      URL: fom.nrs.gov.bc.ca
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
@@ -365,17 +364,17 @@ jobs:
             | oc apply -f -
 
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
+            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=false \
             -p SITEMINDER_URL="https://logon7.gov.bc.ca" -p KEYCLOAK_URL="https://oidc.gov.bc.ca/auth" \
             | oc apply -f -
 
           oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
+            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
             | oc apply -f -
 
           oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
+            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
             | oc apply -f -
 
           # Follow any active rollouts (see deploymentconfigs)
