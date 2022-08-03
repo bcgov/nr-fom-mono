@@ -150,7 +150,7 @@ objects:
                       key: database-user
                       name: ${NAME}-${ZONE}-db
                 - name: ENV
-                  value: ${ENV}
+                  value: ${ZONE}
                 - name: HOSTNAME
                   value: ${URL}/${COMPONENT}
                 - name: PORT
