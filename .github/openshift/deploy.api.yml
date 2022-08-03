@@ -152,7 +152,7 @@ objects:
                 - name: ENV
                   value: ${ZONE}
                 - name: HOSTNAME
-                  value: ${URL}/${COMPONENT}
+                  value: ${URL}
                 - name: PORT
                   value: "${PORT}"
                 - name: KEYCLOAK_ENABLED
