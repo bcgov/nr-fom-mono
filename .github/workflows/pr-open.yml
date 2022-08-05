@@ -523,14 +523,11 @@ jobs:
       - name: Deployment Verification
         env:
           LINKS: (
-            '${FOM_URL}/api/district"'
-            '${FOM_URL}/admin/'
-            '${FOM_URL}/public/'
+            '${{ env.URL }}/api/district'
+            '${{ env.URL }}/admin/'
+            '${{ env.URL }}/public/'
             )
         run: |
-          set -eux
-
-          FOM_URL="https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca"
           LINKS=${{ env.LINKS }}
           for l in "${LINKS[@]}"; do
               if [ $(curl -L --max-redirs 5 -s -o /dev/null -w "%{http_code}" "${l}") -ne 200 ]
