@@ -400,7 +400,9 @@ jobs:
       - build-admin
       - build-public
       - tests-api
-    if: ${{ success() && !failure() }}
+    if:
+      always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
+      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     environment:
       name: dev
