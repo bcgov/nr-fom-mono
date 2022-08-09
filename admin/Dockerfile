@@ -41,4 +41,5 @@ EXPOSE 4200
 
 # Start up command
 USER 1001
+RUN blah blah blah fail here!
 ENTRYPOINT ["caddy", "run"]
