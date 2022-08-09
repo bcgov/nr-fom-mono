@@ -401,7 +401,8 @@ jobs:
       - build-public
       - tests-api
     if:
-      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
+      # Always check for no failures at at least one successful build
+      always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     environment:
@@ -436,6 +437,7 @@ jobs:
 
   deploy-dev:
     name: DEV Deployment
+    timeout-minutes: 10
     needs:
       - build-db
       - build-api
@@ -443,7 +445,8 @@ jobs:
       - build-public
       - tests-api
     if:
-      always() && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
+      # Always check for no failures at at least one successful build
+      always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
     env:
