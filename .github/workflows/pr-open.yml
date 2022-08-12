@@ -225,6 +225,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Remove stale images
+        run: |
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+
+          # Clean previous image
+          oc delete is ${{ env.NAME }}-${{ github.event.number }}-db || true
+
   build-api:
     name: API Image Build
     needs:
@@ -265,6 +274,15 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-api
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Remove stale images
+        run: |
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+
+          # Clean previous image
+          oc delete is ${{ env.NAME }}-${{ github.event.number }}-api || true
 
   build-public:
     name: Public Image Build
@@ -307,6 +325,15 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Remove stale images
+        run: |
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+
+          # Clean previous image
+          oc delete is ${{ env.NAME }}-${{ github.event.number }}-public || true
+
   build-admin:
     name: Admin Image Build
     needs:
@@ -347,6 +374,15 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-admin
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Remove stale images
+        run: |
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
+          oc project ${{ secrets.OC_NAMESPACE }}
+
+          # Clean previous image
+          oc delete is ${{ env.NAME }}-${{ github.event.number }}-admin || true
 
   tests-api:
     name: API Unit Tests
@@ -459,8 +495,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Deploy
         run: |
-          set -eux
-
           # Login to OpenShift and select project
           oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
           oc project ${{ secrets.OC_NAMESPACE }}
@@ -480,11 +514,6 @@ jobs:
           oc process -f .github/openshift/init.api.yml -p ZONE=${{ env.ZONE }} \
             | oc create -f - || \
             echo "API secret already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${{ github.event.number }} -o name | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${{ github.event.number }}
-          fi
 
           # Process and apply deployment templates
           oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
