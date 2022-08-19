@@ -13,6 +13,10 @@ env:
   REGISTRY: ghcr.io
   NAME: fom
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   codeql:
     name: Semantic Code Analysis
