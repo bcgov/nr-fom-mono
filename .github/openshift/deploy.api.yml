@@ -28,21 +28,19 @@ parameters:
   - name: DB_TESTDATA
     description: Whether to load test data
     value: "false"
-  - description: SMTP Server URL for sending emails
-    displayName: SMTP Server URL
-    name: SMTP_SERVER
+  - name: FOM_EMAIL_NOTIFY
+    description: Email address to notify when a FOM closes
+  - name: SMTP_SERVER
+    description: SMTP Server URL for sending emails
     value: "smtp://apps.smtp.gov.bc.ca/?port=25&ignoreTLS=true&secure=false"
-  - description: URL of Keycloak Server to use for authentication.
-    displayName: Keycloak Server URL
-    name: KEYCLOAK_URL
+  - name: KEYCLOAK_URL
+    description: URL of Keycloak Server to use for authentication.
     value: "https://oidc.gov.bc.ca/auth"
-  - description: URL of SiteMinder Server used for logout (with BCeID)
-    displayName: SiteMinder Server URL
-    name: SITEMINDER_URL
+  - name: SITEMINDER_URL
+    description: URL of SiteMinder Server used for logout (with BCeID)
     value: "https://logon7.gov.bc.ca"
-  - description: URL of Object Storage Service
-    displayName: Object Storage URL
-    name: OBJECT_STORAGE_URL
+  - name: OBJECT_STORAGE_URL
+    description: URL of Object Storage Service
     value: "nrs.objectstore.gov.bc.ca"
   - name: URL
     description: Deployment URL, e.g. fom-123.apps.silver.devops.gov.bc.ca or fom.nrs.gov.bc.ca
@@ -64,9 +62,8 @@ parameters:
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
     generate: expression
-  - description: Number of replicas
-    displayName: Replica Count
-    name: REPLICA_COUNT
+  - name: REPLICA_COUNT
+    description: Number of replicas
     required: false
     value: "3"
 objects:
@@ -149,8 +146,8 @@ objects:
                     secretKeyRef:
                       key: database-user
                       name: ${NAME}-${ZONE}-db
-                - name: ENV
-                  value: ${ZONE}
+                - name: FOM_EMAIL_NOTIFY
+                  value: ${FOM_EMAIL_NOTIFY}
                 - name: HOSTNAME
                   value: ${URL}
                 - name: PORT
