@@ -7,6 +7,10 @@ env:
   REGISTRY: ghcr.io
   NAME: fom
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   check-db:
     name: Check Database

@@ -9,6 +9,10 @@ env:
   REGISTRY: ghcr.io
   NAME: fom
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   build-db:
     name: Database Image Build

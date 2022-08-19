@@ -13,6 +13,10 @@ env:
   NAME: fom
   REPONAME: greenfield-template
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   promote-images:
     name: Promote DEV images to TEST
