@@ -1,4 +1,4 @@
-name: Demo Merge
+name: Merge to Demo
 
 on:
   push:
