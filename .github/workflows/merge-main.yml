@@ -251,6 +251,7 @@ jobs:
             | oc apply -f -
 
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
+            -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca \
             -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \

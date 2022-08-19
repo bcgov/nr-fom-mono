@@ -521,6 +521,7 @@ jobs:
             echo "Database already deployed"
 
           oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
+            -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca \
             -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=1 \
             -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
             -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" \
