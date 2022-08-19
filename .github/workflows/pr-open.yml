@@ -445,8 +445,6 @@ jobs:
       always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-latest
-    environment:
-      name: dev
     steps:
       - uses: actions/checkout@v2
         # Disable shallow clone for SonarCloud analysis
@@ -493,8 +491,6 @@ jobs:
       IMG: ${{ github.repository }}:${{ github.event.number }}
       URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
       ZONE: ${{ github.event.number }}
-    environment:
-      name: dev
     steps:
       - uses: actions/checkout@v2
       - name: Deploy
