@@ -80,9 +80,6 @@
           </div>
         </mat-accordion>
       </section>
-      <div class="validity-txt" *ngIf="pNotices.length > 0">
-        These FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road permit application, or the issuance of a Timber Sales License until the date three years after commencement of the public review and commenting period.
-      </div>
     </div>
 
     <ng-template #no_notice_message >
@@ -167,6 +164,15 @@
         <div class="col-sm-4 bold">Email for Public Comment: </div>
         <div class="col-sm-8">{{pn.email}}</div>
       </div>
+
+      <div class="validity-txt">
+        <div style="margin-bottom: 15px;">
+          This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road
+          permit application, or the issuance of a Timber Sales License until the date three years
+          after commencement of the public review and commenting period.
+        </div>
+      </div>
+
     </ng-template>
   </div>
 
