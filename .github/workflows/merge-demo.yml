@@ -19,7 +19,7 @@ jobs:
     env:
       COMPONENT: db
       TARGET: demo
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -60,7 +60,7 @@ jobs:
     env:
       COMPONENT: api
       TARGET: demo
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -101,7 +101,7 @@ jobs:
     env:
       COMPONENT: public
       TARGET: demo
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -142,7 +142,7 @@ jobs:
     env:
       COMPONENT: admin
       TARGET: demo
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -185,7 +185,7 @@ jobs:
       - build-api
       - build-admin
       - build-public
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: demo
     env:

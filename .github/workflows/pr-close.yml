@@ -20,7 +20,7 @@ concurrency:
 jobs:
   promote-images:
     name: Promote DEV images to TEST
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
       - name: Promote Database Image to TEST
@@ -58,7 +58,7 @@ jobs:
 
   merge-notification:
     name: Merge Notification
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     steps:
       - name: Pre-merge update
@@ -73,7 +73,7 @@ jobs:
 
   cleanup-openshift:
     name: Cleanup OpenShift
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
       - name: Remove OpenShift artifacts
