@@ -19,7 +19,7 @@ jobs:
     env:
       TRIGGERS: ('db/')
       TARGET: db
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -63,7 +63,7 @@ jobs:
     env:
       TRIGGERS: ('api/' 'libs/' '.github/openshift/deploy.api.yml')
       TARGET: api
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -107,7 +107,7 @@ jobs:
     env:
       TRIGGERS: ('admin/' 'libs/' '.github/openshift/deploy.admin.yml')
       TARGET: admin
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -151,7 +151,7 @@ jobs:
     env:
       TRIGGERS: ('public/' 'libs/' '.github/openshift/deploy.public.yml')
       TARGET: public
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -193,7 +193,7 @@ jobs:
     needs:
       - check-db
     if: needs.check-db.outputs.build == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -243,7 +243,7 @@ jobs:
     needs:
       - check-api
     if: needs.check-api.outputs.build == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -293,7 +293,7 @@ jobs:
     needs:
       - check-public
     if: needs.check-public.outputs.build == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -343,7 +343,7 @@ jobs:
     needs:
       - check-admin
     if: needs.check-admin.outputs.build == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: read
       packages: write
@@ -393,7 +393,7 @@ jobs:
     needs:
       - check-api
     if: needs.check-api.outputs.build == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -444,7 +444,7 @@ jobs:
       # Always check for no failures at at least one successful build
       always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
         # Disable shallow clone for SonarCloud analysis
@@ -486,7 +486,7 @@ jobs:
       # Always check for no failures at at least one successful build
       always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
       needs.build-admin.result == 'success' || needs.build-public.result == 'success')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
       IMG: ${{ github.repository }}:${{ github.event.number }}
       URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca

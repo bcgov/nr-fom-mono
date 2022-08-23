@@ -20,7 +20,7 @@ concurrency:
 jobs:
   codeql:
     name: Semantic Code Analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       actions: read
       contents: read
@@ -45,7 +45,7 @@ jobs:
   # https://github.com/snyk/snyk
   snyk:
     name: Dependency Report
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -65,7 +65,7 @@ jobs:
 
   sonarcloud:
     name: Static Analysis
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v2
         # Disable shallow clone for SonarCloud analysis
@@ -87,7 +87,7 @@ jobs:
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-api:
     name: API Image Report
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -110,7 +110,7 @@ jobs:
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-admin:
     name: Admin Image Report
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -128,7 +128,7 @@ jobs:
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-public:
     name: Public Image Report
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -151,7 +151,7 @@ jobs:
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-repo:
     name: Repository Report
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -173,7 +173,7 @@ jobs:
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy-rhel-ubi:
     name: Base Image Report
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:
       - name: Checkout repository
@@ -195,7 +195,7 @@ jobs:
 
   cleanup-ghcr:
     name: Cleanup Container Registry
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       # https://github.com/marketplace/actions/ghcr-io-container-cleanup
       - name: Delete old packages
@@ -212,7 +212,7 @@ jobs:
 
   deploy-test:
     name: TEST Deployment
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: test
     env:
@@ -282,7 +282,7 @@ jobs:
     name: API Pen Tests
     needs:
       - deploy-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -299,7 +299,7 @@ jobs:
     name: Admin Pen Tests
     needs:
       - deploy-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -316,7 +316,7 @@ jobs:
     name: Publid Pen Tests
     needs:
       - deploy-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -335,7 +335,7 @@ jobs:
       - zap-api
       - zap-admin
       - zap-public
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment:
       name: prod
     env:
