@@ -38,6 +38,13 @@ export class PublicNoticeCreateRequest {
   @MaxLength(100) 
   email: string;
   
+  @ApiProperty({ required: true })
+  @IsNumber()
+  operationStartYear: number;
+
+  @ApiProperty({ required: true })
+  @IsNumber()
+  operationEndYear: number;
 }
 
 export class PublicNoticeUpdateRequest extends PublicNoticeCreateRequest {

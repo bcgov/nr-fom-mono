@@ -39,4 +39,9 @@ export class PublicNotice extends ApiBaseEntity<PublicNotice> {
   @Column()
   email: string
 
+  @Column({ name: 'operation_start_year'})
+  operationStartYear: number;
+
+  @Column({ name: 'operation_end_year'})
+  operationEndYear: number;
 }
