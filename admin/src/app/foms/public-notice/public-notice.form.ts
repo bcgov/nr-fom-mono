@@ -1,3 +1,4 @@
+import { PublicNoticeResponse } from "@api-client";
 import { email, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
 import * as R from 'remeda';
 export class PublicNoticeForm {
@@ -52,12 +53,22 @@ export class PublicNoticeForm {
   @prop()
   email: string;
 
-  constructor(publicNoticeResponse?: any) {
+  // Special case. It is at form control, but will be convert into request body for 'operationStartYear' (number).
+  @required({message: 'Operation Start Year is required.'})
+  @prop()
+  opStartDate: Date;
+
+  // Special case. It is at form control, but will be convert into request body for 'operationEndYear' (number).
+  @required({message: 'Operation End Year is required.'})
+  @prop()
+  opEndDate: Date;
+
+  constructor(publicNoticeResponse?: PublicNoticeResponse) {
     if (publicNoticeResponse) {
       // Pick the field to instantiate.
       Object.assign(this, R.pick(publicNoticeResponse, 
         [
-          'project.projectId',
+          'projectId',
           'id',
           'reviewAddress',
           'reviewBusinessHours',
