@@ -1,5 +1,5 @@
 import { PublicNoticeResponse } from "@api-client";
-import { email, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
+import { email, minDate, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
@@ -60,6 +60,7 @@ export class PublicNoticeForm {
 
   // Special case. It is at form control, but will be convert into request body for 'operationEndYear' (number).
   @required({message: 'Operation End Year is required.'})
+  @minDate({fieldName:'opStartDate', message: 'Must be the same or after Operation Start Year'})
   @prop()
   opEndDate: Date;
 

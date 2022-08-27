@@ -189,6 +189,11 @@
               && getErrorMessage('opEndDate', 'required')">
               {{getErrorMessage('opEndDate', 'required')}}
           </div>
+          <div class="invalid-feedback" 
+            *ngIf="(form.submitted || fieldTouchedOrDirty('opEndDate')) 
+              && getErrorMessage('opEndDate', 'minDate')">
+              {{getErrorMessage('opEndDate', 'minDate')}}
+          </div>
         </div>
       </div>
 
