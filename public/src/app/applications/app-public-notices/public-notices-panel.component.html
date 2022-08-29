@@ -120,13 +120,8 @@
       </div>
 
       <div class="row" *ngIf="pn.operationStartYear && pn.operationEndYear">
-        <div class="col-sm-4 bold">Operation Start Year: </div>
-        <div class="col-sm-8">{{pn.operationStartYear}}</div>
-      </div>
-
-      <div class="row" *ngIf="pn.operationEndYear && pn.operationEndYear">
-        <div class="col-sm-4 bold">Operation End Year: </div>
-        <div class="col-sm-8">{{pn.operationEndYear}}</div>
+        <div class="col-sm-4 bold">Proposed Period of Operations: </div>
+        <div class="col-sm-8">{{pn.operationStartYear}} - {{pn.operationEndYear}}</div>
       </div>
 
       <div class="row">
