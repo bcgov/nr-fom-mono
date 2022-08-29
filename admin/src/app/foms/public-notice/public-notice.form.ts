@@ -1,5 +1,6 @@
 import { PublicNoticeResponse } from "@api-client";
 import { email, minDate, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
+import moment = require("moment");
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
@@ -60,14 +61,15 @@ export class PublicNoticeForm {
 
   // Special case. It is at form control, but will be convert into request body for 'operationEndYear' (number).
   @required({message: 'Operation End Year is required.'})
-  @minDate({fieldName:'opStartDate', message: 'Must be the same or after Operation Start Year'})
+  @minDate({fieldName:'opStartDate', message: 'Must be the same or after Proposed Start of Operations'})
   @prop()
   opEndDate: Date;
 
   constructor(publicNoticeResponse?: PublicNoticeResponse) {
-    if (publicNoticeResponse) {
+    const pn = publicNoticeResponse;
+    if (pn) {
       // Pick the field to instantiate.
-      Object.assign(this, R.pick(publicNoticeResponse, 
+      Object.assign(this, R.pick(pn, 
         [
           'projectId',
           'id',
@@ -80,6 +82,28 @@ export class PublicNoticeForm {
           'email'
         ]
       ));
+    }
+
+    this.initProposedOperations(pn);
+  }
+
+  initProposedOperations(pn: PublicNoticeResponse) {
+    // Extra conversion for form: 'opStartDate' and 'opEndDate'
+    if (pn?.operationStartYear) {
+      this.opStartDate = moment().set('year', pn.operationStartYear)
+                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
+                                  .toDate();
+    }
+    // Setting default year 
+    else {
+      this.opStartDate = moment().set('date', 1)
+                                  .toDate();
+    }
+
+    if (pn?.operationEndYear) {
+      this.opEndDate = moment().set('year', pn.operationEndYear)
+                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
+                                  .toDate();
     }
   }
 }

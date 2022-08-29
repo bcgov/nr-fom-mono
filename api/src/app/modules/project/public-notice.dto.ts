@@ -44,8 +44,8 @@ export class PublicNoticeCreateRequest {
 
   @ApiProperty({ required: true })
   @IsNumber()
-  @IsNotLessThan('operationStartYear', {
-    message: "[Operation End Year] must be the same or after [Operation Start Year]",
+  @IsGreaterOrEqualTo('operationStartYear', {
+    message: "[Proposed End of Operations] must be the same or after [Proposed Start of Operations]",
   })
   operationEndYear: number;
 }
@@ -73,12 +73,12 @@ export class PublicNoticePublicFrontEndResponse extends PublicNoticeCreateReques
 }
 
 /**
- * Custom validation decorator: @IsNotLessThan - check number_1 >= number_2
+ * Custom validation decorator: @IsGreaterOrEqualTo - check number_1 >= number_2
  */
-export function IsNotLessThan(property: string, validationOptions?: ValidationOptions) {
+export function IsGreaterOrEqualTo(property: string, validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
     registerDecorator({
-      name: 'isNotLessThan',
+      name: 'isGreaterOrEqualTo',
       target: object.constructor,
       propertyName: propertyName,
       constraints: [property],
