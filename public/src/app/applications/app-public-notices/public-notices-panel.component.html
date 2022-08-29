@@ -119,6 +119,16 @@
         <div class="col-sm-8">{{pn.project.commentingOpenDate | date: 'longDate'}} to {{pn.project.validityEndDate | date: 'longDate'}}</div>
       </div>
 
+      <div class="row" *ngIf="pn.operationStartYear && pn.operationEndYear">
+        <div class="col-sm-4 bold">Operation Start Year: </div>
+        <div class="col-sm-8">{{pn.operationStartYear}}</div>
+      </div>
+
+      <div class="row" *ngIf="pn.operationEndYear && pn.operationEndYear">
+        <div class="col-sm-4 bold">Operation End Year: </div>
+        <div class="col-sm-8">{{pn.operationEndYear}}</div>
+      </div>
+
       <div class="row">
         <div class="col-sm-4 bold">FOM Summary: </div>
         <div class="col-sm-8">{{pn.project.name}}</div>
@@ -165,12 +175,14 @@
         <div class="col-sm-8">{{pn.email}}</div>
       </div>
 
+      <div class="validity-txt" *ngIf="pn.operationStartYear && pn.operationEndYear">
+        Road construction and harvesting of cutblocks depicted on this Forest Operations Map is scheduled to be conducted between {{pn.operationStartYear}} and {{pn.operationEndYear}}.
+      </div>
+
       <div class="validity-txt">
-        <div>
-          This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road
-          permit application, or the issuance of a Timber Sales License until the date three years
-          after commencement of the public review and commenting period.
-        </div>
+        This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road
+        permit application, or the issuance of a Timber Sales License until the date three years
+        after commencement of the public review and commenting period.
       </div>
 
     </ng-template>
