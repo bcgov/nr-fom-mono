@@ -230,3 +230,8 @@ input, textarea {
       color: $gray4;
   }
 }
+
+// Lighter color override for bs-datepicker for dates that are disabled.
+.bs-datepicker-body table td span.disabled, .bs-datepicker-body table td.disabled span {
+  color: #d4d9dd !important;
+}
