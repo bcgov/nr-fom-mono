@@ -5,6 +5,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { User } from "@utility/security/user";
 import { PinoLogger } from "nestjs-pino/dist/PinoLogger";
+import { Repository } from "typeorm";
 import { ProjectResponse } from "./project.dto";
 import { PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse } from "./public-notice.dto";
 import { WorkflowStateEnum } from "./workflow-state-code.entity";
@@ -12,6 +13,7 @@ import { WorkflowStateEnum } from "./workflow-state-code.entity";
 describe('PublicNoticeService', () => {
     let service: PublicNoticeService;
     let projectService: ProjectService;
+    let repository: Repository<PublicNotice>;
 
     beforeAll(async () => {
         const moduleRef: TestingModule = await Test.createTestingModule({
@@ -20,11 +22,14 @@ describe('PublicNoticeService', () => {
 
         projectService = moduleRef.get<ProjectService>(ProjectService);
         service = moduleRef.get<PublicNoticeService>(PublicNoticeService);
+        repository = moduleRef.get(getRepositoryToken(PublicNotice));
     });
 
-    // This is prerequisite to make sure service is setup for testing.
-    it('Service for testing should be defined', () => {
+    // This is prerequisite to make sure services/repository are setup for testing.
+    it('Services/repository for testing should be defined', () => {
         expect(service).toBeDefined();
+        expect(projectService).toBeDefined();
+        expect(repository).toBeDefined();
     });
 
     describe('isCreateAuthorized', () => {
@@ -43,12 +48,12 @@ describe('PublicNoticeService', () => {
       it('project contains public notice, cannot create', async () => {
         const projectResponseData: any = getSimpleProjectResponseData();
         request.projectId = (projectResponseData as ProjectResponse).id;
-        const projectServiceMock = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
+        const projectServiceSpy = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
 
         const testResult = await service.isCreateAuthorized(request, user);
 
         expect(testResult).toBeFalsy();
-        expect(projectServiceMock).toHaveBeenCalledWith(request.projectId, user);
+        expect(projectServiceSpy).toHaveBeenCalledWith(request.projectId, user);
       });
 
       it.each([
@@ -63,14 +68,14 @@ describe('PublicNoticeService', () => {
         projectResponseData.id = 2;
         projectResponseData.publicNoticeId = undefined; // no public_notice exists for projectId = 2, so can be created;
         projectResponseData.workflowState.code = testWorkflowStateCode; // can't create with this status.
-        const projectServiceMock = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
+        const projectServiceSpy = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
         request.projectId = projectResponseData.id;
 
         const testResult = await service.isCreateAuthorized(request, user);
 
         expect(projectResponseData.workflowState.code).toBe(testWorkflowStateCode);
         expect(testResult).toBeFalsy();
-        expect(projectServiceMock).toHaveBeenCalledWith(request.projectId, user);
+        expect(projectServiceSpy).toHaveBeenCalledWith(request.projectId, user);
       });
 
       it('cannot create public notice for project status "INITIAL" with wrong forest-client', 
@@ -81,16 +86,16 @@ describe('PublicNoticeService', () => {
         projectResponseData.workflowState.code = WorkflowStateEnum.INITIAL; // can create with this status.
         const wrongForestClientId = 'wrong-id';
         projectResponseData.forestClient.id = wrongForestClientId;
-        const projectServiceMock = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
+        const projectServiceSpy = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
         user.isForestClient = true;
-        const userMock = jest.spyOn((user as any), 'isAuthorizedForClientId').mockReturnValue(false); // this client is not authorized.
+        const userSpy = jest.spyOn((user as any), 'isAuthorizedForClientId').mockReturnValue(false); // this client is not authorized.
         request.projectId = projectResponseData.id;
 
         const testResult = await service.isCreateAuthorized(request, user);
 
         expect(testResult).toBeFalsy();
-        expect(projectServiceMock).toHaveBeenCalledWith(request.projectId, user);
-        expect(userMock).toHaveBeenCalledWith(wrongForestClientId);
+        expect(projectServiceSpy).toHaveBeenCalledWith(request.projectId, user);
+        expect(userSpy).toHaveBeenCalledWith(wrongForestClientId);
       });
 
       it('can create public notice for project status "INITIAL" with right forest-client', 
@@ -99,44 +104,69 @@ describe('PublicNoticeService', () => {
         projectResponseData.id = 2;
         projectResponseData.publicNoticeId = undefined; // no public_notice exists for projectId = 2, so can be created;
         projectResponseData.workflowState.code = WorkflowStateEnum.INITIAL; // can create with this status.
-        const projectServiceMock = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
+        const projectServiceSpy = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponseData);
         user.isForestClient = true;
-        const userMock = jest.spyOn((user as any), 'isAuthorizedForClientId').mockReturnValue(true);
+        const userSpy = jest.spyOn((user as any), 'isAuthorizedForClientId').mockReturnValue(true);
         request.projectId = projectResponseData.id;
 
         const testResult = await service.isCreateAuthorized(request, user);
 
         expect(testResult).toBeTruthy();
-        expect(projectServiceMock).toHaveBeenCalledWith(request.projectId, user);
-        expect(userMock).toHaveBeenCalledWith(projectResponseData.forestClient.id);
+        expect(projectServiceSpy).toHaveBeenCalledWith(request.projectId, user);
+        expect(userSpy).toHaveBeenCalledWith(projectResponseData.forestClient.id);
       });
 
     });
 
     describe('findForPublicFrontEnd', () => {
 
-      it("Return cache Public Notices when cache still presents", async () => {
+      it('return cache Public Notices when cache still presents', async () => {
         const cacheResult: Array<PublicNoticePublicFrontEndResponse> = getSimplePublicNoticePublicFrontEndResponseData();
-        const cacheMock = jest.spyOn((service as any).cache, 'get').mockImplementation(jest.fn((x) => cacheResult));
+        const cacheSpy = jest.spyOn((service as any).cache, 'get').mockImplementation(jest.fn((x) => cacheResult));
 
         const testResult = await service.findForPublicFrontEnd();
 
         expect(testResult).toBe(cacheResult);
-        expect(cacheMock).toHaveBeenCalledWith(service.cacheKey);
+        expect(cacheSpy).toHaveBeenCalledWith(service.cacheKey);
+      });
+
+      it('return new Public Notices when no cache', async () => {
+        const cacheSpy = jest.spyOn((service as any).cache, 'get').mockImplementation(jest.fn((x) => null)); // no cache.
+        const publicNoticeEntityData = getSamplePublicNoticeEntity();
+        const projectResponseData = getSimpleProjectResponseData();
+        const createQueryBuilder: any = {
+          leftJoinAndSelect: () => createQueryBuilder,
+          andWhere: () => createQueryBuilder,
+          addOrderBy: () => createQueryBuilder,
+          getMany: () => [publicNoticeEntityData],
+        };
+        const createQueryBuilderSpy = jest.spyOn(repository, 'createQueryBuilder').mockImplementation(() => createQueryBuilder);
+        const serviceSpy = jest.spyOn(service, 'convertEntity').mockImplementation((x) => x);
+        const projectServiceSpy = jest.spyOn(projectService, 'convertEntity').mockReturnValue(projectResponseData);
+
+        const testResult = await service.findForPublicFrontEnd();
+
+        expect(cacheSpy).toHaveBeenCalledWith(service.cacheKey);
+        expect(createQueryBuilderSpy).toHaveBeenCalled();
+        expect(serviceSpy).toHaveBeenCalledWith(publicNoticeEntityData);
+        expect(projectServiceSpy).toHaveBeenCalledWith(publicNoticeEntityData.project);
+        expect(JSON.stringify(testResult[0])).toBe(JSON.stringify(getSimplePublicNoticePublicFrontEndResponseData()[0]));
       });
 
     });
 
 });
 
+export class PublicNoticeRepositoryFake {
+  public createQueryBuilder(): void {}
+}
+
 function provideDependencyMock(): Array<any> {
   const dependencyMock =  
     [ PublicNoticeService,
       {
         provide: getRepositoryToken(PublicNotice),
-        useValue: {
-            createQueryBuilder: jest.fn(),
-        }
+        useClass: PublicNoticeRepositoryFake
       },
       {
         provide: PinoLogger,
@@ -211,4 +241,31 @@ function getSimplePublicNoticePublicFrontEndResponseData() {
     }
   ];
   return data;
+}
+
+function getSamplePublicNoticeEntity() {
+  const pncr : PublicNoticePublicFrontEndResponse = getSimplePublicNoticePublicFrontEndResponseData()[0];
+  const entity = {
+    id: pncr.project.publicNoticeId,
+    projectId: pncr.projectId,
+    reviewAddress: pncr.reviewAddress,
+    reviewBusinessHours: pncr.reviewBusinessHours,
+    receiveCommentsAddress: pncr.receiveCommentsAddress,
+    receiveCommentsBusinessHours: pncr.receiveCommentsBusinessHours,
+    isReceiveCommentsSameAsReview: pncr.isReceiveCommentsSameAsReview,
+    mailingAddress: pncr.mailingAddress,
+    email: pncr.email,
+    revisionCount: 1,
+    operationStartYear: pncr.operationStartYear,
+    operationEndYear: pncr.operationEndYear,
+    project: {
+      id: pncr.project.id,
+      fspId: pncr.project.fspId,
+      name: pncr.project.name,
+      revisionCount: pncr.project.revisionCount,
+      workflowState: pncr.project.workflowState,
+      publicNotices: [{id:pncr.project.publicNoticeId}]
+    }
+  } as PublicNotice;
+  return entity;
 }
