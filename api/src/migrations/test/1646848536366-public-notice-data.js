@@ -17,10 +17,6 @@ module.exports = class publicNoticeData1646848536366 {
             , (1108, 1108, 'Suite #1108, 1108th Street, Vancouver BC', 'Monday to Friday 8am to 5pm, Weekends 10am - 3pm', 'P.O. Box 1108 Surrey BC', 'info@co1108ltd.com', 'testdata')
             ;
 
-            -- Records with operation_start_year and operation_end_year
-            UPDATE app_fom.public_notice set operation_start_year = 2025, operation_end_year = 2025 where project_id = 1108;
-            UPDATE app_fom.public_notice set operation_start_year = 2024, operation_end_year = 2027 where project_id = 1072;
-
             -- Fix missing data from large volume test migration
             UPDATE app_fom.project set district_id = 56 where district_id is null and project_id < 50000;
 
