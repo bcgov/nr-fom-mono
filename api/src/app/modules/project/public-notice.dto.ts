@@ -45,7 +45,7 @@ export class PublicNoticeCreateRequest {
   @ApiProperty({ required: true })
   @IsNumber()
   @IsGreaterOrEqualTo('operationStartYear', {
-    message: "[Proposed End of Operations] must be the same or after [Proposed Start of Operations]",
+    message: "Must be equal to or later than the Proposed Start of Operations",
   })
   operationEndYear: number;
 }
