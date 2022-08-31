@@ -51,9 +51,9 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
       return false;
     }
 
-    if (WorkflowStateEnum.INITIAL == projectResponse.workflowState.code) {
-      return user.isForestClient && user.isAuthorizedForClientId(projectResponse.forestClient.id);
-    }
+    return (WorkflowStateEnum.INITIAL == projectResponse.workflowState.code) &&
+            user.isForestClient && 
+            user.isAuthorizedForClientId(projectResponse.forestClient.id);
   }
   
   async isUpdateAuthorized(_dto: PublicNoticeUpdateRequest, entity: PublicNotice, user?: User): Promise<boolean> {
