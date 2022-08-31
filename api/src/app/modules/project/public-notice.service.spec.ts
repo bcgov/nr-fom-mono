@@ -14,6 +14,8 @@ describe('PublicNoticeService', () => {
     let service: PublicNoticeService;
     let projectService: ProjectService;
     let repository: Repository<PublicNotice>;
+    let request: PublicNoticeCreateRequest;
+    let user: User;
 
     beforeAll(async () => {
         const moduleRef: TestingModule = await Test.createTestingModule({
@@ -33,13 +35,10 @@ describe('PublicNoticeService', () => {
     });
 
     describe('isCreateAuthorized', () => {
-      let request: PublicNoticeCreateRequest;
-      let user: User;
-
       beforeEach(async () => {
         user = new User();
         request = new PublicNoticeCreateRequest();
-      })
+      });
 
       it('public user cannot create', async () => {
         expect(await service.isCreateAuthorized(request, null)).toBe(false);
@@ -115,6 +114,68 @@ describe('PublicNoticeService', () => {
         expect(projectServiceSpy).toHaveBeenCalledWith(request.projectId, user);
         expect(userSpy).toHaveBeenCalledWith(projectResponseData.forestClient.id);
       });
+    });
+
+    describe('isViewAuthorized', () => {
+      beforeEach(async () => {
+        user = new User();
+        request = new PublicNoticeCreateRequest();
+      });
+
+      it('public user cannot view detail public notice', async () => {
+        expect(await service.isViewAuthorized(new PublicNotice(), null)).toBe(false);
+      });
+
+      it('ministry user can view detail public notice', async () => {
+        user.isMinistry = true;
+        const entity = new PublicNotice();
+        const samplePublicNoticeResponseData = getSimplePublicNoticePublicFrontEndResponseData()[0];
+        entity.projectId = samplePublicNoticeResponseData.projectId;
+        const projectServiceSpy = jest.spyOn(projectService, 'findOne').mockResolvedValue(new ProjectResponse());
+
+        const result = await service.isViewAuthorized(entity, user);
+
+        expect(result).toBeTruthy();
+        expect(projectServiceSpy).toHaveBeenCalledWith(entity.projectId, user);
+      });
+
+      it('invalid forest client cannot view detail public notice', async () => {
+        user.isForestClient = true;
+        user.clientIds = ['invalid-client-id'];
+        const entity = new PublicNotice();
+        const projectResponseData = getSimpleProjectResponseData();
+        entity.projectId = projectResponseData.id;
+        const userSpy = jest.spyOn(user, 'isAuthorizedForClientId');
+        const projectResponse = new ProjectResponse();
+        projectResponse.id = entity.projectId;
+        projectResponse.forestClient = projectResponseData.forestClient;
+        const projectServiceSpy = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponse);
+
+        const result = await service.isViewAuthorized(entity, user);
+
+        expect(result).toBeFalsy();
+        expect(projectServiceSpy).toHaveBeenCalledWith(entity.projectId, user);
+        expect(userSpy).toHaveBeenCalledWith(projectResponseData.forestClient.id);
+      });
+
+      it('valid forest client can view detail public notice', async () => {
+        const projectResponseData = getSimpleProjectResponseData();
+        user.isForestClient = true;
+        user.clientIds = [projectResponseData.forestClient.id];
+        const entity = new PublicNotice();
+        entity.projectId = projectResponseData.id;
+        const userSpy = jest.spyOn(user, 'isAuthorizedForClientId');
+        const projectResponse = new ProjectResponse();
+        projectResponse.id = entity.projectId;
+        projectResponse.forestClient = projectResponseData.forestClient;
+        const projectServiceSpy = jest.spyOn(projectService, 'findOne').mockResolvedValue(projectResponse);
+
+        const result = await service.isViewAuthorized(entity, user);
+
+        expect(result).toBeTruthy();
+        expect(projectServiceSpy).toHaveBeenCalledWith(entity.projectId, user);
+        expect(userSpy).toHaveBeenCalledWith(projectResponseData.forestClient.id);
+      });
 
     });
 
@@ -158,7 +219,9 @@ describe('PublicNoticeService', () => {
 });
 
 export class PublicNoticeRepositoryFake {
-  public createQueryBuilder(): void {}
+  public createQueryBuilder(): void {
+    // This is intentional for empty body.
+  }
 }
 
 function provideDependencyMock(): Array<any> {
