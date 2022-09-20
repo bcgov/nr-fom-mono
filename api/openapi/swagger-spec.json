@@ -445,6 +445,12 @@
           "email": {
             "type": "string"
           },
+          "operationStartYear": {
+            "type": "number"
+          },
+          "operationEndYear": {
+            "type": "number"
+          },
           "project": {
             "$ref": "#/components/schemas/ProjectResponse"
           }
@@ -458,6 +464,8 @@
           "isReceiveCommentsSameAsReview",
           "mailingAddress",
           "email",
+          "operationStartYear",
+          "operationEndYear",
           "project"
         ]
       },
@@ -488,6 +496,12 @@
           "email": {
             "type": "string"
           },
+          "operationStartYear": {
+            "type": "number"
+          },
+          "operationEndYear": {
+            "type": "number"
+          },
           "revisionCount": {
             "type": "number"
           },
@@ -504,6 +518,8 @@
           "isReceiveCommentsSameAsReview",
           "mailingAddress",
           "email",
+          "operationStartYear",
+          "operationEndYear",
           "revisionCount",
           "id"
         ]
@@ -534,6 +550,12 @@
           },
           "email": {
             "type": "string"
+          },
+          "operationStartYear": {
+            "type": "number"
+          },
+          "operationEndYear": {
+            "type": "number"
           }
         },
         "required": [
@@ -544,7 +566,9 @@
           "receiveCommentsBusinessHours",
           "isReceiveCommentsSameAsReview",
           "mailingAddress",
-          "email"
+          "email",
+          "operationStartYear",
+          "operationEndYear"
         ]
       },
       "PublicNoticeUpdateRequest": {
@@ -574,6 +598,12 @@
           "email": {
             "type": "string"
           },
+          "operationStartYear": {
+            "type": "number"
+          },
+          "operationEndYear": {
+            "type": "number"
+          },
           "revisionCount": {
             "type": "number"
           }
@@ -587,6 +617,8 @@
           "isReceiveCommentsSameAsReview",
           "mailingAddress",
           "email",
+          "operationStartYear",
+          "operationEndYear",
           "revisionCount"
         ]
       },

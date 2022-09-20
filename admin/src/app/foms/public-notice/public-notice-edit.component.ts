@@ -12,6 +12,7 @@ import { lastValueFrom, map, Subject, switchMap } from 'rxjs';
 import { KeycloakService } from "../../../core/services/keycloak.service";
 import { StateService } from '../../../core/services/state.service';
 import { PublicNoticeForm } from './public-notice.form';
+import moment = require('moment');
 
 @Component({
   selector: 'app-public-notice-edit',
@@ -28,6 +29,15 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   addressLimit: number = 500;
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
+  
+  // bsDatepicker config object
+  readonly bsConfig = {
+      dateInputFormat: 'YYYY', 
+      minMode: 'year', 
+      minDate: moment().toDate(), 
+      maxDate: moment().add(7, 'years').toDate(), // current + 7 years
+      containerClass: 'theme-dark-blue'
+  }
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   
@@ -79,7 +89,6 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
         this.publicNoticeResponse = result.publicNotice;
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
-
         this.onSameAsReviewIndToggled();
         if (!this.editMode) {
           this.publicNoticeFormGroup.disable();
@@ -147,14 +156,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
 
   async onSubmit() {
     if (this.editMode && this.publicNoticeFormGroup.valid) {
-
-      if (this.isAddNewNotice()) {
-        // POST - Create Public Notice.
-        await lastValueFrom(this.createNewPublicNotice());
-      }
-      else {
-        await lastValueFrom(this.updatePublicNotice());
-      }
+      await lastValueFrom(this.submitPublicNotice());
       this.router.navigate(['/a', this.projectId]);
     }
   }
@@ -173,17 +175,26 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     return control?.touched || control?.dirty;
   }
 
-  private createNewPublicNotice() {
-    let createBody = this.publicNoticeFormGroup.value as PublicNoticeCreateRequest
-    createBody.projectId = this.project.id;
-    return this.publicNoticeService.publicNoticeControllerCreate(createBody);
-  }
+  private submitPublicNotice() {
+    let body: any;
+    if (this.isAddNewNotice()) {
+      body = this.publicNoticeFormGroup.value as PublicNoticeCreateRequest;
+    }
+    else {
+      body = this.publicNoticeFormGroup.value as PublicNoticeUpdateRequest;
+      body.revisionCount = this.publicNoticeResponse.revisionCount;
+    }
 
-  private updatePublicNotice() {
-    const updateBody = this.publicNoticeFormGroup.value as PublicNoticeUpdateRequest;
-    updateBody.projectId = this.project.id;
-    updateBody.revisionCount = this.publicNoticeResponse.revisionCount;
-    return this.publicNoticeService.publicNoticeControllerUpdate(this.publicNoticeResponse.id, updateBody);
+    body.operationStartYear = parseInt(moment(body['opStartDate']).format('YYYY'));
+    body.operationEndYear = parseInt(moment(body['opEndDate']).format('YYYY'));
+    body.projectId = this.project.id;
+
+    if (this.isAddNewNotice()) {
+      return this.publicNoticeService.publicNoticeControllerCreate(body);
+    }
+    else {
+      return this.publicNoticeService.publicNoticeControllerUpdate(this.publicNoticeResponse.id, body);
+    }
   }
 
   ngOnDestroy() {

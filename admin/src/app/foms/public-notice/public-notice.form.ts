@@ -1,4 +1,6 @@
-import { email, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
+import { PublicNoticeResponse } from "@api-client";
+import { email, minDate, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
+import moment = require("moment");
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
@@ -52,12 +54,24 @@ export class PublicNoticeForm {
   @prop()
   email: string;
 
-  constructor(publicNoticeResponse?: any) {
-    if (publicNoticeResponse) {
+  // Special case. It is at form control, but will be convert into request body for 'operationStartYear' (number).
+  @required({message: 'Operation Start Year is required.'})
+  @prop()
+  opStartDate: Date;
+
+  // Special case. It is at form control, but will be convert into request body for 'operationEndYear' (number).
+  @required({message: 'Operation End Year is required.'})
+  @minDate({fieldName:'opStartDate', message: 'Must be equal to or later than the Proposed Start of Operations'})
+  @prop()
+  opEndDate: Date;
+
+  constructor(publicNoticeResponse?: PublicNoticeResponse) {
+    const pn = publicNoticeResponse;
+    if (pn) {
       // Pick the field to instantiate.
-      Object.assign(this, R.pick(publicNoticeResponse, 
+      Object.assign(this, R.pick(pn, 
         [
-          'project.projectId',
+          'projectId',
           'id',
           'reviewAddress',
           'reviewBusinessHours',
@@ -68,6 +82,28 @@ export class PublicNoticeForm {
           'email'
         ]
       ));
+    }
+
+    this.initProposedOperations(pn);
+  }
+
+  initProposedOperations(pn: PublicNoticeResponse) {
+    // Extra conversion for form: 'opStartDate' and 'opEndDate'
+    if (pn?.operationStartYear) {
+      this.opStartDate = moment().set('year', pn.operationStartYear)
+                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
+                                  .toDate();
+    }
+    // Setting default year 
+    else {
+      this.opStartDate = moment().set('date', 1)
+                                  .toDate();
+    }
+
+    if (pn?.operationEndYear) {
+      this.opEndDate = moment().set('year', pn.operationEndYear)
+                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
+                                  .toDate();
     }
   }
 }

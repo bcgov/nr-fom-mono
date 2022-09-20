@@ -79,7 +79,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.exclusions=**/test/**,.github/**/*
+            -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.project.monorepo.enabled=true
             -Dsonar.projectKey=nr-fom

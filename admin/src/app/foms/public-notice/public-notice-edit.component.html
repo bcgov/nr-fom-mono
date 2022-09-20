@@ -148,6 +148,59 @@
 
       <div class="form-row" >
         <div class="form-group col-md-12">
+          <label for="op-start-year" [ngClass]="{'required': editMode}">Proposed Start of Operations</label>
+          <input
+            readonly
+            id="op-start-year"
+            name="op-start-year"
+            style="width: 10rem;"
+            class="form-control readonly-normal"
+            type="text"
+            placeholder="YYYY"
+            formControlName="opStartDate"
+            bsDatepicker
+            onkeydown="return false"
+            [bsConfig]="bsConfig"
+          />
+          <div class="invalid-feedback" 
+            *ngIf="(form.submitted || fieldTouchedOrDirty('opStartDate')) 
+              && getErrorMessage('opStartDate', 'required')">
+              {{getErrorMessage('opStartDate', 'required')}}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" >
+        <div class="form-group col-md-12">
+          <label for="op-end-year" [ngClass]="{'required': editMode}">Proposed End of Operations</label>
+          <input
+            readonly
+            id="op-end-year"
+            name="op-end-year"
+            style="width: 10rem;"
+            class="form-control readonly-normal"
+            type="text"
+            placeholder="YYYY"
+            formControlName="opEndDate"
+            bsDatepicker
+            onkeydown="return false"
+            [bsConfig]="bsConfig"
+          />
+          <div class="invalid-feedback" 
+            *ngIf="(form.submitted || fieldTouchedOrDirty('opEndDate')) 
+              && getErrorMessage('opEndDate', 'required')">
+              {{getErrorMessage('opEndDate', 'required')}}
+          </div>
+          <div class="invalid-feedback" 
+            *ngIf="(form.submitted || fieldTouchedOrDirty('opEndDate')) 
+              && getErrorMessage('opEndDate', 'minDate')">
+              {{getErrorMessage('opEndDate', 'minDate')}}
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" >
+        <div class="form-group col-md-12">
           <label for="mailing-address" [ngClass]="{'required': editMode}">Mailing Address</label>
           <textarea class="form-control mb" rows="3" 
             id="mailing-address" name="mailing-address"

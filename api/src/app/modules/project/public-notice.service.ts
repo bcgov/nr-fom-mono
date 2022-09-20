@@ -51,9 +51,9 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
       return false;
     }
 
-    if (WorkflowStateEnum.INITIAL == projectResponse.workflowState.code) {
-      return user.isForestClient && user.isAuthorizedForClientId(projectResponse.forestClient.id);
-    }
+    return (WorkflowStateEnum.INITIAL == projectResponse.workflowState.code) &&
+            user.isForestClient && 
+            user.isAuthorizedForClientId(projectResponse.forestClient.id);
   }
   
   async isUpdateAuthorized(_dto: PublicNoticeUpdateRequest, entity: PublicNotice, user?: User): Promise<boolean> {
@@ -125,7 +125,9 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
           'receiveCommentsBusinessHours',
           'isReceiveCommentsSameAsReview',
           'mailingAddress',
-          'email'
+          'email',
+          'operationStartYear',
+          'operationEndYear'
         ]
       ));
       response.project = this.projectService.convertEntity(entity.project);
@@ -173,6 +175,8 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     response.mailingAddress = entity.mailingAddress;
     response.email = entity.email;
     response.revisionCount = entity.revisionCount;
+    response.operationStartYear = entity.operationStartYear;
+    response.operationEndYear = entity.operationEndYear;
     return response;
   }
 

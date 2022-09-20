@@ -19,6 +19,7 @@ module.exports = class publicNoticeData1646848536366 {
 
             -- Fix missing data from large volume test migration
             UPDATE app_fom.project set district_id = 56 where district_id is null and project_id < 50000;
+
         `);
     }
 
