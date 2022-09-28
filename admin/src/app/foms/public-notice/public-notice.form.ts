@@ -55,13 +55,13 @@ export class PublicNoticeForm {
   email: string;
 
   // Special case. It is at form control, but will be convert into request body for 'operationStartYear' (number).
-  @required({message: 'Operation Start Year is required.'})
+  @required({message: 'Start of Operations Year is required.'})
   @prop()
   opStartDate: Date;
 
   // Special case. It is at form control, but will be convert into request body for 'operationEndYear' (number).
   @required({message: 'Operation End Year is required.'})
-  @minDate({fieldName:'opStartDate', message: 'Must be equal to or later than the Proposed Start of Operations'})
+  @minDate({fieldName:'opStartDate', message: 'Must be equal to or later than the Start of Operations'})
   @prop()
   opEndDate: Date;
 
