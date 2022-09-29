@@ -89,8 +89,8 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
         this.publicNoticeResponse = result.publicNotice;
         if (this.isNewForm) {
           // Don't inherit operation years from previous public notice from the forest client.
-          delete this.publicNoticeResponse.operationStartYear;
-          delete this.publicNoticeResponse.operationEndYear;
+          delete this.publicNoticeResponse?.operationStartYear;
+          delete this.publicNoticeResponse?.operationEndYear;
         }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
