@@ -18,43 +18,60 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  promote-images:
-    name: Promote DEV images to TEST
-    runs-on: ubuntu-22.04
+  image-promotions:
+    name: Image Promotions
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    steps:
-      - name: Promote Database Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-db
-          tags: |
-            test-db
-      - name: Promote API Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-api
-          tags: |
-            test-api
-      - name: Promote Admin Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-admin
-          tags: |
-            test-admin
-      - name: Promote Public Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-public
-          tags: |
-            test-public
+    uses: bcgov/devops-quickstart-helpers/.github/workflows/_image_promote.yml@main
+    strategy:
+      matrix:
+        component: [api, admin, public]
+    with:
+      app_name: fom
+      component: ${{ matrix.component }}
+      env_source: ${{ github.event.number }}
+      env_target: test
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_server: ${{ secrets.OC_SERVER }}
+      oc_token: ${{ secrets.OC_TOKEN }}
+
+  # promote-images:
+  #   name: Promote DEV images to TEST
+  #   runs-on: ubuntu-22.04
+  #   if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+  #   steps:
+  #     - name: Promote Database Image to TEST
+  #       uses: shrink/actions-docker-registry-tag@v2
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}
+  #         target: ${{ github.event.number }}-db
+  #         tags: |
+  #           test-db
+  #     - name: Promote API Image to TEST
+  #       uses: shrink/actions-docker-registry-tag@v2
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}
+  #         target: ${{ github.event.number }}-api
+  #         tags: |
+  #           test-api
+  #     - name: Promote Admin Image to TEST
+  #       uses: shrink/actions-docker-registry-tag@v2
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}
+  #         target: ${{ github.event.number }}-admin
+  #         tags: |
+  #           test-admin
+  #     - name: Promote Public Image to TEST
+  #       uses: shrink/actions-docker-registry-tag@v2
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}
+  #         target: ${{ github.event.number }}-public
+  #         tags: |
+  #           test-public
 
   merge-notification:
     name: Merge Notification
