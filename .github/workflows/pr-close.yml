@@ -20,7 +20,7 @@ concurrency:
 jobs:
   image-promotions:
     name: Image Promotions
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     uses: bcgov/devops-quickstart-helpers/.github/workflows/_image_promote.yml@main
     strategy:
       matrix:
