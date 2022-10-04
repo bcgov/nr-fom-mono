@@ -11,7 +11,6 @@ on:
 
 env:
   NAME: fom
-  REPONAME: greenfield-template
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -21,13 +20,13 @@ jobs:
   # Tag images for promotion, clearing out imagestreams to address an OpenShift bug
   image-promotions:
     name: Image Promotions
-    # if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
+    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     uses: bcgov/devops-quickstart-helpers/.github/workflows/_image_promote.yml@main
     strategy:
       matrix:
         component: [api, admin, db, public]
     with:
-      app_name: fom
+      app_name: ${{ env.NAME }}
       component: ${{ matrix.component }}
       env_source: ${{ github.event.number }}
       env_target: test
