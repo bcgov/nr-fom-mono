@@ -9,9 +9,6 @@ on:
       - ".github/ISSUE_TEMPLATE/**"
       - "**.md"
 
-env:
-  NAME: fom
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -26,7 +23,7 @@ jobs:
       matrix:
         component: [api, admin, db, public]
     with:
-      app_name: ${{ env.NAME }}
+      app_name: fom
       component: ${{ matrix.component }}
       env_source: ${{ github.event.number }}
       env_target: test
@@ -53,6 +50,8 @@ jobs:
   cleanup-openshift:
     name: Cleanup OpenShift
     runs-on: ubuntu-22.04
+    env:
+      NAME: fom
     steps:
       - uses: actions/checkout@v2
       - name: Remove OpenShift artifacts
