@@ -24,7 +24,7 @@ jobs:
     uses: bcgov/devops-quickstart-helpers/.github/workflows/_image_promote.yml@main
     strategy:
       matrix:
-        component: [api, admin, public]
+        component: [api, admin, db, public]
     with:
       app_name: fom
       component: ${{ matrix.component }}
