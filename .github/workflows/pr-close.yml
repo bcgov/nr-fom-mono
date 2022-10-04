@@ -9,52 +9,28 @@ on:
       - ".github/ISSUE_TEMPLATE/**"
       - "**.md"
 
-env:
-  NAME: fom
-  REPONAME: greenfield-template
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  promote-images:
-    name: Promote DEV images to TEST
-    runs-on: ubuntu-22.04
+  # Tag images for promotion, clearing out imagestreams to address an OpenShift bug
+  image-promotions:
+    name: Image Promotions
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    steps:
-      - name: Promote Database Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-db
-          tags: |
-            test-db
-      - name: Promote API Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-api
-          tags: |
-            test-api
-      - name: Promote Admin Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-admin
-          tags: |
-            test-admin
-      - name: Promote Public Image to TEST
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-public
-          tags: |
-            test-public
+    uses: bcgov/devops-quickstart-helpers/.github/workflows/_image_promote.yml@main
+    strategy:
+      matrix:
+        component: [api, admin, db, public]
+    with:
+      app_name: fom
+      component: ${{ matrix.component }}
+      env_source: ${{ github.event.number }}
+      env_target: test
+    secrets:
+      oc_namespace: ${{ secrets.OC_NAMESPACE }}
+      oc_server: ${{ secrets.OC_SERVER }}
+      oc_token: ${{ secrets.OC_TOKEN }}
 
   merge-notification:
     name: Merge Notification
@@ -74,6 +50,8 @@ jobs:
   cleanup-openshift:
     name: Cleanup OpenShift
     runs-on: ubuntu-22.04
+    env:
+      NAME: fom
     steps:
       - uses: actions/checkout@v2
       - name: Remove OpenShift artifacts
