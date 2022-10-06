@@ -90,13 +90,13 @@ jobs:
           done < <(git diff origin/main --name-only)
           echo "Container build not required"
 
-      - name: Recycle/retag PROD Image
+      - name: Recycle/retag TEST Image
         if: steps.check.outputs.build != 'true'
         uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
-          target: prod-${{ env.TARGET }}
+          target: test-${{ env.TARGET }}
           tags: |
             ${{ github.event.number }}-${{ env.TARGET }}
 
@@ -134,13 +134,13 @@ jobs:
           done < <(git diff origin/main --name-only)
           echo "Container build not required"
 
-      - name: Recycle/retag PROD Image
+      - name: Recycle/retag TEST Image
         if: steps.check.outputs.build != 'true'
         uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ${{ env.REGISTRY }}
           repository: ${{ github.repository }}
-          target: prod-${{ env.TARGET }}
+          target: test-${{ env.TARGET }}
           tags: |
             ${{ github.event.number }}-${{ env.TARGET }}
 
