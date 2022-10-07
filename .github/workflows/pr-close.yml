@@ -14,23 +14,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Tag images for promotion, clearing out imagestreams to address an OpenShift bug
+  # Tag images for promotion on GitHub Container Registry (ghcr.io)
   image-promotions:
-    name: Image Promotions
+    name: Tag images
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    uses: bcgov/devops-quickstart-helpers/.github/workflows/_image_promote.yml@v0.0.1
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         component: [api, admin, db, public]
-    with:
-      app_name: fom
-      component: ${{ matrix.component }}
-      env_source: ${{ github.event.number }}
-      env_target: test
-    secrets:
-      oc_namespace: ${{ secrets.OC_NAMESPACE }}
-      oc_server: ${{ secrets.OC_SERVER }}
-      oc_token: ${{ secrets.OC_TOKEN }}
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v2
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}
+          target: ${{ github.event.number }}-${{ matrix.component }}
+          tags: test-${{ matrix.component }}
 
   merge-notification:
     name: Merge Notification
