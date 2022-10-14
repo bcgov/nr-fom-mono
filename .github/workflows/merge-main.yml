@@ -317,7 +317,7 @@ jobs:
           fail_action: false
 
   zap-public:
-    name: Publid Pen Tests
+    name: Public Pen Tests
     needs:
       - deploy-test
     runs-on: ubuntu-22.04
@@ -345,7 +345,7 @@ jobs:
     env:
       ZONE: prod
       PREV: test
-      IMG: ${{ github.repository }}:prod
+      IMG: ${{ github.repository }}:test
       URL: fom.nrs.gov.bc.ca
     steps:
       - uses: actions/checkout@v2
@@ -395,35 +395,18 @@ jobs:
           # Remove completed build runs, build pods and deployment pods
           oc delete po --field-selector=status.phase==Succeeded
 
-      - name: Promote Database Image to PROD
-        uses: shrink/actions-docker-registry-tag@v2
+  image-promotions:
+    name: Promote images to PROD
+    needs:
+      - deploy-prod
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [api, admin, db, public]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v2
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}
-          target: test-db
-          tags: |
-            prod-db
-      - name: Promote API Image to PROD
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: test-api
-          tags: |
-            prod-api
-      - name: Promote Admin Image to PROD
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: test-admin
-          tags: |
-            prod-admin
-      - name: Promote Public Image to PROD
-        uses: shrink/actions-docker-registry-tag@v2
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: test-public
-          tags: |
-            prod-public
+          target: test-${{ matrix.component }}
+          tags: prod-${{ matrix.component }}
