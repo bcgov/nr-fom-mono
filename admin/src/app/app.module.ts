@@ -71,12 +71,12 @@ const apiConfig = new Configuration({
   providers: [
     KeycloakService,
     AuthService,
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: cogFactory,
-    //   deps: [AuthService],
-    //   multi: true,
-    // },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: cogFactory,
+      deps: [AuthService],
+      multi: true,
+    },
     // {
     //   provide: APP_INITIALIZER,
     //   useFactory: kcFactory,
