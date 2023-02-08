@@ -115,6 +115,7 @@ export class AuthService {
 
     constructor(private logger: PinoLogger) {
         this.providedAuth = (process.env.AUTH_PROVIDER || AUTH_PROVIDER.KEYCLOAK); // Default to 'KEYCLOAK' if not provided.
+        console.log(`Auth provider: ${this.providedAuth}`)
         // TODO: this part when it is working for aws, can refactor or retire keycloak.
         if (AUTH_PROVIDER.KEYCLOAK === this.providedAuth) {
             // Defaults are for local development. Keycloak enabled by default for maximum security.
@@ -136,6 +137,11 @@ export class AuthService {
         else {
             this.awsConfig = Object.assign(new AwsCognitoConfig(), aswCognitoEnvJson);
             console.log(this.awsConfig)
+            this.jwksClient = new JwksClient({
+              jwksUri: `https://cognito-idp.${this.awsConfig.region}.amazonaws.com/${this.awsConfig.userPoolsId}/.well-known/jwks.json`,
+              cache: true, // Accept cache defaults
+              rateLimit: true,
+            });
         }
     }
 
