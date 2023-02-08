@@ -161,7 +161,7 @@ export class AuthService {
         const tokenStartIndex = bearer.length;
         const token = authHeader.substr(tokenStartIndex);
         if (!this.config.enabled) {
-          const user = User.convertJsonToUser(token);
+          const user = User.convertJsonToUser(token);  // TODO: verify this if needs to be changed.
           return Promise.resolve(user);
         }
         
@@ -177,7 +177,12 @@ export class AuthService {
               nonce: nonce
             });
           this.logger.debug("Trusted decoded token = %o", decodedToken);
-          return User.convertJwtToUser(decodedToken);
+          if (AUTH_PROVIDER.KEYCLOAK === this.providedAuth) {
+            return User.convertJwtToUser(decodedToken);
+          }
+          else {
+            return User.convertAwsCognitoJwtToUser(decodedToken);
+          }
         } catch (err) {
           this.logger.warn("Invalid token %o", err);
           return Promise.reject(new ForbiddenException());
