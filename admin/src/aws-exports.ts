@@ -8,8 +8,8 @@ const config = {
   oauth: {
     domain: `dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com`,
     scope: ["openid"],
-    redirectSignIn: `https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/`, // For some reason, vue nested path (/cognito/callback) does not work yet.
-    redirectSignOut: `http://localhost:4200/not-authorized`,
+    redirectSignIn: `http://localhost:4200/admin`, // For some reason, vue nested path (/cognito/callback) does not work yet.
+    redirectSignOut: `http://localhost:4200/admin/not-authorized`,
     responseType: "code",
   },
   federationTarget: "DEV_IDIR",

@@ -37,8 +37,8 @@ export function kcFactory(keycloakService: KeycloakService) {
   return () => keycloakService.init();
 }
 
-export function cogFactory(AuthService: AuthService) {
-  return () => AuthService.login();
+export function cogFactory(authService: AuthService) {
+  return () => authService.init();
 }
 
 const apiConfig = new Configuration({
