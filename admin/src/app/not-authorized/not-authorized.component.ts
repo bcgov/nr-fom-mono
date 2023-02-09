@@ -2,7 +2,6 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
-import { AuthService } from "../../core/services/auth.service";
 
 @Component({
   selector: "app-not-authorized",
@@ -13,10 +12,7 @@ export class NotAuthorizedComponent implements OnInit {
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   public loggedout = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private authService: AuthService
-  ) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit() {
     this.route.queryParamMap
@@ -28,6 +24,5 @@ export class NotAuthorizedComponent implements OnInit {
 
   login() {
     window.location.href = window.location.origin + "/admin";
-    this.authService.login();
   }
 }

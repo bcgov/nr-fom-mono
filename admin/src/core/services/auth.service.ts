@@ -1,5 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Auth } from "aws-amplify";
+import { JwtHelperService } from "@auth0/angular-jwt";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
 
 export interface CognitoLoginUser {
@@ -31,7 +32,25 @@ export class AuthService {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 
-  async init(): Promise<any> {
+  /**
+   * See OIDC Attribute Mapping mapping reference:
+   *      https://github.com/bcgov/nr-forests-access-management/wiki/OIDC-Attribute-Mapping
+   * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
+   * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
+   */
+  private parseToken(authToken: CognitoUserSession): CognitoLoginUser {
+    const decodedIdToken = authToken.getIdToken().decodePayload();
+    const decodedAccessToken = authToken.getAccessToken().decodePayload();
+    const cognitoLoginUser = {
+      username: decodedIdToken["custom:idp_username"],
+      idpProvider: decodedIdToken["identities"]["providerName"],
+      roles: decodedAccessToken["cognito:groups"],
+      authToken: authToken,
+    };
+    return cognitoLoginUser;
+  }
+
+  public async init(): Promise<any> {
     /*
         See Aws-Amplify documenation: 
         https://docs.amplify.aws/lib/auth/social/q/platform/js/
@@ -40,27 +59,23 @@ export class AuthService {
     this.loggedOut = this.getParameterByName("loggedout");
 
     return new Promise(async (resolve, reject) => {
-      console.log(
-        'sessionStorage.getItem("FOM_LOGIN_USER")',
-        sessionStorage.getItem("FOM_LOGIN_USER")
-      );
-      console.log("this.loggedOut", this.loggedOut);
-
-      if (this.loggedOut === "true") resolve(null);
-      else {
-        if (!sessionStorage.getItem("FOM_LOGIN_USER")) {
-          await this.login();
-        }
-
+      if (this.loggedOut === "true") {
+        resolve(null);
+      } else {
         Auth.currentAuthenticatedUser()
           .then(async (_userData) => {
             console.log("_userData", _userData);
+            if (!_userData) {
+              await this.login();
+            }
             await this.refreshToken();
             resolve(null);
           })
           .catch(async (error) => {
-            console.log("There is no user logged in", error);
-            reject();
+            console.log("There is no current user", error);
+            await this.login();
+            await this.refreshToken();
+            resolve(null);
           });
       }
     });
@@ -83,7 +98,6 @@ export class AuthService {
 
       const cognitoLoginUser = this.parseToken(currentAuthToken);
       this.loginUser = cognitoLoginUser;
-      sessionStorage.setItem("FOM_LOGIN_USER", cognitoLoginUser.username);
     } catch (error) {
       console.error("Problem refreshing token or token is invalidated:", error);
       // logout and redirect to login.
@@ -91,38 +105,54 @@ export class AuthService {
     }
   }
 
-  /**
-   * See OIDC Attribute Mapping mapping reference:
-   *      https://github.com/bcgov/nr-forests-access-management/wiki/OIDC-Attribute-Mapping
-   * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
-   * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
-   */
-  parseToken(authToken: CognitoUserSession): CognitoLoginUser {
-    const decodedIdToken = authToken.getIdToken().decodePayload();
-    const decodedAccessToken = authToken.getAccessToken().decodePayload();
-    const cognitoLoginUser = {
-      username: decodedIdToken["custom:idp_username"],
-      idpProvider: decodedIdToken["identities"]["providerName"],
-      roles: decodedAccessToken["cognito:groups"],
-      authToken: authToken,
-    };
-    return cognitoLoginUser;
-  }
-
-  async login() {
+  public async login() {
     await Auth.federatedSignIn();
     console.log("User logged in.");
   }
 
-  logout() {
-    Auth.signOut();
+  public async logout() {
+    await Auth.signOut();
     this.loginUser = undefined;
     console.log("User logged out.");
-    sessionStorage.removeItem("FOM_LOGIN_USER");
   }
 
-  getUser() {
-    console.log("loginUser", this.loginUser);
+  public getUser() {
+    // console.log("loginUser", this.loginUser);
+    // const token = this.getToken();
+    // if (!token) {
+    //   return null;
+    // }
+
+    // const helper = new JwtHelperService();
+    // const decodedToken = helper.decodeToken(token);
+    // if (!decodedToken) {
+    //   return null;
+    // }
+    // console.log("decodedToken", decodedToken);
+    // const user = User.convertJwtToUser(decodedToken);
+    // console.log("User " + JSON.stringify(user));
+
+    // return user;
+
     return this.loginUser;
+  }
+
+  /**
+   * Returns the current keycloak auth token.
+   *
+   * @returns {string} keycloak auth token.
+   * @memberof AuthService
+   */
+  public getToken(): string {
+    if (this.loginUser && this.loginUser.authToken)
+      return this.loginUser.authToken.getAccessToken().getJwtToken();
+    return null;
+  }
+
+  public getLogoutURL(): string {
+    const postLogoutUrl =
+      window.location.origin + "/admin/not-authorized?loggedout=true";
+
+    return `https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/logout?client_id=6c9ieu27ik29mq75jeb7rrbdls&logout_uri=${postLogoutUrl}`;
   }
 }

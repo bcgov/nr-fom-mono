@@ -61,10 +61,11 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  navigateToLogout() {
-    this.authService.logout();
-    this.keycloakService.logout();
-    window.location.href = this.keycloakService.getLogoutURL();
+  async navigateToLogout() {
+    await this.authService.logout();
+    window.location.href = this.authService.getLogoutURL();
+    // this.keycloakService.logout();
+    // window.location.href = this.keycloakService.getLogoutURL();
   }
 
   toggleNav() {

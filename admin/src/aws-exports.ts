@@ -9,7 +9,7 @@ const config = {
     domain: `dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com`,
     scope: ["openid"],
     redirectSignIn: `http://localhost:4200/admin`, // For some reason, vue nested path (/cognito/callback) does not work yet.
-    redirectSignOut: `http://localhost:4200/admin/not-authorized`,
+    redirectSignOut: `http://localhost:4200/admin/not-authorized?loggedout=true`,
     responseType: "code",
   },
   federationTarget: "DEV_IDIR",
