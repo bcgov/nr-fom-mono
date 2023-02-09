@@ -1,5 +1,6 @@
 export * from './attachmentResponse';
 export * from './attachmentTypeCode';
+export * from './awsCognitoConfig';
 export * from './commentScopeCode';
 export * from './districtResponse';
 export * from './featureTypeCode';
