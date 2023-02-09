@@ -11,7 +11,6 @@ import { User } from "@utility/security/user";
 import { ConfigService } from "@utility/services/config.service";
 import { KeycloakService } from "../../core/services/keycloak.service";
 import { AuthService } from "../../core/services/auth.service";
-import type { CognitoLoginUser } from "../../core/services/auth.service";
 
 @Component({
   selector: "app-header",
@@ -30,8 +29,7 @@ export class HeaderComponent implements OnInit {
   isNavMenuOpen = true;
   environmentDisplay: string;
   logoutMsg: string = "Logout";
-  // user: User;
-  user: CognitoLoginUser;
+  user: User;
 
   constructor(
     private keycloakService: KeycloakService,
@@ -43,14 +41,12 @@ export class HeaderComponent implements OnInit {
     // this.user = this.keycloakService.getUser();
     this.user = this.authService.getUser();
     if (this.user) {
-      // this.logoutMsg += " " + this.user.displayName;
-      this.logoutMsg += " " + this.user.username;
+      this.logoutMsg += " " + this.user.displayName;
     }
   }
 
   ngOnInit() {
-    // if (!this.user || !this.user.isAuthorizedForAdminSite()) {
-    if (!this.user || !this.user.roles.includes("FOM_REVIEWER")) {
+    if (!this.user || !this.user.isAuthorizedForAdminSite()) {
       // If on not-authorized page, or if just logged out, don't redirect to not-authorized page as would cause an infinite loop.
       if (
         window.location.href.indexOf("/not-authorized") == -1 &&

@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { Auth } from "aws-amplify";
-import { JwtHelperService } from "@auth0/angular-jwt";
+import { User } from "@utility/security/user";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
 
 export interface CognitoLoginUser {
@@ -8,14 +8,11 @@ export interface CognitoLoginUser {
   idpProvider?: string;
   roles?: string[];
   authToken?: CognitoUserSession;
-  isMinistry?: boolean;
-  isForestClient?: boolean;
-  clientIds?: string[];
 }
 
 @Injectable()
 export class AuthService {
-  public loginUser: CognitoLoginUser;
+  public cognitoLoginUser: CognitoLoginUser;
   private loggedOut: string;
 
   private getParameterByName(name) {
@@ -97,11 +94,11 @@ export class AuthService {
       console.log("currentAuthToken: ", currentAuthToken);
 
       const cognitoLoginUser = this.parseToken(currentAuthToken);
-      this.loginUser = cognitoLoginUser;
+      this.cognitoLoginUser = cognitoLoginUser;
     } catch (error) {
       console.error("Problem refreshing token or token is invalidated:", error);
       // logout and redirect to login.
-      this.logout();
+      await this.logout();
     }
   }
 
@@ -112,40 +109,30 @@ export class AuthService {
 
   public async logout() {
     await Auth.signOut();
-    this.loginUser = undefined;
+    this.cognitoLoginUser = undefined;
     console.log("User logged out.");
   }
 
   public getUser() {
-    // console.log("loginUser", this.loginUser);
-    // const token = this.getToken();
-    // if (!token) {
-    //   return null;
-    // }
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
 
-    // const helper = new JwtHelperService();
-    // const decodedToken = helper.decodeToken(token);
-    // if (!decodedToken) {
-    //   return null;
-    // }
-    // console.log("decodedToken", decodedToken);
-    // const user = User.convertJwtToUser(decodedToken);
-    // console.log("User " + JSON.stringify(user));
+    const user = User.convertAwsCognitoJwtToUser(token);
+    console.log("User " + JSON.stringify(user));
 
-    // return user;
-
-    return this.loginUser;
+    return user;
   }
 
-  /**
-   * Returns the current keycloak auth token.
-   *
-   * @returns {string} keycloak auth token.
-   * @memberof AuthService
-   */
-  public getToken(): string {
-    if (this.loginUser && this.loginUser.authToken)
-      return this.loginUser.authToken.getAccessToken().getJwtToken();
+  public getToken(): object {
+    if (this.cognitoLoginUser && this.cognitoLoginUser.authToken)
+      return {
+        id_token: this.cognitoLoginUser.authToken.getIdToken().decodePayload(),
+        access_token: this.cognitoLoginUser.authToken
+          .getAccessToken()
+          .decodePayload(),
+      };
     return null;
   }
 
