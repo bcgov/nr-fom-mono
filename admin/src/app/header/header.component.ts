@@ -9,8 +9,8 @@ import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { User } from "@utility/security/user";
 import { ConfigService } from "@utility/services/config.service";
-import { KeycloakService } from "../../core/services/keycloak.service";
-import { AuthService } from "../../core/services/auth.service";
+// import { KeycloakService } from "../../core/services/keycloak.service";
+import { CognitoService } from "../../core/services/cognito.service";
 
 @Component({
   selector: "app-header",
@@ -32,14 +32,14 @@ export class HeaderComponent implements OnInit {
   user: User;
 
   constructor(
-    private keycloakService: KeycloakService,
+    // private keycloakService: KeycloakService,
     private configService: ConfigService,
     public router: Router,
-    private authService: AuthService
+    private cognitoService: CognitoService
   ) {
     this.environmentDisplay = configService.getEnvironmentDisplay();
     // this.user = this.keycloakService.getUser();
-    this.user = this.authService.getUser();
+    this.user = this.cognitoService.getUser();
     if (this.user) {
       this.logoutMsg += " " + this.user.displayName;
     }
@@ -58,8 +58,8 @@ export class HeaderComponent implements OnInit {
   }
 
   async navigateToLogout() {
-    await this.authService.logout();
-    window.location.href = this.authService.getLogoutURL();
+    await this.cognitoService.logout();
+    window.location.href = this.cognitoService.getLogoutURL();
     // this.keycloakService.logout();
     // window.location.href = this.keycloakService.getLogoutURL();
   }

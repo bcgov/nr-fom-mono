@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
 import { Auth } from "aws-amplify";
 import { User } from "@utility/security/user";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
@@ -11,9 +12,10 @@ export interface CognitoLoginUser {
 }
 
 @Injectable()
-export class AuthService {
+export class CognitoService {
   public cognitoLoginUser: CognitoLoginUser;
   private loggedOut: string;
+  public initialized: boolean = false;
 
   private getParameterByName(name) {
     const url = window.location.href;
@@ -64,17 +66,18 @@ export class AuthService {
             console.log("_userData", _userData);
             if (!_userData) {
               await this.login();
+            } else {
+              await this.refreshToken();
             }
-            await this.refreshToken();
             resolve(null);
           })
           .catch(async (error) => {
             console.log("There is no current user", error);
             await this.login();
-            await this.refreshToken();
             resolve(null);
           });
       }
+      this.initialized = true;
     });
   }
 
@@ -102,9 +105,30 @@ export class AuthService {
     }
   }
 
+  updateToken(): Observable<any> {
+    return new Observable((observer) => {
+      Auth.currentSession()
+        .then((refreshed) => {
+          console.log("Cognito token refreshed?:", refreshed);
+          observer.next();
+          observer.complete();
+        })
+        .catch((err) => {
+          console.error("Cognito token refresh error:", err);
+          observer.error();
+        });
+
+      return {
+        unsubscribe() {
+          // Deliberately empty
+        },
+      };
+    });
+  }
+
   public async login() {
     await Auth.federatedSignIn();
-    console.log("User logged in.");
+    console.log("Navigate to user login.");
   }
 
   public async logout() {

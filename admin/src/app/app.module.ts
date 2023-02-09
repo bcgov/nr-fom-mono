@@ -16,16 +16,17 @@ import { SearchComponent } from "./search/search.component";
 import { HeaderComponent } from "./header/header.component";
 import { FooterComponent } from "./footer/footer.component";
 
-// services
-import { KeycloakService } from "../core/services/keycloak.service";
-import { AuthService } from "../core/services/auth.service";
+// // services
+// import { KeycloakService } from "../core/services/keycloak.service";
+import { CognitoService } from "../core/services/cognito.service";
 
 import {
   ConfigService,
   retrieveApiBasePath,
 } from "@utility/services/config.service";
 
-import { TokenInterceptor } from "../core/utils/token-interceptor";
+// import { TokenInterceptor } from "../core/utils/token-interceptor";
+import { CognitoTokenInterceptor } from "../core/utils/cognito-token-interceptor";
 import { NotAuthorizedComponent } from "./not-authorized/not-authorized.component";
 import { ApiModule, Configuration } from "@api-client";
 import { ErrorInterceptor } from "../core/interceptors/http-error.interceptor";
@@ -33,12 +34,12 @@ import { ErrorInterceptor } from "../core/interceptors/http-error.interceptor";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators";
 
-export function kcFactory(keycloakService: KeycloakService) {
-  return () => keycloakService.init();
-}
+// export function kcFactory(keycloakService: KeycloakService) {
+//   return () => keycloakService.init();
+// }
 
-export function cogFactory(authService: AuthService) {
-  return () => authService.init();
+export function cogFactory(cognitoService: CognitoService) {
+  return () => cognitoService.init();
 }
 
 const apiConfig = new Configuration({
@@ -69,12 +70,12 @@ const apiConfig = new Configuration({
     // LeafletModule
   ],
   providers: [
-    KeycloakService,
-    AuthService,
+    // KeycloakService,
+    CognitoService,
     {
       provide: APP_INITIALIZER,
       useFactory: cogFactory,
-      deps: [AuthService],
+      deps: [CognitoService],
       multi: true,
     },
     // {
@@ -91,9 +92,14 @@ const apiConfig = new Configuration({
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
+      useClass: CognitoTokenInterceptor,
       multi: true,
     },
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: TokenInterceptor,
+    //   multi: true,
+    // },
     ConfigService,
   ],
   bootstrap: [AppComponent],
