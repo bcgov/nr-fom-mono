@@ -1,21 +1,31 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { Auth } from "aws-amplify";
+import { Amplify, Auth } from "aws-amplify";
+import { AwsCognitoConfig } from "@api-client";
 import { User } from "@utility/security/user";
+import { ConfigService } from "@utility/services/config.service";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
-
-export interface CognitoLoginUser {
-  username?: string;
-  idpProvider?: string;
-  roles?: string[];
-  authToken?: CognitoUserSession;
-}
 
 @Injectable()
 export class CognitoService {
-  public cognitoLoginUser: CognitoLoginUser;
+  private config: AwsCognitoConfig = {
+    enabled: false,
+    region: "",
+    userPoolsId: "",
+    userPoolWebClientId: "",
+    mandatorySignIn: true,
+    federationTarget: "",
+    domain: "",
+    scope: [],
+    signUpVerificationMethod: "",
+    frontendRedirectBaseUrl: "",
+  };
+  private cognitoAuthToken: object;
   private loggedOut: string;
   public initialized: boolean = false;
+
+  constructor(private configService: ConfigService, private http: HttpClient) {}
 
   private getParameterByName(name) {
     const url = window.location.href;
@@ -37,16 +47,13 @@ export class CognitoService {
    * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
    * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
    */
-  private parseToken(authToken: CognitoUserSession): CognitoLoginUser {
+  private parseToken(authToken: CognitoUserSession): object {
     const decodedIdToken = authToken.getIdToken().decodePayload();
     const decodedAccessToken = authToken.getAccessToken().decodePayload();
-    const cognitoLoginUser = {
-      username: decodedIdToken["custom:idp_username"],
-      idpProvider: decodedIdToken["identities"]["providerName"],
-      roles: decodedAccessToken["cognito:groups"],
-      authToken: authToken,
+    return {
+      id_token: decodedIdToken,
+      access_token: decodedAccessToken,
     };
-    return cognitoLoginUser;
   }
 
   public async init(): Promise<any> {
@@ -55,6 +62,32 @@ export class CognitoService {
         https://docs.amplify.aws/lib/auth/social/q/platform/js/
         https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
     */
+
+    let url: string =
+      this.configService.getApiBasePath() + "/api/awsCognitoConfig";
+    let data = await this.http
+      .get(url, { observe: "body", responseType: "json" })
+      .toPromise();
+    this.config = data as AwsCognitoConfig;
+
+    const parsedConfig = {
+      aws_cognito_region: this.config.region,
+      aws_user_pools_id: this.config.userPoolsId,
+      aws_user_pools_web_client_id: "6c9ieu27ik29mq75jeb7rrbdls",
+      aws_mandatory_sign_in: this.config.mandatorySignIn ? "enable" : "disable",
+      oauth: {
+        domain: `${this.config.domain}.auth.ca-central-1.amazoncognito.com`,
+        scope: this.config.scope,
+        redirectSignIn: this.config.frontendRedirectBaseUrl,
+        redirectSignOut: `${this.config.frontendRedirectBaseUrl}/not-authorized?loggedout=true`,
+        responseType: this.config.signUpVerificationMethod,
+      },
+      federationTarget: this.config.federationTarget,
+    };
+
+    console.log("Using keycloak config = " + JSON.stringify(this.config));
+    Amplify.configure(parsedConfig);
+
     this.loggedOut = this.getParameterByName("loggedout");
 
     return new Promise(async (resolve, reject) => {
@@ -96,8 +129,7 @@ export class CognitoService {
       const currentAuthToken: CognitoUserSession = await Auth.currentSession();
       console.log("currentAuthToken: ", currentAuthToken);
 
-      const cognitoLoginUser = this.parseToken(currentAuthToken);
-      this.cognitoLoginUser = cognitoLoginUser;
+      this.cognitoAuthToken = this.parseToken(currentAuthToken);
     } catch (error) {
       console.error("Problem refreshing token or token is invalidated:", error);
       // logout and redirect to login.
@@ -133,7 +165,7 @@ export class CognitoService {
 
   public async logout() {
     await Auth.signOut();
-    this.cognitoLoginUser = undefined;
+    this.cognitoAuthToken = undefined;
     console.log("User logged out.");
   }
 
@@ -149,15 +181,8 @@ export class CognitoService {
     return user;
   }
 
-  public getToken(): object {
-    if (this.cognitoLoginUser && this.cognitoLoginUser.authToken)
-      return {
-        id_token: this.cognitoLoginUser.authToken.getIdToken().decodePayload(),
-        access_token: this.cognitoLoginUser.authToken
-          .getAccessToken()
-          .decodePayload(),
-      };
-    return null;
+  public getToken(): object | undefined {
+    return this.cognitoAuthToken;
   }
 
   public getLogoutURL(): string {
