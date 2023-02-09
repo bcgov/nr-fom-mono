@@ -20,7 +20,7 @@ export class KeycloakService {
   };
   private keycloakAuth: any;
   private loggedOut: string;
-  private fakeUser: User = getFakeUser();
+  private fakeUser: User;
   public initialized: boolean = false;
 
   constructor(private configService: ConfigService, private http: HttpClient) {}
