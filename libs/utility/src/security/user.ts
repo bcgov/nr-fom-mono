@@ -51,10 +51,12 @@ export class User {
     // TODO - Verify this mapping: JWT token from AWS Cognito converted to User.
     static convertAwsCognitoJwtToUser(jwt: any): User {
         const user = new User();
-        user.userName = jwt['custom:idp_username'];
-        user.displayName = jwt['custom:idp_display_name'];
+        const idToken = jwt['id_token'];
+        const accessToken = jwt['access_token']
+        user.userName = idToken['custom:idp_username'];
+        user.displayName = idToken['custom:idp_display_name'];
         let roles: string[];
-        roles = jwt['cognito:groups'];
+        roles = accessToken['cognito:groups'];
 
         if (roles) {
             const FOM_REVIEWER_ROLE = 'FOM_REVIEWER';
