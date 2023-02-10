@@ -22,9 +22,6 @@ RUN cd libs && \
 # Deploy container
 FROM caddy:2.4.6-alpine
 
-# Envar
-ENV FOM_ENV=dev
-
 # Copy over Caddyfile and static content
 ARG build_dir
 COPY --from=build /app/${build_dir}/dist/${build_dir} /dist
