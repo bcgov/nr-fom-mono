@@ -71,7 +71,7 @@ export class CognitoService {
       .get(url, { observe: "body", responseType: "json" })
       .toPromise();
     this.config = data as AwsCognitoConfig;
-    this.config.enabled = true;
+
     const parsedConfig = {
       aws_cognito_region: this.config.region,
       aws_user_pools_id: this.config.userPoolsId,
