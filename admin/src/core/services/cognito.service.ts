@@ -5,6 +5,7 @@ import { Amplify, Auth } from "aws-amplify";
 import { AwsCognitoConfig } from "@api-client";
 import { User } from "@utility/security/user";
 import { ConfigService } from "@utility/services/config.service";
+import { getFakeUser } from "./mock-user";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
 
 @Injectable()
@@ -23,6 +24,7 @@ export class CognitoService {
   };
   private cognitoAuthToken: object;
   private loggedOut: string;
+  private fakeUser: User;
   public initialized: boolean = false;
 
   constructor(private configService: ConfigService, private http: HttpClient) {}
@@ -69,26 +71,32 @@ export class CognitoService {
       .get(url, { observe: "body", responseType: "json" })
       .toPromise();
     this.config = data as AwsCognitoConfig;
-
+    this.config.enabled = true;
     const parsedConfig = {
       aws_cognito_region: this.config.region,
       aws_user_pools_id: this.config.userPoolsId,
-      aws_user_pools_web_client_id: "6c9ieu27ik29mq75jeb7rrbdls",
+      aws_user_pools_web_client_id: this.config.userPoolWebClientId,
       aws_mandatory_sign_in: this.config.mandatorySignIn ? "enable" : "disable",
       oauth: {
-        domain: `${this.config.domain}.auth.ca-central-1.amazoncognito.com`,
+        domain: `${this.config.domain}.auth.${this.config.region}.amazoncognito.com`,
         scope: this.config.scope,
-        redirectSignIn: this.config.frontendRedirectBaseUrl,
-        redirectSignOut: `${this.config.frontendRedirectBaseUrl}/not-authorized?loggedout=true`,
+        redirectSignIn: `${this.config.frontendRedirectBaseUrl}/admin`,
+        redirectSignOut: `${this.config.frontendRedirectBaseUrl}/admin/not-authorized?loggedout=true`,
         responseType: this.config.signUpVerificationMethod,
       },
       federationTarget: this.config.federationTarget,
     };
 
-    console.log("Using keycloak config = " + JSON.stringify(this.config));
+    console.log("Using cognito config = " + JSON.stringify(this.config));
     Amplify.configure(parsedConfig);
 
     this.loggedOut = this.getParameterByName("loggedout");
+
+    if (!this.config.enabled) {
+      this.fakeUser = getFakeUser();
+      this.initialized = true;
+      return null;
+    }
 
     return new Promise(async (resolve, reject) => {
       if (this.loggedOut === "true") {
@@ -165,23 +173,27 @@ export class CognitoService {
 
   public async logout() {
     await Auth.signOut();
-    this.cognitoAuthToken = undefined;
     console.log("User logged out.");
   }
 
   public getUser() {
+    if (!this.config.enabled) {
+      return this.fakeUser;
+    }
+
     const token = this.getToken();
     if (!token) {
       return null;
     }
-
     const user = User.convertAwsCognitoJwtToUser(token);
-    console.log("User " + JSON.stringify(user));
-
+    // console.log("User " + JSON.stringify(user));
     return user;
   }
 
   public getToken(): object | undefined {
+    if (!this.config.enabled) {
+      return { id_token: {}, accessToken: {} };
+    }
     return this.cognitoAuthToken;
   }
 
@@ -189,6 +201,14 @@ export class CognitoService {
     const postLogoutUrl =
       window.location.origin + "/admin/not-authorized?loggedout=true";
 
-    return `https://dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com/logout?client_id=6c9ieu27ik29mq75jeb7rrbdls&logout_uri=${postLogoutUrl}`;
+    if (!this.config.enabled) {
+      // Not using keycloak.
+      return postLogoutUrl;
+    }
+
+    return (
+      `${this.config.domain}.auth.${this.config.region}.amazoncognito.com/` +
+      `logout?client_id=${this.config.userPoolWebClientId}&logout_uri=${postLogoutUrl}`
+    );
   }
 }
