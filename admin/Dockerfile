@@ -27,9 +27,7 @@ ENV FOM_ENV=dev
 
 # Copy over Caddyfile and static content
 ARG build_dir
-WORKDIR /app
-COPY --from=build /app/${build_dir}/dist ./dist
-COPY --from=build /app/${build_dir} ./${build_dir}
+COPY --from=build /app/${build_dir}/dist/${build_dir} /dist
 COPY --from=build /app/${build_dir}/Caddyfile /etc/caddy/Caddyfile
 
 # Port, health check and user

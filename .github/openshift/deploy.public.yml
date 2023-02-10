@@ -144,7 +144,7 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts:
-                - mountPath: /app/dist/${COMPONENT}/assets/env
+                - mountPath: /dist/assets/env
                   name: env-config
                 - mountPath: /data
                   name: caddy-data
