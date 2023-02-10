@@ -28,11 +28,11 @@ docker-compose.y*ml
 .ps1
 
 # Node
-node_modules
+**/node_modules/
 nodemon*.json
 npm-debug.log
 npm-debug.log.*
 
 # Generated/transpiled files
-dist
-.dist
+**/dist/
+**/.dist/
