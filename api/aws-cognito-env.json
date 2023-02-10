@@ -5,5 +5,5 @@
     "userPoolWebClientId": "6c9ieu27ik29mq75jeb7rrbdls",
     "federationTarget": "COGNITO_USER_POOLS",
     "domain": "dev-fam-user-pool-domain",
-    "frontendRedirectBaseUrl": "http://localhost:4200/admin"
+    "frontendRedirectBaseUrl": "http://localhost:4200"
 }
