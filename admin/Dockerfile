@@ -1,31 +1,39 @@
-# Build container
-FROM node:alpine3.16 AS build
+# Global args
+ARG build_dir=admin
+ARG port=4200
 
-# Install packages, build and keep only prod packages
+
+# Build container
+FROM node:14.21.2-alpine3.17 AS build
+
+# Install dependencies and build static content
+ARG build_dir
 WORKDIR /app
-COPY . ./
+COPY ./libs ./libs
+COPY ./${build_dir} ./${build_dir}
 RUN cd libs && \
     npm ci && \
-    cd ../admin && \
+    cd ../${build_dir} && \
     npm ci && \
-    npm run build:admin && \
-    rm -rf node_modules
+    npm run build:${build_dir} && \
+    rm -rf node_modules ../libs/node_modules
+
 
 # Deploy container
 FROM caddy:2.4.6-alpine
 
-# Vars - configured for local development
+# Envar
 ENV FOM_ENV=dev
 
-# Copy over app
+# Copy over Caddyfile and static content
+ARG build_dir
 WORKDIR /app
-COPY --from=build /app/admin/Caddyfile /etc/caddy/Caddyfile
-COPY --from=build /app/admin/dist /srv
+COPY --from=build /app/${build_dir}/dist ./dist
+COPY --from=build /app/${build_dir} ./${build_dir}
+COPY --from=build /app/${build_dir}/Caddyfile /etc/caddy/Caddyfile
 
-# Port and health check
-EXPOSE 4200
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:4200
-
-# Start up
+# Port, health check and user
+ARG port
+EXPOSE ${port}
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:${port}
 USER 1001
-ENTRYPOINT ["caddy", "run"]

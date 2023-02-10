@@ -15,7 +15,7 @@
 	encode zstd gzip
 
 	# If 'root' directive is used, it has to be before other directives such as 'try_files'.
-	root ./dist/admin
+	root * /app/dist/admin
 
 	header {
 		# allow caching for 5 minutes, for refreshing after deployments.
