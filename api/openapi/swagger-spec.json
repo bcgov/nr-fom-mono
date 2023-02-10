@@ -44,6 +44,56 @@
           "clientId"
         ]
       },
+      "AwsCognitoConfig": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "region": {
+            "type": "string"
+          },
+          "userPoolsId": {
+            "type": "string"
+          },
+          "userPoolWebClientId": {
+            "type": "string"
+          },
+          "mandatorySignIn": {
+            "type": "boolean"
+          },
+          "federationTarget": {
+            "type": "string"
+          },
+          "domain": {
+            "type": "string"
+          },
+          "scope": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "signUpVerificationMethod": {
+            "type": "string"
+          },
+          "frontendRedirectBaseUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "enabled",
+          "region",
+          "userPoolsId",
+          "userPoolWebClientId",
+          "mandatorySignIn",
+          "federationTarget",
+          "domain",
+          "scope",
+          "signUpVerificationMethod",
+          "frontendRedirectBaseUrl"
+        ]
+      },
       "AttachmentTypeCode": {
         "type": "object",
         "properties": {
@@ -1016,6 +1066,27 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/KeycloakConfig"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/awsCognitoConfig": {
+      "get": {
+        "operationId": "AuthController_getAwsCognitoConfig",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AwsCognitoConfig"
                 }
               }
             }

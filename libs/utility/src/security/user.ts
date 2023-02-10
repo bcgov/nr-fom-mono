@@ -20,6 +20,7 @@ export class User {
       return user;
     }
 
+    // This function is reserved for Keycloak.
     static convertJwtToUser(jwt: any): User {
       const user = new User();
       user.userName = jwt['username'];
@@ -46,6 +47,34 @@ export class User {
   
       return user;
     }
-    
+
+    // TODO - Verify this mapping: JWT token from AWS Cognito converted to User.
+    static convertAwsCognitoJwtToUser(jwt: any): User {
+        const user = new User();
+        const idToken = jwt['id_token'];
+        const accessToken = jwt['access_token']
+        user.userName = idToken['custom:idp_username'];
+        user.displayName = idToken['custom:idp_display_name'];
+        let roles: string[];
+        roles = accessToken['cognito:groups'];
+
+        if (roles) {
+            const FOM_REVIEWER_ROLE = 'FOM_REVIEWER';
+            const FOM_SUBMITTER_ROLE = 'FOM_SUBMITTER';
+            roles.forEach(role => {
+			if (role == FOM_REVIEWER_ROLE) {
+				user.isMinistry = true;
+			}
+			if (role.startsWith(FOM_SUBMITTER_ROLE)) {
+				user.isForestClient = true;
+                const clientStartIndex = `${FOM_SUBMITTER_ROLE}_`.length;
+				if (role.length > clientStartIndex) {
+				const clientId = role.substring(clientStartIndex);
+				user.clientIds.push(clientId);
+				}
+			}
+			});
+		}
+        return user;
+    }
   }
-  
