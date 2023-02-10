@@ -1,20 +1,29 @@
-import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
-import { ProjectResponse, ProjectService, WorkflowStateEnum } from "@api-client";
+import { Location } from "@angular/common";
+import { Component, OnDestroy, OnInit } from "@angular/core";
+import {
+  MatSnackBar,
+  MatSnackBarRef,
+  SimpleSnackBar,
+} from "@angular/material/snack-bar";
+import { ActivatedRoute, ParamMap, Params, Router } from "@angular/router";
+import {
+  ProjectResponse,
+  ProjectService,
+  WorkflowStateEnum,
+} from "@api-client";
 import { User } from "@utility/security/user";
-import { isNil } from 'lodash';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { KeycloakService } from '../../core/services/keycloak.service';
-import { ModalService } from '../../core/services/modal.service';
-import { StateService } from '../../core/services/state.service';
+import { isNil } from "lodash";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+// import { KeycloakService } from '../../core/services/keycloak.service';
+import { CognitoService } from "../../core/services/cognito.service";
+import { ModalService } from "../../core/services/modal.service";
+import { StateService } from "../../core/services/state.service";
 
 @Component({
-  selector: 'app-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss']
+  selector: "app-search",
+  templateUrl: "./search.component.html",
+  styleUrls: ["./search.component.scss"],
 })
 export class SearchComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<boolean>();
@@ -28,8 +37,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   public projects: ProjectResponse[] = [];
   public count = 0;
   public searching = false;
-  public statusCodes = this.stateSvc.getCodeTable('workflowResponseCode');
-  public districts = this.stateSvc.getCodeTable('district');
+  public statusCodes = this.stateSvc.getCodeTable("workflowResponseCode");
+  public districts = this.stateSvc.getCodeTable("district");
   public searched = false;
 
   constructor(
@@ -37,24 +46,28 @@ export class SearchComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private stateSvc: StateService,
-    private keycloakService: KeycloakService,
+    // private keycloakService: KeycloakService,
+    private cognitoService: CognitoService,
     public snackBar: MatSnackBar,
     public searchProjectService: ProjectService,
     private modalSvc: ModalService
   ) {
-    this.user = this.keycloakService.getUser();
+    // this.user = this.keycloakService.getUser();
+    this.user = this.cognitoService.getUser();
   }
 
   ngOnInit() {
     // get search terms from route
-    this.route.queryParamMap.pipe(takeUntil(this.ngUnsubscribe)).subscribe(paramMap => {
-      this.paramMap = paramMap;
-      this.setInitialQueryParameters();
+    this.route.queryParamMap
+      .pipe(takeUntil(this.ngUnsubscribe))
+      .subscribe((paramMap) => {
+        this.paramMap = paramMap;
+        this.setInitialQueryParameters();
 
-      if (this.fFspId || this.fStatus || this.fDistrict || this.fHolder) {
-        this.doSearch();
-      }
-    });
+        if (this.fFspId || this.fStatus || this.fDistrict || this.fHolder) {
+          this.doSearch();
+        }
+      });
   }
 
   private doSearch() {
@@ -62,57 +75,84 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.projects = [];
     this.count = 0;
 
-    const workFlowStateCodeArg = this.fStatus === 'undefined'? null: this.fStatus;
-    const districtArg = (isNaN(this.fDistrict) || isNil(this.fDistrict))? null : this.fDistrict.toString();
-    const fspIdArg = (isNaN(this.fFspId) || isNil(this.fFspId))? null : this.fFspId.toString();
-    this.searchProjectService.projectControllerFind(fspIdArg , districtArg, workFlowStateCodeArg, this.fHolder)
+    const workFlowStateCodeArg =
+      this.fStatus === "undefined" ? null : this.fStatus;
+    const districtArg =
+      isNaN(this.fDistrict) || isNil(this.fDistrict)
+        ? null
+        : this.fDistrict.toString();
+    const fspIdArg =
+      isNaN(this.fFspId) || isNil(this.fFspId) ? null : this.fFspId.toString();
+    this.searchProjectService
+      .projectControllerFind(
+        fspIdArg,
+        districtArg,
+        workFlowStateCodeArg,
+        this.fHolder
+      )
       .subscribe(
-        projects => {
+        (projects) => {
           this.projects = projects;
           this.count = this.projects.length;
           const limit = 2500;
           if (this.count >= limit) {
-            this.modalSvc.openSnackBar({message: `Warning: Maximum of ${limit} search results exceeded -
-            not all results have been displayed. Please refine your search criteria.`, button: 'OK'});
+            this.modalSvc.openSnackBar({
+              message: `Warning: Maximum of ${limit} search results exceeded -
+            not all results have been displayed. Please refine your search criteria.`,
+              button: "OK",
+            });
           }
         },
-        error => {
-          console.error('error =', error);
+        (error) => {
+          console.error("error =", error);
           this.searched = true;
           this.searching = false;
-          this.snackBarRef = this.snackBar.open('Error searching foms ...', null, {duration: 3000});
+          this.snackBarRef = this.snackBar.open(
+            "Error searching foms ...",
+            null,
+            { duration: 3000 }
+          );
         },
         () => {
           this.searched = true;
           this.searching = false;
-        });
+        }
+      );
   }
 
   public setInitialQueryParameters() {
-    this.fFspId = this.paramMap.get('fFspId')? parseInt(this.paramMap.get('fFspId')): null;
-    this.fDistrict = this.paramMap.get('fDistrict')? parseInt(this.paramMap.get('fDistrict')): null;
-    this.fStatus = this.paramMap.get('fStatus') || undefined;
-    this.fHolder = this.paramMap.get('fHolder') || null;
+    this.fFspId = this.paramMap.get("fFspId")
+      ? parseInt(this.paramMap.get("fFspId"))
+      : null;
+    this.fDistrict = this.paramMap.get("fDistrict")
+      ? parseInt(this.paramMap.get("fDistrict"))
+      : null;
+    this.fStatus = this.paramMap.get("fStatus") || undefined;
+    this.fHolder = this.paramMap.get("fHolder") || null;
   }
 
   public saveQueryParameters() {
     const params: Params = {};
 
     if (!isNaN(this.fFspId)) {
-      params['fFspId'] = this.fFspId;
+      params["fFspId"] = this.fFspId;
     }
     if (!isNaN(this.fDistrict)) {
-      params['fDistrict'] = this.fDistrict;
+      params["fDistrict"] = this.fDistrict;
     }
-    if (this.fStatus !== 'undefined') {
-      params['fStatus'] = this.fStatus;
+    if (this.fStatus !== "undefined") {
+      params["fStatus"] = this.fStatus;
     }
     if (this.fHolder != null) {
-      params['fHolder'] = this.fHolder;
+      params["fHolder"] = this.fHolder;
     }
 
     // change browser URL without reloading page (so any query params are saved in history)
-    this.location.go(this.router.createUrlTree([], {relativeTo: this.route, queryParams: params}).toString());
+    this.location.go(
+      this.router
+        .createUrlTree([], { relativeTo: this.route, queryParams: params })
+        .toString()
+    );
   }
 
   public onSubmit() {
@@ -135,22 +175,37 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   public canAccessComments(project: ProjectResponse): boolean {
-    const userCanView = this.user.isMinistry || this.user.isAuthorizedForClientId(project.forestClient.id);
-    return userCanView && (project.workflowState['code'] !== 'INITIAL'
-                          && project.workflowState['code'] !== 'PUBLISHED');
+    const userCanView =
+      this.user.isMinistry ||
+      this.user.isAuthorizedForClientId(project.forestClient.id);
+    return (
+      userCanView &&
+      project.workflowState["code"] !== "INITIAL" &&
+      project.workflowState["code"] !== "PUBLISHED"
+    );
   }
 
   public canEditFOM(project: ProjectResponse): boolean {
-    const userCanEdit = this.user.isAuthorizedForClientId(project.forestClient.id);
-    return userCanEdit && (project.workflowState.code !== WorkflowStateEnum.Published
-      && project.workflowState.code !== WorkflowStateEnum.Finalized
-      && project.workflowState.code !== WorkflowStateEnum.Expired);
+    const userCanEdit = this.user.isAuthorizedForClientId(
+      project.forestClient.id
+    );
+    return (
+      userCanEdit &&
+      project.workflowState.code !== WorkflowStateEnum.Published &&
+      project.workflowState.code !== WorkflowStateEnum.Finalized &&
+      project.workflowState.code !== WorkflowStateEnum.Expired
+    );
   }
 
   public canViewSubmission(project: ProjectResponse): boolean {
-    const userCanView = this.user.isAuthorizedForClientId(project.forestClient.id);
-    return userCanView && (project.workflowState.code === WorkflowStateEnum.Initial
-      || project.workflowState.code === WorkflowStateEnum.CommentClosed);
+    const userCanView = this.user.isAuthorizedForClientId(
+      project.forestClient.id
+    );
+    return (
+      userCanView &&
+      (project.workflowState.code === WorkflowStateEnum.Initial ||
+        project.workflowState.code === WorkflowStateEnum.CommentClosed)
+    );
   }
 
   ngOnDestroy() {
