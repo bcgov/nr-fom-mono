@@ -1,10 +1,9 @@
-# RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/nodejs-16 as builder
+# Build container
+FROM node:alpine3.16 AS build
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
-USER root
 RUN cd libs && \
     npm ci && \
     cd ../public && \
@@ -12,33 +11,20 @@ RUN cd libs && \
     npm run build:public && \
     rm -rf node_modules
 
-# Deployment container
-# FROM registry.access.redhat.com/ubi8/ubi-micro
-FROM caddy:2
+# Deploy container
+FROM caddy:2.4.6-alpine
 
 # Vars - configured for local development
 ENV FOM_ENV=dev
 
-# Node packages and dependencies
-COPY --from=builder /usr/bin/node /usr/bin/
-COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlienc.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libcrypto.so.1.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libssl.so.1.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libstdc++.so.6 /usr/lib64/
-COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
-
 # Copy over app
 WORKDIR /app
-COPY --from=builder /app/public/dist ./dist
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/public/Caddyfile .
+COPY --from=build /app/public/Caddyfile /etc/caddy/Caddyfile
+COPY --from=build /app/public/dist /srv
 
-# Expose port - mostly a convention, for readability
+# Port and health check
 EXPOSE 4300
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost/:4300
 
-# Start up command
-USER 1001 
-ENTRYPOINT ["caddy", "run"]
+# User
+USER 1001
