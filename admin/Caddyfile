@@ -3,35 +3,35 @@
 #        Then access local frontend app: http://localhost:4300/admin/
 
 :4200 {
-    redir /admin /admin/
+	redir /admin /admin/
 
-    log {
-        level ERROR
-        format json
-        output stdout
-    }
+	log {
+		level ERROR
+		format json
+		output stdout
+	}
 
-    # Good practice to compress responses.
-    encode zstd gzip
+	# Good practice to compress responses.
+	encode zstd gzip
 
-    # If 'root' directive is used, it has to be before other directives such as 'try_files'.
-    root ./dist/admin
+	# If 'root' directive is used, it has to be before other directives such as 'try_files'.
+	root * /dist
 
-    header {
-        # allow caching for 5 minutes, for refreshing after deployments.
-        Cache-Control "public, max-age=300"
+	header {
+		# allow caching for 5 minutes, for refreshing after deployments.
+		Cache-Control "admin, max-age=300"
 
-        # Multi-lines for header's Content-Security-Policy won't work, it has to be enclosed in double quote as one line.
-        Content-Security-Policy "connect-src 'self' https://*.gov.bc.ca http://*.gov.bc.ca;form-action 'self';img-src 'self' https://server.arcgisonline.com data: https://services.arcgisonline.com data: https://maps.gov.bc.ca;frame-src 'self' https://*.gov.bc.ca;default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';object-src 'none';script-src 'self';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
-        
-        # For connect-src (Content-Security-Policy): add "*" if testing locally, will also need to bypass CORS in the API.
-        # For frame-src (Content-Security-Policy): gov.bc.ca is for keycloak.
-    }
+		# Multi-lines for header's Content-Security-Policy won't work, it has to be enclosed in double quote as one line.
+		Content-Security-Policy "connect-src 'self' https://*.gov.bc.ca http://*.gov.bc.ca;form-action 'self';img-src 'self' https://server.arcgisonline.com data: https://services.arcgisonline.com data: https://maps.gov.bc.ca;frame-src 'self' https://*.gov.bc.ca;default-src 'self';base-uri 'self';block-all-mixed-content;font-src 'self' https: data:;frame-ancestors 'self';object-src 'none';script-src 'self';style-src 'self' https: 'unsafe-inline';upgrade-insecure-requests;"
 
-   # 'handle_path' does the match of the path and stripping the matched prefix out.
-    handle_path /admin/* {
-        try_files {path} {path}/ {file} /index.html
-    }
+		# For connect-src (Content-Security-Policy): add "*" if testing locally, will also need to bypass CORS in the API.
+		# For frame-src (Content-Security-Policy): gov.bc.ca is for keycloak.
+	}
 
-    file_server
+	# 'handle_path' does the match of the path and stripping the matched prefix out.
+	handle_path /admin/* {
+		try_files {path} {path}/ {file} /index.html
+	}
+
+	file_server
 }
