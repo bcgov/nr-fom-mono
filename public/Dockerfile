@@ -11,12 +11,9 @@ ARG build_dir
 WORKDIR /app
 COPY ./libs ./libs
 COPY ./${build_dir} ./${build_dir}
-RUN cd libs && \
-    npm ci && \
-    cd ../${build_dir} && \
-    npm ci && \
-    npm run build:${build_dir} && \
-    rm -rf node_modules ../libs/node_modules
+RUN pushd libs && npm ci && popd && \
+    pushd ${build_dir} && npm ci && npm run build:${build_dir} && popd && \
+    rm -rf libs/node_modules ${build_dir}/node_modules
 
 
 # Deploy container
