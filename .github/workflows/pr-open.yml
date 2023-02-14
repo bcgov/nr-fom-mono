@@ -8,7 +8,7 @@ env:
   NAME: fom
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: pr-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -30,12 +30,12 @@ jobs:
             Thanks for the PR!
 
             Any successful deployments (not always required) will be available below.
-            [api](https://${{ env.NAME }}-${{ github.event.number }}.${ env.DOMAIN }/api)
-            [admin](https://${{ env.NAME }}-${{ github.event.number }}.${ env.DOMAIN }/admin)
-            [public](https://${{ env.NAME }}-${{ github.event.number }}.${ env.DOMAIN }/public)
+             - [api](https://${{ env.NAME }}-${{ github.event.number }}.${{ env.DOMAIN }}/api)
+             - [admin](https://${{ env.NAME }}-${{ github.event.number }}.${{ env.DOMAIN }}/admin)
+             - [public](https://${{ env.NAME }}-${{ github.event.number }}.${{ env.DOMAIN }}/public)
 
             Once merged, code will be promoted and handed off to following workflow run.
-            [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+             - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
   builds:
     name: Builds
@@ -47,18 +47,26 @@ jobs:
         package: [admin, api, db, public]
         include:
           - package: admin
+            build_context: ./
+            build_file: admin/Dockerfile
             triggers: ('admin/', 'libs/')
           - package: api
+            build_context: ./
+            build_file: api/Dockerfile
             triggers: ('api/')
           - package: db
             triggers: ('db')
           - package: public
+            build_context: ./
+            build_file: public/Dockerfile
             triggers: ('public/', 'libs/')
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.0.0
+      - uses: bcgov-nr/action-builder-ghcr@main
         with:
           package: ${{ matrix.package }}
+          build_context: ${{ matrix.build_context }}
+          build_file: ${{ matrix.build_file }}
           tag: ${{ github.event.number }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,9 +74,6 @@ jobs:
 
   tests-api:
     name: API Unit Tests
-    needs:
-      - check-api
-    if: needs.check-api.outputs.build == 'true'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
