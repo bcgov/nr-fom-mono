@@ -94,7 +94,7 @@ jobs:
 
       # Backend container scan
       - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.3.0
+        uses: aquasecurity/trivy-action@0.9.1
         with:
           image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-api
           ignore-unfixed: true
@@ -117,7 +117,7 @@ jobs:
 
       # Backend container scan
       - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.3.0
+        uses: aquasecurity/trivy-action@0.9.1
         with:
           image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-admin
           ignore-unfixed: true
@@ -135,7 +135,7 @@ jobs:
 
       # Backend container scan
       - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.3.0
+        uses: aquasecurity/trivy-action@0.9.1
         with:
           image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-public
           ignore-unfixed: true
@@ -157,7 +157,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.3.0
+        uses: aquasecurity/trivy-action@0.9.1
         with:
           scan-type: "fs"
           ignore-unfixed: true
@@ -180,7 +180,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Trivy Vulnerability Scan
-        uses: aquasecurity/trivy-action@0.3.0
+        uses: aquasecurity/trivy-action@0.9.1
         with:
           image-ref: registry.access.redhat.com/ubi8/nodejs-14
           ignore-unfixed: true
