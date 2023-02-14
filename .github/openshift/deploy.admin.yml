@@ -112,8 +112,6 @@ objects:
               imagePullPolicy: Always
               name: ${NAME}
               env:
-                - name: FOM_ENV
-                  value: dev
                 - name: API_BASE_URL
                   value: fom-${ZONE}-api
                 - name: fom_api_base_url

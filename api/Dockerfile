@@ -6,8 +6,9 @@ WORKDIR /app
 COPY . ./
 USER root
 RUN dnf install -y ca-certificates && \
-    pushd libs && npm ci && popd && \
+    cd libs && npm ci && cd .. && \
     cd api && npm ci && npm run build:api
+
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
