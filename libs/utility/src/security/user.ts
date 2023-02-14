@@ -62,19 +62,19 @@ export class User {
             const FOM_REVIEWER_ROLE = 'FOM_REVIEWER';
             const FOM_SUBMITTER_ROLE = 'FOM_SUBMITTER';
             roles.forEach(role => {
-			if (role == FOM_REVIEWER_ROLE) {
-				user.isMinistry = true;
-			}
-			if (role.startsWith(FOM_SUBMITTER_ROLE)) {
-				user.isForestClient = true;
-                const clientStartIndex = `${FOM_SUBMITTER_ROLE}_`.length;
-				if (role.length > clientStartIndex) {
-				const clientId = role.substring(clientStartIndex);
-				user.clientIds.push(clientId);
-				}
-			}
-			});
-		}
+                if (role == FOM_REVIEWER_ROLE) {
+                    user.isMinistry = true;
+                }
+                if (role.startsWith(FOM_SUBMITTER_ROLE)) {
+                    user.isForestClient = true;
+                    const clientStartIndex = `${FOM_SUBMITTER_ROLE}_`.length;
+                    if (role.length > clientStartIndex) {
+                        const clientId = role.substring(clientStartIndex);
+                        user.clientIds.push(clientId);
+                    }
+                }
+		        });
+		    }
         return user;
     }
-  }
+}

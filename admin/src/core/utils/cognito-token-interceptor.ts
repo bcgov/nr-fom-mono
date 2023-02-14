@@ -76,7 +76,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
    */
   private addAuthHeader(request: HttpRequest<any>): HttpRequest<any> {
     const authToken: string = this.cognitoAuth.getToken()
-      ? this.cognitoAuth.getToken()["access_token"] || ""
+      ? this.cognitoAuth.getToken()|| ""
       : "";
 
     request = request.clone({

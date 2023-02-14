@@ -22,7 +22,7 @@ export class CognitoService {
     signUpVerificationMethod: "",
     frontendRedirectBaseUrl: "",
   };
-  private cognitoAuthToken: object;
+  private cognitoAuthToken: any;
   private loggedOut: string;
   private fakeUser: User;
   public initialized: boolean = false;
@@ -46,15 +46,15 @@ export class CognitoService {
   /**
    * See OIDC Attribute Mapping mapping reference:
    *      https://github.com/bcgov/nr-forests-access-management/wiki/OIDC-Attribute-Mapping
-   * Note, current user data return for 'userData.username' is matched to "cognito:username" on Cognito.
-   * Which isn't what we really want to display. The display username is "custom:idp_username" from token.
+   * The display username is "custom:idp_username" from token.
    */
-  private parseToken(authToken: CognitoUserSession): object {
+  private parseToken(authToken: CognitoUserSession): any {
     const decodedIdToken = authToken.getIdToken().decodePayload();
     const decodedAccessToken = authToken.getAccessToken().decodePayload();
     return {
       id_token: decodedIdToken,
       access_token: decodedAccessToken,
+      authToken: authToken
     };
   }
 
@@ -190,9 +190,9 @@ export class CognitoService {
     return user;
   }
 
-  public getToken(): object | undefined {
+  public getToken(): any {
     if (!this.config.enabled) {
-      return { id_token: {}, accessToken: {} };
+      return JSON.stringify(this.fakeUser);
     }
     return this.cognitoAuthToken;
   }

@@ -153,6 +153,15 @@ export class AuthService {
        return this.awsConfig;
     }
 
+    // Temporary, to return config based on auth_provider.
+    // Remove/Change this when later Keycloak is not used.
+    getConfig(): any {
+        if (AUTH_PROVIDER.KEYCLOAK === this.providedAuth) {
+            return this.getKeycloakConfig();
+        }
+        return this.getAwsCognitoConfig();
+    }
+
     async verifyToken(authHeader: string):Promise<User> {
         const bearer = 'Bearer ';
         if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
@@ -160,7 +169,8 @@ export class AuthService {
         }
         const tokenStartIndex = bearer.length;
         const token = authHeader.substr(tokenStartIndex);
-        if (!this.config.enabled) {
+        const config = this.getConfig()
+        if (!config.enabled) {
           const user = User.convertJsonToUser(token);  // TODO: verify this if needs to be changed.
           return Promise.resolve(user);
         }
@@ -184,7 +194,7 @@ export class AuthService {
             return User.convertAwsCognitoJwtToUser(decodedToken);
           }
         } catch (err) {
-          this.logger.warn("Invalid token %o", err);
+          this.logger.warn("Invalid token: %o", err);
           return Promise.reject(new ForbiddenException());
         }
     }
