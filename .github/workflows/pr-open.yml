@@ -37,381 +37,32 @@ jobs:
             Once merged, code will be promoted and handed off to following workflow run.
             [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-  check-db:
-    name: Check Database
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('db/')
-      TARGET: db
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  check-api:
-    name: Check API
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('api/' 'libs/' '.github/openshift/deploy.api.yml')
-      TARGET: api
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  check-admin:
-    name: Check Admin
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('admin/' 'libs/' '.github/openshift/deploy.admin.yml')
-      TARGET: admin
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  check-public:
-    name: Check Public
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('public/' 'libs/' '.github/openshift/deploy.public.yml')
-      TARGET: public
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  build-db:
-    name: Database Image Build
-    needs:
-      - check-db
-    if: needs.check-db.outputs.build == 'true'
+  builds:
+    name: Builds
     runs-on: ubuntu-22.04
     permissions:
-      contents: read
       packages: write
+    strategy:
+      matrix:
+        package: [admin, api, db, public]
+        include:
+          - package: admin
+            triggers: ('admin/', 'libs/')
+          - package: api
+            triggers: ('api/')
+          - package: db
+            triggers: ('db')
+          - package: public
+            triggers: ('public/', 'libs/')
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
+      - uses: actions/checkout@v3
+      - uses: bcgov-nr/action-builder-ghcr@v1.0.0
         with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push API Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: db/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-db
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-db || true
-
-  build-api:
-    name: API Image Build
-    needs:
-      - check-api
-    if: needs.check-api.outputs.build == 'true'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push API Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: api/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-api
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-api || true
-
-  build-public:
-    name: Public Image Build
-    needs:
-      - check-public
-    if: needs.check-public.outputs.build == 'true'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push Public Frontend Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: public/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-public
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-public || true
-
-  build-admin:
-    name: Admin Image Build
-    needs:
-      - check-admin
-    if: needs.check-admin.outputs.build == 'true'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push Admin Frontend Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: admin/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-admin
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-admin || true
+          package: ${{ matrix.package }}
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
 
   tests-api:
     name: API Unit Tests
@@ -460,15 +111,8 @@ jobs:
   sonarcloud:
     name: Static Analysis
     needs:
-      - build-db
-      - build-api
-      - build-admin
-      - build-public
+      - builds
       - tests-api
-    if:
-      # Always check for no failures at at least one successful build
-      always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
-      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
@@ -502,15 +146,8 @@ jobs:
     name: DEV Deployment
     timeout-minutes: 10
     needs:
-      - build-db
-      - build-api
-      - build-admin
-      - build-public
+      - builds
       - tests-api
-    if:
-      # Always check for no failures at at least one successful build
-      always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
-      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
     runs-on: ubuntu-22.04
     env:
       IMG: ${{ github.repository }}:${{ github.event.number }}
