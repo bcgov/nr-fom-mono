@@ -292,7 +292,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.4.0
         with:
           target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/api
           cmd_options: "-a"
@@ -309,7 +309,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.4.0
         with:
           target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/admin
           cmd_options: "-a"
@@ -326,7 +326,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.3.0
+        uses: zaproxy/action-full-scan@v0.4.0
         with:
           target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/public
           cmd_options: "-a"
