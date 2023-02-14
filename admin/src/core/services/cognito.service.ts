@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 import { Amplify, Auth } from "aws-amplify";
-import { AwsCognitoConfig } from "@api-client";
+import { AwsCognitoConfig, KeycloakConfig } from "@api-client";
 import { User } from "@utility/security/user";
 import { ConfigService } from "@utility/services/config.service";
 import { getFakeUser } from "./mock-user";
@@ -22,7 +22,14 @@ export class CognitoService {
     signUpVerificationMethod: "",
     frontendRedirectBaseUrl: "",
   };
-  private cognitoAuthToken: any;
+  private keyclaokConfig: KeycloakConfig = {
+    url: "",
+    siteMinderUrl: "",
+    realm: "",
+    clientId: "",
+    enabled: false,
+  };
+  private cognitoAuthToken: object;
   private loggedOut: string;
   private fakeUser: User;
   public initialized: boolean = false;
@@ -71,6 +78,13 @@ export class CognitoService {
       .get(url, { observe: "body", responseType: "json" })
       .toPromise();
     this.config = data as AwsCognitoConfig;
+
+    let keycloakUrl: string =
+      this.configService.getApiBasePath() + "/api/keycloakConfig";
+    let keycloakData = await this.http
+      .get(keycloakUrl, { observe: "body", responseType: "json" })
+      .toPromise();
+    this.keyclaokConfig = keycloakData as KeycloakConfig;
 
     const parsedConfig = {
       aws_cognito_region: this.config.region,
@@ -202,13 +216,27 @@ export class CognitoService {
       window.location.origin + "/admin/not-authorized?loggedout=true";
 
     if (!this.config.enabled) {
-      // Not using keycloak.
+      // Not using cognito.
       return postLogoutUrl;
     }
 
-    return (
+    const cognitoLogoutUrl =
       `${this.config.domain}.auth.${this.config.region}.amazoncognito.com/` +
-      `logout?client_id=${this.config.userPoolWebClientId}&logout_uri=${postLogoutUrl}`
-    );
+      `logout?client_id=${this.config.userPoolWebClientId}&logout_uri=` +
+      postLogoutUrl;
+
+    const keycloakLogoutUrl =
+      this.keyclaokConfig.url +
+      "/realms/" +
+      this.keyclaokConfig.realm +
+      "/protocol/openid-connect/logout?post_logout_redirect_uri=" +
+      cognitoLogoutUrl;
+
+    const siteMinderLogoutUrl =
+      this.keyclaokConfig.siteMinderUrl +
+      "/clp-cgi/logoff.cgi?retnow=1&returl=" +
+      keycloakLogoutUrl;
+
+    return siteMinderLogoutUrl;
   }
 }
