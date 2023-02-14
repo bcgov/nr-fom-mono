@@ -1,14 +1,13 @@
 # RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 AS builder
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
 COPY . ./
 USER root
 RUN dnf install -y ca-certificates && \
-    cd libs && npm ci && \
-    cd ../api && npm ci && \
-    npm run build:api
+    pushd libs && npm ci && popd && \
+    cd api && npm ci && npm run build:api
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
