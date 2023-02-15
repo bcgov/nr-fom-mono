@@ -4,8 +4,10 @@ on:
   pull_request:
 
 env:
-  REGISTRY: ghcr.io
   NAME: fom
+  ZONE: ${{ github.event.number }}
+  IMG: ghcr.io/${{ github.repository }}
+  BASE_URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
 
 concurrency:
   group: pr-${{ github.ref }}
@@ -147,12 +149,131 @@ jobs:
             -Dsonar.project.monorepo.enabled=true
             -Dsonar.projectKey=nr-fom
 
-  deploy-dev:
-    name: DEV Deployment
-    timeout-minutes: 10
+  deploy-init-database:
+    name: Deploy Init for Database
     needs:
       - builds
       - tests-api
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: .github/openshift/init.database.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          penetration_test: false
+          parameters: -p ZONE=${{ env.ZONE }}
+
+  deploy-init-api:
+    name: Deploy Init for API
+    needs:
+      - builds
+      - tests-api
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: .github/openshift/init.api.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          penetration_test: false
+          parameters: -p ZONE=${{ env.ZONE }}
+
+  deploy-database:
+    name: Deploy Database
+    needs:
+      - builds
+      - tests-api
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: .github/openshift/deploy.database.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: false
+          penetration_test: false
+          parameters: -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/db:${{ env.ZONE }}
+
+  deploy-api:
+    name: Deploy API
+    needs:
+      - builds
+      - tests-api
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: .github/openshift/deploy.api.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/api:${{ env.ZONE }}
+            -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
+            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
+            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true
+            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth"
+
+  deploy-admin:
+    name: Deploy Admin
+    needs:
+      - builds
+      - tests-api
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: .github/openshift/deploy.admin.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/admin:${{ env.ZONE }}
+            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
+
+  deploy-public:
+    name: Deploy Public
+    needs:
+      - builds
+      - tests-api
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: .github/openshift/deploy.public.yml
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: true
+          penetration_test: false
+          parameters:
+            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/public:${{ env.ZONE }}
+            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
+
+  keycloak:
+    name: Add KeyCroak Redirect URL for Admin
+    timeout-minutes: 10
+    needs:
+      - deploy-admin
+      - deploy-api
+      - deploy-database
+      - deploy-public
     runs-on: ubuntu-22.04
     env:
       IMG: ${{ github.repository }}:${{ github.event.number }}
@@ -160,56 +281,7 @@ jobs:
       ZONE: ${{ github.event.number }}
     steps:
       - uses: actions/checkout@v3
-      - name: Deploy
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Init database secret, only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "Database secret already initialized"
-
-          # Init database backups cronjob, only if necessary
-          oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
-            -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            | oc create -f - || \
-            echo "Database backup cronjob already initialized"
-
-          # Init API data encryption key, only if necessary
-          oc process -f .github/openshift/init.api.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "API secret already initialized"
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
-            | oc create -f - || \
-            echo "Database already deployed"
-
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=1 \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=1 \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=1 \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-db -w
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-api -w
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-public -w
-
-      - name: Add KeyCroak Redirect URL for Admin
-        uses: bcgov/nr-keycloak-redirect@main
+      - uses: bcgov/nr-keycloak-redirect@main
         id: add-keycroak
         with:
           add_delete: "add"
@@ -219,22 +291,3 @@ jobs:
           clientid_2: "fom"
           realm: ${{ secrets.KC_REALM }}
           host: ${{ secrets.KC_HOST }}
-
-      - name: Deployment Verification
-        env:
-          LINKS: (
-            '${{ env.URL }}/api/district'
-            '${{ env.URL }}/admin/'
-            '${{ env.URL }}/public/'
-            )
-        run: |
-          LINKS=${{ env.LINKS }}
-          for l in "${LINKS[@]}"; do
-              if [ $(curl -L --max-redirs 5 -s -o /dev/null -w "%{http_code}" "${l}") -ne 200 ]
-              then
-                  echo "Status != 200 for ${l}"
-                  exit 1
-              fi
-          done
-
-          echo "Deployment verification successful"
