@@ -1,7 +1,7 @@
 {
     "enabled": false,
     "region": "ca-central-1",
-    "userPoolsId": "ca-central-1_5BOn4rGL8",
+    "userPoolsId": "ca-central-1_yds9Vci8g",
     "userPoolWebClientId": "6c9ieu27ik29mq75jeb7rrbdls",
     "federationTarget": "COGNITO_USER_POOLS",
     "domain": "dev-fam-user-pool-domain",
