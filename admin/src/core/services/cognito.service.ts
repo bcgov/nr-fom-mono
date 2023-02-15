@@ -61,7 +61,7 @@ export class CognitoService {
     return {
       id_token: decodedIdToken,
       access_token: decodedAccessToken,
-      authToken: authToken
+      jwtToken: authToken
     };
   }
 
@@ -238,5 +238,9 @@ export class CognitoService {
       keycloakLogoutUrl;
 
     return siteMinderLogoutUrl;
+  }
+
+  public getConfig() {
+    return this.config;
   }
 }

@@ -75,9 +75,11 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
    * @memberof TokenInterceptor
    */
   private addAuthHeader(request: HttpRequest<any>): HttpRequest<any> {
-    const authToken: string = this.cognitoAuth.getToken()
-      ? this.cognitoAuth.getToken()|| ""
-      : "";
+    let authToken: any = this.cognitoAuth.getToken();
+
+    if (this.cognitoAuth.getConfig().enabled) {
+      authToken = JSON.stringify(authToken['jwtToken']);
+    }
 
     request = request.clone({
       setHeaders: { Authorization: "Bearer " + authToken },
