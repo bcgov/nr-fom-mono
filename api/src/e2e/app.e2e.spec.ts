@@ -9,7 +9,7 @@ import { SpatialFeatureBcgwResponse } from '../app/modules/spatial-feature/spati
 import { KeycloakConfig } from '../core/security/auth.service';
 import { createFakeForestryUser, createFakeMinistryUser } from '../core/security/mock-user.factory';
 
-process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
+process.env.SECURITY_ENABLED="false"; // Necessary in order for authentication to succeed.
 
 const httpGetFunction = (app) => async ( user: User, args: string ) => {
   if (user == null) {

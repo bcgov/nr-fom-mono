@@ -105,7 +105,7 @@ export class AuthService {
         // TODO: this part when it is working for aws, can refactor or retire keycloak.
         if (AUTH_PROVIDER.KEYCLOAK === this.providedAuth) {
             // Defaults are for local development. Keycloak enabled by default for maximum security.
-            this.keyCloakconfig.enabled = (process.env.KEYCLOAK_ENABLED || 'true') === 'true';
+            this.keyCloakconfig.enabled = (process.env.SECURITY_ENABLED || 'true') === 'true';
             this.keyCloakconfig.realm = process.env.KEYCLOAK_REALM || 'ichqx89w';
             this.keyCloakconfig.url = process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth';
             this.keyCloakconfig.siteMinderUrl = process.env.SITEMINDER_URL || 'https://logontest7.gov.bc.ca';
@@ -122,6 +122,7 @@ export class AuthService {
         }
         else {
             this.awsConfig = Object.assign(new AwsCognitoConfig(), aswCognitoEnvJson);
+            this.awsConfig.enabled = (process.env.SECURITY_ENABLED || 'true') === 'true';
             console.log(this.awsConfig)
             const jwksUri = `https://cognito-idp.${this.awsConfig.region}.amazonaws.com/${this.awsConfig.userPoolsId}/.well-known/jwks.json`;
             console.log("jwksUri", jwksUri);

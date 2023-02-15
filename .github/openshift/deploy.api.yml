@@ -152,7 +152,7 @@ objects:
                   value: ${URL}
                 - name: PORT
                   value: "${PORT}"
-                - name: KEYCLOAK_ENABLED
+                - name: SECURITY_ENABLED
                   value: "true"
                 - name: KEYCLOAK_URL
                   value: ${KEYCLOAK_URL}
