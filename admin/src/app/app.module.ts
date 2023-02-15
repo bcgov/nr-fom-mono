@@ -38,7 +38,7 @@ import { RxReactiveFormsModule } from "@rxweb/reactive-form-validators";
 //   return () => keycloakService.init();
 // }
 
-export function cogFactory(cognitoService: CognitoService) {
+export function cognitoFactory(cognitoService: CognitoService) {
   return () => cognitoService.init();
 }
 
@@ -74,7 +74,7 @@ const apiConfig = new Configuration({
     CognitoService,
     {
       provide: APP_INITIALIZER,
-      useFactory: cogFactory,
+      useFactory: cognitoFactory,
       deps: [CognitoService],
       multi: true,
     },

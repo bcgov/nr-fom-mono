@@ -65,12 +65,18 @@ export class CognitoService {
     };
   }
 
+  /*
+      See Aws-Amplify documenation for intgration: 
+      https://docs.amplify.aws/lib/auth/social/q/platform/js/
+      https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
+  */
   public async init(): Promise<any> {
-    /*
-        See Aws-Amplify documenation: 
-        https://docs.amplify.aws/lib/auth/social/q/platform/js/
-        https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
-    */
+
+    this.loggedOut = this.getParameterByName("loggedout");
+    if (this.loggedOut === "true") {
+      this.initialized = false;
+      return null;
+    }
 
     let url: string =
       this.configService.getApiBasePath() + "/api/awsCognitoConfig";
@@ -104,8 +110,6 @@ export class CognitoService {
     console.log("Using cognito config = " + JSON.stringify(this.config));
     Amplify.configure(parsedConfig);
 
-    this.loggedOut = this.getParameterByName("loggedout");
-
     if (!this.config.enabled) {
       this.fakeUser = getFakeUser();
       this.initialized = true;
@@ -124,6 +128,7 @@ export class CognitoService {
             } else {
               await this.refreshToken();
             }
+            this.initialized = true;
             resolve(null);
           })
           .catch(async (error) => {
@@ -132,7 +137,6 @@ export class CognitoService {
             resolve(null);
           });
       }
-      this.initialized = true;
     });
   }
 
@@ -186,8 +190,12 @@ export class CognitoService {
   }
 
   public async logout() {
+    console.log("User logging out.");
+    if (!this.config.enabled) {
+      this.fakeUser = null;
+      return;
+    }
     await Auth.signOut();
-    console.log("User logged out.");
   }
 
   public getUser() {
