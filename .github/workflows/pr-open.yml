@@ -3,193 +3,138 @@ name: Pull Request Open
 on:
   pull_request:
 
-env:
-  NAME: fom
-  ZONE: ${{ github.event.number }}
-  IMG: ghcr.io/${{ github.repository }}
-  BASE_URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
-
 concurrency:
   group: pr-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  # pr-greeting:
-  #   name: PR Greeting
-  #   env:
-  #     DOMAIN: apps.silver.devops.gov.bc.ca
-  #     PREFIX: ${{ github.event.repository.name }}-${{ github.event.number }}
-  #   runs-on: ubuntu-22.04
-  #   permissions:
-  #     pull-requests: write
-  #   steps:
-  #     - name: PR Greeting
-  #       uses: bcgov-nr/action-pr-description-add@v0.0.2
-  #       with:
-  #         github_token: ${{ secrets.GITHUB_TOKEN }}
-  #         add_markdown: |
-  #           ---
-  #           Thanks for the PR!
-
-  #           Any successful deployments (not always required) will be available below.
-  #            - [api](https://${{ env.NAME }}-${{ github.event.number }}.${{ env.DOMAIN }}/api)
-  #            - [admin](https://${{ env.NAME }}-${{ github.event.number }}.${{ env.DOMAIN }}/admin)
-  #            - [public](https://${{ env.NAME }}-${{ github.event.number }}.${{ env.DOMAIN }}/public)
-
-  #           Once merged, code will be promoted and handed off to following workflow run.
-  #            - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-
-  # builds:
-  #   name: Builds
-  #   runs-on: ubuntu-22.04
-  #   permissions:
-  #     packages: write
-  #   strategy:
-  #     matrix:
-  #       package: [admin, api, db, public]
-  #       include:
-  #         - package: admin
-  #           build_context: ./
-  #           build_file: admin/Dockerfile
-  #           triggers: ('admin/', 'libs/')
-  #         - package: api
-  #           build_context: ./
-  #           build_file: api/Dockerfile
-  #           triggers: ('api/')
-  #         - package: db
-  #           triggers: ('db')
-  #         - package: public
-  #           build_context: ./
-  #           build_file: public/Dockerfile
-  #           triggers: ('public/', 'libs/')
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: bcgov-nr/action-builder-ghcr@main
-  #       with:
-  #         package: ${{ matrix.package }}
-  #         build_context: ${{ matrix.build_context }}
-  #         build_file: ${{ matrix.build_file }}
-  #         tag: ${{ github.event.number }}
-  #         tag_fallback: test
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         triggers: ${{ matrix.triggers }}
-
-  deploy-init:
-    name: Deploy Init
-    # needs:
-    #   - builds
+  pr-greeting:
+    name: PR Greeting
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
     runs-on: ubuntu-22.04
     timeout-minutes: 10
+    permissions:
+      pull-requests: write
+    steps:
+      - name: PR Greeting
+        uses: bcgov-nr/action-pr-description-add@v0.0.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          add_markdown: |
+            ---
+            Thanks for the PR!
+
+            Any successful deployments (not always required) will be available below.
+             - [api](https://fom-${{ github.event.number }}.${{ env.DOMAIN }}/api)
+             - [admin](https://fom-${{ github.event.number }}.${{ env.DOMAIN }}/admin)
+             - [public](https://fom-${{ github.event.number }}.${{ env.DOMAIN }}/public)
+
+            Once merged, code will be promoted and handed off to following workflow run.
+             - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+  builds:
+    name: Builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [admin, api, db, public]
+        include:
+          - package: admin
+            build_context: ./
+            build_file: admin/Dockerfile
+            triggers: ('admin/', 'libs/')
+          - package: api
+            build_context: ./
+            build_file: api/Dockerfile
+            triggers: ('api/', 'libs/')
+          - package: db
+            triggers: ('db')
+          - package: public
+            build_context: ./
+            build_file: public/Dockerfile
+            triggers: ('public/', 'libs/')
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bcgov-nr/action-builder-ghcr@main
+        with:
+          package: ${{ matrix.package }}
+          build_context: ${{ matrix.build_context }}
+          build_file: ${{ matrix.build_file }}
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
+
+  # This is a workaround, because matrix parameters can use outputs, but not vars
+  vars:
+    name: Vars
+    runs-on: ubuntu-22.04
+    outputs:
+      url: ${{ steps.vars.outputs.url }}
+    steps:
+      - id: vars
+        run: echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+
+  deploys:
+    name: Deploys
+    needs: [vars, builds]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        name: [api, admin, db, init, public]
+        include:
+          - name: api
+            file: api/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p URL=${{ needs.vars.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+              -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca -p SITEMINDER_URL="https://logontest7.gov.bc.ca"
+              -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true
+          - name: admin
+            file: admin/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=${{ needs.vars.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+          - name: db
+            file: db/openshift.deploy.yml
+            overwrite: false
+          - name: init
+            file: libs/openshift.init.yml
+            overwrite: false
+          - name: public
+            file: public/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=${{ needs.vars.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
-          file: libs/openshift.init.yml
+          file: ${{ matrix.file }}
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          penetration_test: false
-          parameters: -p ZONE=${{ env.ZONE }}
-
-  deploy-database:
-    name: Deploy Database
-    # needs:
-    #   - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: db/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          penetration_test: false
-          parameters: -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/db:${{ env.ZONE }}
-
-  deploy-api:
-    name: Deploy API
-    # needs:
-    #   - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: api/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/api:${{ env.ZONE }}
-            -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
-            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth"
-
-  deploy-admin:
-    name: Deploy Admin
-    # needs:
-    #   - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: admin/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
+          overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/admin:${{ env.ZONE }}
-            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
+            -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
 
-  deploy-public:
-    name: Deploy Public
-    # needs:
-    #   - builds
+  keycloak:
+    name: Add KeyCroak Redirect URL for Admin
+    needs: [deploys]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+      - uses: actions/checkout@v3
+      - uses: bcgov/nr-keycloak-redirect@main
+        id: add-keycroak
         with:
-          file: public/openshift.deploy.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/public:${{ env.ZONE }}
-            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
-
-  # keycloak:
-  #   name: Add KeyCroak Redirect URL for Admin
-  #   timeout-minutes: 10
-  #   needs:
-  #     - deploy-admin
-  #     - deploy-api
-  #     - deploy-database
-  #     - deploy-public
-  #   runs-on: ubuntu-22.04
-  #   env:
-  #     IMG: ${{ github.repository }}:${{ github.event.number }}
-  #     URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
-  #     ZONE: ${{ github.event.number }}
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: bcgov/nr-keycloak-redirect@main
-  #       id: add-keycroak
-  #       with:
-  #         add_delete: "add"
-  #         redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
-  #         secret: ${{ secrets.KC_SECRET }}
-  #         clientid: ${{ secrets.KC_CLIENTID }}
-  #         clientid_2: "fom"
-  #         realm: ${{ secrets.KC_REALM }}
-  #         host: ${{ secrets.KC_HOST }}
+          add_delete: "add"
+          redirect: https://fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+          secret: ${{ secrets.KC_SECRET }}
+          clientid: ${{ secrets.KC_CLIENTID }}
+          clientid_2: "fom"
+          realm: ${{ secrets.KC_REALM }}
+          host: ${{ secrets.KC_HOST }}
