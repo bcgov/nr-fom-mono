@@ -11,13 +11,7 @@ import type { CognitoUserSession } from "amazon-cognito-identity-js";
 @Injectable()
 export class CognitoService {
   private awsCognitoConfig: AwsCognitoConfig;
-  private keyclaokConfig: KeycloakConfig = {
-    url: "",
-    siteMinderUrl: "",
-    realm: "",
-    clientId: "",
-    enabled: false,
-  };
+  private keycloakConfig: KeycloakConfig;
   private cognitoAuthToken: object;
   private loggedOut: string;
   private fakeUser: User;
@@ -69,17 +63,15 @@ export class CognitoService {
 
     let url: string =
       this.configService.getApiBasePath() + "/api/awsCognitoConfig";
-    let data = await this.http
+    this.awsCognitoConfig = await this.http
       .get(url, { observe: "body", responseType: "json" })
-      .toPromise();
-    this.awsCognitoConfig = data as AwsCognitoConfig;
+      .toPromise() as AwsCognitoConfig;
 
     let keycloakUrl: string =
       this.configService.getApiBasePath() + "/api/keycloakConfig";
-    let keycloakData = await this.http
+    this.keycloakConfig = await this.http
       .get(keycloakUrl, { observe: "body", responseType: "json" })
-      .toPromise();
-    this.keyclaokConfig = keycloakData as KeycloakConfig;
+      .toPromise() as KeycloakConfig;
 
     console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
     Amplify.configure(this.awsCognitoConfig);
@@ -210,14 +202,14 @@ export class CognitoService {
       `&logout_uri=${postLogoutUrl}`;
 
     const keycloakLogoutUrl =
-      this.keyclaokConfig.url +
+      this.keycloakConfig.url +
       "/realms/" +
-      this.keyclaokConfig.realm +
+      this.keycloakConfig.realm +
       "/protocol/openid-connect/logout?post_logout_redirect_uri=" +
       cognitoLogoutUrl;
 
     const siteMinderLogoutUrl =
-      this.keyclaokConfig.siteMinderUrl +
+      this.keycloakConfig.siteMinderUrl +
       "/clp-cgi/logoff.cgi?retnow=1&returl=" +
       keycloakLogoutUrl;
 
