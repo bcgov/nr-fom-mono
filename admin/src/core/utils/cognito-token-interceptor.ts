@@ -22,7 +22,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
   private tokenRefreshedSource = new Subject();
   private tokenRefreshed$ = this.tokenRefreshedSource.asObservable();
 
-  constructor(private cognitoAuth: CognitoService) {}
+  constructor(private cognitoService: CognitoService) {}
 
   /**
    * Main request intercept handler to automatically add the bearer auth token to every request.
@@ -35,7 +35,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
    * @memberof TokenInterceptor
    */
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
-    if (!this.cognitoAuth.initialized) {
+    if (!this.cognitoService.initialized) {
       return next.handle(request);
     }
 
@@ -75,9 +75,9 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
    * @memberof TokenInterceptor
    */
   private addAuthHeader(request: HttpRequest<any>): HttpRequest<any> {
-    let authToken: any = this.cognitoAuth.getToken();
+    let authToken: any = this.cognitoService.getToken();
 
-    if (this.cognitoAuth.getConfig().enabled) {
+    if (this.cognitoService.getConfig().enabled) {
       authToken = JSON.stringify(authToken['jwtToken']);
     }
 
@@ -105,7 +105,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
       });
     } else {
       this.refreshTokenInProgress = true;
-      return this.cognitoAuth.updateToken().pipe(
+      return this.cognitoService.updateToken().pipe(
         tap(() => {
           this.refreshTokenInProgress = false;
           this.tokenRefreshedSource.next();
