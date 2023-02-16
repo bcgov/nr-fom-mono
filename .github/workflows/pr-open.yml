@@ -39,51 +39,51 @@ jobs:
             Once merged, code will be promoted and handed off to following workflow run.
              - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [admin, api, db, public]
-        include:
-          - package: admin
-            build_context: ./
-            build_file: admin/Dockerfile
-            triggers: ('admin/', 'libs/')
-          - package: api
-            build_context: ./
-            build_file: api/Dockerfile
-            triggers: ('api/')
-          - package: db
-            triggers: ('db')
-          - package: public
-            build_context: ./
-            build_file: public/Dockerfile
-            triggers: ('public/', 'libs/')
-    steps:
-      - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@main
-        with:
-          package: ${{ matrix.package }}
-          build_context: ${{ matrix.build_context }}
-          build_file: ${{ matrix.build_file }}
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [admin, api, db, public]
+  #       include:
+  #         - package: admin
+  #           build_context: ./
+  #           build_file: admin/Dockerfile
+  #           triggers: ('admin/', 'libs/')
+  #         - package: api
+  #           build_context: ./
+  #           build_file: api/Dockerfile
+  #           triggers: ('api/')
+  #         - package: db
+  #           triggers: ('db')
+  #         - package: public
+  #           build_context: ./
+  #           build_file: public/Dockerfile
+  #           triggers: ('public/', 'libs/')
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: bcgov-nr/action-builder-ghcr@main
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         build_context: ${{ matrix.build_context }}
+  #         build_file: ${{ matrix.build_file }}
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         triggers: ${{ matrix.triggers }}
 
-  deploy-init-database:
-    name: Deploy Init for Database
-    needs:
-      - builds
+  deploy-init:
+    name: Deploy Init
+    # needs:
+    #   - builds
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
-          file: .github/openshift/init.database.yml
+          file: libs/openshift.init.yml
           oc_namespace: ${{ secrets.OC_NAMESPACE }}
           oc_server: ${{ secrets.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
@@ -91,122 +91,105 @@ jobs:
           penetration_test: false
           parameters: -p ZONE=${{ env.ZONE }}
 
-  deploy-init-api:
-    name: Deploy Init for API
-    needs:
-      - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: .github/openshift/init.api.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          penetration_test: false
-          parameters: -p ZONE=${{ env.ZONE }}
+  # deploy-database:
+  #   name: Deploy Database
+  #   needs:
+  #     - builds
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+  #       with:
+  #         file: .github/openshift/deploy.database.yml
+  #         oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #         oc_server: ${{ secrets.OC_SERVER }}
+  #         oc_token: ${{ secrets.OC_TOKEN }}
+  #         overwrite: false
+  #         penetration_test: false
+  #         parameters: -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/db:${{ env.ZONE }}
 
-  deploy-database:
-    name: Deploy Database
-    needs:
-      - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: .github/openshift/deploy.database.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: false
-          penetration_test: false
-          parameters: -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/db:${{ env.ZONE }}
+  # deploy-api:
+  #   name: Deploy API
+  #   needs:
+  #     - builds
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+  #       with:
+  #         file: .github/openshift/deploy.api.yml
+  #         oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #         oc_server: ${{ secrets.OC_SERVER }}
+  #         oc_token: ${{ secrets.OC_TOKEN }}
+  #         overwrite: true
+  #         penetration_test: false
+  #         parameters:
+  #           -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/api:${{ env.ZONE }}
+  #           -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
+  #           -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
+  #           -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true
+  #           -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth"
 
-  deploy-api:
-    name: Deploy API
-    needs:
-      - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: .github/openshift/deploy.api.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/api:${{ env.ZONE }}
-            -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
-            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth"
+  # deploy-admin:
+  #   name: Deploy Admin
+  #   needs:
+  #     - builds
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+  #       with:
+  #         file: .github/openshift/deploy.admin.yml
+  #         oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #         oc_server: ${{ secrets.OC_SERVER }}
+  #         oc_token: ${{ secrets.OC_TOKEN }}
+  #         overwrite: true
+  #         penetration_test: false
+  #         parameters:
+  #           -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/admin:${{ env.ZONE }}
+  #           -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
 
-  deploy-admin:
-    name: Deploy Admin
-    needs:
-      - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: .github/openshift/deploy.admin.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/admin:${{ env.ZONE }}
-            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
+  # deploy-public:
+  #   name: Deploy Public
+  #   needs:
+  #     - builds
+  #   runs-on: ubuntu-22.04
+  #   timeout-minutes: 10
+  #   steps:
+  #     - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+  #       with:
+  #         file: .github/openshift/deploy.public.yml
+  #         oc_namespace: ${{ secrets.OC_NAMESPACE }}
+  #         oc_server: ${{ secrets.OC_SERVER }}
+  #         oc_token: ${{ secrets.OC_TOKEN }}
+  #         overwrite: true
+  #         penetration_test: false
+  #         parameters:
+  #           -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/public:${{ env.ZONE }}
+  #           -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
 
-  deploy-public:
-    name: Deploy Public
-    needs:
-      - builds
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
-        with:
-          file: .github/openshift/deploy.public.yml
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}/public:${{ env.ZONE }}
-            -p URL=${{ env.BASE_URL }} -p CERTBOT=false -p REPLICA_COUNT=1
-
-  keycloak:
-    name: Add KeyCroak Redirect URL for Admin
-    timeout-minutes: 10
-    needs:
-      - deploy-admin
-      - deploy-api
-      - deploy-database
-      - deploy-public
-    runs-on: ubuntu-22.04
-    env:
-      IMG: ${{ github.repository }}:${{ github.event.number }}
-      URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
-      ZONE: ${{ github.event.number }}
-    steps:
-      - uses: actions/checkout@v3
-      - uses: bcgov/nr-keycloak-redirect@main
-        id: add-keycroak
-        with:
-          add_delete: "add"
-          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
-          secret: ${{ secrets.KC_SECRET }}
-          clientid: ${{ secrets.KC_CLIENTID }}
-          clientid_2: "fom"
-          realm: ${{ secrets.KC_REALM }}
-          host: ${{ secrets.KC_HOST }}
+  # keycloak:
+  #   name: Add KeyCroak Redirect URL for Admin
+  #   timeout-minutes: 10
+  #   needs:
+  #     - deploy-admin
+  #     - deploy-api
+  #     - deploy-database
+  #     - deploy-public
+  #   runs-on: ubuntu-22.04
+  #   env:
+  #     IMG: ${{ github.repository }}:${{ github.event.number }}
+  #     URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
+  #     ZONE: ${{ github.event.number }}
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: bcgov/nr-keycloak-redirect@main
+  #       id: add-keycroak
+  #       with:
+  #         add_delete: "add"
+  #         redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+  #         secret: ${{ secrets.KC_SECRET }}
+  #         clientid: ${{ secrets.KC_CLIENTID }}
+  #         clientid_2: "fom"
+  #         realm: ${{ secrets.KC_REALM }}
+  #         host: ${{ secrets.KC_HOST }}
