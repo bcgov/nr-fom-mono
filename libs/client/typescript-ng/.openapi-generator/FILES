@@ -19,6 +19,7 @@ index.ts
 model/attachmentResponse.ts
 model/attachmentTypeCode.ts
 model/awsCognitoConfig.ts
+model/awsCognitoOauthConfig.ts
 model/commentScopeCode.ts
 model/districtResponse.ts
 model/featureTypeCode.ts

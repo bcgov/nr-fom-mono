@@ -9,18 +9,17 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { AwsCognitoOauthConfig } from './awsCognitoOauthConfig';
 
 
 export interface AwsCognitoConfig { 
     enabled: boolean;
-    region: string;
-    userPoolsId: string;
-    userPoolWebClientId: string;
-    mandatorySignIn: boolean;
+    aws_cognito_domain: string;
+    aws_cognito_region: string;
+    aws_user_pools_id: string;
+    aws_user_pools_web_client_id: string;
+    aws_mandatory_sign_in: string;
+    oauth: AwsCognitoOauthConfig;
     federationTarget: string;
-    domain: string;
-    scope: Array<string>;
-    signUpVerificationMethod: string;
-    frontendRedirectBaseUrl: string;
 }
 

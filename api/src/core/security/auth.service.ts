@@ -55,36 +55,65 @@ export class KeycloakConfig {
 }
 
 export class AwsCognitoConfig {
+
   @ApiProperty()
   enabled: boolean = true;
 
   @ApiProperty()
-  region: string;
+  aws_cognito_domain: string;
 
   @ApiProperty()
-  userPoolsId: string;
+  aws_cognito_region: string;
 
   @ApiProperty()
-  userPoolWebClientId: string;
+  aws_user_pools_id: string;
 
   @ApiProperty()
-  mandatorySignIn: boolean = true;
+  aws_user_pools_web_client_id: string;
 
   @ApiProperty()
-  federationTarget: string = 'COGNITO_USER_POOLS'
+  aws_mandatory_sign_in: string = "enable"; // 'enable' or 'disable'
+
+  @ApiProperty({ type: () => AwsCognitoOauthConfig })
+  oauth: AuthAwsCognitoConfig = new AwsCognitoOauthConfig();
 
   @ApiProperty()
-  domain: string; // 'your_cognito_domain'
-
-  @ApiProperty()
-  scope: string[] = ['openid'];
-
-  @ApiProperty()
-  signUpVerificationMethod: string = 'code'
-
-  @ApiProperty()
-  frontendRedirectBaseUrl: string; // Frontend needs. 
+  federationTarget: string = 'COGNITO_USER_POOLS';
 }
+
+export interface AuthAwsCognitoConfig {
+  domain: string;
+  scope: string[];
+  redirectSignIn: string;
+  redirectSignOut: string;
+  responseType: string;
+}
+
+/**
+ * Info: Need to define interface/type for Nest to properly generate OpenAPI model.
+ * Ref: https://docs.nestjs.com/openapi/types-and-parameters
+ * Example:
+ *    interface AuthAwsCognitoConfig{}
+ *    class AwsCognitoOauthConfig implements AuthAwsCognitoConfig {}
+ *    Usage: @ApiProperty({ type: () => AwsCognitoOauthConfig })
+ */
+export class AwsCognitoOauthConfig implements AuthAwsCognitoConfig {
+  @ApiProperty()
+  domain: string;
+
+  @ApiProperty()
+  scope: string[];
+
+  @ApiProperty()
+  redirectSignIn: string;
+
+  @ApiProperty()
+  redirectSignOut: string;
+
+  @ApiProperty()
+  responseType: string;
+}
+
 
 export enum AUTH_PROVIDER {
     KEYCLOAK = 'KEYCLOAK',
@@ -124,7 +153,7 @@ export class AuthService {
             this.awsConfig = Object.assign(new AwsCognitoConfig(), aswCognitoEnvJson);
             this.awsConfig.enabled = (process.env.SECURITY_ENABLED || 'true') === 'true';
             console.log(this.awsConfig)
-            const jwksUri = `https://cognito-idp.${this.awsConfig.region}.amazonaws.com/${this.awsConfig.userPoolsId}/.well-known/jwks.json`;
+            const jwksUri = `https://cognito-idp.${this.awsConfig.aws_cognito_region}.amazonaws.com/${this.awsConfig.aws_user_pools_id}/.well-known/jwks.json`;
             console.log("jwksUri", jwksUri);
             this.jwksClient = new JwksClient({
               jwksUri,
@@ -199,7 +228,7 @@ export class AuthService {
       const token = authHeader.substr(tokenStartIndex);
       const config = this.awsConfig
       if (!config.enabled) {
-        const user = User.convertJsonToUser(token);  // TODO: verify this if needs to be changed.
+        const user = User.convertJsonToUser(token);
         return Promise.resolve(user);
       }
       

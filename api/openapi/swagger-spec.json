@@ -44,27 +44,9 @@
           "clientId"
         ]
       },
-      "AwsCognitoConfig": {
+      "AwsCognitoOauthConfig": {
         "type": "object",
         "properties": {
-          "enabled": {
-            "type": "boolean"
-          },
-          "region": {
-            "type": "string"
-          },
-          "userPoolsId": {
-            "type": "string"
-          },
-          "userPoolWebClientId": {
-            "type": "string"
-          },
-          "mandatorySignIn": {
-            "type": "boolean"
-          },
-          "federationTarget": {
-            "type": "string"
-          },
           "domain": {
             "type": "string"
           },
@@ -74,24 +56,61 @@
               "type": "string"
             }
           },
-          "signUpVerificationMethod": {
+          "redirectSignIn": {
             "type": "string"
           },
-          "frontendRedirectBaseUrl": {
+          "redirectSignOut": {
+            "type": "string"
+          },
+          "responseType": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "domain",
+          "scope",
+          "redirectSignIn",
+          "redirectSignOut",
+          "responseType"
+        ]
+      },
+      "AwsCognitoConfig": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "aws_cognito_domain": {
+            "type": "string"
+          },
+          "aws_cognito_region": {
+            "type": "string"
+          },
+          "aws_user_pools_id": {
+            "type": "string"
+          },
+          "aws_user_pools_web_client_id": {
+            "type": "string"
+          },
+          "aws_mandatory_sign_in": {
+            "type": "string"
+          },
+          "oauth": {
+            "$ref": "#/components/schemas/AwsCognitoOauthConfig"
+          },
+          "federationTarget": {
             "type": "string"
           }
         },
         "required": [
           "enabled",
-          "region",
-          "userPoolsId",
-          "userPoolWebClientId",
-          "mandatorySignIn",
-          "federationTarget",
-          "domain",
-          "scope",
-          "signUpVerificationMethod",
-          "frontendRedirectBaseUrl"
+          "aws_cognito_domain",
+          "aws_cognito_region",
+          "aws_user_pools_id",
+          "aws_user_pools_web_client_id",
+          "aws_mandatory_sign_in",
+          "oauth",
+          "federationTarget"
         ]
       },
       "AttachmentTypeCode": {
