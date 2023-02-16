@@ -48,11 +48,10 @@ export class User {
       return user;
     }
 
-    // TODO - Verify this mapping: JWT token from AWS Cognito converted to User.
-    static convertAwsCognitoJwtToUser(jwt: any): User {
+    static convertAwsCognitoDecodedTokenToUser(decodedToken: any): User {
         const user = new User();
-        const idToken = jwt['id_token'];
-        const accessToken = jwt['access_token']
+        const idToken = decodedToken['id_token'];
+        const accessToken = decodedToken['access_token']
         user.userName = idToken['custom:idp_username'];
         user.displayName = idToken['custom:idp_display_name'];
         let roles: string[];

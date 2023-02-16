@@ -177,7 +177,7 @@ export class CognitoService {
     if (!token) {
       return null;
     }
-    const user = User.convertAwsCognitoJwtToUser(token);
+    const user = User.convertAwsCognitoDecodedTokenToUser(token);
     return user;
   }
 

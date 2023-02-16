@@ -226,22 +226,36 @@ export class AuthService {
       }
       const tokenStartIndex = bearer.length;
       const token = authHeader.substr(tokenStartIndex);
-      const config = this.awsConfig
-      if (!config.enabled) {
+      if (!this.awsConfig.enabled) {
         const user = User.convertJsonToUser(token);
         return Promise.resolve(user);
       }
       
       try {
+        console.log("Header bearer token (cognitoToken):", token)
         const cognitoToken = JSON.parse(token);
+        const cognitoIdToken = cognitoToken['idToken']['jwtToken'];
         const cognitoAccessToken = cognitoToken['accessToken']['jwtToken'];
-        const untrustedDecodedToken = decode(cognitoAccessToken, { complete: true });
-        this.logger.debug("Untrusted decoded token %o", untrustedDecodedToken);
-        const kid = untrustedDecodedToken.header.kid;
-        var key = await this.jwksClient.getSigningKey(kid);
-        var decodedToken = verify(token, key.getPublicKey());
-        this.logger.debug("Trusted decoded token = %o", decodedToken);
-        return User.convertAwsCognitoJwtToUser(decodedToken);
+        const untrustedDecodedIdToken = decode(cognitoIdToken, { complete: true });
+        const untrustedDecodedAccessToken = decode(cognitoAccessToken, { complete: true });
+        this.logger.debug("Untrusted decoded ID token %o", untrustedDecodedIdToken);
+        this.logger.debug("Untrusted decoded ACCESS token %o", untrustedDecodedAccessToken);
+
+        const idToken_kid = untrustedDecodedIdToken.header.kid;
+        const idPubkey = await this.jwksClient.getSigningKey(idToken_kid);
+        const decodedIdToken = verify(cognitoIdToken, idPubkey.getPublicKey());
+        this.logger.debug("Trusted decoded ID token = %o", decodedIdToken);
+
+        const accessToken_kid = untrustedDecodedAccessToken.header.kid;
+        const accessPubkey = await this.jwksClient.getSigningKey(accessToken_kid);
+        var decodedAccessToken = verify(cognitoAccessToken, accessPubkey.getPublicKey());
+        this.logger.debug("Trusted decoded Access token = %o", decodedAccessToken);
+
+        const decodedToken = {
+          id_token: decodedIdToken,
+          access_token: decodedAccessToken
+        }
+        return User.convertAwsCognitoDecodedTokenToUser(decodedToken);
       } catch (err) {
         console.error("err: ", err)
         this.logger.warn("Invalid token: %o", err);
