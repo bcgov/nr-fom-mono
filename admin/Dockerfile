@@ -11,19 +11,13 @@ ARG build_dir
 WORKDIR /app
 COPY ./libs ./libs
 COPY ./${build_dir} ./${build_dir}
-RUN cd libs && \
-    npm ci && \
-    cd ../${build_dir} && \
-    npm ci && \
-    npm run build:${build_dir} && \
-    rm -rf node_modules ../libs/node_modules
+RUN cd libs && npm ci && cd .. && \
+    cd ${build_dir} && npm ci && npm run build:${build_dir} && cd .. && \
+    rm -rf libs/node_modules ${build_dir}/node_modules
 
 
 # Deploy container
 FROM caddy:2.4.6-alpine
-
-# Envar
-ENV FOM_ENV=dev
 
 # Copy over Caddyfile and static content
 ARG build_dir

@@ -16,8 +16,6 @@ services:
       - cd libs && npm ci &&
         cd ../admin && npm ci &&
         npm run start:admin
-    environment:
-      - FOM_ENV=dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4200/admin"]
       interval: 10s
@@ -110,8 +108,6 @@ services:
       - cd libs && npm ci &&
         cd ../public && npm ci &&
         npm run start:public
-    environment:
-      - FOM_ENV=dev
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:4300/public"]
       interval: 10s

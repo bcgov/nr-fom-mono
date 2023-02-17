@@ -19,10 +19,6 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
-    # https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-  - name: NAMESPACE
-    description: Current namespace (required for image pull bug)
-    required: true
   - name: PORT
     value: "3333"
   - name: DB_TESTDATA
@@ -271,7 +267,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: image-registry.openshift-image-registry.svc:5000/${NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+                  image: ${REGISTRY}/${PROMOTE}
                   imagePullPolicy: Always
                   args: ["-batch"]
                   env:

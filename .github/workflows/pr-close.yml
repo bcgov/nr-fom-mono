@@ -4,13 +4,9 @@ on:
   pull_request:
     types:
       - closed
-    paths-ignore:
-      - ".github/graphics/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - "**.md"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: pr-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -23,27 +19,12 @@ jobs:
       matrix:
         component: [api, admin, db, public]
     steps:
-      - uses: shrink/actions-docker-registry-tag@v2
+      - uses: shrink/actions-docker-registry-tag@v3
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}
           target: ${{ github.event.number }}-${{ matrix.component }}
           tags: test-${{ matrix.component }}
-
-  merge-notification:
-    name: Merge Notification
-    runs-on: ubuntu-22.04
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    steps:
-      - name: Pre-merge update
-        uses: mshick/add-pr-comment@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          allow-repeats: false
-          message: |
-            Your Pull Request code is being promoted!  Please follow the link below.
-            [Merge to Main Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
   cleanup-openshift:
     name: Cleanup OpenShift
