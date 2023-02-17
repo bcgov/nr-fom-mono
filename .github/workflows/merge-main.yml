@@ -43,25 +43,12 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  prep:
-    name: Prep
-    outputs:
-      url: ${{ steps.vars.outputs.url }}
-      zone: ${{ steps.vars.outputs.zone }}
-    permissions:
-      pull-requests: write
-    runs-on: ubuntu-22.04
-    steps:
-      # This is a workaround, because matrix parameters can use outputs, but not vars
-      - name: Variables
-        id: vars-test
-        run: |
-          echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
-          echo "zone=test" >> $GITHUB_OUTPUT
-
   deploy-test:
-    name: Deploys
-    needs: [codeql, prep]
+    name: TEST Deploys
+    needs: [codeql]
+    environment: test
+    env:
+      ZONE: test
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
@@ -72,13 +59,13 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p URL=${{ needs.prep.outputs.url }} -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth"
-              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca  -p REPLICA_COUNT=3 -p CERTBOT=true
+              -p URL=fom-test.nrs.gov.bc.ca -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth"
+              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
               -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p DB_TESTDATA=true
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=true -p REPLICA_COUNT=3
+            parameters: -p URL=fom-test.nrs.gov.bc.ca
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
@@ -88,23 +75,40 @@ jobs:
           - name: public
             file: public/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=true -p REPLICA_COUNT=3
+            parameters: -p URL=fom-test.nrs.gov.bc.ca
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: ${{ matrix.file }}
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          penetration_test: true
+          penetration_test: false
           parameters:
-            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ needs.prep.outputs.zone }}
-            -p ZONE=${{ needs.prep.outputs.zone }} ${{ matrix.parameters }}
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+
+  certbot-test:
+    name: Certbot
+    needs: [deploy-test]
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Run Certbot
+        run: |
+          set -eux
+
+          # Login to OpenShift and select project
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ vars.OC_NAMESPACE }}
+
+          # Run certbot with one-off job
+          oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
   deploy-prod:
     name: PROD Deployment
-    needs: [deploy-test]
+    needs: [certbot-test]
     runs-on: ubuntu-22.04
     environment:
       name: prod
