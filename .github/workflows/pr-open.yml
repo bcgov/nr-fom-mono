@@ -35,7 +35,7 @@ jobs:
              - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
       - name: KeyCloak Redirect URL
-        uses: bcgov/nr-keycloak-redirect@main
+        uses: bcgov/nr-keycloak-redirect@v0.0.2
         with:
           add_delete: "add"
           redirect: https://fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
