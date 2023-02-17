@@ -248,7 +248,7 @@ export class AuthService {
 
         const accessToken_kid = untrustedDecodedAccessToken.header.kid;
         const accessPubkey = await this.jwksClient.getSigningKey(accessToken_kid);
-        var decodedAccessToken = verify(cognitoAccessToken, accessPubkey.getPublicKey());
+        const decodedAccessToken = verify(cognitoAccessToken, accessPubkey.getPublicKey());
         this.logger.debug("Trusted decoded Access token = %o", decodedAccessToken);
 
         const decodedToken = {
