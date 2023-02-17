@@ -8,16 +8,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  pr-greeting:
-    name: PR Greeting
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
+  prep:
+    name: Prep
+    outputs:
+      url: ${{ steps.vars.outputs.url }}
     permissions:
       pull-requests: write
+    runs-on: ubuntu-22.04
     steps:
       - name: PR Greeting
+        env:
+          DOMAIN: apps.silver.devops.gov.bc.ca
         uses: bcgov-nr/action-pr-description-add@v0.0.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -32,6 +33,22 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
              - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+      - name: KeyCloak Redirect URL
+        uses: bcgov/nr-keycloak-redirect@main
+        with:
+          add_delete: "add"
+          redirect: https://fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+          secret: ${{ secrets.KC_SECRET }}
+          clientid: ${{ secrets.KC_CLIENTID }}
+          clientid_2: "fom"
+          realm: ${{ secrets.KC_REALM }}
+          host: ${{ secrets.KC_HOST }}
+
+      # This is a workaround, because matrix parameters can use outputs, but not vars
+      - name: Variables
+        id: vars
+        run: echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
 
   builds:
     name: Builds
@@ -68,19 +85,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
 
-  # This is a workaround, because matrix parameters can use outputs, but not vars
-  vars:
-    name: Vars
-    runs-on: ubuntu-22.04
-    outputs:
-      url: ${{ steps.vars.outputs.url }}
-    steps:
-      - id: vars
-        run: echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
-
   deploys:
     name: Deploys
-    needs: [vars, builds]
+    needs: [prep, builds]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
@@ -91,13 +98,13 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p URL=${{ needs.vars.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca -p SITEMINDER_URL="https://logontest7.gov.bc.ca"
               -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=${{ needs.vars.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
@@ -107,7 +114,7 @@ jobs:
           - name: public
             file: public/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=${{ needs.vars.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -120,21 +127,3 @@ jobs:
           parameters:
             -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
-
-  keycloak:
-    name: Add KeyCroak Redirect URL for Admin
-    needs: [deploys]
-    runs-on: ubuntu-22.04
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v3
-      - uses: bcgov/nr-keycloak-redirect@main
-        id: add-keycroak
-        with:
-          add_delete: "add"
-          redirect: https://fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
-          secret: ${{ secrets.KC_SECRET }}
-          clientid: ${{ secrets.KC_CLIENTID }}
-          clientid_2: "fom"
-          realm: ${{ secrets.KC_REALM }}
-          host: ${{ secrets.KC_HOST }}
