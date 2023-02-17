@@ -3,582 +3,127 @@ name: Pull Request Open
 on:
   pull_request:
 
-env:
-  REGISTRY: ghcr.io
-  NAME: fom
-
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: pr-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check-db:
-    name: Check Database
+  prep:
+    name: Prep
     outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('db/')
-      TARGET: db
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  check-api:
-    name: Check API
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('api/' 'libs/' '.github/openshift/deploy.api.yml')
-      TARGET: api
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  check-admin:
-    name: Check Admin
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('admin/' 'libs/' '.github/openshift/deploy.admin.yml')
-      TARGET: admin
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  check-public:
-    name: Check Public
-    outputs:
-      build: ${{ steps.check.outputs.build }}
-    env:
-      TRIGGERS: ('public/' 'libs/' '.github/openshift/deploy.public.yml')
-      TARGET: public
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Check and process modified files
-        id: check
-        run: |
-          # Fetch main to diff against
-          git fetch origin main:refs/remotes/origin/master
-
-          # Trigger build if diff matches any triggers
-          TRIGGERS=${{ env.TRIGGERS }}
-          while read -r check
-          do
-              for t in "${TRIGGERS[@]}"; do
-                  if [[ "${check}" =~ "${t}" ]]
-                  then
-                      # Output build=true for next steps
-                      echo "::set-output name=build::true"
-                      echo -e "${t}\n --> ${check}\n"
-                      exit 0
-                  fi
-              done
-          done < <(git diff origin/main --name-only)
-          echo "Container build not required"
-
-      - name: Recycle/retag TEST Image
-        if: steps.check.outputs.build != 'true'
-        uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ${{ env.REGISTRY }}
-          repository: ${{ github.repository }}
-          target: test-${{ env.TARGET }}
-          tags: |
-            ${{ github.event.number }}-${{ env.TARGET }}
-
-  build-db:
-    name: Database Image Build
-    needs:
-      - check-db
-    if: needs.check-db.outputs.build == 'true'
-    runs-on: ubuntu-22.04
+      url: ${{ steps.vars.outputs.url }}
     permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push API Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: db/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-db
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-db || true
-
-  build-api:
-    name: API Image Build
-    needs:
-      - check-api
-    if: needs.check-api.outputs.build == 'true'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push API Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: api/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-api
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-api || true
-
-  build-public:
-    name: Public Image Build
-    needs:
-      - check-public
-    if: needs.check-public.outputs.build == 'true'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push Public Frontend Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: public/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-public
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-public || true
-
-  build-admin:
-    name: Admin Image Build
-    needs:
-      - check-admin
-    if: needs.check-admin.outputs.build == 'true'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push Admin Frontend Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: admin/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.number }}-admin
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-      - name: Remove stale images
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Clean previous image
-          oc delete is ${{ env.NAME }}-${{ github.event.number }}-admin || true
-
-  tests-api:
-    name: API Unit Tests
-    needs:
-      - check-api
-    if: needs.check-api.outputs.build == 'true'
+      pull-requests: write
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Get npm cache directory
-        id: npm-cache-dir
-        run: |
-          echo "::set-output name=dir::$(npm config get cache)"
-      - uses: actions/cache@v3
-        id: npm-cache-api # use this to check for `cache-hit` ==> if: steps.npm-cache.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Cache for test results
-        id: cache-api
-        uses: actions/cache@v3
-        with:
-          path: coverage
-          key: coverage-api-${{ github.run_number }}
-          restore-keys: |
-            coverage-api-
-
-      - name: Tests
-        run: |
-          cd api
-          npm ci
-          npm run test-unit
-      - name: Report code coverage
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        with:
-          title: API coverage report
-          delete-old-comments: true
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: ./coverage/api/lcov.info
-
-  sonarcloud:
-    name: Static Analysis
-    needs:
-      - build-db
-      - build-api
-      - build-admin
-      - build-public
-      - tests-api
-    if:
-      # Always check for no failures at at least one successful build
-      always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
-      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-        # Disable shallow clone for SonarCloud analysis
-        with:
-          fetch-depth: 0
-
-      - name: Cache for api test results
-        id: cache-backend
-        uses: actions/cache@v3
-        with:
-          path: coverage
-          key: coverage-api-${{ github.run_number }}
-          restore-keys: |
-            coverage-api-
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: PR Greeting
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          DOMAIN: apps.silver.devops.gov.bc.ca
+        uses: bcgov-nr/action-pr-description-add@v0.0.2
         with:
-          args: >
-            -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
-            -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.project.monorepo.enabled=true
-            -Dsonar.projectKey=nr-fom
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          add_markdown: |
+            ---
+            Thanks for the PR!
 
-  deploy-dev:
-    name: DEV Deployment
-    timeout-minutes: 10
-    needs:
-      - build-db
-      - build-api
-      - build-admin
-      - build-public
-      - tests-api
-    if:
-      # Always check for no failures at at least one successful build
-      always() && (! failure()) && (needs.build-db.result == 'success' || needs.build-api.result == 'success' ||
-      needs.build-admin.result == 'success' || needs.build-public.result == 'success')
-    runs-on: ubuntu-22.04
-    env:
-      IMG: ${{ github.repository }}:${{ github.event.number }}
-      URL: fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
-      ZONE: ${{ github.event.number }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy
-        run: |
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
+            Any successful deployments (not always required) will be available below.
+             - [api](https://fom-${{ github.event.number }}.${{ env.DOMAIN }}/api)
+             - [admin](https://fom-${{ github.event.number }}.${{ env.DOMAIN }}/admin)
+             - [public](https://fom-${{ github.event.number }}.${{ env.DOMAIN }}/public)
 
-          # Init database secret, only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "Database secret already initialized"
+            Once merged, code will be promoted and handed off to following workflow run.
+             - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-          # Init database backups cronjob, only if necessary
-          oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
-            -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            | oc create -f - || \
-            echo "Database backup cronjob already initialized"
-
-          # Init API data encryption key, only if necessary
-          oc process -f .github/openshift/init.api.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "API secret already initialized"
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
-            | oc create -f - || \
-            echo "Database already deployed"
-
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=1 \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=1 \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=1 \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-db -w
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-api -w
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${{ github.event.number }}-public -w
-
-      - name: Add KeyCroak Redirect URL for Admin
-        uses: bcgov/nr-keycloak-redirect@main
-        id: add-keycroak
+      - name: KeyCloak Redirect URL
+        uses: bcgov/nr-keycloak-redirect@v0.0.2
         with:
           add_delete: "add"
-          redirect: https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
+          redirect: https://fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
           secret: ${{ secrets.KC_SECRET }}
           clientid: ${{ secrets.KC_CLIENTID }}
           clientid_2: "fom"
           realm: ${{ secrets.KC_REALM }}
           host: ${{ secrets.KC_HOST }}
 
-      - name: Deployment Verification
-        env:
-          LINKS: (
-            '${{ env.URL }}/api/district'
-            '${{ env.URL }}/admin/'
-            '${{ env.URL }}/public/'
-            )
-        run: |
-          LINKS=${{ env.LINKS }}
-          for l in "${LINKS[@]}"; do
-              if [ $(curl -L --max-redirs 5 -s -o /dev/null -w "%{http_code}" "${l}") -ne 200 ]
-              then
-                  echo "Status != 200 for ${l}"
-                  exit 1
-              fi
-          done
+      # This is a workaround, because matrix parameters can use outputs, but not vars
+      - name: Variables
+        id: vars
+        run: echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
 
-          echo "Deployment verification successful"
-
-      - name: Deployment update
-        uses: mshick/add-pr-comment@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  builds:
+    name: Builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [admin, api, db, public]
+        include:
+          - package: admin
+            build_context: ./
+            build_file: admin/Dockerfile
+            triggers: ('admin/', 'libs/')
+          - package: api
+            build_context: ./
+            build_file: api/Dockerfile
+            triggers: ('api/', 'libs/')
+          - package: db
+            triggers: ('db')
+          - package: public
+            build_context: ./
+            build_file: public/Dockerfile
+            triggers: ('public/', 'libs/')
+    steps:
+      - uses: actions/checkout@v3
+      - uses: bcgov-nr/action-builder-ghcr@main
         with:
-          allow-repeats: false
-          message: |
-            [Dev - api](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/api) available
-            [Dev - admin](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/admin) available
-            [Dev - public](https://${{ env.NAME }}-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/public) available
+          package: ${{ matrix.package }}
+          build_context: ${{ matrix.build_context }}
+          build_file: ${{ matrix.build_file }}
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
+
+  deploys:
+    name: Deploys
+    needs: [prep, builds]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        name: [api, admin, db, init, public]
+        include:
+          - name: api
+            file: api/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+              -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca -p SITEMINDER_URL="https://logontest7.gov.bc.ca"
+              -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true
+          - name: admin
+            file: admin/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+          - name: db
+            file: db/openshift.deploy.yml
+            overwrite: false
+          - name: init
+            file: libs/openshift.init.yml
+            overwrite: false
+          - name: public
+            file: public/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: ${{ matrix.overwrite }}
+          penetration_test: false
+          parameters:
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
+            -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
