@@ -4,10 +4,6 @@ on:
   pull_request:
     types:
       - closed
-    paths-ignore:
-      - ".github/graphics/**"
-      - ".github/ISSUE_TEMPLATE/**"
-      - "**.md"
 
 concurrency:
   group: pr-${{ github.ref }}
@@ -29,21 +25,6 @@ jobs:
           repository: ${{ github.repository }}
           target: ${{ github.event.number }}-${{ matrix.component }}
           tags: test-${{ matrix.component }}
-
-  merge-notification:
-    name: Merge Notification
-    runs-on: ubuntu-22.04
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
-    steps:
-      - name: Pre-merge update
-        uses: mshick/add-pr-comment@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          allow-repeats: false
-          message: |
-            Your Pull Request code is being promoted!  Please follow the link below.
-            [Merge to Main Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
   cleanup-openshift:
     name: Cleanup OpenShift
