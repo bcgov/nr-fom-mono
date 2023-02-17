@@ -1,13 +1,14 @@
 name: Merge to Main
 
 on:
-  push:
-    branches:
-      - main
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
-  workflow_dispatch:
+  pull_request:
+  # push:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - ".github/ISSUE_TEMPLATE/*"
+  #     - "**.md"
+  # workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -46,22 +47,21 @@ jobs:
     name: Prep
     outputs:
       url: ${{ steps.vars.outputs.url }}
+      zone: ${{ steps.vars.outputs.zone }}
     permissions:
       pull-requests: write
     runs-on: ubuntu-22.04
     steps:
       # This is a workaround, because matrix parameters can use outputs, but not vars
       - name: Variables
-        id: vars
+        id: vars-test
         run: |
           echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
-          echo "replicas=3" >> $GITHUB_OUTPUT
-          echo "certbot=true" >> $GITHUB_OUTPUT
           echo "zone=test" >> $GITHUB_OUTPUT
 
   deploy-test:
     name: Deploys
-    needs: [codeql]
+    needs: [codeql, prep]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
@@ -72,15 +72,13 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
-              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca -p SITEMINDER_URL="https://logontest7.gov.bc.ca"
-              -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true
+              -p URL=${{ needs.prep.outputs.url }} -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth"
+              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca  -p REPLICA_COUNT=3 -p CERTBOT=true
+              -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p DB_TESTDATA=true
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
-            parameters:
-              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=${{ needs.prep.outputs.certbot }}
-              -p REPLICA_COUNT=${{ needs.prep.outputs.replicas }}
+            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=true -p REPLICA_COUNT=3
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
@@ -90,9 +88,7 @@ jobs:
           - name: public
             file: public/openshift.deploy.yml
             overwrite: true
-            parameters:
-              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=${{ needs.prep.outputs.certbot }}
-              -p REPLICA_COUNT=${{ needs.prep.outputs.replicas }}
+            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=true -p REPLICA_COUNT=3
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
@@ -104,7 +100,7 @@ jobs:
           penetration_test: true
           parameters:
             -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ needs.prep.outputs.zone }}
-            -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
+            -p ZONE=${{ needs.prep.outputs.zone }} ${{ matrix.parameters }}
 
   deploy-prod:
     name: PROD Deployment
