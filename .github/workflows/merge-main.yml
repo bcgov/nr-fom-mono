@@ -42,135 +42,73 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  deploy-test:
-    name: TEST Deployment
-    needs:
-      - cleanup-ghcr
-      - codeql
-      - sonarcloud
+  prep:
+    name: Prep
+    outputs:
+      url: ${{ steps.vars.outputs.url }}
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-22.04
-    environment:
-      name: test
-    env:
-      IMG: ${{ github.repository }}:test
-      URL: fom-test.nrs.gov.bc.ca
-      ZONE: test
     steps:
-      - uses: actions/checkout@v3
-      - name: Deploy
+      # This is a workaround, because matrix parameters can use outputs, but not vars
+      - name: Variables
+        id: vars
         run: |
-          set -eux
+          echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+          echo "replicas=3" >> $GITHUB_OUTPUT
+          echo "certbot=true" >> $GITHUB_OUTPUT
+          echo "zone=test" >> $GITHUB_OUTPUT
 
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Init database secret, only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "Database secret already initialized"
-
-          # Init database backups cronjob, only if necessary
-          oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
-            -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            | oc create -f - || \
-            echo "Database backup cronjob already initialized"
-
-          # Init API data encryption key, only if necessary
-          oc process -f .github/openshift/init.api.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "API secret already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
-          fi
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
-
-          # Run certbot with one-off job
-          oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
-
-  zap-api:
-    name: API Pen Tests
-    needs:
-      - deploy-test
+  deploy-test:
+    name: Deploys
+    needs: [codeql]
     runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        name: [api, admin, db, init, public]
+        include:
+          - name: api
+            file: api/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca -p SITEMINDER_URL="https://logontest7.gov.bc.ca"
+              -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true
+          - name: admin
+            file: admin/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=${{ needs.prep.outputs.certbot }}
+              -p REPLICA_COUNT=${{ needs.prep.outputs.replicas }}
+          - name: db
+            file: db/openshift.deploy.yml
+            overwrite: false
+          - name: init
+            file: libs/openshift.init.yml
+            overwrite: false
+          - name: public
+            file: public/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=${{ needs.prep.outputs.certbot }}
+              -p REPLICA_COUNT=${{ needs.prep.outputs.replicas }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
-          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/api
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
-
-  zap-admin:
-    name: Admin Pen Tests
-    needs:
-      - deploy-test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
-        with:
-          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/admin
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
-
-  zap-public:
-    name: Public Pen Tests
-    needs:
-      - deploy-test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
-        with:
-          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/public
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ secrets.OC_NAMESPACE }}
+          oc_server: ${{ secrets.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: ${{ matrix.overwrite }}
+          penetration_test: true
+          parameters:
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ needs.prep.outputs.zone }}
+            -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
 
   deploy-prod:
     name: PROD Deployment
-    needs:
-      - zap-api
-      - zap-admin
-      - zap-public
+    needs: [deploy-test]
     runs-on: ubuntu-22.04
     environment:
       name: prod
