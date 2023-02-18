@@ -1,8 +1,7 @@
 name: Pull Request Open
 
 on:
-  # pull_request:
-  workflow_dispatch:
+  pull_request:
 
 concurrency:
   group: pr-${{ github.ref }}
@@ -76,7 +75,7 @@ jobs:
             triggers: ('public/', 'libs/')
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@main
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
@@ -120,8 +119,8 @@ jobs:
       - uses: bcgov-nr/action-deployer-openshift@v1.0.2
         with:
           file: ${{ matrix.file }}
-          oc_namespace: ${{ secrets.OC_NAMESPACE }}
-          oc_server: ${{ secrets.OC_SERVER }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
