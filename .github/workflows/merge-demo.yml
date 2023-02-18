@@ -6,247 +6,90 @@ on:
       - demo
 
 env:
-  REGISTRY: ghcr.io
-  NAME: fom
+  ZONE: demo
 
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
 jobs:
-  build-db:
-    name: Database Image Build
-    env:
-      COMPONENT: db
-      TARGET: demo
+  builds:
+    name: Builds
     runs-on: ubuntu-22.04
     permissions:
-      contents: read
       packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push API Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ${{ env.COMPONENT }}/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  build-api:
-    name: API Image Build
-    env:
-      COMPONENT: api
-      TARGET: demo
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push API Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ${{ env.COMPONENT }}/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  build-public:
-    name: Public Image Build
-    env:
-      COMPONENT: public
-      TARGET: demo
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push Public Frontend Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ${{ env.COMPONENT }}/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  build-admin:
-    name: Admin Image Build
-    env:
-      COMPONENT: admin
-      TARGET: demo
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v2
-        with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GHCR_TOKEN }}
-
-      - name: Build and push Admin Frontend Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ${{ env.COMPONENT }}/Dockerfile
-          push: true
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ env.TARGET }}-${{ env.COMPONENT }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  deploy-demo:
-    name: DEMO Deployment
-    needs:
-      - build-db
-      - build-api
-      - build-admin
-      - build-public
-    runs-on: ubuntu-22.04
-    environment:
-      name: demo
-    env:
-      IMG: ${{ github.repository }}:demo
-      URL: fom-demo.apps.silver.devops.gov.bc.ca
-      ZONE: demo
+    strategy:
+      matrix:
+        package: [admin, api, db, public]
+        include:
+          - package: admin
+            build_context: ./
+            build_file: admin/Dockerfile
+            triggers: ('admin/', 'libs/')
+          - package: api
+            build_context: ./
+            build_file: api/Dockerfile
+            triggers: ('api/', 'libs/')
+          - package: db
+            triggers: ('db')
+          - package: public
+            build_context: ./
+            build_file: public/Dockerfile
+            triggers: ('public/', 'libs/')
     steps:
       - uses: actions/checkout@v3
-      - name: Deploy
-        run: |
-          set -eux
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+        with:
+          package: ${{ matrix.package }}
+          build_context: ${{ matrix.build_context }}
+          build_file: ${{ matrix.build_file }}
+          tag: ${{ env.ZONE }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
 
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Init database secret, only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "Database secret already initialized"
-
-          # Init database backups cronjob, only if necessary
-          oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
-            -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            | oc create -f - || \
-            echo "Database backup cronjob already initialized"
-
-          # Init API data encryption key, only if necessary
-          oc process -f .github/openshift/init.api.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "API secret already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
-          fi
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} \
-            -p PROMOTE=${{ github.repository }}:${{ env.ZONE }}-db | oc apply -f -
-
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=false -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
-
-          # Remove completed build runs, build pods and deployment pods
-          oc delete po --field-selector=status.phase==Succeeded
+  deploy:
+    name: DEMO Deploys
+    needs: [builds]
+    environment: test
+    env:
+      ZONE: demo
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        name: [api, admin, db, init, public]
+        include:
+          - name: api
+            file: api/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p URL=fom-demo.apps.silver.devops.gov.bc.ca -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth"
+              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
+              -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p DB_TESTDATA=true
+          - name: admin
+            file: admin/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca -p CERTBOT=false
+          - name: db
+            file: db/openshift.deploy.yml
+            overwrite: false
+          - name: init
+            file: libs/openshift.init.yml
+            overwrite: false
+          - name: public
+            file: public/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca -p CERTBOT=false
+    steps:
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: ${{ matrix.overwrite }}
+          penetration_test: false
+          parameters:
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
