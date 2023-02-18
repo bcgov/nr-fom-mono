@@ -1,14 +1,13 @@
 name: Merge to Main
 
 on:
-  pull_request:
-  # push:
-  #   branches:
-  #     - main
-  #   paths-ignore:
-  #     - ".github/ISSUE_TEMPLATE/*"
-  #     - "**.md"
-  # workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - ".github/ISSUE_TEMPLATE/*"
+      - "**.md"
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -107,68 +106,68 @@ jobs:
           oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
   deploy-prod:
-    name: PROD Deployment
-    needs: [certbot-test]
-    runs-on: ubuntu-22.04
-    environment:
-      name: prod
+    name: TEST Deploys
+    needs: [codeql]
+    environment: prod
     env:
       ZONE: prod
-      PREV: test
-      IMG: ${{ github.repository }}:test
-      URL: fom.nrs.gov.bc.ca
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        name: [api, admin, db, init, public]
+        include:
+          - name: api
+            file: api/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom.nrs.gov.bc.ca
+          - name: admin
+            file: admin/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom.nrs.gov.bc.ca
+          - name: db
+            file: db/openshift.deploy.yml
+            overwrite: false
+          - name: init
+            file: libs/openshift.init.yml
+            overwrite: false
+          - name: public
+            file: public/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom.nrs.gov.bc.ca
     steps:
-      - uses: actions/checkout@v3
-      - name: Deploy
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: ${{ matrix.overwrite }}
+          penetration_test: false
+          parameters:
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:test
+            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+
+  certbot-prod:
+    name: Certbot
+    needs: [deploy-prod]
+    environment: prod
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Run Certbot
         run: |
           set -eux
 
           # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ vars.OC_NAMESPACE }}
 
-          # Db backups cronjob, only if necessary
-          oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
-            -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            | oc create -f - || \
-            echo "Database backup cronjob already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
-          fi
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=false \
-            -p SITEMINDER_URL="https://logon7.gov.bc.ca" -p KEYCLOAK_URL="https://oidc.gov.bc.ca/auth" \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
-
-          # Remove completed build runs, build pods and deployment pods
-          oc delete po --field-selector=status.phase==Succeeded
+          # Run certbot with one-off job
+          oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
   image-promotions:
     name: Promote images to PROD
-    needs:
-      - deploy-prod
+    needs: [deploy-prod]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -177,6 +176,6 @@ jobs:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
           registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: test-${{ matrix.component }}
-          tags: prod-${{ matrix.component }}
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: test
+          tags: prod
