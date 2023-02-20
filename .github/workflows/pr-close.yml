@@ -17,14 +17,14 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        component: [api, admin, db, public]
+        package: [api, admin, db, public]
     steps:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
           registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: ${{ github.event.number }}-${{ matrix.component }}
-          tags: test-${{ matrix.component }}
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: ${{ github.event.number }}
+          tags: test
 
   cleanup-openshift:
     name: Cleanup OpenShift
@@ -35,8 +35,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Remove OpenShift artifacts
         run: |
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ vars.OC_NAMESPACE }}
 
           # Remove old build runs, build pods and deployment pods
           oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ github.event.number }}

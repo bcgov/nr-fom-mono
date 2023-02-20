@@ -5,9 +5,9 @@ on:
     branches:
       - main
     paths-ignore:
-      - ".github/graphics/**"
-      - ".github/ISSUE_TEMPLATE/**"
+      - ".github/ISSUE_TEMPLATE/*"
       - "**.md"
+  workflow_dispatch:
 
 env:
   REGISTRY: ghcr.io
@@ -42,363 +42,132 @@ jobs:
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v2
 
-  # https://github.com/snyk/snyk
-  snyk:
-    name: Dependency Report
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        continue-on-error: true # To make sure that SARIF upload gets called
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        with:
-          args: --all-projects --severity-threshold=high --sarif-file-output=snyk.sarif
-
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: snyk.sarif
-
-  sonarcloud:
-    name: Static Analysis
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v3
-        # Disable shallow clone for SonarCloud analysis
-        with:
-          fetch-depth: 0
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
-            -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.project.monorepo.enabled=true
-            -Dsonar.projectKey=nr-fom
-
-  # https://github.com/marketplace/actions/aqua-security-trivy
-  trivy-api:
-    name: API Image Report
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Backend container scan
-      - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.3.0
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-api
-          ignore-unfixed: true
-          severity: CRITICAL
-          format: "sarif"
-          output: "trivy-results-backend.sarif"
-
-      - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-backend.sarif"
-
-  # https://github.com/marketplace/actions/aqua-security-trivy
-  trivy-admin:
-    name: Admin Image Report
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Backend container scan
-      - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.3.0
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-admin
-          ignore-unfixed: true
-          severity: CRITICAL
-          format: "sarif"
-          output: "trivy-results-backend.sarif"
-
-  # https://github.com/marketplace/actions/aqua-security-trivy
-  trivy-public:
-    name: Public Image Report
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      # Backend container scan
-      - name: Trivy Image Scan
-        uses: aquasecurity/trivy-action@0.3.0
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ github.repository }}:test-public
-          ignore-unfixed: true
-          severity: CRITICAL
-          format: "sarif"
-          output: "trivy-results-backend.sarif"
-
-      - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results-backend.sarif"
-
-  # https://github.com/marketplace/actions/aqua-security-trivy
-  trivy-repo:
-    name: Repository Report
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.3.0
-        with:
-          scan-type: "fs"
-          ignore-unfixed: true
-          format: "sarif"
-          output: "trivy-results.sarif"
-          severity: "CRITICAL"
-
-      - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results.sarif"
-
-  # https://github.com/marketplace/actions/aqua-security-trivy
-  trivy-rhel-ubi:
-    name: Base Image Report
-    runs-on: ubuntu-22.04
-    timeout-minutes: 5
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Trivy Vulnerability Scan
-        uses: aquasecurity/trivy-action@0.3.0
-        with:
-          image-ref: registry.access.redhat.com/ubi8/nodejs-14
-          ignore-unfixed: true
-          severity: CRITICAL
-          format: "sarif"
-          output: "trivy-results.sarif"
-
-      - name: Upload Trivy results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
-        with:
-          sarif_file: "trivy-results.sarif"
-
-  cleanup-ghcr:
-    name: Cleanup Container Registry
-    runs-on: ubuntu-22.04
-    steps:
-      # https://github.com/marketplace/actions/ghcr-io-container-cleanup
-      - name: Delete old packages
-        uses: davahome/ghcr-cleanup@v1.1.0.1
-        with:
-          token: ${{ secrets.GHCR_TOKEN }}
-          delete_untagged: 1
-          keep_versions: 3
-          keep_versions_untagged: 0
-          minimum_days: 14
-          package: ${{ github.event.repository.name }}
-          owner: orgs/bcgov
-          skip_tags: prod-db,prod-api,prod-admin,prod-public
-
   deploy-test:
-    name: TEST Deployment
-    needs:
-      - cleanup-ghcr
-      - codeql
-      - sonarcloud
-    runs-on: ubuntu-22.04
-    environment:
-      name: test
+    name: TEST Deploys
+    needs: [codeql]
+    environment: test
     env:
-      IMG: ${{ github.repository }}:test
-      URL: fom-test.nrs.gov.bc.ca
       ZONE: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        name: [api, admin, db, init, public]
+        include:
+          - name: api
+            file: api/openshift.deploy.yml
+            overwrite: true
+            parameters:
+              -p URL=fom-test.nrs.gov.bc.ca -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth"
+              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
+              -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p DB_TESTDATA=true
+          - name: admin
+            file: admin/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom-test.nrs.gov.bc.ca
+          - name: db
+            file: db/openshift.deploy.yml
+            overwrite: false
+          - name: init
+            file: libs/openshift.init.yml
+            overwrite: false
+          - name: public
+            file: public/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom-test.nrs.gov.bc.ca
     steps:
-      - uses: actions/checkout@v3
-      - name: Deploy
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: ${{ matrix.overwrite }}
+          penetration_test: false
+          parameters:
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
+            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+
+  certbot-test:
+    name: Certbot
+    needs: [deploy-test]
+    environment: test
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Run Certbot
         run: |
           set -eux
 
           # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
-
-          # Init database secret, only if necessary
-          oc process -f .github/openshift/init.database.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "Database secret already initialized"
-
-          # Init database backups cronjob, only if necessary
-          oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
-            -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            | oc create -f - || \
-            echo "Database backup cronjob already initialized"
-
-          # Init API data encryption key, only if necessary
-          oc process -f .github/openshift/init.api.yml -p ZONE=${{ env.ZONE }} \
-            | oc create -f - || \
-            echo "API secret already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
-          fi
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=true \
-            -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth" \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ vars.OC_NAMESPACE }}
 
           # Run certbot with one-off job
           oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
-  zap-api:
-    name: API Pen Tests
-    needs:
-      - deploy-test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
-        with:
-          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/api
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
-
-  zap-admin:
-    name: Admin Pen Tests
-    needs:
-      - deploy-test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
-        with:
-          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/admin
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
-
-  zap-public:
-    name: Public Pen Tests
-    needs:
-      - deploy-test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: ZAP Scan
-        uses: zaproxy/action-full-scan@v0.4.0
-        with:
-          target: https://${{ env.NAME }}-test.apps.silver.devops.gov.bc.ca/public
-          cmd_options: "-a"
-          allow_issue_writing: false
-          fail_action: false
-
   deploy-prod:
-    name: PROD Deployment
-    needs:
-      - zap-api
-      - zap-admin
-      - zap-public
-    runs-on: ubuntu-22.04
-    environment:
-      name: prod
+    name: TEST Deploys
+    needs: [codeql]
+    environment: prod
     env:
       ZONE: prod
-      PREV: test
-      IMG: ${{ github.repository }}:test
-      URL: fom.nrs.gov.bc.ca
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        name: [api, admin, db, init, public]
+        include:
+          - name: api
+            file: api/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom.nrs.gov.bc.ca
+          - name: admin
+            file: admin/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom.nrs.gov.bc.ca
+          - name: db
+            file: db/openshift.deploy.yml
+            overwrite: false
+          - name: init
+            file: libs/openshift.init.yml
+            overwrite: false
+          - name: public
+            file: public/openshift.deploy.yml
+            overwrite: true
+            parameters: -p URL=fom.nrs.gov.bc.ca
     steps:
-      - uses: actions/checkout@v3
-      - name: Deploy
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+        with:
+          file: ${{ matrix.file }}
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          overwrite: ${{ matrix.overwrite }}
+          penetration_test: false
+          parameters:
+            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:test
+            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+
+  certbot-prod:
+    name: Certbot
+    needs: [deploy-prod]
+    environment: prod
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Run Certbot
         run: |
           set -eux
 
           # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ secrets.OC_SERVER }}
-          oc project ${{ secrets.OC_NAMESPACE }}
+          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
+          oc project ${{ vars.OC_NAMESPACE }}
 
-          # Db backups cronjob, only if necessary
-          oc process -f .github/openshift/deploy.backups.yml -p ZONE=${{ env.ZONE }} \
-            -p IMAGE_NAMESPACE=${{ secrets.OC_NAMESPACE }} \
-            | oc create -f - || \
-            echo "Database backup cronjob already initialized"
-
-          # Clear stale images for import/replacement
-          if [ $(oc get is -l app=${{ env.NAME }}-${{ env.ZONE }} -o name | grep -v database | wc -l) -gt 0 ]; then
-            oc delete is -l app=${{ env.NAME }}-${{ env.ZONE }}
-          fi
-
-          # Process and apply deployment templates
-          oc process -f .github/openshift/deploy.database.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-db \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.api.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-api \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            -p NAMESPACE=${{ secrets.OC_NAMESPACE }} -p DB_TESTDATA=false \
-            -p SITEMINDER_URL="https://logon7.gov.bc.ca" -p KEYCLOAK_URL="https://oidc.gov.bc.ca/auth" \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.admin.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-admin \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          oc process -f .github/openshift/deploy.public.yml -p ZONE=${{ env.ZONE }} -p PROMOTE=${{ env.IMG }}-public \
-            -p URL=${{ env.URL }} -p CERTBOT=true -p REPLICA_COUNT=3 \
-            | oc apply -f -
-
-          # Follow any active rollouts (see deploymentconfigs)
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-db -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-api -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-admin -w
-          oc rollout status dc/${{ env.NAME }}-${{ env.ZONE }}-public -w
-
-          # Remove completed build runs, build pods and deployment pods
-          oc delete po --field-selector=status.phase==Succeeded
+          # Run certbot with one-off job
+          oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
   image-promotions:
     name: Promote images to PROD
-    needs:
-      - deploy-prod
+    needs: [deploy-prod]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
@@ -407,6 +176,6 @@ jobs:
       - uses: shrink/actions-docker-registry-tag@v3
         with:
           registry: ghcr.io
-          repository: ${{ github.repository }}
-          target: test-${{ matrix.component }}
-          tags: prod-${{ matrix.component }}
+          repository: ${{ github.repository }}/${{ matrix.package }}
+          target: test
+          tags: prod
