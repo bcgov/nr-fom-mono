@@ -178,6 +178,7 @@ export class CognitoService {
       return null;
     }
     const user = User.convertAwsCognitoDecodedTokenToUser(token);
+    console.log("User " + JSON.stringify(user));
     return user;
   }
 
