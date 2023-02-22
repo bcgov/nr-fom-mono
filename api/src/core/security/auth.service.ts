@@ -5,7 +5,7 @@ import { JwksClient } from 'jwks-rsa';
 import { PinoLogger } from 'nestjs-pino';
 
 import { User } from '@utility/security/user';
-import * as aswCognitoEnvJson from '../../../aws-cognito-env.json';
+import * as aswCognitoEnvJson from '../../assets/aws-cognito-env.json';
 
 // Both of these decorators requires the global AuthInterceptor to add the User object to the request. If no bearer token is provided, the user object will be null.
 /**
