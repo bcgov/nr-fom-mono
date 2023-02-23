@@ -238,7 +238,7 @@ objects:
                 periodSeconds: 30
                 timeoutSeconds: 5
               volumeMounts:
-                - mountPath: /dist/api/src/assets
+                - mountPath: /app/dist/api/src/assets
                   subPath: aws-cognito-env.json
                   name: aws-cognito-env-config
           volumes:
