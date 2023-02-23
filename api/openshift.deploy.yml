@@ -93,8 +93,8 @@ objects:
           "oauth": {
             "domain": "dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com",
             "scope": ["openid"],
-            "redirectSignIn": "https://fom-287.apps.silver.devops.gov.bc.ca/admin/",
-            "redirectSignOut": "https://fom-287.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
+            "redirectSignIn": "https://fom-313.apps.silver.devops.gov.bc.ca/admin",
+            "redirectSignOut": "https://fom-313.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
             "responseType": "code"
           },
           "federationTarget": "COGNITO_USER_POOLS"
