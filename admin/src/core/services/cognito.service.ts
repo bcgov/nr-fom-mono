@@ -76,15 +76,28 @@ export class CognitoService {
     // console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
     // Amplify.configure(this.awsCognitoConfig);
 
-    const tempAmplifyConfig = {...this.awsCognitoConfig, cookieStorage: {
-        domain: 'fom-313.apps.silver.devops.gov.bc.ca',
-        secure: true,
-        path: '/',
-        expires: 365,
-        sameSite: "none"
-    }};
-    console.log("Using cognito config = " + JSON.stringify(tempAmplifyConfig));
-    Amplify.configure(tempAmplifyConfig);
+    Amplify.configure({
+        Auth: {
+            identityPoolId: 'ca-central-1_yds9Vci8g',
+            region: 'ca-central-1',
+            userPoolId: 'ca-central-1_yds9Vci8g',
+            userPoolWebClientId: '6c9ieu27ik29mq75jeb7rrbdls',
+            mandatorySignIn: true,
+            cookieStorage: {
+                domain: 'fom-313.apps.silver.devops.gov.bc.ca',
+                secure: true
+            },
+            authenticationFlowType: "COGNITO_USER_POOLS",
+            oauth: {
+                "domain": "dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com",
+                "scope": ["openid"],
+                "redirectSignIn": "https://fom-313.apps.silver.devops.gov.bc.ca/admin",
+                "redirectSignOut": "https://fom-313.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
+                "responseType": "code"
+            }
+        }
+    })
+    console.log("Using cognito config = " + JSON.stringify(Auth.configure()));
 
     Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
