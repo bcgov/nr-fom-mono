@@ -59,6 +59,7 @@ export class CognitoService {
       this.setAuthInProgress(true)
     }
     else {
+      await Auth.currentAuthenticatedUser();
       await this.refreshToken();
       this.initialized = true;
       return Promise.resolve(null);
