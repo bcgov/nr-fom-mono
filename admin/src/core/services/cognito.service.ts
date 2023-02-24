@@ -77,8 +77,11 @@ export class CognitoService {
     // Amplify.configure(this.awsCognitoConfig);
 
     const tempAmplifyConfig = {...this.awsCognitoConfig, cookieStorage: {
-          domain: 'fom-313.apps.silver.devops.gov.bc.ca',
-          secure: true
+        domain: 'fom-313.apps.silver.devops.gov.bc.ca',
+        secure: true,
+        path: '/',
+        expires: 365,
+        sameSite: "none"
     }};
     console.log("Using cognito config = " + JSON.stringify(tempAmplifyConfig));
     Amplify.configure(tempAmplifyConfig);
