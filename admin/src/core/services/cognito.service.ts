@@ -73,8 +73,15 @@ export class CognitoService {
       .get(keycloakUrl, { observe: "body", responseType: "json" })
       .toPromise() as KeycloakConfig;
 
-    console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
-    Amplify.configure(this.awsCognitoConfig);
+    // console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
+    // Amplify.configure(this.awsCognitoConfig);
+
+    const tempAmplifyConfig = {...this.awsCognitoConfig, cookieStorage: {
+          domain: 'fom-313.apps.silver.devops.gov.bc.ca',
+          secure: true
+    }};
+    console.log("Using cognito config = " + JSON.stringify(tempAmplifyConfig));
+    Amplify.configure(tempAmplifyConfig);
 
     Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
