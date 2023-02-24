@@ -1,6 +1,6 @@
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { Amplify } from "aws-amplify";
+import { Amplify, Auth } from "aws-amplify";
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
@@ -16,8 +16,10 @@ Amplify.configure({
     "scope": [
       "openid"
     ],
-    "redirectSignIn": "https://oidcdebuggersecure-3d5c3f-dev.apps.silver.devops.gov.bc.ca/",
+    "redirectSignIn": "https://fom-316.apps.silver.devops.gov.bc.ca/admin",
     "redirectSignOut": "https://fom-316.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
+    // "redirectSignIn": "http://localhost:4200/admin",
+    // "redirectSignOut": "http://localhost:4200/admin/not-authorized?loggedout=true",
     "responseType": "code"
   },
   "federationTarget": "COGNITO_USER_POOLS",
@@ -26,6 +28,15 @@ Amplify.configure({
   "aws_user_pools_id": "ca-central-1_yds9Vci8g",
   "aws_user_pools_web_client_id": "6c9ieu27ik29mq75jeb7rrbdls"
 });
+
+Auth.currentAuthenticatedUser()
+  .then(async (_userData) => {
+    console.log("_userData", _userData);
+  })
+  .catch(async (error) => {
+    console.log("There is no current user", error);
+    Auth.federatedSignIn();
+  });
 
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch((err) => console.error(err));

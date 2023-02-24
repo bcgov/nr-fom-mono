@@ -76,12 +76,12 @@ const apiConfig = new Configuration({
     //   multi: true
     // },
     CognitoService,
-    {
-      provide: APP_INITIALIZER,
-      useFactory: cognitoFactory,
-      deps: [CognitoService],
-      multi: true,
-    },
+    // {
+    //   provide: APP_INITIALIZER,
+    //   useFactory: cognitoFactory,
+    //   deps: [CognitoService],
+    //   multi: true,
+    // },
     // Order of these interceptors is critical - token interceptor must be last, after error interceptor.
     {
       provide: HTTP_INTERCEPTORS,
