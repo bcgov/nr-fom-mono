@@ -75,6 +75,7 @@ export class CognitoService {
 
     console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
     Amplify.configure(this.awsCognitoConfig);
+
     Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
     if (!this.awsCognitoConfig.enabled) {
@@ -153,12 +154,14 @@ export class CognitoService {
 
   public async login() {
     try {
-      await Auth.federatedSignIn();
+      console.log("Navigate to user login.");
+      const signedInCred = await Auth.federatedSignIn();
+      console.log("signedInCred: ", signedInCred);
+      return signedInCred;
     }
     catch (error) {
       console.log(`Cognito SignIn failed: `, error)
     }
-    console.log("Navigate to user login.");
   }
 
   public async logout() {
