@@ -16,8 +16,8 @@ Amplify.configure({
     "scope": [
       "openid"
     ],
-    "redirectSignIn": "http://fom-287.apps.silver.devops.gov.bc.ca/admin",
-    "redirectSignOut": "https://fom-287.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
+    "redirectSignIn": "http://fom-316.apps.silver.devops.gov.bc.ca/admin",
+    "redirectSignOut": "https://fom-316.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
     "responseType": "code"
   },
   "federationTarget": "COGNITO_USER_POOLS",
