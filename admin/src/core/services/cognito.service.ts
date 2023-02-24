@@ -73,31 +73,31 @@ export class CognitoService {
       .get(keycloakUrl, { observe: "body", responseType: "json" })
       .toPromise() as KeycloakConfig;
 
-    // console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
-    // Amplify.configure(this.awsCognitoConfig);
+    console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
+    Amplify.configure(this.awsCognitoConfig);
 
-    Amplify.configure({
-        Auth: {
-            identityPoolId: 'ca-central-1_yds9Vci8g',
-            region: 'ca-central-1',
-            userPoolId: 'ca-central-1_yds9Vci8g',
-            userPoolWebClientId: '6c9ieu27ik29mq75jeb7rrbdls',
-            mandatorySignIn: true,
-            cookieStorage: {
-                domain: 'fom-313.apps.silver.devops.gov.bc.ca',
-                secure: true
-            },
-            authenticationFlowType: "COGNITO_USER_POOLS",
-            oauth: {
-                "domain": "dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com",
-                "scope": ["openid"],
-                "redirectSignIn": "https://fom-313.apps.silver.devops.gov.bc.ca/admin",
-                "redirectSignOut": "https://fom-313.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
-                "responseType": "code"
-            }
-        }
-    })
-    console.log("Using cognito config = " + JSON.stringify(Auth.configure()));
+    // Amplify.configure({
+    //     Auth: {
+    //         identityPoolId: 'ca-central-1_yds9Vci8g',
+    //         region: 'ca-central-1',
+    //         userPoolId: 'ca-central-1_yds9Vci8g',
+    //         userPoolWebClientId: '6c9ieu27ik29mq75jeb7rrbdls',
+    //         mandatorySignIn: true,
+    //         // cookieStorage: {
+    //         //     domain: 'fom-313.apps.silver.devops.gov.bc.ca',
+    //         //     secure: true
+    //         // },
+    //         authenticationFlowType: "COGNITO_USER_POOLS",
+    //         oauth: {
+    //             "domain": "dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com",
+    //             "scope": ["openid"],
+    //             "redirectSignIn": "https://fom-313.apps.silver.devops.gov.bc.ca/admin",
+    //             "redirectSignOut": "https://fom-313.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
+    //             "responseType": "code"
+    //         }
+    //     }
+    // })
+    // console.log("Using cognito config = " + JSON.stringify(Auth.configure()));
 
     Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
@@ -111,7 +111,8 @@ export class CognitoService {
       if (this.loggedOut === "true") {
         resolve(null);
       } else {
-        Auth.currentAuthenticatedUser()
+        // Auth.currentAuthenticatedUser()
+        Auth.currentUserPoolUser()
           .then(async (_userData) => {
             console.log("_userData", _userData);
             if (!_userData) {
