@@ -16,7 +16,7 @@ Amplify.configure({
     "scope": [
       "openid"
     ],
-    "redirectSignIn": "http://fom-316.apps.silver.devops.gov.bc.ca/admin",
+    "redirectSignIn": "https://fom-316.apps.silver.devops.gov.bc.ca/admin",
     "redirectSignOut": "https://fom-316.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
     "responseType": "code"
   },
