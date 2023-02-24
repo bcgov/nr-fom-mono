@@ -19,89 +19,6 @@ export class CognitoService {
 
   constructor(private configService: ConfigService, private http: HttpClient) {}
 
-  isAuthInProgress(): boolean {
-    return localStorage.getItem('authInProgress') === 'true'
-  }
-
-  setAuthInProgress(authInProgress: boolean) {
-    localStorage.setItem('authInProgress', authInProgress? 'true': undefined)
-  }
-
-  /*
-      See Aws-Amplify documenation for intgration: 
-      https://docs.amplify.aws/lib/auth/social/q/platform/js/
-      https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
-  */
-  public async init(): Promise<any> {
-
-    this.loggedOut = this.getParameterByName("loggedout");
-    if (this.loggedOut === "true") {
-      this.initialized = false;
-      return null;
-    }
-
-    await this.obtainAuthConfig();
-    console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
-
-    // Local development using fakeUser data.
-    if (!this.awsCognitoConfig.enabled) {
-      this.fakeUser = getFakeUser();
-      this.initialized = true;
-      return null;
-    }
-
-    // When Auth is enabled.
-    Amplify.configure(this.awsCognitoConfig);
-    Amplify.Logger.LOG_LEVEL = 'DEBUG';
-    if ( !this.isAuthInProgress()) {
-      console.log("No Token... logging in")
-      this.login();
-      this.setAuthInProgress(true)
-    }
-    else {
-      await Auth.currentAuthenticatedUser();
-      await this.refreshToken();
-      this.initialized = true;
-      return Promise.resolve(null);
-    }
-
-
-    // return new Promise(async (resolve, reject) => {
-    //   if (this.loggedOut === "true") {
-    //     resolve(null);
-    //   } else {
-    //     Auth.currentAuthenticatedUser()
-    //       .then(async (_userData) => {
-    //         console.log("_userData", _userData);
-    //         if (!_userData) {
-    //           await this.login();
-    //         } else {
-    //           await this.refreshToken();
-    //         }
-    //         this.initialized = true;
-    //         resolve(null);
-    //       })
-    //       .catch(async (error) => {
-    //         console.log("There is no current user", error);
-    //         await this.login();
-    //         resolve(null);
-    //       });
-    //   }
-    // });
-  }
-
-  async obtainAuthConfig() {
-    let url: string = this.configService.getApiBasePath() + "/api/awsCognitoConfig";
-    this.awsCognitoConfig = await this.http
-        .get(url, { observe: "body", responseType: "json" })
-        .toPromise() as AwsCognitoConfig;
-
-    let keycloakUrl: string = this.configService.getApiBasePath() + "/api/keycloakConfig";
-    this.keycloakConfig = await this.http
-        .get(keycloakUrl, { observe: "body", responseType: "json" })
-        .toPromise() as KeycloakConfig;
-  }
-
   private getParameterByName(name) {
     const url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
@@ -131,15 +48,75 @@ export class CognitoService {
     };
   }
 
-  // /**
-  //  * Amplify method currentSession() will automatically refresh the accessToken and idToken
-  //  * if tokens are "expired" and a valid refreshToken presented.
-  //  *   // console.log("currentAuthToken: ", currentAuthToken)
-  //  *   // console.log("ID Token: ", currentAuthToken.getIdToken().getJwtToken())
-  //  *   // console.log("Access Token: ", currentAuthToken.getAccessToken().getJwtToken())
-  //  *
-  //  * Automatically logout if unable to get currentSession().
-  //  */
+  /*
+      See Aws-Amplify documenation for intgration: 
+      https://docs.amplify.aws/lib/auth/social/q/platform/js/
+      https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
+  */
+  public async init(): Promise<any> {
+
+    this.loggedOut = this.getParameterByName("loggedout");
+    if (this.loggedOut === "true") {
+      this.initialized = false;
+      return null;
+    }
+
+    let url: string =
+      this.configService.getApiBasePath() + "/api/awsCognitoConfig";
+    this.awsCognitoConfig = await this.http
+      .get(url, { observe: "body", responseType: "json" })
+      .toPromise() as AwsCognitoConfig;
+
+    let keycloakUrl: string =
+      this.configService.getApiBasePath() + "/api/keycloakConfig";
+    this.keycloakConfig = await this.http
+      .get(keycloakUrl, { observe: "body", responseType: "json" })
+      .toPromise() as KeycloakConfig;
+
+    console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
+    Amplify.configure(this.awsCognitoConfig);
+
+    Amplify.Logger.LOG_LEVEL = 'DEBUG';
+
+    if (!this.awsCognitoConfig.enabled) {
+      this.fakeUser = getFakeUser();
+      this.initialized = true;
+      return null;
+    }
+
+    return new Promise(async (resolve, reject) => {
+      if (this.loggedOut === "true") {
+        resolve(null);
+      } else {
+        Auth.currentAuthenticatedUser()
+          .then(async (_userData) => {
+            console.log("_userData", _userData);
+            if (!_userData) {
+              await this.login();
+            } else {
+              await this.refreshToken();
+            }
+            this.initialized = true;
+            resolve(null);
+          })
+          .catch(async (error) => {
+            console.log("There is no current user", error);
+            await this.login();
+            resolve(null);
+          });
+      }
+    });
+  }
+
+  /**
+   * Amplify method currentSession() will automatically refresh the accessToken and idToken
+   * if tokens are "expired" and a valid refreshToken presented.
+   *   // console.log("currentAuthToken: ", currentAuthToken)
+   *   // console.log("ID Token: ", currentAuthToken.getIdToken().getJwtToken())
+   *   // console.log("Access Token: ", currentAuthToken.getAccessToken().getJwtToken())
+   *
+   * Automatically logout if unable to get currentSession().
+   */
   async refreshToken() {
     try {
       console.log("Refreshing Token...");
@@ -147,7 +124,6 @@ export class CognitoService {
       console.log("currentAuthToken: ", currentAuthToken);
 
       this.cognitoAuthToken = this.parseToken(currentAuthToken);
-      this.setAuthInProgress(false)
     } catch (error) {
       console.error("Problem refreshing token or token is invalidated:", error);
       // logout and redirect to login.
@@ -179,7 +155,9 @@ export class CognitoService {
   public async login() {
     try {
       console.log("Navigate to user login.");
-      await Auth.federatedSignIn();
+      const signedInCred = await Auth.federatedSignIn();
+      console.log("signedInCred: ", signedInCred);
+      return signedInCred;
     }
     catch (error) {
       console.log(`Cognito SignIn failed: `, error)
