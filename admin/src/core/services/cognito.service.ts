@@ -179,9 +179,7 @@ export class CognitoService {
   public async login() {
     try {
       console.log("Navigate to user login.");
-      const signedInCred = await Auth.federatedSignIn();
-      console.log("signedInCred: ", signedInCred);
-      return signedInCred;
+      await Auth.federatedSignIn();
     }
     catch (error) {
       console.log(`Cognito SignIn failed: `, error)
