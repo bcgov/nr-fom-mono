@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { Amplify, Auth } from "aws-amplify";
+import { Amplify, Auth, Logger } from "aws-amplify";
 import { AwsCognitoConfig, KeycloakConfig } from "@api-client";
 import { User } from "@utility/security/user";
 import { ConfigService } from "@utility/services/config.service";
@@ -75,6 +75,7 @@ export class CognitoService {
 
     console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
     Amplify.configure(this.awsCognitoConfig);
+    Amplify.Logger.LOG_LEVEL = 'DEBUG';
 
     if (!this.awsCognitoConfig.enabled) {
       this.fakeUser = getFakeUser();
@@ -151,7 +152,12 @@ export class CognitoService {
   }
 
   public async login() {
-    await Auth.federatedSignIn();
+    try {
+      await Auth.federatedSignIn();
+    }
+    catch (error) {
+      console.log(`Cognito SignIn failed: `, error)
+    }
     console.log("Navigate to user login.");
   }
 
