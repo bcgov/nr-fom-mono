@@ -109,8 +109,8 @@ objects:
           "oauth": {
             "domain": "${AWS_COGNITO_DOMAIN}.auth.ca-central-1.amazoncognito.com",
             "scope": ["openid"],
-            "redirectSignIn": "https://fom-313.apps.silver.devops.gov.bc.ca/admin",
-            "redirectSignOut": "https://fom-313.apps.silver.devops.gov.bc.ca/admin/not-authorized?loggedout=true",
+            "redirectSignIn": "https://${URL}/admin",
+            "redirectSignOut": "https://${URL}/admin/not-authorized?loggedout=true",
             "responseType": "code"
           },
           "federationTarget": "COGNITO_USER_POOLS"
