@@ -92,15 +92,15 @@ export class CognitoService {
             console.log("_userData", _userData);
             if (!_userData) {
               await this.login();
-            } 
-            await this.refreshToken();
+            } else {
+              await this.refreshToken();
+            }
             this.initialized = true;
             resolve(null);
           })
           .catch(async (error) => {
             console.log("There is no current user", error);
             await this.login();
-            await this.refreshToken();
             resolve(null);
           });
       }
