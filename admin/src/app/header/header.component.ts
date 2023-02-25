@@ -55,7 +55,6 @@ export class HeaderComponent implements OnInit {
 
   async navigateToLogout() {
     await this.cognitoService.logout();
-    window.location.href = this.cognitoService.getLogoutURL();
   }
 
   toggleNav() {
