@@ -61,6 +61,7 @@ jobs:
               -p URL=fom-test.nrs.gov.bc.ca -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth"
               -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
               -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p DB_TESTDATA=true
+              -p AWS_USER_POOLS_WEB_CLIENT_ID="5da3feaatgugse9c5tdkhsq5r5"
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
@@ -120,7 +121,9 @@ jobs:
           - name: api
             file: api/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=fom.nrs.gov.bc.ca
+            parameters: 
+              -p URL=fom.nrs.gov.bc.ca
+              -p AWS_USER_POOLS_WEB_CLIENT_ID="639rhc2m2q1ml6bnk88e7qd6g1"
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true

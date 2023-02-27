@@ -1,15 +1,15 @@
 {
     "enabled": false,
-    "aws_cognito_domain": "dev-fam-user-pool-domain",
+    "aws_cognito_domain": "prod-fam-user-pool-domain",
     "aws_cognito_region": "ca-central-1",
-    "aws_user_pools_id": "ca-central-1_yds9Vci8g",
-    "aws_user_pools_web_client_id": "6c9ieu27ik29mq75jeb7rrbdls",
+    "aws_user_pools_id": "ca-central-1_RCQQWwBBS",
+    "aws_user_pools_web_client_id": "lsg00u7bv7qm2p92qf1f8t255",
     "aws_mandatory_sign_in": "enable",
     "oauth": {
-        "domain": "dev-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com",
+        "domain": "prod-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com",
         "scope": ["openid"],
         "redirectSignIn": "http://localhost:4200/admin",
-        "redirectSignOut": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=http://localhost:4200/admin/not-authorized?loggedout=true",
+        "redirectSignOut": "http://localhost:4200/admin/not-authorized?loggedout=true",
         "responseType": "code"
     },
     "federationTarget": "COGNITO_USER_POOLS"
