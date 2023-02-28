@@ -8,7 +8,7 @@
     "oauth": {
         "domain": "prod-fam-user-pool-domain.auth.ca-central-1.amazoncognito.com",
         "scope": ["openid"],
-        "redirectSignIn": "http://localhost:4200/admin",
+        "redirectSignIn": "http://localhost:4200/admin/search",
         "redirectSignOut": "http://localhost:4200/admin/not-authorized?loggedout=true",
         "responseType": "code"
     },
