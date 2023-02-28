@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "dist/admin",
-    "types": []
+    "types": ["node"]
   },
   "exclude": ["**/*.spec.ts"],
   "files": ["src/main.ts", "src/polyfills.ts"]
