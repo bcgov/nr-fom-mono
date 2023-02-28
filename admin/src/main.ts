@@ -29,15 +29,6 @@ Amplify.configure({
   "aws_user_pools_web_client_id": "6c9ieu27ik29mq75jeb7rrbdls"
 });
 
-Auth.currentAuthenticatedUser()
-  .then(async (_userData) => {
-    console.log("_userData", _userData);
-  })
-  .catch(async (error) => {
-    console.log("There is no current user", error);
-    Auth.federatedSignIn();
-  });
-
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch((err) => console.error(err));
 

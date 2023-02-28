@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {StateService} from '../core/services/state.service';
 import {Observable} from 'rxjs';
+import { Auth } from "aws-amplify";
 
 @Component({
   selector: 'app-root',
@@ -18,5 +19,17 @@ export class AppComponent implements OnInit {
     this.stateSvc.setCodeTables(codeTables);
     this.stateSvc.setReady();
     this.isReady$ = this.stateSvc.isReady$;
+
+    console.log('123');
+
+    Auth.currentAuthenticatedUser()
+      .then(async (_userData) => {
+        console.log("_userData", _userData);
+      })
+      .catch(async (error) => {
+        console.log("There is no current user", error);
+        Auth.federatedSignIn();
+    });
+
   }
 }
