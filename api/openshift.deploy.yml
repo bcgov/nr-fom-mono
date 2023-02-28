@@ -109,7 +109,7 @@ objects:
           "oauth": {
             "domain": "${AWS_COGNITO_DOMAIN}.auth.ca-central-1.amazoncognito.com",
             "scope": ["openid"],
-            "redirectSignIn": "https://${URL}/admin",
+            "redirectSignIn": "https://${URL}/admin/search",
             "redirectSignOut": "https://${URL}/admin/not-authorized?loggedout=true",
             "responseType": "code"
           },
