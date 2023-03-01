@@ -85,6 +85,7 @@ export class CognitoService {
 
     return new Promise(async (resolve, reject) => {
       if (this.loggedOut === "true") {
+        console.log("stay logout");
         resolve(null);
       } else {
         // Auth.currentAuthenticatedUser()
@@ -194,34 +195,6 @@ export class CognitoService {
       return JSON.stringify(this.fakeUser);
     }
     return this.cognitoAuthToken;
-  }
-
-  public getLogoutURL(): string {
-    const postLogoutUrl =
-      window.location.origin + "/admin/not-authorized?loggedout=true";
-
-    if (!this.awsCognitoConfig.enabled) {
-      // Not using cognito.
-      return postLogoutUrl;
-    }
-
-    const cognitoLogoutUrl =
-      `${this.awsCognitoConfig.oauth.domain}/logout?client_id=${this.awsCognitoConfig.aws_user_pools_web_client_id}` +
-      `&logout_uri=${postLogoutUrl}`;
-
-    const keycloakLogoutUrl =
-      this.keycloakConfig.url +
-      "/realms/" +
-      this.keycloakConfig.realm +
-      "/protocol/openid-connect/logout?post_logout_redirect_uri=" +
-      cognitoLogoutUrl;
-
-    const siteMinderLogoutUrl =
-      this.keycloakConfig.siteMinderUrl +
-      "/clp-cgi/logoff.cgi?retnow=1&returl=" +
-      keycloakLogoutUrl;
-
-    return siteMinderLogoutUrl;
   }
 
   public getConfig() {
