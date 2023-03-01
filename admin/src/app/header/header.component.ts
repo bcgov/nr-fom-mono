@@ -43,7 +43,7 @@ export class HeaderComponent implements OnInit {
     if (!this.user || !this.user.isAuthorizedForAdminSite()) {
       // If on not-authorized page, or if just logged out, don't redirect to not-authorized page as would cause an infinite loop.
       if (window.location.href.indexOf('/not-authorized') == -1 && window.location.href.indexOf("loggedout=true") == -1) {
-        this.router.navigate(['/not-authorized']);
+        this.router.navigate(['/not-authorized'], { queryParams: { loggedout: true } } );
       }
     }
   }
