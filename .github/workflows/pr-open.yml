@@ -102,6 +102,7 @@ jobs:
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca -p SITEMINDER_URL="https://logontest7.gov.bc.ca"
               -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="lsg00u7bv7qm2p92qf1f8t255"
+              -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true

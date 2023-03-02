@@ -78,6 +78,10 @@ parameters:
     description: FAM Authentication Cognito user pools client ID
     value: "lsg00u7bv7qm2p92qf1f8t255"
     required: true
+  - name: LOGOUT_CHAIN_URL
+    description: FAM Authentication Cognito logout chain url for Siteminder and Keycloak
+    value: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -110,7 +114,7 @@ objects:
             "domain": "${AWS_COGNITO_DOMAIN}.auth.ca-central-1.amazoncognito.com",
             "scope": ["openid"],
             "redirectSignIn": "https://${URL}/admin/search",
-            "redirectSignOut": "https://${URL}/admin/not-authorized?loggedout=true",
+            "redirectSignOut": "${LOGOUT_CHAIN_URL}https://${URL}/admin/not-authorized?loggedout=true",
             "responseType": "code"
           },
           "federationTarget": "COGNITO_USER_POOLS"
