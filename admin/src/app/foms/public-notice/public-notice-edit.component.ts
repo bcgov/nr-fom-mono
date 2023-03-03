@@ -10,8 +10,8 @@ import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
 import { lastValueFrom, map, Subject, switchMap } from 'rxjs';
 // import { KeycloakService } from "../../../core/services/keycloak.service";
-import { CognitoService } from "../../../core/services/cognito.service";
-import { StateService } from '../../../core/services/state.service';
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { StateService } from '@admin-core/services/state.service';
 import { PublicNoticeForm } from './public-notice.form';
 import moment = require('moment');
 

@@ -89,7 +89,6 @@ export class CognitoService {
       } else {
         Auth.currentAuthenticatedUser()
           .then(async (_userData) => {
-            console.log("_userData", _userData);
             if (!_userData) {
               await this.login();
             } else {
@@ -99,7 +98,7 @@ export class CognitoService {
             resolve(null);
           })
           .catch(async (error) => {
-            console.log("There is no current user", error);
+            console.log(error);
             await this.login();
             resolve(null);
           });
@@ -118,7 +117,6 @@ export class CognitoService {
    */
   async refreshToken() {
     try {
-      console.log("Refreshing Token...");
       const currentAuthToken: CognitoUserSession = await Auth.currentSession();
       console.log("currentAuthToken: ", currentAuthToken);
 
@@ -134,7 +132,6 @@ export class CognitoService {
     return new Observable((observer) => {
       Auth.currentSession()
         .then((refreshed) => {
-          console.log("Cognito token refreshed?:", refreshed);
           observer.next();
           observer.complete();
         })
@@ -153,16 +150,16 @@ export class CognitoService {
 
   public async login() {
     await Auth.federatedSignIn();
-    console.log("Navigate to user login.");
   }
 
   public async logout() {
-    console.log("User logging out.");
     if (!this.awsCognitoConfig.enabled) {
       this.fakeUser = null;
+      console.log("User logged out.");
       return;
     }
     await Auth.signOut();
+    console.log("User logged out.");
   }
 
   public getUser() {

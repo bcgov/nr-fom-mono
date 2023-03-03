@@ -160,14 +160,6 @@ export class AuthService {
               cache: true, // Accept cache defaults
               rateLimit: true,
             });
-
-            // TODO: Remove this when logout does not need these.
-            // Currently for logout chain redirection to work properly to siteminder/Keycloak, these Keycloak settings are 
-            // temporary set here for FOM frontend to setup nested chianed logout url to pass during logout process. 
-            // When there is a way for Cognito to log user out from Keycloak, this should be removed.
-            this.keyCloakconfig.realm = process.env.KEYCLOAK_REALM || 'ichqx89w';
-            this.keyCloakconfig.url = process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth';
-            this.keyCloakconfig.siteMinderUrl = process.env.SITEMINDER_URL || 'https://logontest7.gov.bc.ca';
         }
     }
 

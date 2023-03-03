@@ -108,7 +108,7 @@ jobs:
           oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
   deploy-prod:
-    name: TEST Deploys
+    name: PROD Deploys
     needs: [codeql]
     environment: prod
     env:
