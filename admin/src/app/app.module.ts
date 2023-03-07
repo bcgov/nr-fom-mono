@@ -75,7 +75,6 @@ const apiConfig = new Configuration({
     //   deps: [KeycloakService],
     //   multi: true
     // },
-    CognitoService,
     {
       provide: APP_INITIALIZER,
       useFactory: cognitoFactory,
