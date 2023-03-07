@@ -8,7 +8,9 @@ import { ConfigService } from "@utility/services/config.service";
 import { getFakeUser } from "./mock-user";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class CognitoService {
   private awsCognitoConfig: AwsCognitoConfig;
   private keycloakConfig: KeycloakConfig;
@@ -82,28 +84,26 @@ export class CognitoService {
       return null;
     }
 
-    return new Promise(async (resolve, reject) => {
-      if (this.loggedOut === "true") {
-        console.log("stay logout");
-        resolve(null);
-      } else {
-        Auth.currentAuthenticatedUser()
-          .then(async (_userData) => {
-            if (!_userData) {
-              await this.login();
-            } else {
-              await this.refreshToken();
-            }
-            this.initialized = true;
+    return new Promise<any>((resolve) => {
+        if (this.loggedOut === "true") {
             resolve(null);
-          })
-          .catch(async (error) => {
-            console.log(error);
-            await this.login();
-            resolve(null);
-          });
-      }
+        }
+        else {
+            return Auth.currentAuthenticatedUser()
+            .then(async () => {
+                console.log("Signed in...");
+                await this.refreshToken();
+                this.initialized = true;
+                resolve(null)
+            })
+            .catch((error) => {
+                console.log(error);
+                this.login();
+                // resolve(null)
+            })            
+        }
     });
+
   }
 
   /**
@@ -153,13 +153,12 @@ export class CognitoService {
   }
 
   public async logout() {
+    console.log("User logged out.");
     if (!this.awsCognitoConfig.enabled) {
       this.fakeUser = null;
-      console.log("User logged out.");
       return;
     }
     await Auth.signOut();
-    console.log("User logged out.");
   }
 
   public getUser() {

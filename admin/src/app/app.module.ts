@@ -35,21 +35,13 @@ import {RxReactiveFormsModule} from '@rxweb/reactive-form-validators';
 //   return () => keycloakService.init();
 // }
 
-export function cognitoFactory(cognitoService: CognitoService) {
+function cognitoFactory(cognitoService: CognitoService) {
   return () => cognitoService.init();
 }
 
 const apiConfig = new Configuration({
   basePath: retrieveApiBasePath()
 })
-
-function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function delayInit(): Promise<any> {
-    return sleep(2000)
-}
 
 @NgModule({
   declarations: [
@@ -89,17 +81,6 @@ function delayInit(): Promise<any> {
       useFactory: cognitoFactory,
       deps: [CognitoService],
       multi: true,
-    },
-    {
-        /**
-         * Note: This is a bit hacky. Add delay here to wait for previous CognitoService to 
-         * initialize Amplify and redirect to Cognito before Angular gets a chance to load a page.
-         * If in future a solution for properly awaiting to resolve CognitoService.init() is found, 
-         * then this delay can be removed.
-         */
-        provide: APP_INITIALIZER,
-        useFactory: () => delayInit,
-        multi: true
     },
     // Order of these interceptors is critical - token interceptor must be last, after error interceptor.
     {
