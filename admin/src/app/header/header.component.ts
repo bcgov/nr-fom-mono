@@ -54,7 +54,7 @@ export class HeaderComponent implements OnInit {
   // }
 
   async navigateToLogout() {
-    if (!this.cognitoService.getConfig().enabled) {
+    if (!this.cognitoService.awsCognitoConfig.enabled) {
         window.location.href = window.location.origin + '/admin/not-authorized?loggedout=true';
         return;
     }

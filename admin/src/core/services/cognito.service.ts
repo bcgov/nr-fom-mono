@@ -12,7 +12,7 @@ import type { CognitoUserSession } from "amazon-cognito-identity-js";
     providedIn: 'root'
 })
 export class CognitoService {
-  private awsCognitoConfig: AwsCognitoConfig;
+  public awsCognitoConfig: AwsCognitoConfig;
   private keycloakConfig: KeycloakConfig;
   private cognitoAuthToken: object;
   private loggedOut: string;
@@ -20,6 +20,51 @@ export class CognitoService {
   public initialized: boolean = false;
 
   constructor(private configService: ConfigService, private http: HttpClient) {}
+
+  /*
+      See Aws-Amplify documenation for intgration: 
+      https://docs.amplify.aws/lib/auth/social/q/platform/js/
+      https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
+  */
+  public async init(): Promise<any> {
+    this.loggedOut = this.getParameterByName("loggedout");
+    if (this.loggedOut === "true") {
+      this.initialized = false;
+      return null;
+    }
+    else {
+      await this.loadRemoteConfig()
+      if (!this.awsCognitoConfig.enabled) {
+        this.fakeUser = getFakeUser();
+        this.initialized = true;
+        return null;
+      }
+      return new Promise<any>((resolve) => {
+        return Auth.currentAuthenticatedUser()
+        .then(async () => {
+            console.log("Signed in...");
+            await this.refreshToken();
+            this.initialized = true;
+            resolve(null)
+        })
+        .catch((error) => {
+            console.log(error);
+            this.login();
+            // resolve(null) no need for resolve as it will gets redirected.
+        })            
+      });
+    }
+  }
+
+  private async loadRemoteConfig() {
+    let url: string = this.configService.getApiBasePath() + "/api/awsCognitoConfig";
+    this.awsCognitoConfig = await this.http
+        .get(url, { observe: "body", responseType: "json" })
+        .toPromise() as AwsCognitoConfig;
+
+    console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
+    Amplify.configure(this.awsCognitoConfig);
+  }
 
   private getParameterByName(name) {
     const url = window.location.href;
@@ -48,62 +93,6 @@ export class CognitoService {
       access_token: decodedAccessToken,
       jwtToken: authToken
     };
-  }
-
-  /*
-      See Aws-Amplify documenation for intgration: 
-      https://docs.amplify.aws/lib/auth/social/q/platform/js/
-      https://docs.amplify.aws/lib/auth/advanced/q/platform/js/#identity-pool-federation
-  */
-  public async init(): Promise<any> {
-
-    this.loggedOut = this.getParameterByName("loggedout");
-    if (this.loggedOut === "true") {
-      this.initialized = false;
-      return null;
-    }
-
-    let url: string =
-      this.configService.getApiBasePath() + "/api/awsCognitoConfig";
-    this.awsCognitoConfig = await this.http
-      .get(url, { observe: "body", responseType: "json" })
-      .toPromise() as AwsCognitoConfig;
-
-    let keycloakUrl: string =
-      this.configService.getApiBasePath() + "/api/keycloakConfig";
-    this.keycloakConfig = await this.http
-      .get(keycloakUrl, { observe: "body", responseType: "json" })
-      .toPromise() as KeycloakConfig;
-
-    console.log("Using cognito config = " + JSON.stringify(this.awsCognitoConfig));
-    Amplify.configure(this.awsCognitoConfig);
-
-    if (!this.awsCognitoConfig.enabled) {
-      this.fakeUser = getFakeUser();
-      this.initialized = true;
-      return null;
-    }
-
-    return new Promise<any>((resolve) => {
-        if (this.loggedOut === "true") {
-            resolve(null);
-        }
-        else {
-            return Auth.currentAuthenticatedUser()
-            .then(async () => {
-                console.log("Signed in...");
-                await this.refreshToken();
-                this.initialized = true;
-                resolve(null)
-            })
-            .catch((error) => {
-                console.log(error);
-                this.login();
-                // resolve(null)
-            })            
-        }
-    });
-
   }
 
   /**
@@ -184,9 +173,5 @@ export class CognitoService {
       return JSON.stringify(this.fakeUser);
     }
     return this.cognitoAuthToken;
-  }
-
-  public getConfig() {
-    return this.awsCognitoConfig;
   }
 }

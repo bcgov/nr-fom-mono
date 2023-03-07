@@ -77,7 +77,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
   private addAuthHeader(request: HttpRequest<any>): HttpRequest<any> {
     let authToken: any = this.cognitoService.getToken();
 
-    if (this.cognitoService.getConfig().enabled) {
+    if (this.cognitoService.awsCognitoConfig.enabled) {
       authToken = JSON.stringify(authToken['jwtToken']);
     }
 
