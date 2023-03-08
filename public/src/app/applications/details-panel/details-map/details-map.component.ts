@@ -149,9 +149,19 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
         this.projectFeatures.addLayer(layer);
         var style: L.PathOptions = {};
         style.weight = 5; 
+        if (this.map.getZoom() < 14) {
+          style.weight = 2;
+        } else if (this.map.getZoom() < 15) {
+          style.weight = 3;
+        } else if (this.map.getZoom() < 16) {
+          style.weight = 4;
+        }
         style.fillOpacity = 0.25;
         if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
           style.dashArray = '10,10';
+          if (this.map.getZoom() < 14) {
+            style.dashArray = '7,7';
+          }
         }
         if (spatialDetail.featureType.code == 'road_section') {
           style.color = 'yellow';
