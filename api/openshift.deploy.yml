@@ -186,8 +186,6 @@ objects:
                   value: "${PORT}"
                 - name: SECURITY_ENABLED
                   value: "true"
-                - name: AUTH_PROVIDER
-                  value: "AWS_COGNITO"
                 - name: SMTP_SERVER
                   value: ${SMTP_SERVER}
                 - name: OBJECT_STORAGE_ACCESS_ID
