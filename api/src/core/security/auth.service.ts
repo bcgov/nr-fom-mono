@@ -28,32 +28,6 @@ export const UserRequiredHeader = createParamDecorator( (data: unknown, ctx: Exe
   return user;
 });
 
-export class KeycloakConfig {
-  @ApiProperty()
-  enabled: boolean = true;
-
-  // Keycloak Server URL
-  @ApiProperty()
-  url: string;
-
-  @ApiProperty()
-  siteMinderUrl: string;
-
-  @ApiProperty()
-  realm: string;
-
-  @ApiProperty()
-  clientId: string = 'fom';
-
-  getIssuer(): string {
-    return this.url + "/realms/" + this.realm;
-  }
-
-  getCertsUri(): string {
-    return this.getIssuer() + "/protocol/openid-connect/certs";
-  }
-}
-
 export class AwsCognitoConfig {
 
   @ApiProperty()
@@ -114,116 +88,46 @@ export class AwsCognitoOauthConfig implements AuthAwsCognitoConfig {
   responseType: string;
 }
 
-
-export enum AUTH_PROVIDER {
-    KEYCLOAK = 'KEYCLOAK',
-    AWS_COGNITO = 'AWS_COGNITO'
-}
-
 @Injectable()
 export class AuthService {
-    private providedAuth: string;
-    private keyCloakconfig:KeycloakConfig = new KeycloakConfig();
     private awsConfig: AwsCognitoConfig;
 
     private jwksClient;
 
     constructor(private logger: PinoLogger) {
-        this.providedAuth = (process.env.AUTH_PROVIDER || AUTH_PROVIDER.KEYCLOAK); // Default to 'KEYCLOAK' if not provided.
-        console.log(`Auth provider: ${this.providedAuth}`)
-        // TODO: this part when it is working for aws, can refactor or retire keycloak.
-        if (AUTH_PROVIDER.KEYCLOAK === this.providedAuth) {
-            // Defaults are for local development. Keycloak enabled by default for maximum security.
-            this.keyCloakconfig.enabled = (process.env.SECURITY_ENABLED || 'true') === 'true';
-            this.keyCloakconfig.realm = process.env.KEYCLOAK_REALM || 'ichqx89w';
-            this.keyCloakconfig.url = process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth';
-            this.keyCloakconfig.siteMinderUrl = process.env.SITEMINDER_URL || 'https://logontest7.gov.bc.ca';
-            // Sample User = {"isMinistry":true,"isForestClient":true,"clientIds":[1011, 1012],"userName":"fakeuser@idir","displayName":"Longlastname, Firstname"}
-            // Other values for Keycloak URL: TEST: https://test.oidc.gov.bc.ca/auth, PROD: https://oidc.gov.bc.ca/auth
-
-            this.logger.info("Keycloak configuration %o", this.keyCloakconfig);
-
-            this.jwksClient = new JwksClient({
-                jwksUri: this.keyCloakconfig.getCertsUri(),
-                cache: true, // Accept cache defaults
-                rateLimit: true,
-            });
-        }
-        else {
-            this.awsConfig = Object.assign(new AwsCognitoConfig(), aswCognitoEnvJson);
-            this.awsConfig.enabled = (process.env.SECURITY_ENABLED || 'true') === 'true';
-            console.log(this.awsConfig)
-            const jwksUri = `https://cognito-idp.${this.awsConfig.aws_cognito_region}.amazonaws.com/${this.awsConfig.aws_user_pools_id}/.well-known/jwks.json`;
-            console.log("jwksUri", jwksUri);
-            this.jwksClient = new JwksClient({
-              jwksUri,
-              cache: true, // Accept cache defaults
-              rateLimit: true,
-            });
-        }
-    }
-
-    getKeycloakConfig(): KeycloakConfig {
-        return this.keyCloakconfig;
+        this.awsConfig = Object.assign(new AwsCognitoConfig(), aswCognitoEnvJson);
+        this.awsConfig.enabled = (process.env.SECURITY_ENABLED || 'true') === 'true';
+        console.log(this.awsConfig)
+        const jwksUri = `https://cognito-idp.${this.awsConfig.aws_cognito_region}.amazonaws.com/${this.awsConfig.aws_user_pools_id}/.well-known/jwks.json`;
+        console.log("jwksUri", jwksUri);
+        this.jwksClient = new JwksClient({
+            jwksUri,
+            cache: true, // Accept cache defaults
+            rateLimit: true,
+        });
     }
 
     getAwsCognitoConfig(): AwsCognitoConfig {
-       return this.awsConfig;
+        return this.awsConfig;
     }
 
     async verifyToken(authHeader: string):Promise<User> {
-      if (AUTH_PROVIDER.KEYCLOAK === this.providedAuth) {
-        return this.verifyKeycloakToken(authHeader);
-      }
-      else {
         return this.verifyCognitoToken(authHeader);
-      }
-    }
-
-    async verifyKeycloakToken(authHeader: string):Promise<User> {
-      const bearer = 'Bearer ';
-      if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
-        return Promise.reject(new ForbiddenException());
-      }
-      const tokenStartIndex = bearer.length;
-      const token = authHeader.substr(tokenStartIndex);
-      if (!this.keyCloakconfig.enabled) {
-        const user = User.convertJsonToUser(token);
-        return Promise.resolve(user);
-      }
-      
-      try {
-        const untrustedDecodedToken = decode(token, { complete: true });
-        this.logger.debug("Untrusted decoded token %o", untrustedDecodedToken);
-        const kid = untrustedDecodedToken.header.kid;
-        var key = await this.jwksClient.getSigningKey(kid);
-        const nonce = untrustedDecodedToken.payload['nonce']; // Workaround weird typing of payload able to be a string.
-        this.logger.debug("Nonce %o", nonce);
-        var decodedToken = verify(token, key.getPublicKey(), 
-          { issuer: this.keyCloakconfig.getIssuer(), 
-            nonce: nonce
-          });
-        this.logger.debug("Trusted decoded token = %o", decodedToken);
-        return User.convertJwtToUser(decodedToken);
-      } catch (err) {
-        this.logger.warn("Invalid token %o", err);
-        return Promise.reject(new ForbiddenException());
-      }
     }
 
     async verifyCognitoToken(authHeader: string):Promise<User> {
-      const bearer = 'Bearer ';
-      if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
+        const bearer = 'Bearer ';
+        if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
         return Promise.reject(new ForbiddenException());
-      }
-      const tokenStartIndex = bearer.length;
-      const token = authHeader.substr(tokenStartIndex);
-      if (!this.awsConfig.enabled) {
+        }
+        const tokenStartIndex = bearer.length;
+        const token = authHeader.substr(tokenStartIndex);
+        if (!this.awsConfig.enabled) {
         const user = User.convertJsonToUser(token);
         return Promise.resolve(user);
-      }
-      
-      try {
+        }
+
+        try {
         console.log("Header bearer token (cognitoToken):", token)
         const cognitoToken = JSON.parse(token);
         const cognitoIdToken = cognitoToken['idToken']['jwtToken'];
@@ -244,14 +148,14 @@ export class AuthService {
         this.logger.debug("Trusted decoded Access token = %o", decodedAccessToken);
 
         const decodedToken = {
-          id_token: decodedIdToken,
-          access_token: decodedAccessToken
+            id_token: decodedIdToken,
+            access_token: decodedAccessToken
         }
         return User.convertAwsCognitoDecodedTokenToUser(decodedToken);
-      } catch (err) {
+        } catch (err) {
         console.error("err: ", err)
         this.logger.warn("Invalid token: %o", err);
         return Promise.reject(new ForbiddenException());
-      }
+        }
     }
 }
