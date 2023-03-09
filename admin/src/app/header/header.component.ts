@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { User } from "@utility/security/user";
 import { ConfigService } from '@utility/services/config.service';
-// import { KeycloakService } from "../../core/services/keycloak.service";
 import { CognitoService } from "../../core/services/cognito.service";
 
 @Component({
@@ -26,13 +25,11 @@ export class HeaderComponent implements OnInit {
   user: User;
 
   constructor(
-    //private keycloakService: KeycloakService, 
     private configService: ConfigService, 
     public router: Router, 
     private cognitoService: CognitoService
   ) {
     this.environmentDisplay = configService.getEnvironmentDisplay();
-    // this.user = this.keycloakService.getUser();
     this.user = this.cognitoService.getUser();
     if (this.user) {
       this.logoutMsg += ' ' + this.user.displayName;
@@ -47,11 +44,6 @@ export class HeaderComponent implements OnInit {
       }
     }
   }
-
-  // navigateToLogout() {
-  //   this.keycloakService.logout();
-  //   window.location.href = this.keycloakService.getLogoutURL();
-  // }
 
   async navigateToLogout() {
     if (!this.cognitoService.awsCognitoConfig.enabled) {

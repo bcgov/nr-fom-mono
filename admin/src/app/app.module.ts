@@ -1,39 +1,33 @@
-import {APP_INITIALIZER, ApplicationRef, NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { ApplicationRef, APP_INITIALIZER, NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 // modules
-import {SharedModule} from './shared.module';
-import {FomModule} from './foms/fom.module';
-import {AppRoutingModule} from './app-routing.module';
+import { AppRoutingModule } from './app-routing.module';
+import { FomModule } from './foms/fom.module';
+import { SharedModule } from './shared.module';
 
 // components
-import {AppComponent} from './app.component';
-import {SearchComponent} from './search/search.component';
-import {HeaderComponent} from './header/header.component';
-import {FooterComponent} from './footer/footer.component';
+import { AppComponent } from './app.component';
+import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './header/header.component';
+import { SearchComponent } from './search/search.component';
 
 // services
-// import { KeycloakService } from "../core/services/keycloak.service";
 import { CognitoService } from "../core/services/cognito.service";
 
-import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
+import { retrieveApiBasePath } from '@utility/services/config.service';
 
-// import {TokenInterceptor} from '../core/utils/token-interceptor';
+import { ApiModule, Configuration } from '@api-client';
+import { ErrorInterceptor } from '../core/interceptors/http-error.interceptor';
 import { CognitoTokenInterceptor } from "../core/utils/cognito-token-interceptor";
-import {NotAuthorizedComponent} from './not-authorized/not-authorized.component';
-import {ApiModule, Configuration} from '@api-client';
-import {ErrorInterceptor} from '../core/interceptors/http-error.interceptor';
+import { NotAuthorizedComponent } from './not-authorized/not-authorized.component';
 
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {RxReactiveFormsModule} from '@rxweb/reactive-form-validators';
-
-// export function kcFactory(keycloakService: KeycloakService) {
-//   return () => keycloakService.init();
-// }
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 function cognitoFactory(cognitoService: CognitoService) {
   return () => cognitoService.init();
@@ -61,20 +55,11 @@ const apiConfig = new Configuration({
     ReactiveFormsModule,
     NgbModule,
     ApiModule.forRoot(() => apiConfig),
-    // NgxPaginationModule,
     AppRoutingModule,
-    RxReactiveFormsModule,
-    // LeafletModule
+    RxReactiveFormsModule
 
   ],
   providers: [
-    // KeycloakService,
-    // {
-    //   provide: APP_INITIALIZER,
-    //   useFactory: kcFactory,
-    //   deps: [KeycloakService],
-    //   multi: true
-    // },
     {
       provide: APP_INITIALIZER,
       useFactory: cognitoFactory,
@@ -91,13 +76,7 @@ const apiConfig = new Configuration({
       provide: HTTP_INTERCEPTORS,
       useClass: CognitoTokenInterceptor,
       multi: true,
-    },
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: TokenInterceptor,
-    //   multi: true,
-    // },
-    ConfigService
+    }
   ],
   bootstrap: [AppComponent]
 })

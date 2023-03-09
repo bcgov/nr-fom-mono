@@ -1,19 +1,19 @@
-import {Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {Observable, Subject} from 'rxjs';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
 
+import { CommonUtil } from '@admin-core/utils/commonUtil';
+import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
 import {
-  PublicCommentService, ProjectResponse, ProjectService, PublicCommentAdminResponse,
-  PublicCommentAdminUpdateRequest, SpatialFeatureService } from '@api-client';
-import {StateService} from '../../../core/services/state.service';
-import { CommentDetailComponent } from './comment-detail/comment-detail.component';
-import { map, takeUntil } from 'rxjs/operators';
-// import { KeycloakService } from '../../../core/services/keycloak.service';
-import { CognitoService } from "../../../core/services/cognito.service";
+    ProjectResponse, ProjectService, PublicCommentAdminResponse,
+    PublicCommentAdminUpdateRequest, PublicCommentService, SpatialFeatureService
+} from '@api-client';
 import { User } from "@utility/security/user";
 import * as _ from 'lodash';
-import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
-import { CommonUtil } from '@admin-core/utils/commonUtil';
+import { map, takeUntil } from 'rxjs/operators';
+import { CognitoService } from "../../../core/services/cognito.service";
+import { StateService } from '../../../core/services/state.service';
+import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 
 export const ERROR_DIALOG = {
   width: '340px',
@@ -57,10 +57,8 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
     private stateSvc: StateService,
     private projectSvc: ProjectService,
     private spatialFeatureService: SpatialFeatureService,
-    // private keycloakService: KeycloakService
     private cognitoService: CognitoService
   ) {
-    // this.user = this.keycloakService.getUser();
     this.user = this.cognitoService.getUser();
   }
 

@@ -4,7 +4,6 @@ import { InteractionResponse, InteractionService, ProjectResponse, WorkflowState
 import { User } from "@utility/security/user";
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-// import { KeycloakService } from '../../../core/services/keycloak.service';
 import { CognitoService } from "../../../core/services/cognito.service";
 import { ModalService } from '../../../core/services/modal.service';
 import { InteractionDetailComponent } from './interaction-detail/interaction-detail.component';
@@ -47,11 +46,9 @@ export class InteractionsComponent implements OnInit, OnDestroy {
   constructor(    
     private route: ActivatedRoute,
     private interactionSvc: InteractionService,
-    // private keycloakService: KeycloakService,
     private cognitoService: CognitoService,
     private modalSvc: ModalService) 
   { 
-    // this.user = this.keycloakService.getUser();
     this.user = this.cognitoService.getUser();
   }
 

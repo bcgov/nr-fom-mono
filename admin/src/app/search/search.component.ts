@@ -7,7 +7,6 @@ import { User } from "@utility/security/user";
 import { isNil } from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-// import { KeycloakService } from '../../core/services/keycloak.service';
 import { CognitoService } from "../../core/services/cognito.service";
 import { ModalService } from '../../core/services/modal.service';
 import { StateService } from '../../core/services/state.service';
@@ -38,13 +37,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private stateSvc: StateService,
-    // private keycloakService: KeycloakService,
     private cognitoService: CognitoService,
     public snackBar: MatSnackBar,
     public searchProjectService: ProjectService,
     private modalSvc: ModalService
   ) {
-    // this.user = this.keycloakService.getUser();
     this.user = this.cognitoService.getUser();
   }
 

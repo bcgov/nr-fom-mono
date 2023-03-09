@@ -8,16 +8,15 @@ import { Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe } from '@angular/common';
 import {
-  AttachmentResponse, DistrictResponse, ForestClientResponse,
-  ForestClientService,
-  ProjectCreateRequest, ProjectResponse,
-  ProjectService, WorkflowStateEnum
+    AttachmentResponse, DistrictResponse, ForestClientResponse,
+    ForestClientService,
+    ProjectCreateRequest, ProjectResponse,
+    ProjectService, WorkflowStateEnum
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
 import { AttachmentTypeEnum } from "../../../core/models/attachmentTypeEnum";
 import { AttachmentResolverSvc } from "../../../core/services/AttachmentResolverSvc";
-// import { KeycloakService } from "../../../core/services/keycloak.service";
 import { CognitoService } from "../../../core/services/cognito.service";
 import { ModalService } from '../../../core/services/modal.service';
 import { StateService } from '../../../core/services/state.service';
@@ -84,10 +83,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     private modalSvc: ModalService,
     private datePipe: DatePipe,
     private forestSvc: ForestClientService,
-    // private keycloakService: KeycloakService,
     private cognitoService: CognitoService
   ) {
-    // this.user = this.keycloakService.getUser();
     this.user = this.cognitoService.getUser();
   }
 

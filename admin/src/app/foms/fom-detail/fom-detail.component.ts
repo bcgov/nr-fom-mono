@@ -1,6 +1,4 @@
 import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
-// import { KeycloakService } from '@admin-core/services/keycloak.service';
-import { CognitoService } from "../../../core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -10,6 +8,7 @@ import { User } from "@utility/security/user";
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import * as moment from 'moment';
 import { Subject, takeUntil } from 'rxjs';
+import { CognitoService } from "../../../core/services/cognito.service";
 import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
 
 @Component({
@@ -48,12 +47,10 @@ export class FomDetailComponent implements OnInit, OnDestroy {
     private modalSvc: ModalService,
     public projectService: ProjectService, // also used in template
     public attachmentResolverSvc: AttachmentResolverSvc,
-    // private keycloakService: KeycloakService,
     private cognitoService: CognitoService,
     private ngbModalService: NgbModal,
     private fss: FeatureSelectService
   ) {
-    // this.user = this.keycloakService.getUser();
     this.user = this.cognitoService.getUser();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
