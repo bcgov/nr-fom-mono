@@ -27,7 +27,6 @@
     "aws-amplify": "~5.0.14",
     "bootstrap": "^4.5.3",
     "jquery": "^3.5.1",
-    "keycloak-js": "^12.0.4",
     "leaflet": "~1.7.1",
     "leaflet.markercluster": "~1.5.3",
     "lodash": "^4.17.21",
