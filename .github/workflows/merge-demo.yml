@@ -64,9 +64,9 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p URL=fom-demo.apps.silver.devops.gov.bc.ca -p KEYCLOAK_URL="https://test.oidc.gov.bc.ca/auth"
+              -p URL=fom-demo.apps.silver.devops.gov.bc.ca
               -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
-              -p SITEMINDER_URL="https://logontest7.gov.bc.ca" -p DB_TESTDATA=true
+              -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="5da3feaatgugse9c5tdkhsq5r5"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
           - name: admin

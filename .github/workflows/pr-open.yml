@@ -34,17 +34,6 @@ jobs:
             Once merged, code will be promoted and handed off to following workflow run.
              - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-      - name: KeyCloak Redirect URL
-        uses: bcgov/nr-keycloak-redirect@v0.0.2
-        with:
-          add_delete: "add"
-          redirect: https://fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca/*
-          secret: ${{ secrets.KC_SECRET }}
-          clientid: ${{ secrets.KC_CLIENTID }}
-          clientid_2: "fom"
-          realm: ${{ secrets.KC_REALM }}
-          host: ${{ secrets.KC_HOST }}
-
       # This is a workaround, because matrix parameters can use outputs, but not vars
       - name: Variables
         id: vars
@@ -99,8 +88,8 @@ jobs:
             overwrite: true
             parameters:
               -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
-              -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca -p SITEMINDER_URL="https://logontest7.gov.bc.ca"
-              -p KEYCLOAK_URL="https://dev.oidc.gov.bc.ca/auth" -p DB_TESTDATA=true
+              -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
+              -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="lsg00u7bv7qm2p92qf1f8t255"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
           - name: admin
