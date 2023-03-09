@@ -1,19 +1,18 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
-import { Amplify, Auth } from "aws-amplify";
-import { AwsCognitoConfig, KeycloakConfig } from "@api-client";
+import { AwsCognitoConfig } from "@api-client";
 import { User } from "@utility/security/user";
 import { ConfigService } from "@utility/services/config.service";
-import { getFakeUser } from "./mock-user";
 import type { CognitoUserSession } from "amazon-cognito-identity-js";
+import { Amplify, Auth } from "aws-amplify";
+import { Observable } from "rxjs";
+import { getFakeUser } from "./mock-user";
 
 @Injectable({
     providedIn: 'root'
 })
 export class CognitoService {
   public awsCognitoConfig: AwsCognitoConfig;
-  private keycloakConfig: KeycloakConfig;
   private cognitoAuthToken: object;
   private loggedOut: string;
   private fakeUser: User;
@@ -41,17 +40,17 @@ export class CognitoService {
       }
       return new Promise<any>((resolve) => {
         return Auth.currentAuthenticatedUser()
-        .then(async () => {
-            console.log("Signed in...");
-            await this.refreshToken();
-            this.initialized = true;
-            resolve(null)
-        })
-        .catch((error) => {
-            console.log(error);
-            this.login();
-            // resolve(null) no need for resolve as it will gets redirected.
-        })            
+          .then(async () => {
+              console.log("Signed in...");
+              await this.refreshToken();
+              this.initialized = true;
+              resolve(null)
+          })
+          .catch((error) => {
+              console.log(error);
+              this.login();
+              // resolve(null) no need for resolve as it will gets redirected.
+          })            
       });
     }
   }

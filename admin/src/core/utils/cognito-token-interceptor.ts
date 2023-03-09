@@ -12,7 +12,7 @@ import { catchError, switchMap, tap } from "rxjs/operators";
  * Intercepts all http requests and allows for the request and/or response to be manipulated.
  *
  * @export
- * @class TokenInterceptor
+ * @class CognitoTokenInterceptor
  * @implements {HttpInterceptor}
  */
 @Injectable()
@@ -32,7 +32,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
    * @param {HttpRequest<any>} request
    * @param {HttpHandler} next
    * @returns {Observable<HttpEvent<any>>}
-   * @memberof TokenInterceptor
+   * @memberof CognitoTokenInterceptor
    */
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
     if (!this.cognitoService.initialized) {
@@ -72,7 +72,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
    * @private
    * @param {HttpRequest<any>} request to modify
    * @returns {HttpRequest<any>}
-   * @memberof TokenInterceptor
+   * @memberof CognitoTokenInterceptor
    */
   private addAuthHeader(request: HttpRequest<any>): HttpRequest<any> {
     let authToken: any = this.cognitoService.getToken();
@@ -93,7 +93,7 @@ export class CognitoTokenInterceptor implements HttpInterceptor {
    *
    * @private
    * @returns {Observable<any>}
-   * @memberof TokenInterceptor
+   * @memberof CognitoTokenInterceptor
    */
   private refreshToken(): Observable<any> {
     if (this.refreshTokenInProgress) {
