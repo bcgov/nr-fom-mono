@@ -118,44 +118,44 @@ export class AuthService {
     async verifyCognitoToken(authHeader: string):Promise<User> {
         const bearer = 'Bearer ';
         if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
-        return Promise.reject(new ForbiddenException());
+            return Promise.reject(new ForbiddenException());
         }
         const tokenStartIndex = bearer.length;
         const token = authHeader.substr(tokenStartIndex);
         if (!this.awsConfig.enabled) {
         const user = User.convertJsonToUser(token);
-        return Promise.resolve(user);
+            return Promise.resolve(user);
         }
 
         try {
-        console.log("Header bearer token (cognitoToken):", token)
-        const cognitoToken = JSON.parse(token);
-        const cognitoIdToken = cognitoToken['idToken']['jwtToken'];
-        const cognitoAccessToken = cognitoToken['accessToken']['jwtToken'];
-        const untrustedDecodedIdToken = decode(cognitoIdToken, { complete: true });
-        const untrustedDecodedAccessToken = decode(cognitoAccessToken, { complete: true });
-        this.logger.debug("Untrusted decoded ID token %o", untrustedDecodedIdToken);
-        this.logger.debug("Untrusted decoded ACCESS token %o", untrustedDecodedAccessToken);
+            console.log("Header bearer token (cognitoToken):", token)
+            const cognitoToken = JSON.parse(token);
+            const cognitoIdToken = cognitoToken['idToken']['jwtToken'];
+            const cognitoAccessToken = cognitoToken['accessToken']['jwtToken'];
+            const untrustedDecodedIdToken = decode(cognitoIdToken, { complete: true });
+            const untrustedDecodedAccessToken = decode(cognitoAccessToken, { complete: true });
+            this.logger.debug("Untrusted decoded ID token %o", untrustedDecodedIdToken);
+            this.logger.debug("Untrusted decoded ACCESS token %o", untrustedDecodedAccessToken);
 
-        const idToken_kid = untrustedDecodedIdToken.header.kid;
-        const idPubkey = await this.jwksClient.getSigningKey(idToken_kid);
-        const decodedIdToken = verify(cognitoIdToken, idPubkey.getPublicKey());
-        this.logger.debug("Trusted decoded ID token = %o", decodedIdToken);
+            const idToken_kid = untrustedDecodedIdToken.header.kid;
+            const idPubkey = await this.jwksClient.getSigningKey(idToken_kid);
+            const decodedIdToken = verify(cognitoIdToken, idPubkey.getPublicKey());
+            this.logger.debug("Trusted decoded ID token = %o", decodedIdToken);
 
-        const accessToken_kid = untrustedDecodedAccessToken.header.kid;
-        const accessPubkey = await this.jwksClient.getSigningKey(accessToken_kid);
-        const decodedAccessToken = verify(cognitoAccessToken, accessPubkey.getPublicKey());
-        this.logger.debug("Trusted decoded Access token = %o", decodedAccessToken);
+            const accessToken_kid = untrustedDecodedAccessToken.header.kid;
+            const accessPubkey = await this.jwksClient.getSigningKey(accessToken_kid);
+            const decodedAccessToken = verify(cognitoAccessToken, accessPubkey.getPublicKey());
+            this.logger.debug("Trusted decoded Access token = %o", decodedAccessToken);
 
-        const decodedToken = {
-            id_token: decodedIdToken,
-            access_token: decodedAccessToken
-        }
-        return User.convertAwsCognitoDecodedTokenToUser(decodedToken);
+            const decodedToken = {
+                id_token: decodedIdToken,
+                access_token: decodedAccessToken
+            }
+            return User.convertAwsCognitoDecodedTokenToUser(decodedToken);
         } catch (err) {
-        console.error("err: ", err)
-        this.logger.warn("Invalid token: %o", err);
-        return Promise.reject(new ForbiddenException());
+            console.error("err: ", err)
+            this.logger.warn("Invalid token: %o", err);
+            return Promise.reject(new ForbiddenException());
         }
     }
 }
