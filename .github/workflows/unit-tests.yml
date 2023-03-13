@@ -29,7 +29,7 @@ jobs:
             npm run test-unit
           dir: api
           sonar_args: >
-            -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
+            -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*,**/coverage/**
             -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info   
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.project.monorepo.enabled=false
