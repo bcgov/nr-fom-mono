@@ -10,7 +10,9 @@ export function retrieveApiBasePath():string {
   }
 }
 
-@Injectable()
+@Injectable({
+    providedIn: 'root'
+})
 export class ConfigService {
 
   private environmentDisplay?:string;

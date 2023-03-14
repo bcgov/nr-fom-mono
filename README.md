@@ -73,7 +73,7 @@ Due to the minimal automated tests, the following should be done after major dep
 - (API Backend): npm run build:api
 - (API Backend): npm run test-unit
 - (Public Frontend): npm run start:public
-- (Admin Frontend): npm run start:admin (ideally with keycloak and object storage enabled)
+- (Admin Frontend): npm run start:admin (ideally with security and object storage enabled)
 - (API Backend): npm run start:api
 - Test both front-ends.
 

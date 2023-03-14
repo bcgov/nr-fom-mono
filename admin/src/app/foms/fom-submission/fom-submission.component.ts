@@ -1,4 +1,3 @@
-import { KeycloakService } from '@admin-core/services/keycloak.service';
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
@@ -9,6 +8,7 @@ import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from '@utility/security/user';
 import { Observable, Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { CognitoService } from "../../../core/services/cognito.service";
 import { ModalService } from '../../../core/services/modal.service';
 import { StateService } from '../../../core/services/state.service';
 import { FomSubmissionForm } from './fom-submission.form';
@@ -53,9 +53,9 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
     private stateSvc: StateService,
     private modalSvc: ModalService,
     private submissionSvc: SubmissionService,
-    private keycloakService: KeycloakService
-  ) {  
-    this.user = this.keycloakService.getUser();
+    private cognitoService: CognitoService
+  ) {
+    this.user = this.cognitoService.getUser();
   }
 
   // check for unsaved changes before navigating away from current route (ie, this page)

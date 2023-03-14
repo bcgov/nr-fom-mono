@@ -1,25 +1,28 @@
-import {HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {KeycloakService} from '../services/keycloak.service';
-import {Observable, Subject} from 'rxjs';
-import {catchError, switchMap, tap} from 'rxjs/operators';
+import {
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+} from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { CognitoService } from "../services/cognito.service";
+import { Observable, Subject } from "rxjs";
+import { catchError, switchMap, tap } from "rxjs/operators";
 
 /**
  * Intercepts all http requests and allows for the request and/or response to be manipulated.
  *
  * @export
- * @class TokenInterceptor
+ * @class CognitoTokenInterceptor
  * @implements {HttpInterceptor}
  */
 @Injectable()
-export class TokenInterceptor implements HttpInterceptor {
+export class CognitoTokenInterceptor implements HttpInterceptor {
   private refreshTokenInProgress = false;
 
   private tokenRefreshedSource = new Subject();
   private tokenRefreshed$ = this.tokenRefreshedSource.asObservable();
 
-  constructor(private auth: KeycloakService) {
-  }
+  constructor(private cognitoService: CognitoService) {}
 
   /**
    * Main request intercept handler to automatically add the bearer auth token to every request.
@@ -29,17 +32,17 @@ export class TokenInterceptor implements HttpInterceptor {
    * @param {HttpRequest<any>} request
    * @param {HttpHandler} next
    * @returns {Observable<HttpEvent<any>>}
-   * @memberof TokenInterceptor
+   * @memberof CognitoTokenInterceptor
    */
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<any> {
-    if (!this.auth.initialized) {
+    if (!this.cognitoService.initialized) {
       return next.handle(request);
     }
 
     request = this.addAuthHeader(request);
 
     return next.handle(request).pipe(
-      catchError(error => {
+      catchError((error) => {
         if (error.status === 403) {
           console.log("Caught 403, refreshing token");
           return this.refreshToken().pipe(
@@ -47,9 +50,12 @@ export class TokenInterceptor implements HttpInterceptor {
               request = this.addAuthHeader(request);
               return next.handle(request);
             }),
-            catchError(err => {
+            catchError((err) => {
               // If the user really isn't authorized, every attempt will fail even after token refresh.
-              console.error("Caught error after refresh, rethowing original. New error is", err);
+              console.error(
+                "Caught error after refresh, rethowing original. New error is",
+                err
+              );
               // Rethrow original forbidden error as throwning new err isn't working. A bit of a hack...
               throw error;
             })
@@ -66,13 +72,17 @@ export class TokenInterceptor implements HttpInterceptor {
    * @private
    * @param {HttpRequest<any>} request to modify
    * @returns {HttpRequest<any>}
-   * @memberof TokenInterceptor
+   * @memberof CognitoTokenInterceptor
    */
   private addAuthHeader(request: HttpRequest<any>): HttpRequest<any> {
-    const authToken: string = this.auth.getToken() || '';
+    let authToken: any = this.cognitoService.getToken();
+
+    if (this.cognitoService.awsCognitoConfig.enabled) {
+      authToken = JSON.stringify(authToken['jwtToken']);
+    }
 
     request = request.clone({
-      setHeaders: {Authorization: 'Bearer ' + authToken}
+      setHeaders: { Authorization: "Bearer " + authToken },
     });
 
     return request;
@@ -83,11 +93,11 @@ export class TokenInterceptor implements HttpInterceptor {
    *
    * @private
    * @returns {Observable<any>}
-   * @memberof TokenInterceptor
+   * @memberof CognitoTokenInterceptor
    */
   private refreshToken(): Observable<any> {
     if (this.refreshTokenInProgress) {
-      return new Observable(observer => {
+      return new Observable((observer) => {
         this.tokenRefreshed$.subscribe(() => {
           observer.next();
           observer.complete();
@@ -95,8 +105,7 @@ export class TokenInterceptor implements HttpInterceptor {
       });
     } else {
       this.refreshTokenInProgress = true;
-
-      return this.auth.refreshToken().pipe(
+      return this.cognitoService.updateToken().pipe(
         tap(() => {
           this.refreshTokenInProgress = false;
           this.tokenRefreshedSource.next();

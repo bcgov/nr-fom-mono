@@ -1,3 +1,4 @@
+import { AwsCognitoConfig } from '@api-core/security/auth.service';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from "@utility/security/user";
@@ -6,10 +7,9 @@ import * as request from 'supertest';
 import { AppModule } from '../app/app.module';
 import { ProjectResponse } from '../app/modules/project/project.dto';
 import { SpatialFeatureBcgwResponse } from '../app/modules/spatial-feature/spatial-feature.dto';
-import { KeycloakConfig } from '../core/security/auth.service';
 import { createFakeForestryUser, createFakeMinistryUser } from '../core/security/mock-user.factory';
 
-process.env.KEYCLOAK_ENABLED="false"; // Necessary in order for authentication to succeed.
+process.env.SECURITY_ENABLED="false"; // Necessary in order for authentication to succeed.
 
 const httpGetFunction = (app) => async ( user: User, args: string ) => {
   if (user == null) {
@@ -46,10 +46,10 @@ describe('API endpoints testing (e2e)', () => {
   });
 
   describe('Auth Endpoint', () => {
-    // Testing of other endpoints is based on keycloak being disabled.
-    it('should have keycloak disabled', async () => {
-      const res = await request(app.getHttpServer()).get('/keycloakConfig');
-      const config = res.body as KeycloakConfig;
+    // Testing of other endpoints is based on AWS Cognito being disabled.
+    it('should have AWS Cognito disabled', async () => {
+      const res = await request(app.getHttpServer()).get('/awsCognitoConfig');
+      const config = res.body as AwsCognitoConfig;
       expect(config.enabled).toBe(false);
     });
   });

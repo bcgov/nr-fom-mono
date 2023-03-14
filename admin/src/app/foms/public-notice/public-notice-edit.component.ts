@@ -1,16 +1,16 @@
+import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
-  ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
-  PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum
+    ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
+    PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum
 } from '@api-client';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
 import { lastValueFrom, map, Subject, switchMap } from 'rxjs';
-import { KeycloakService } from "../../../core/services/keycloak.service";
-import { StateService } from '../../../core/services/state.service';
 import { PublicNoticeForm } from './public-notice.form';
 import moment = require('moment');
 
@@ -46,11 +46,11 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     private router: Router,
     private formBuilder: RxFormBuilder,
     public stateSvc: StateService,
-    private keycloakService: KeycloakService,
+    private cognitoService: CognitoService,
     private modalSvc: ModalService,
     private publicNoticeService: PublicNoticeService
   ) {
-    this.user = this.keycloakService.getUser();
+    this.user = this.cognitoService.getUser();
   }
 
   ngOnInit() {

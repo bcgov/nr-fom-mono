@@ -59,7 +59,7 @@ These are the steps to generate the client library used by the frontend componen
 - Start the API component (npm run start:api) and access http://localhost:3333/api-json. Copy this content to 'openapi/swagger-spec.json'
 - Remove the existing generated client library files. Delete the directories ../libs/client/typescript-ng/{api|models}.
 - Generate the client library using 'npm run gen:client-api:ng'. Generated files will be placed into '../libs/client/typescript-ng'
-- Copy the client library into the Admin and Public components in /src/core/api
+- Copy the client library into the Admin and Public components in /src/core/api (current frontend has tsconfig.json 'path' referencing to this generated client so there is no need for this step; If it is not setup, then this step is required.)
 
 ## Database Migrations Setup
 - See [Database Migrations Setup](./src/migrations/README.md)

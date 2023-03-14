@@ -11,11 +11,11 @@
  */
 
 
-export interface KeycloakConfig { 
-    enabled: boolean;
-    url: string;
-    siteMinderUrl: string;
-    realm: string;
-    clientId: string;
+export interface AwsCognitoOauthConfig { 
+    domain: string;
+    scope: Array<string>;
+    redirectSignIn: string;
+    redirectSignOut: string;
+    responseType: string;
 }
 

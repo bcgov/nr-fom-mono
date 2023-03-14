@@ -1,5 +1,4 @@
 .gitignore
-.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
@@ -19,12 +18,13 @@ git_push.sh
 index.ts
 model/attachmentResponse.ts
 model/attachmentTypeCode.ts
+model/awsCognitoConfig.ts
+model/awsCognitoOauthConfig.ts
 model/commentScopeCode.ts
 model/districtResponse.ts
 model/featureTypeCode.ts
 model/forestClientResponse.ts
 model/interactionResponse.ts
-model/keycloakConfig.ts
 model/models.ts
 model/projectCommentClassificationMandatoryChangeRequest.ts
 model/projectCommentingClosedDateChangeRequest.ts

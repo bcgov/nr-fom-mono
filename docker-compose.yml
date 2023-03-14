@@ -48,7 +48,7 @@ services:
       - DB_TESTDATA=true
       - DB_TYPE=postgres
       - DB_USERNAME=postgres
-      - KEYCLOAK_ENABLED=false
+      - SECURITY_ENABLED=false
       - BYPASS_CORS=true
       - OBJECT_STORAGE_URL=nrs.objectstore.gov.bc.ca
       - OBJECT_STORAGE_ACCESS_ID=nr-fom-dev

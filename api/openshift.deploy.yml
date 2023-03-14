@@ -29,12 +29,6 @@ parameters:
   - name: SMTP_SERVER
     description: SMTP Server URL for sending emails
     value: "smtp://apps.smtp.gov.bc.ca/?port=25&ignoreTLS=true&secure=false"
-  - name: KEYCLOAK_URL
-    description: URL of Keycloak Server to use for authentication.
-    value: "https://oidc.gov.bc.ca/auth"
-  - name: SITEMINDER_URL
-    description: URL of SiteMinder Server used for logout (with BCeID)
-    value: "https://logon7.gov.bc.ca"
   - name: OBJECT_STORAGE_URL
     description: URL of Object Storage Service
     value: "nrs.objectstore.gov.bc.ca"
@@ -62,6 +56,26 @@ parameters:
     description: Number of replicas
     required: false
     value: "3"
+  - name: AWS_COGNITO_DOMAIN
+    description: FAM Authentication Cognito domain
+    value: "prod-fam-user-pool-domain"
+    required: true
+  - name: AWS_COGNITO_REGION
+    description: FAM Authentication Cognito region
+    value: "ca-central-1"
+    required: true
+  - name: AWS_USER_POOLS_ID
+    description: FAM Authentication Cognito user pools ID
+    value: "ca-central-1_RCQQWwBBS"
+    required: true
+  - name: AWS_USER_POOLS_WEB_CLIENT_ID
+    description: FAM Authentication Cognito user pools client ID
+    value: "lsg00u7bv7qm2p92qf1f8t255"
+    required: true
+  - name: LOGOUT_CHAIN_URL
+    description: FAM Authentication Cognito logout chain url for Siteminder and Keycloak
+    value: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -79,6 +93,28 @@ objects:
             name: ${REGISTRY}/${PROMOTE}
           referencePolicy:
             type: Local
+  - apiVersion: v1
+    kind: ConfigMap
+    data:
+      aws-cognito-env.json: |-
+        {
+          "enabled": true,
+          "aws_cognito_domain": "${AWS_COGNITO_DOMAIN}",
+          "aws_cognito_region": "${AWS_COGNITO_REGION}",
+          "aws_user_pools_id": "${AWS_USER_POOLS_ID}",
+          "aws_user_pools_web_client_id": "${AWS_USER_POOLS_WEB_CLIENT_ID}",
+          "aws_mandatory_sign_in": "enable",
+          "oauth": {
+            "domain": "${AWS_COGNITO_DOMAIN}.auth.ca-central-1.amazoncognito.com",
+            "scope": ["openid"],
+            "redirectSignIn": "https://${URL}/admin/search",
+            "redirectSignOut": "${LOGOUT_CHAIN_URL}https://${URL}/admin/not-authorized?loggedout=true",
+            "responseType": "code"
+          },
+          "federationTarget": "COGNITO_USER_POOLS"
+        }
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -148,12 +184,8 @@ objects:
                   value: ${URL}
                 - name: PORT
                   value: "${PORT}"
-                - name: KEYCLOAK_ENABLED
+                - name: SECURITY_ENABLED
                   value: "true"
-                - name: KEYCLOAK_URL
-                  value: ${KEYCLOAK_URL}
-                - name: SITEMINDER_URL
-                  value: ${SITEMINDER_URL}
                 - name: SMTP_SERVER
                   value: ${SMTP_SERVER}
                 - name: OBJECT_STORAGE_ACCESS_ID
@@ -213,6 +245,14 @@ objects:
                 initialDelaySeconds: 15
                 periodSeconds: 30
                 timeoutSeconds: 5
+              volumeMounts:
+                - mountPath: /app/dist/api/src/assets/aws-cognito-env.json
+                  subPath: aws-cognito-env.json
+                  name: aws-cognito-env-config
+          volumes:
+            - name: aws-cognito-env-config
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: v1
     kind: Service
     metadata:
