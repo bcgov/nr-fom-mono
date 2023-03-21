@@ -107,7 +107,7 @@ jobs:
             overwrite: true
             parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.2
+      - uses: bcgov-nr/action-deployer-openshift@v1.0.3
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
