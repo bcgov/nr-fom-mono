@@ -147,35 +147,37 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
         const layer = L.geoJSON(<GeoJsonObject>spatialDetail['geometry']);
         layer.on('click', L.Util.bind(this.onSpatialFeatureClick, this, spatialDetail));
         this.projectFeatures.addLayer(layer);
-        var style: L.PathOptions = {};
-        style.weight = 5; 
-        if (this.map.getZoom() < 14) {
-          style.weight = 2;
-        } else if (this.map.getZoom() < 15) {
-          style.weight = 3;
-        } else if (this.map.getZoom() < 16) {
-          style.weight = 4;
-        }
-        style.fillOpacity = 0.25;
-        if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
-          style.dashArray = '10,10';
-          if (this.map.getZoom() < 14) {
-            style.dashArray = '7,7';
-          }
-        }
-        if (spatialDetail.featureType.code == 'road_section') {
-          style.color = 'yellow';
-          style.opacity = 1;
-        }
-        if (spatialDetail.featureType.code == 'retention_area') {
-          style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
-          style.fillColor = '#7CFF87';
-        }
-        layer.setStyle(style);
+        this.map.on('zoomend', () => {
+            var style: L.PathOptions = {};
+            style.weight = 5; 
+            if (this.map.getZoom() < 14) {
+                style.weight = 2;
+            } else if (this.map.getZoom() < 15) {
+                style.weight = 3;
+            } else if (this.map.getZoom() < 16) {
+                style.weight = 4;
+            }
+            style.fillOpacity = 0.25;
+            if (spatialDetail.submissionType.code == SubmissionTypeCodeEnum.Proposed) {
+                style.dashArray = '10,10';
+            if (this.map.getZoom() < 14) {
+                style.dashArray = '7,7';
+            }
+            }
+            if (spatialDetail.featureType.code == 'road_section') {
+                style.color = 'yellow';
+                style.opacity = 1;
+            }
+            if (spatialDetail.featureType.code == 'retention_area') {
+                style.color = '#00DD06'; // Needs to be contrast with fill color, otherwise dashed lines won't be seen.
+                style.fillColor = '#7CFF87';
+            }
+            layer.setStyle(style);
 
-        this.featureToLayerMap.set((spatialDetail.featureId + '-' +spatialDetail.featureType.code), {
-          layer: layer,
-          detail: spatialDetail
+            this.featureToLayerMap.set((spatialDetail.featureId + '-' +spatialDetail.featureType.code), {
+                layer: layer,
+                detail: spatialDetail
+            });
         });
       });
       this.map.addLayer(this.projectFeatures);
