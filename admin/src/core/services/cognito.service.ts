@@ -120,6 +120,7 @@ export class CognitoService {
     return new Observable((observer) => {
       Auth.currentSession()
         .then((refreshed) => {
+          this.cognitoAuthToken = this.parseToken(refreshed);
           observer.next();
           observer.complete();
         })
