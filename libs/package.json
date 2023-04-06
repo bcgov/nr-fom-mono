@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@nestjs/common": "^7.6.18",
-    "@nestjs/core": "^7.6.18",
+    "@nestjs/core": "^9.0.0",
     "@nestjs/testing": "^7.6.18",
     "@types/jest": "^29.4.0",
     "@types/leaflet": "~1.7.11",
