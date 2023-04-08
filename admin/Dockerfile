@@ -17,7 +17,7 @@ RUN cd libs && npm ci && cd .. && \
 
 
 # Deploy container
-FROM caddy:2.4.6-alpine
+FROM caddy:2.6.4-alpine@sha256:eefd3d61e9ee8f35e046f614982d9a970006e3943c6e5f09957a4048f4c80d35
 
 # Copy over Caddyfile and static content
 ARG build_dir
