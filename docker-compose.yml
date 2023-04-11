@@ -58,7 +58,7 @@ services:
       retries: 3
       start_period: 60s
       timeout: 5s
-    image: node:14
+    image: node:16
     ports:
       - 3333:3333
     links:
