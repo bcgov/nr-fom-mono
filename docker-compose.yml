@@ -22,7 +22,7 @@ services:
       retries: 3
       start_period: 60s
       timeout: 5s
-    image: node:14
+    image: node:14@sha256:a158d3b9b4e3fa813fa6c8c590b8f0a860e015ad4e59bbce5744d2f6fd8461aa
     ports:
       - 4200:4200
     volumes:
@@ -58,7 +58,7 @@ services:
       retries: 3
       start_period: 60s
       timeout: 5s
-    image: node:14
+    image: node:14@sha256:a158d3b9b4e3fa813fa6c8c590b8f0a860e015ad4e59bbce5744d2f6fd8461aa
     ports:
       - 3333:3333
     links:
@@ -70,7 +70,7 @@ services:
   db:
     container_name: db
     # Postgis with extensions (postgis_topology, fuzzystrmatch, postgis_tiger_geocoder)
-    image: postgis/postgis:13-master
+    image: postgis/postgis:13-master@sha256:030cb327736b4f06b6f8d5d33ebd4f8818e73c1bdf9a70ba55944df60c54ba5c
     # Add pgcrypto extension (sed) if not present (grep), then start normally (entrypoint)
     entrypoint:
       - sh
@@ -113,7 +113,7 @@ services:
       retries: 3
       start_period: 60s
       timeout: 5s
-    image: node:14
+    image: node:14@sha256:a158d3b9b4e3fa813fa6c8c590b8f0a860e015ad4e59bbce5744d2f6fd8461aa
     ports:
       - 4300:4300
     volumes:

@@ -4,7 +4,7 @@ ARG port=4200
 
 
 # Build container
-FROM node:14.21.2-alpine3.17 AS build
+FROM node:14.21.2-alpine3.17@sha256:e389e6411b9951c74289fd51834f59b2b45655ba7aecd3df96e62d1741f4f902 AS build
 
 # Install dependencies and build static content
 ARG build_dir
@@ -17,7 +17,7 @@ RUN cd libs && npm ci && cd .. && \
 
 
 # Deploy container
-FROM caddy:2.4.6-alpine
+FROM caddy:2.4.6-alpine@sha256:15e576e7d00b1f41a648c5295a03677c24da5fede09131edcb1e6d809c7dc8aa
 
 # Copy over Caddyfile and static content
 ARG build_dir

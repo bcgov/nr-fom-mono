@@ -1,5 +1,5 @@
 # RedHat UBI 8 with nodejs 14
-FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492 AS builder
+FROM registry.access.redhat.com/ubi8/nodejs-14:1-75.1652296492@sha256:ee9e9cac25b97874007bb4c6399f375ba6a36af1a63ad998dff7f7919d0c4efd AS builder
 
 # Install packages, build and keep only prod packages
 WORKDIR /app
@@ -11,7 +11,7 @@ RUN dnf install -y ca-certificates && \
 
 
 # Deployment container
-FROM registry.access.redhat.com/ubi8/ubi-micro
+FROM registry.access.redhat.com/ubi8/ubi-micro@sha256:6a56010de933f172b195a1a575855d37b70a4968be8edb35157f6ca193969ad2
 
 # Node packages and dependencies
 COPY --from=builder /usr/bin/node /usr/bin/
