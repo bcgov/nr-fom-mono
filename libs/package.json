@@ -12,7 +12,7 @@
     "@angular/core": "^11.2.14",
     "leaflet": "~1.7.1",
     "leaflet.markercluster": "~1.5.3",
-    "rxjs": "~7.5.5",
+    "rxjs": "~6.6.0",
     "tslib": "^2.3.1"
   },
   "devDependencies": {

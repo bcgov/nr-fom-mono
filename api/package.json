@@ -44,7 +44,7 @@
     "node-cache": "^5.1.2",
     "pg": "^8.5.1",
     "remeda": "^0.0.32",
-    "rxjs": "^6.6.7",
+    "rxjs": "~6.6.0",
     "swagger-ui-express": "^4.3.0",
     "tslib": "^2.3.1",
     "typeorm": "^0.2.34",
