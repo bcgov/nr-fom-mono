@@ -2,14 +2,13 @@ import { ApiBaseEntity, DeepPartial } from '@entities';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { PinoLogger } from 'nestjs-pino';
-import { DataSource, FindOptionsWhere, Repository, UpdateResult } from 'typeorm';
+import { FindOptionsWhere, Repository, UpdateResult } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
 import { mapToEntity } from '@core';
 import { User } from "@utility/security/user";
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
-import { InjectRepository } from '@nestjs/typeorm';
 
 /**
  * Base class to extend for interacting with the database through a repository pattern.
@@ -242,10 +241,6 @@ export abstract class DataService<
 
     const findAll = await this.repository.find(this.addCommonRelationsToFindOptions(options));
     return findAll.map((r) => this.convertEntity(r));
-  }
-
-  public getDataSource() {
-    return this.dataSource;
   }
 
 }
