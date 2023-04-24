@@ -2,13 +2,14 @@ import { ApiBaseEntity, DeepPartial } from '@entities';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { PinoLogger } from 'nestjs-pino';
-import { Repository, UpdateResult } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository, UpdateResult } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
 import { mapToEntity } from '@core';
 import { User } from "@utility/security/user";
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 /**
  * Base class to extend for interacting with the database through a repository pattern.
@@ -114,21 +115,23 @@ export abstract class DataService<
 
   // Deliberately exclude loading relations for updates. TypeORM gets confused if an entity has both the id field and the relation field populated on update.
   protected async findEntityForUpdate(id: string | number): Promise<E|undefined> {
-    return this.repository.findOne(id);
+    return this.repository.findOne({ where: { id } } as FindOneOptions);
   }
 
   // A hook on find entity for other service to override if it needs extra operation, like db column decryption.
   protected async findEntityWithCommonRelations(id: string | number, options?: FindOneOptions<E> | undefined): Promise<E|undefined> {
     const revisedOptions = this.addCommonRelationsToFindOptions(options);
-    return this.repository.findOne(id, revisedOptions);
+    revisedOptions.where = {...revisedOptions.where, id } as unknown as FindOptionsWhere<E>;
+    return this.repository.findOne(revisedOptions);
   }
 
-  protected addCommonRelationsToFindOptions(options?: FindOneOptions<E> | FindManyOptions<E>): FindOneOptions<E> | FindManyOptions<E> {
+  protected addCommonRelationsToFindOptions(options?: FindOneOptions<E>): FindOneOptions<E> {
     const revisedOptions = options ? options : {};
-    revisedOptions.relations = options && options.relations ? options.relations : [];
-    this.getCommonRelations().forEach(relation => {
-      if (!revisedOptions.relations.includes(relation)) { 
-        revisedOptions.relations.push(relation);
+    revisedOptions.relations = options && options.relations ? options.relations : {};
+    // this.getCommonRelations() is an 'array', but options.relations is 'object'
+    this.getCommonRelations().forEach(cRelation => {
+      if (! (cRelation in revisedOptions.relations)) { 
+        revisedOptions.relations[cRelation] = true;
       }
     });
     return revisedOptions;
@@ -188,7 +191,7 @@ export abstract class DataService<
   async delete(id: number | string, user?: User): Promise<void> {
     this.logger.debug(`${this.constructor.name}.delete id %o`, id);
 
-    const entity:(E|undefined) = await this.repository.findOne(id);
+    const entity:(E|undefined) = await this.repository.findOne({ where: { id } } as FindOneOptions);
     if (entity == undefined) {
       throw new BadRequestException("Entity does not exist.");
     }
@@ -239,6 +242,10 @@ export abstract class DataService<
 
     const findAll = await this.repository.find(this.addCommonRelationsToFindOptions(options));
     return findAll.map((r) => this.convertEntity(r));
+  }
+
+  public getDataSource() {
+    return this.dataSource;
   }
 
 }

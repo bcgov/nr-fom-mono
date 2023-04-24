@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PinoLogger } from 'nestjs-pino';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { ApiCodeTableEntity } from '@entities';
 
 import { mapFromEntity } from '@core';
@@ -35,7 +35,7 @@ export abstract class CodeTableService<E extends ApiCodeTableEntity<E>, R extend
    */
   async findOne<C>(id: number | string): Promise<C> {
 
-    const record = await this.repository.findOne(id);
+    const record = await this.repository.findOne({ where: { id } } as FindOneOptions);
     const dto = {} as C;
     return mapFromEntity(record, dto);
   }

@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from "@utility/security/user";
 import { PinoLogger } from 'nestjs-pino';
 import { Stream } from 'node:stream';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { minioClient } from '../../../minio';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
@@ -160,8 +160,10 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
   async findFileDatabase(id: number, user?: User): Promise<AttachmentFileResponse> {
     // Works, but fileContents being treated as a Buffer...
-    const entity:Attachment = await this.repository.findOne(id, this.addCommonRelationsToFindOptions(
-      { select: [ 'id', 'projectId', 'fileName', 'attachmentType' ] }));
+    const revisedOptions = this.addCommonRelationsToFindOptions(this.addCommonRelationsToFindOptions(
+        { select: [ 'id', 'projectId', 'fileName', 'attachmentType' ] }));
+    revisedOptions.where = { ...revisedOptions.where, id } as unknown as FindOptionsWhere<Attachment>;
+    const entity:Attachment = await this.repository.findOne(revisedOptions);
 
     if (!entity) {
       throw new BadRequestException("No entity for the specified id.");

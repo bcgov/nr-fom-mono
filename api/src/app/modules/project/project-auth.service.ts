@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from "@utility/security/user";
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 
@@ -85,7 +85,7 @@ export class ProjectAuthService {
   }
 
   private async getProject(projectId: number): Promise<Project> {
-    return this.repository.findOne(projectId);
+    return this.repository.findOne({ where: { id: projectId } } as FindOneOptions);
   }
 
 }
