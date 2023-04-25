@@ -4,7 +4,7 @@ import { PublicNoticeService } from "@api-modules/project/public-notice.service"
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { User } from "@utility/security/user";
-import { PinoLogger } from "nestjs-pino/dist/PinoLogger";
+import { PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 import { ProjectResponse } from "./project.dto";
 import { PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse } from "./public-notice.dto";
