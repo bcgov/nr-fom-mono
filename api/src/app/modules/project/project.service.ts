@@ -11,7 +11,7 @@ import { User } from "@utility/security/user";
 import * as dayjs from 'dayjs';
 import { isNil } from 'lodash';
 import { PinoLogger } from 'nestjs-pino';
-import { DataSource, getRepository, Repository, SelectQueryBuilder } from 'typeorm';
+import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
@@ -72,8 +72,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     private forestClientService: ForestClientService,
     private attachmentService: AttachmentService,
     private publicCommentService: PublicCommentService,
-    private mailService: MailService,
-    private dataSource: DataSource
+    private mailService: MailService
   ) {
     super(repository, new Project(), logger);
   }
@@ -595,25 +594,19 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const response = new ProjectMetricsResponse();
     response.id = id;
 
-    // TODO: remove await getRepository(Interaction) from using deprecated TypeORM getRepository().
-    //       Use injecting global DataSource from TypeORM in constructor first. Need to fix tests; 
-    //       or find out how to better obtaining datasource from NestJs instead of injecting here.
-    // response.totalInteractionsCount = await getRepository(Interaction)
-    response.totalInteractionsCount = await this.dataSource.getRepository(Interaction)
+    response.totalInteractionsCount = await this.getDataSource().getRepository(Interaction)
       .createQueryBuilder("interaction")
       .select("interaction.id")
       .where("interaction.projectId = :projectId", {projectId: id})
       .getCount();
 
-    // response.totalCommentsCount = await getRepository(PublicComment)
-    response.totalCommentsCount = await this.dataSource.getRepository(PublicComment)
+    response.totalCommentsCount = await this.getDataSource().getRepository(PublicComment)
       .createQueryBuilder("comment")
       .select("comment.id")
       .where("comment.projectId = :projectId", {projectId: id})
       .getCount();
 
-    // response.respondedToCommentsCount = await getRepository(PublicComment)
-    response.respondedToCommentsCount = await this.dataSource.getRepository(PublicComment)
+    response.respondedToCommentsCount = await this.getDataSource().getRepository(PublicComment)
     .createQueryBuilder("comment")
       .select("comment.id")
       .where("comment.projectId = :projectId", {projectId: id})

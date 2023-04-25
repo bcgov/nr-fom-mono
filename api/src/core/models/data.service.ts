@@ -1,8 +1,8 @@
 import { ApiBaseEntity, DeepPartial } from '@entities';
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { PinoLogger } from 'nestjs-pino';
-import { FindOptionsWhere, Repository, UpdateResult } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository, UpdateResult } from 'typeorm';
 import { FindManyOptions } from 'typeorm/find-options/FindManyOptions';
 import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
 
@@ -41,12 +41,20 @@ export abstract class DataService<
   R extends Repository<E>,
   O
 > {
+
+  @Inject(DataSource)
+  private readonly dataSource: DataSource;
+
   protected constructor(
     protected repository: R,
     private entity: E, // prototype for creating a new entity instance
     protected readonly logger: PinoLogger
   ) {
     logger.setContext(this.constructor.name);
+  }
+
+  protected getDataSource() {
+    return this.dataSource;
   }
 
   /**
