@@ -5,7 +5,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { User } from "@utility/security/user";
 import { PinoLogger } from "nestjs-pino";
-import { Repository } from "typeorm";
+import { DataSource, Repository } from "typeorm";
 import { ProjectResponse } from "./project.dto";
 import { PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse } from "./public-notice.dto";
 import { WorkflowStateEnum } from "./workflow-state-code.entity";
@@ -243,6 +243,12 @@ function provideDependencyMock(): Array<any> {
         useValue: {
           findOne: jest.fn(),
           convertEntity: jest.fn()
+        }
+      },
+      {
+        provide: DataSource,
+        useValue: {
+            getRepository: jest.fn()
         }
       }
     ];
