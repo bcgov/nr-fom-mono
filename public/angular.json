@@ -30,7 +30,9 @@
               {
                 "glob": "**/*",
                 "input": "src/assets/",
-                "ignore": ["**/*.scss"],
+                "ignore": [
+                  "**/*.scss"
+                ],
                 "output": "/assets/"
               }
             ],
@@ -84,7 +86,6 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "baseHref": "/public/",
             "browserTarget": "public:build",
             "port": 4300,
             "host": "0.0.0.0"
@@ -113,5 +114,13 @@
       }
     }
   },
-  "defaultProject": "public"
+  "defaultProject": "public",
+  "schematics": {
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
+    }
+  }
 }
