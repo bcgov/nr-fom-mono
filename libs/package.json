@@ -8,12 +8,12 @@
     "test-unit": "set LOG_LEVEL=warn && jest"
   },
   "dependencies": {
-    "@angular/common": "^13.3.11",
-    "@angular/core": "^13.3.11",
+    "@angular/common": "^14.2.12",
+    "@angular/core": "^14.3.0",
     "leaflet": "~1.9.0",
     "leaflet.markercluster": "~1.5.3",
     "rxjs": "~6.6.0",
-    "tslib": "^2.3.1"
+    "tslib": "~2.4.0"
   },
   "devDependencies": {
     "@nestjs/common": "^7.6.18",
