@@ -8,8 +8,8 @@
     "test-unit": "set LOG_LEVEL=warn && jest"
   },
   "dependencies": {
-    "@angular/common": "~12.2.0",
-    "@angular/core": "~12.2.0",
+    "@angular/common": "^13.3.11",
+    "@angular/core": "^13.3.11",
     "leaflet": "~1.9.0",
     "leaflet.markercluster": "~1.5.3",
     "rxjs": "~6.6.0",
