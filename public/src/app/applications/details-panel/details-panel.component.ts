@@ -93,7 +93,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
       next: (results) => {
         this.project = results.project;
         this.projectSpatialDetail = results.spatialDetail;
-        this.attachments = _.orderBy(results.attachments, ['attachmentType.code'],['asc']);
+        this.attachments = _.orderBy(results.attachments, ['attachmentType.code'],['asc']) as AttachmentResponse[];
         this.isAppLoading = false;
         this.projectIdFilter.filter.value = this.project.id.toString();
         this.saveQueryParameters();

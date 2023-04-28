@@ -8,7 +8,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "es2020",
     "module": "commonjs",
     "lib": ["es2017", "dom"],
     "skipLibCheck": true,
@@ -19,6 +19,9 @@
       "@public-core/*": ["core/*"],
       "@api-client": ["../../libs/client/typescript-ng"],
       "@utility/*": ["../../libs/utility/src/*"],
+      "@angular/*": [
+        "../node_modules/@angular/*"
+      ]
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts"],
