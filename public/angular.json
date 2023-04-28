@@ -91,6 +91,12 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "vendorChunk": true
             }
           }
         },
@@ -109,6 +115,9 @@
                 "scripts": true,
                 "styles": true
               }
+            },
+            "development": {
+              "browserTarget": "public:build:development"
             }
           }
         },
