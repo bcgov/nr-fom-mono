@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "start:public": "ng serve --host=0.0.0.0",
+    "start:public": "ng serve --configuration=development --host=0.0.0.0",
     "build:public": "ng build --configuration production"
   },
   "private": true,
