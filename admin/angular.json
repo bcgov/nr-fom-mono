@@ -77,7 +77,6 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "baseHref": "/admin/",
             "browserTarget": "admin:build",
             "port": 4200,
             "host": "0.0.0.0"
