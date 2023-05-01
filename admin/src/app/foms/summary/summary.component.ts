@@ -7,7 +7,8 @@ import { AttachmentResponse, AttachmentService, InteractionResponse, Interaction
         SpatialFeaturePublicResponse, SpatialFeatureService } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
 import * as _ from 'lodash';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-summary',

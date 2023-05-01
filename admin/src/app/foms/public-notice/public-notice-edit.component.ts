@@ -10,7 +10,8 @@ import {
 } from '@api-client';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { lastValueFrom, map, Subject, switchMap } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { switchMap, map } from 'rxjs/operators';
 import { PublicNoticeForm } from './public-notice.form';
 import moment = require('moment');
 
@@ -207,3 +208,4 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
+

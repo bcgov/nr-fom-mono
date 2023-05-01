@@ -7,7 +7,8 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { User } from "@utility/security/user";
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import * as moment from 'moment';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { CognitoService } from "../../../core/services/cognito.service";
 import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
 

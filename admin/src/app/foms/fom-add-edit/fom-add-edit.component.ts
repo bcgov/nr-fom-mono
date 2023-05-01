@@ -3,7 +3,8 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
-import { Observable, of, Subject, switchMap, takeUntil, tap } from 'rxjs';
+import { Observable, of, Subject } from 'rxjs';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe } from '@angular/common';
