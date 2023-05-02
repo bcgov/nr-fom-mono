@@ -2,7 +2,7 @@ import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
@@ -10,8 +10,8 @@ import {
 } from '@api-client';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { Observable, Subject } from 'rxjs';
-import { switchMap, map } from 'rxjs/operators';
+import { Subject, lastValueFrom } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { PublicNoticeForm } from './public-notice.form';
 import moment = require('moment');
 
@@ -26,7 +26,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   projectId: number;
   isNewForm: boolean;
   publicNoticeResponse: PublicNoticeResponse;
-  publicNoticeFormGroup: FormGroup;
+  publicNoticeFormGroup: UntypedFormGroup;
   addressLimit: number = 500;
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.

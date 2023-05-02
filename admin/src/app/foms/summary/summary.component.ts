@@ -33,7 +33,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   commentScopeOpts :Array<CommentScopeOpt> = [];
   selectedScope: CommentScopeOpt;
 
-  private ngUnsubscribe$: Subject<boolean> = new Subject<boolean>();
+  private ngUnsubscribe$: Subject<void> = new Subject<void>();
   private scopeOptionChange$ = new Subject<CommentScopeOpt>(); // To notify when scope 'option' changed.
 
   constructor(    

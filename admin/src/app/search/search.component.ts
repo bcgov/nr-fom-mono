@@ -17,7 +17,7 @@ import { StateService } from '../../core/services/state.service';
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
-  private ngUnsubscribe = new Subject<boolean>();
+  private ngUnsubscribe = new Subject<void>();
   private paramMap: ParamMap = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   public user: User;

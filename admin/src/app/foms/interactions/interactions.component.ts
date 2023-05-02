@@ -40,8 +40,8 @@ export class InteractionsComponent implements OnInit, OnDestroy {
   private user: User;
 
   data$: Observable<InteractionResponse[]>;
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
-  private interactionSaved$ = new Subject(); // To notify when 'save' happen.
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private interactionSaved$ = new Subject<void>(); // To notify when 'save' happen.
 
   constructor(    
     private route: ActivatedRoute,

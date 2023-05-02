@@ -70,7 +70,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(
     private route: ActivatedRoute,

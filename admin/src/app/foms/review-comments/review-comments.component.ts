@@ -48,8 +48,8 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
   public selectedScope: CommentScopeOpt;
 
   public publicComments$: Observable<PublicCommentAdminResponse[]>;
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
-  private triggered$ = new Subject(); // To notify when 'save' or scope 'select' happen.
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private triggered$ = new Subject<void>(); // To notify when 'save' or scope 'select' happen.
 
   constructor(
     private route: ActivatedRoute,

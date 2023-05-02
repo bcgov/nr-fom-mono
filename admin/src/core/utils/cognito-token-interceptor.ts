@@ -19,7 +19,7 @@ import { catchError, switchMap, tap } from "rxjs/operators";
 export class CognitoTokenInterceptor implements HttpInterceptor {
   private refreshTokenInProgress = false;
 
-  private tokenRefreshedSource = new Subject();
+  private tokenRefreshedSource = new Subject<void>();
   private tokenRefreshed$ = this.tokenRefreshedSource.asObservable();
 
   constructor(private cognitoService: CognitoService) {}
