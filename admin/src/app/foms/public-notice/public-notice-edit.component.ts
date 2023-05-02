@@ -14,6 +14,7 @@ import { Subject, lastValueFrom } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { PublicNoticeForm } from './public-notice.form';
 import moment = require('moment');
+import { BsDatepickerConfig } from "ngx-bootstrap/datepicker";
 
 @Component({
   selector: 'app-public-notice-edit',
@@ -38,7 +39,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       minDate: moment().toDate(), 
       maxDate: moment().add(7, 'years').toDate(), // current + 7 years
       containerClass: 'theme-dark-blue'
-  }
+  } as Partial<BsDatepickerConfig>
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   
