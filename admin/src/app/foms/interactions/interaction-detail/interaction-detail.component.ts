@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { AttachmentResponse, AttachmentService, InteractionResponse } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
@@ -19,7 +19,9 @@ export class InteractionDetailComponent implements OnInit {
   interaction: InteractionResponse;
   @Input()
   editMode: boolean;
-  interactionFormGroup: FormGroup;
+
+  interactionFormGroup;
+  
   files: any[] = []; // Array type, but only 1 attachment for Interaction.
   maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
   fileContent: any;

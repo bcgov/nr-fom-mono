@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {FormGroup} from '@angular/forms';
+import {UntypedFormGroup} from '@angular/forms';
 import {RxFormBuilder} from '@rxweb/reactive-form-validators';
 import {CommentScopeCode, PublicCommentAdminResponse, ResponseCode} from '@api-client';
 import { StateService } from '@admin-core/services/state.service';
@@ -14,7 +14,7 @@ import {CommentDetailForm} from './comment-detail.form';
 })
 export class CommentDetailComponent {
   commentScopeCodes: _.Dictionary<CommentScopeCode>;
-  commentFormGroup: FormGroup;
+  commentFormGroup: UntypedFormGroup;
   comment: PublicCommentAdminResponse;
   responseDetailsLimit: number = 4000;
 
