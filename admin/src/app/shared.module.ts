@@ -14,7 +14,6 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { ButtonComponent } from '../core/components/button/button.component';
 import { DialogComponent } from '../core/components/dialog/dialog.component';
-import { FileRowComponent } from '../core/components/file-row/file-row.component';
 import { UploadBoxComponent } from '../core/components/file-upload-box/file-upload-box.component';
 import { FormGroupComponent } from '../core/components/form-group/form-group.component';
 import { AppFormControlDirective } from '../core/directives/form-control.directive';
@@ -24,7 +23,7 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
   imports: [BrowserModule, MatSlideToggleModule, MatSnackBarModule, MatDialogModule, MatProgressBarModule, NgxDropzoneModule, MatIconModule, FontAwesomeModule],//LeafletModule
 
   declarations: [OrderByPipe, NewlinesPipe, PublishedPipe, FileUploadComponent, DialogComponent, ButtonComponent,
-    FileRowComponent, AppFormControlDirective, FormGroupComponent, UploadBoxComponent],
+    AppFormControlDirective, FormGroupComponent, UploadBoxComponent],
 
   exports: [
     MatSlideToggleModule,
@@ -39,7 +38,6 @@ import { FileUploadComponent } from './file-upload/file-upload.component';
     ButtonComponent,
     FormGroupComponent,
     FontAwesomeModule,
-    FileRowComponent,
     UploadBoxComponent,
   ]
 })
