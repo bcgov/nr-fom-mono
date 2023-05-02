@@ -48,6 +48,7 @@ model/spatialFeaturePublicResponse.ts
 model/spatialObjectCodeEnum.ts
 model/submissionDetailResponse.ts
 model/submissionRequest.ts
+model/submissionSpatialObjectDetail.ts
 model/submissionTypeCode.ts
 model/submissionTypeCodeEnum.ts
 model/workflowStateCode.ts

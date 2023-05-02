@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { SubmissionSpatialObjectDetail } from './submissionSpatialObjectDetail';
 import { SubmissionTypeCodeEnum } from './submissionTypeCodeEnum';
 
 
@@ -16,8 +17,8 @@ export interface SubmissionDetailResponse {
     projectId: number;
     submissionId: number;
     submissionTypeCode: SubmissionTypeCodeEnum;
-    cutblocks: SubmissionDetailResponse;
-    roadSections: SubmissionDetailResponse;
-    retentionAreas: SubmissionDetailResponse;
+    cutblocks: SubmissionSpatialObjectDetail;
+    roadSections: SubmissionSpatialObjectDetail;
+    retentionAreas: SubmissionSpatialObjectDetail;
 }
 

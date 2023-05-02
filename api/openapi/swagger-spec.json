@@ -1,1051 +1,5 @@
 {
     "openapi": "3.0.0",
-    "info": {
-      "title": "FOM API",
-      "description": "API for FOM backend",
-      "version": "1.0",
-      "contact": {}
-    },
-    "tags": [],
-    "servers": [],
-    "components": {
-      "securitySchemes": {
-        "bearer": {
-          "scheme": "bearer",
-          "bearerFormat": "JWT",
-          "type": "http"
-        }
-      },
-      "schemas": {
-        "AwsCognitoOauthConfig": {
-          "type": "object",
-          "properties": {
-            "domain": {
-              "type": "string"
-            },
-            "scope": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            },
-            "redirectSignIn": {
-              "type": "string"
-            },
-            "redirectSignOut": {
-              "type": "string"
-            },
-            "responseType": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "domain",
-            "scope",
-            "redirectSignIn",
-            "redirectSignOut",
-            "responseType"
-          ]
-        },
-        "AwsCognitoConfig": {
-          "type": "object",
-          "properties": {
-            "enabled": {
-              "type": "boolean"
-            },
-            "aws_cognito_domain": {
-              "type": "string"
-            },
-            "aws_cognito_region": {
-              "type": "string"
-            },
-            "aws_user_pools_id": {
-              "type": "string"
-            },
-            "aws_user_pools_web_client_id": {
-              "type": "string"
-            },
-            "aws_mandatory_sign_in": {
-              "type": "string"
-            },
-            "oauth": {
-              "$ref": "#/components/schemas/AwsCognitoOauthConfig"
-            },
-            "federationTarget": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "enabled",
-            "aws_cognito_domain",
-            "aws_cognito_region",
-            "aws_user_pools_id",
-            "aws_user_pools_web_client_id",
-            "aws_mandatory_sign_in",
-            "oauth",
-            "federationTarget"
-          ]
-        },
-        "AttachmentTypeCode": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "description"
-          ]
-        },
-        "AttachmentResponse": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number"
-            },
-            "projectId": {
-              "type": "number"
-            },
-            "fileName": {
-              "type": "string"
-            },
-            "attachmentType": {
-              "$ref": "#/components/schemas/AttachmentTypeCode"
-            },
-            "createTimestamp": {
-              "format": "date-time",
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "projectId",
-            "fileName",
-            "attachmentType",
-            "createTimestamp"
-          ]
-        },
-        "InteractionResponse": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "stakeholder": {
-              "type": "string"
-            },
-            "communicationDate": {
-              "type": "string"
-            },
-            "communicationDetails": {
-              "type": "string"
-            },
-            "attachmentId": {
-              "type": "number"
-            },
-            "id": {
-              "type": "number"
-            },
-            "revisionCount": {
-              "type": "number"
-            },
-            "createTimestamp": {
-              "type": "string",
-              "description": "ISO-formatted timestamp"
-            }
-          },
-          "required": [
-            "projectId",
-            "communicationDate",
-            "communicationDetails",
-            "id",
-            "revisionCount",
-            "createTimestamp"
-          ]
-        },
-        "ProjectPublicSummaryResponse": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number"
-            },
-            "name": {
-              "type": "string"
-            },
-            "geojson": {
-              "type": "object",
-              "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
-            },
-            "fspId": {
-              "type": "number"
-            },
-            "forestClientName": {
-              "type": "string"
-            },
-            "workflowStateName": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "name",
-            "geojson",
-            "fspId",
-            "forestClientName",
-            "workflowStateName"
-          ]
-        },
-        "DistrictResponse": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number"
-            },
-            "name": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "name"
-          ]
-        },
-        "ForestClientResponse": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "name"
-          ]
-        },
-        "WorkflowStateCode": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "description"
-          ]
-        },
-        "ProjectResponse": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number"
-            },
-            "name": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "commentingOpenDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "commentingClosedDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "validityEndDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "fspId": {
-              "type": "number"
-            },
-            "district": {
-              "$ref": "#/components/schemas/DistrictResponse"
-            },
-            "forestClient": {
-              "$ref": "#/components/schemas/ForestClientResponse"
-            },
-            "workflowState": {
-              "$ref": "#/components/schemas/WorkflowStateCode"
-            },
-            "revisionCount": {
-              "type": "number"
-            },
-            "createTimestamp": {
-              "type": "string",
-              "description": "ISO-formatted timestamp"
-            },
-            "commentClassificationMandatory": {
-              "type": "boolean",
-              "default": true
-            },
-            "publicNoticeId": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "id",
-            "name",
-            "description",
-            "commentingOpenDate",
-            "commentingClosedDate",
-            "validityEndDate",
-            "fspId",
-            "district",
-            "forestClient",
-            "workflowState",
-            "revisionCount",
-            "createTimestamp",
-            "commentClassificationMandatory",
-            "publicNoticeId"
-          ]
-        },
-        "ProjectMetricsResponse": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "number"
-            },
-            "totalInteractionsCount": {
-              "type": "number"
-            },
-            "totalCommentsCount": {
-              "type": "number"
-            },
-            "respondedToCommentsCount": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "id",
-            "totalInteractionsCount",
-            "totalCommentsCount",
-            "respondedToCommentsCount"
-          ]
-        },
-        "ProjectCreateRequest": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "commentingOpenDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "commentingClosedDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "forestClientNumber": {
-              "type": "string"
-            },
-            "fspId": {
-              "type": "number"
-            },
-            "districtId": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "name",
-            "description",
-            "commentingOpenDate",
-            "commentingClosedDate",
-            "forestClientNumber",
-            "fspId",
-            "districtId"
-          ]
-        },
-        "ProjectUpdateRequest": {
-          "type": "object",
-          "properties": {
-            "name": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            },
-            "commentingOpenDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "commentingClosedDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "fspId": {
-              "type": "number"
-            },
-            "districtId": {
-              "type": "number"
-            },
-            "revisionCount": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "revisionCount"
-          ]
-        },
-        "WorkflowStateEnum": {
-          "type": "string",
-          "enum": [
-            "INITIAL",
-            "PUBLISHED",
-            "COMMENT_OPEN",
-            "COMMENT_CLOSED",
-            "FINALIZED",
-            "EXPIRED"
-          ]
-        },
-        "ProjectWorkflowStateChangeRequest": {
-          "type": "object",
-          "properties": {
-            "revisionCount": {
-              "type": "number"
-            },
-            "workflowStateCode": {
-              "$ref": "#/components/schemas/WorkflowStateEnum"
-            }
-          },
-          "required": [
-            "revisionCount",
-            "workflowStateCode"
-          ]
-        },
-        "ProjectCommentClassificationMandatoryChangeRequest": {
-          "type": "object",
-          "properties": {
-            "commentClassificationMandatory": {
-              "type": "boolean"
-            },
-            "revisionCount": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "commentClassificationMandatory",
-            "revisionCount"
-          ]
-        },
-        "ProjectCommentingClosedDateChangeRequest": {
-          "type": "object",
-          "properties": {
-            "commentingClosedDate": {
-              "type": "string",
-              "description": "ISO-formatted date"
-            },
-            "revisionCount": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "commentingClosedDate",
-            "revisionCount"
-          ]
-        },
-        "PublicNoticePublicFrontEndResponse": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "reviewAddress": {
-              "type": "string"
-            },
-            "reviewBusinessHours": {
-              "type": "string"
-            },
-            "receiveCommentsAddress": {
-              "type": "string"
-            },
-            "receiveCommentsBusinessHours": {
-              "type": "string"
-            },
-            "isReceiveCommentsSameAsReview": {
-              "type": "boolean"
-            },
-            "mailingAddress": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
-            "project": {
-              "$ref": "#/components/schemas/ProjectResponse"
-            }
-          },
-          "required": [
-            "projectId",
-            "reviewAddress",
-            "reviewBusinessHours",
-            "receiveCommentsAddress",
-            "receiveCommentsBusinessHours",
-            "isReceiveCommentsSameAsReview",
-            "mailingAddress",
-            "email",
-            "operationStartYear",
-            "operationEndYear",
-            "project"
-          ]
-        },
-        "PublicNoticeResponse": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "reviewAddress": {
-              "type": "string"
-            },
-            "reviewBusinessHours": {
-              "type": "string"
-            },
-            "receiveCommentsAddress": {
-              "type": "string"
-            },
-            "receiveCommentsBusinessHours": {
-              "type": "string"
-            },
-            "isReceiveCommentsSameAsReview": {
-              "type": "boolean"
-            },
-            "mailingAddress": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
-            "revisionCount": {
-              "type": "number"
-            },
-            "id": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "projectId",
-            "reviewAddress",
-            "reviewBusinessHours",
-            "receiveCommentsAddress",
-            "receiveCommentsBusinessHours",
-            "isReceiveCommentsSameAsReview",
-            "mailingAddress",
-            "email",
-            "operationStartYear",
-            "operationEndYear",
-            "revisionCount",
-            "id"
-          ]
-        },
-        "PublicNoticeCreateRequest": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "reviewAddress": {
-              "type": "string"
-            },
-            "reviewBusinessHours": {
-              "type": "string"
-            },
-            "receiveCommentsAddress": {
-              "type": "string"
-            },
-            "receiveCommentsBusinessHours": {
-              "type": "string"
-            },
-            "isReceiveCommentsSameAsReview": {
-              "type": "boolean"
-            },
-            "mailingAddress": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "projectId",
-            "reviewAddress",
-            "reviewBusinessHours",
-            "receiveCommentsAddress",
-            "receiveCommentsBusinessHours",
-            "isReceiveCommentsSameAsReview",
-            "mailingAddress",
-            "email",
-            "operationStartYear",
-            "operationEndYear"
-          ]
-        },
-        "PublicNoticeUpdateRequest": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "reviewAddress": {
-              "type": "string"
-            },
-            "reviewBusinessHours": {
-              "type": "string"
-            },
-            "receiveCommentsAddress": {
-              "type": "string"
-            },
-            "receiveCommentsBusinessHours": {
-              "type": "string"
-            },
-            "isReceiveCommentsSameAsReview": {
-              "type": "boolean"
-            },
-            "mailingAddress": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
-            "revisionCount": {
-              "type": "number"
-            }
-          },
-          "required": [
-            "projectId",
-            "reviewAddress",
-            "reviewBusinessHours",
-            "receiveCommentsAddress",
-            "receiveCommentsBusinessHours",
-            "isReceiveCommentsSameAsReview",
-            "mailingAddress",
-            "email",
-            "operationStartYear",
-            "operationEndYear",
-            "revisionCount"
-          ]
-        },
-        "PublicCommentCreateRequest": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "commentScopeCode": {
-              "type": "string"
-            },
-            "scopeCutBlockId": {
-              "type": "number"
-            },
-            "scopeRoadSectionId": {
-              "type": "number"
-            },
-            "feedback": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "phoneNumber": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "projectId",
-            "commentScopeCode",
-            "scopeCutBlockId",
-            "scopeRoadSectionId",
-            "feedback",
-            "name",
-            "location",
-            "email",
-            "phoneNumber"
-          ]
-        },
-        "ResponseCodeEnum": {
-          "type": "string",
-          "enum": [
-            "IRRELEVANT",
-            "CONSIDERED",
-            "ADDRESSED"
-          ]
-        },
-        "PublicCommentAdminUpdateRequest": {
-          "type": "object",
-          "properties": {
-            "revisionCount": {
-              "type": "number"
-            },
-            "responseCode": {
-              "$ref": "#/components/schemas/ResponseCodeEnum"
-            },
-            "responseDetails": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "revisionCount",
-            "responseCode",
-            "responseDetails"
-          ]
-        },
-        "CommentScopeCode": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "description"
-          ]
-        },
-        "ResponseCode": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "description"
-          ]
-        },
-        "PublicCommentAdminResponse": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "scopeCutBlockId": {
-              "type": "number"
-            },
-            "scopeRoadSectionId": {
-              "type": "number"
-            },
-            "feedback": {
-              "type": "string"
-            },
-            "name": {
-              "type": "string"
-            },
-            "location": {
-              "type": "string"
-            },
-            "email": {
-              "type": "string"
-            },
-            "phoneNumber": {
-              "type": "string"
-            },
-            "id": {
-              "type": "number"
-            },
-            "revisionCount": {
-              "type": "number"
-            },
-            "createTimestamp": {
-              "type": "string",
-              "description": "ISO-formatted timestamp"
-            },
-            "commentScope": {
-              "$ref": "#/components/schemas/CommentScopeCode"
-            },
-            "response": {
-              "$ref": "#/components/schemas/ResponseCode"
-            },
-            "responseDetails": {
-              "type": "string"
-            },
-            "scopeFeatureName": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "projectId",
-            "scopeCutBlockId",
-            "scopeRoadSectionId",
-            "feedback",
-            "name",
-            "location",
-            "email",
-            "phoneNumber",
-            "id",
-            "revisionCount",
-            "createTimestamp",
-            "commentScope",
-            "response",
-            "responseDetails",
-            "scopeFeatureName"
-          ]
-        },
-        "SubmissionTypeCodeEnum": {
-          "type": "string",
-          "enum": [
-            "PROPOSED",
-            "FINAL"
-          ]
-        },
-        "SpatialObjectCodeEnum": {
-          "type": "string",
-          "enum": [
-            "CUT_BLOCK",
-            "ROAD_SECTION",
-            "WTRA"
-          ]
-        },
-        "SubmissionRequest": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "submissionTypeCode": {
-              "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
-            },
-            "spatialObjectCode": {
-              "$ref": "#/components/schemas/SpatialObjectCodeEnum"
-            },
-            "jsonSpatialSubmission": {
-              "type": "object"
-            }
-          },
-          "required": [
-            "projectId",
-            "submissionTypeCode",
-            "spatialObjectCode",
-            "jsonSpatialSubmission"
-          ]
-        },
-        "SubmissionDetailResponse": {
-          "type": "object",
-          "properties": {
-            "projectId": {
-              "type": "number"
-            },
-            "submissionId": {
-              "type": "number"
-            },
-            "submissionTypeCode": {
-              "example": "PROPOSED",
-              "default": "PROPOSED",
-              "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
-            },
-            "cutblocks": {
-              "$ref": "#/components/schemas/SubmissionDetailResponse"
-            },
-            "roadSections": {
-              "$ref": "#/components/schemas/SubmissionDetailResponse"
-            },
-            "retentionAreas": {
-              "$ref": "#/components/schemas/SubmissionDetailResponse"
-            }
-          },
-          "required": [
-            "projectId",
-            "submissionId",
-            "submissionTypeCode",
-            "cutblocks",
-            "roadSections",
-            "retentionAreas"
-          ]
-        },
-        "SubmissionTypeCode": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "description"
-          ]
-        },
-        "FeatureTypeCode": {
-          "type": "object",
-          "properties": {
-            "code": {
-              "type": "string"
-            },
-            "description": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "code",
-            "description"
-          ]
-        },
-        "SpatialFeaturePublicResponse": {
-          "type": "object",
-          "properties": {
-            "featureType": {
-              "$ref": "#/components/schemas/FeatureTypeCode"
-            },
-            "featureId": {
-              "type": "number"
-            },
-            "name": {
-              "type": "string"
-            },
-            "geometry": {
-              "type": "object",
-              "description": "Format: GeoJSON Geometry object"
-            },
-            "centroid": {
-              "type": "object",
-              "description": "Format: GeoJSON Point"
-            },
-            "plannedDevelopmentDate": {
-              "type": "string",
-              "description": "Format: YYYY-MM-DD"
-            },
-            "plannedAreaHa": {
-              "type": "number"
-            },
-            "plannedLengthKm": {
-              "type": "number"
-            },
-            "submissionType": {
-              "$ref": "#/components/schemas/SubmissionTypeCode"
-            }
-          },
-          "required": [
-            "featureType",
-            "featureId",
-            "name",
-            "geometry",
-            "centroid",
-            "plannedDevelopmentDate",
-            "plannedAreaHa",
-            "plannedLengthKm",
-            "submissionType"
-          ]
-        },
-        "SpatialFeatureBcgwResponse": {
-          "type": "object",
-          "properties": {
-            "fomId": {
-              "type": "number"
-            },
-            "featureType": {
-              "type": "string",
-              "enum": [
-                "cut_block",
-                "road_section",
-                "retention_area"
-              ]
-            },
-            "featureId": {
-              "type": "number"
-            },
-            "fspHolderName": {
-              "type": "string",
-              "description": "Maximum length is expected to be <= 100"
-            },
-            "lifecycleStatus": {
-              "type": "string",
-              "enum": [
-                "Proposed",
-                "Final"
-              ]
-            },
-            "createDate": {
-              "type": "string",
-              "description": "Format: YYYY-MM-DD",
-              "example": "2021-03-31"
-            },
-            "geometry": {
-              "type": "object",
-              "description": "Format: GeoJSON Geometry as per RFC 7946 https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.",
-              "example": "Cut Block / Retention Area Example: {\"type\":\"Polygon\",\"coordinates\":[[[-121.652853481,51.67951884],[-121.499131212,51.763467947],[-121.363845891,51.668139701],[-121.373301212,51.578595415],[-121.661722435,51.589952346],[-121.652853481,51.67951884]]]} Road Section Example: {\"type\":\"LineString\",\"coordinates\":[[-124.667049923,52.651503193],[-124.739768473,52.697146151],[-124.816364174,52.60827305]]}"
-            },
-            "plannedDevelopmentDate": {
-              "type": "string",
-              "description": "Format: YYYY-MM-DD",
-              "example": "2021-03-31"
-            },
-            "plannedAreaHa": {
-              "type": "number",
-              "example": "1.2345"
-            },
-            "plannedLengthKm": {
-              "type": "number",
-              "example": "1.2345"
-            }
-          },
-          "required": [
-            "fomId",
-            "featureType",
-            "featureId",
-            "fspHolderName",
-            "lifecycleStatus",
-            "createDate",
-            "geometry",
-            "plannedDevelopmentDate",
-            "plannedAreaHa",
-            "plannedLengthKm"
-          ]
-        }
-      }
-    },
     "paths": {
       "/api/awsCognitoConfig": {
         "get": {
@@ -2571,6 +1525,1068 @@
           },
           "tags": [
             "spatial-feature"
+          ]
+        }
+      }
+    },
+    "info": {
+      "title": "FOM API",
+      "description": "API for FOM backend",
+      "version": "1.0",
+      "contact": {}
+    },
+    "tags": [],
+    "servers": [],
+    "components": {
+      "securitySchemes": {
+        "bearer": {
+          "scheme": "bearer",
+          "bearerFormat": "JWT",
+          "type": "http"
+        }
+      },
+      "schemas": {
+        "AwsCognitoOauthConfig": {
+          "type": "object",
+          "properties": {
+            "domain": {
+              "type": "string"
+            },
+            "scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "redirectSignIn": {
+              "type": "string"
+            },
+            "redirectSignOut": {
+              "type": "string"
+            },
+            "responseType": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "domain",
+            "scope",
+            "redirectSignIn",
+            "redirectSignOut",
+            "responseType"
+          ]
+        },
+        "AwsCognitoConfig": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "aws_cognito_domain": {
+              "type": "string"
+            },
+            "aws_cognito_region": {
+              "type": "string"
+            },
+            "aws_user_pools_id": {
+              "type": "string"
+            },
+            "aws_user_pools_web_client_id": {
+              "type": "string"
+            },
+            "aws_mandatory_sign_in": {
+              "type": "string"
+            },
+            "oauth": {
+              "$ref": "#/components/schemas/AwsCognitoOauthConfig"
+            },
+            "federationTarget": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "enabled",
+            "aws_cognito_domain",
+            "aws_cognito_region",
+            "aws_user_pools_id",
+            "aws_user_pools_web_client_id",
+            "aws_mandatory_sign_in",
+            "oauth",
+            "federationTarget"
+          ]
+        },
+        "AttachmentTypeCode": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "description"
+          ]
+        },
+        "AttachmentResponse": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "projectId": {
+              "type": "number"
+            },
+            "fileName": {
+              "type": "string"
+            },
+            "attachmentType": {
+              "$ref": "#/components/schemas/AttachmentTypeCode"
+            },
+            "createTimestamp": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "projectId",
+            "fileName",
+            "attachmentType",
+            "createTimestamp"
+          ]
+        },
+        "InteractionResponse": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "stakeholder": {
+              "type": "string"
+            },
+            "communicationDate": {
+              "type": "string"
+            },
+            "communicationDetails": {
+              "type": "string"
+            },
+            "attachmentId": {
+              "type": "number"
+            },
+            "id": {
+              "type": "number"
+            },
+            "revisionCount": {
+              "type": "number"
+            },
+            "createTimestamp": {
+              "type": "string",
+              "description": "ISO-formatted timestamp"
+            }
+          },
+          "required": [
+            "projectId",
+            "communicationDate",
+            "communicationDetails",
+            "id",
+            "revisionCount",
+            "createTimestamp"
+          ]
+        },
+        "ProjectPublicSummaryResponse": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "geojson": {
+              "type": "object",
+              "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
+            },
+            "fspId": {
+              "type": "number"
+            },
+            "forestClientName": {
+              "type": "string"
+            },
+            "workflowStateName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "geojson",
+            "fspId",
+            "forestClientName",
+            "workflowStateName"
+          ]
+        },
+        "DistrictResponse": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        },
+        "ForestClientResponse": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "name"
+          ]
+        },
+        "WorkflowStateCode": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "description"
+          ]
+        },
+        "ProjectResponse": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "commentingOpenDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "commentingClosedDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "validityEndDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "fspId": {
+              "type": "number"
+            },
+            "district": {
+              "$ref": "#/components/schemas/DistrictResponse"
+            },
+            "forestClient": {
+              "$ref": "#/components/schemas/ForestClientResponse"
+            },
+            "workflowState": {
+              "$ref": "#/components/schemas/WorkflowStateCode"
+            },
+            "revisionCount": {
+              "type": "number"
+            },
+            "createTimestamp": {
+              "type": "string",
+              "description": "ISO-formatted timestamp"
+            },
+            "commentClassificationMandatory": {
+              "type": "boolean",
+              "default": true
+            },
+            "publicNoticeId": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "id",
+            "name",
+            "description",
+            "commentingOpenDate",
+            "commentingClosedDate",
+            "validityEndDate",
+            "fspId",
+            "district",
+            "forestClient",
+            "workflowState",
+            "revisionCount",
+            "createTimestamp",
+            "commentClassificationMandatory",
+            "publicNoticeId"
+          ]
+        },
+        "ProjectMetricsResponse": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "number"
+            },
+            "totalInteractionsCount": {
+              "type": "number"
+            },
+            "totalCommentsCount": {
+              "type": "number"
+            },
+            "respondedToCommentsCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "id",
+            "totalInteractionsCount",
+            "totalCommentsCount",
+            "respondedToCommentsCount"
+          ]
+        },
+        "ProjectCreateRequest": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "commentingOpenDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "commentingClosedDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "forestClientNumber": {
+              "type": "string"
+            },
+            "fspId": {
+              "type": "number"
+            },
+            "districtId": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "name",
+            "description",
+            "commentingOpenDate",
+            "commentingClosedDate",
+            "forestClientNumber",
+            "fspId",
+            "districtId"
+          ]
+        },
+        "ProjectUpdateRequest": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            },
+            "commentingOpenDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "commentingClosedDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "fspId": {
+              "type": "number"
+            },
+            "districtId": {
+              "type": "number"
+            },
+            "revisionCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "revisionCount"
+          ]
+        },
+        "WorkflowStateEnum": {
+          "type": "string",
+          "enum": [
+            "INITIAL",
+            "PUBLISHED",
+            "COMMENT_OPEN",
+            "COMMENT_CLOSED",
+            "FINALIZED",
+            "EXPIRED"
+          ]
+        },
+        "ProjectWorkflowStateChangeRequest": {
+          "type": "object",
+          "properties": {
+            "revisionCount": {
+              "type": "number"
+            },
+            "workflowStateCode": {
+              "$ref": "#/components/schemas/WorkflowStateEnum"
+            }
+          },
+          "required": [
+            "revisionCount",
+            "workflowStateCode"
+          ]
+        },
+        "ProjectCommentClassificationMandatoryChangeRequest": {
+          "type": "object",
+          "properties": {
+            "commentClassificationMandatory": {
+              "type": "boolean"
+            },
+            "revisionCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "commentClassificationMandatory",
+            "revisionCount"
+          ]
+        },
+        "ProjectCommentingClosedDateChangeRequest": {
+          "type": "object",
+          "properties": {
+            "commentingClosedDate": {
+              "type": "string",
+              "description": "ISO-formatted date"
+            },
+            "revisionCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "commentingClosedDate",
+            "revisionCount"
+          ]
+        },
+        "PublicNoticePublicFrontEndResponse": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "reviewAddress": {
+              "type": "string"
+            },
+            "reviewBusinessHours": {
+              "type": "string"
+            },
+            "receiveCommentsAddress": {
+              "type": "string"
+            },
+            "receiveCommentsBusinessHours": {
+              "type": "string"
+            },
+            "isReceiveCommentsSameAsReview": {
+              "type": "boolean"
+            },
+            "mailingAddress": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
+            },
+            "project": {
+              "$ref": "#/components/schemas/ProjectResponse"
+            }
+          },
+          "required": [
+            "projectId",
+            "reviewAddress",
+            "reviewBusinessHours",
+            "receiveCommentsAddress",
+            "receiveCommentsBusinessHours",
+            "isReceiveCommentsSameAsReview",
+            "mailingAddress",
+            "email",
+            "operationStartYear",
+            "operationEndYear",
+            "project"
+          ]
+        },
+        "PublicNoticeResponse": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "reviewAddress": {
+              "type": "string"
+            },
+            "reviewBusinessHours": {
+              "type": "string"
+            },
+            "receiveCommentsAddress": {
+              "type": "string"
+            },
+            "receiveCommentsBusinessHours": {
+              "type": "string"
+            },
+            "isReceiveCommentsSameAsReview": {
+              "type": "boolean"
+            },
+            "mailingAddress": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
+            },
+            "revisionCount": {
+              "type": "number"
+            },
+            "id": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "projectId",
+            "reviewAddress",
+            "reviewBusinessHours",
+            "receiveCommentsAddress",
+            "receiveCommentsBusinessHours",
+            "isReceiveCommentsSameAsReview",
+            "mailingAddress",
+            "email",
+            "operationStartYear",
+            "operationEndYear",
+            "revisionCount",
+            "id"
+          ]
+        },
+        "PublicNoticeCreateRequest": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "reviewAddress": {
+              "type": "string"
+            },
+            "reviewBusinessHours": {
+              "type": "string"
+            },
+            "receiveCommentsAddress": {
+              "type": "string"
+            },
+            "receiveCommentsBusinessHours": {
+              "type": "string"
+            },
+            "isReceiveCommentsSameAsReview": {
+              "type": "boolean"
+            },
+            "mailingAddress": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "projectId",
+            "reviewAddress",
+            "reviewBusinessHours",
+            "receiveCommentsAddress",
+            "receiveCommentsBusinessHours",
+            "isReceiveCommentsSameAsReview",
+            "mailingAddress",
+            "email",
+            "operationStartYear",
+            "operationEndYear"
+          ]
+        },
+        "PublicNoticeUpdateRequest": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "reviewAddress": {
+              "type": "string"
+            },
+            "reviewBusinessHours": {
+              "type": "string"
+            },
+            "receiveCommentsAddress": {
+              "type": "string"
+            },
+            "receiveCommentsBusinessHours": {
+              "type": "string"
+            },
+            "isReceiveCommentsSameAsReview": {
+              "type": "boolean"
+            },
+            "mailingAddress": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
+            },
+            "revisionCount": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "projectId",
+            "reviewAddress",
+            "reviewBusinessHours",
+            "receiveCommentsAddress",
+            "receiveCommentsBusinessHours",
+            "isReceiveCommentsSameAsReview",
+            "mailingAddress",
+            "email",
+            "operationStartYear",
+            "operationEndYear",
+            "revisionCount"
+          ]
+        },
+        "PublicCommentCreateRequest": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "commentScopeCode": {
+              "type": "string"
+            },
+            "scopeCutBlockId": {
+              "type": "number"
+            },
+            "scopeRoadSectionId": {
+              "type": "number"
+            },
+            "feedback": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "phoneNumber": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "projectId",
+            "commentScopeCode",
+            "scopeCutBlockId",
+            "scopeRoadSectionId",
+            "feedback",
+            "name",
+            "location",
+            "email",
+            "phoneNumber"
+          ]
+        },
+        "ResponseCodeEnum": {
+          "type": "string",
+          "enum": [
+            "IRRELEVANT",
+            "CONSIDERED",
+            "ADDRESSED"
+          ]
+        },
+        "PublicCommentAdminUpdateRequest": {
+          "type": "object",
+          "properties": {
+            "revisionCount": {
+              "type": "number"
+            },
+            "responseCode": {
+              "$ref": "#/components/schemas/ResponseCodeEnum"
+            },
+            "responseDetails": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "revisionCount",
+            "responseCode",
+            "responseDetails"
+          ]
+        },
+        "CommentScopeCode": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "description"
+          ]
+        },
+        "ResponseCode": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "description"
+          ]
+        },
+        "PublicCommentAdminResponse": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "scopeCutBlockId": {
+              "type": "number"
+            },
+            "scopeRoadSectionId": {
+              "type": "number"
+            },
+            "feedback": {
+              "type": "string"
+            },
+            "name": {
+              "type": "string"
+            },
+            "location": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "phoneNumber": {
+              "type": "string"
+            },
+            "id": {
+              "type": "number"
+            },
+            "revisionCount": {
+              "type": "number"
+            },
+            "createTimestamp": {
+              "type": "string",
+              "description": "ISO-formatted timestamp"
+            },
+            "commentScope": {
+              "$ref": "#/components/schemas/CommentScopeCode"
+            },
+            "response": {
+              "$ref": "#/components/schemas/ResponseCode"
+            },
+            "responseDetails": {
+              "type": "string"
+            },
+            "scopeFeatureName": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "projectId",
+            "scopeCutBlockId",
+            "scopeRoadSectionId",
+            "feedback",
+            "name",
+            "location",
+            "email",
+            "phoneNumber",
+            "id",
+            "revisionCount",
+            "createTimestamp",
+            "commentScope",
+            "response",
+            "responseDetails",
+            "scopeFeatureName"
+          ]
+        },
+        "SubmissionTypeCodeEnum": {
+          "type": "string",
+          "enum": [
+            "PROPOSED",
+            "FINAL"
+          ]
+        },
+        "SpatialObjectCodeEnum": {
+          "type": "string",
+          "enum": [
+            "CUT_BLOCK",
+            "ROAD_SECTION",
+            "WTRA"
+          ]
+        },
+        "SubmissionRequest": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "submissionTypeCode": {
+              "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
+            },
+            "spatialObjectCode": {
+              "$ref": "#/components/schemas/SpatialObjectCodeEnum"
+            },
+            "jsonSpatialSubmission": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "projectId",
+            "submissionTypeCode",
+            "spatialObjectCode",
+            "jsonSpatialSubmission"
+          ]
+        },
+        "SubmissionSpatialObjectDetail": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "number"
+            },
+            "dateSubmitted": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          "required": [
+            "count",
+            "dateSubmitted"
+          ]
+        },
+        "SubmissionDetailResponse": {
+          "type": "object",
+          "properties": {
+            "projectId": {
+              "type": "number"
+            },
+            "submissionId": {
+              "type": "number"
+            },
+            "submissionTypeCode": {
+              "example": "PROPOSED",
+              "default": "PROPOSED",
+              "$ref": "#/components/schemas/SubmissionTypeCodeEnum"
+            },
+            "cutblocks": {
+              "$ref": "#/components/schemas/SubmissionSpatialObjectDetail"
+            },
+            "roadSections": {
+              "$ref": "#/components/schemas/SubmissionSpatialObjectDetail"
+            },
+            "retentionAreas": {
+              "$ref": "#/components/schemas/SubmissionSpatialObjectDetail"
+            }
+          },
+          "required": [
+            "projectId",
+            "submissionId",
+            "submissionTypeCode",
+            "cutblocks",
+            "roadSections",
+            "retentionAreas"
+          ]
+        },
+        "SubmissionTypeCode": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "description"
+          ]
+        },
+        "FeatureTypeCode": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string"
+            },
+            "description": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "code",
+            "description"
+          ]
+        },
+        "SpatialFeaturePublicResponse": {
+          "type": "object",
+          "properties": {
+            "featureType": {
+              "$ref": "#/components/schemas/FeatureTypeCode"
+            },
+            "featureId": {
+              "type": "number"
+            },
+            "name": {
+              "type": "string"
+            },
+            "geometry": {
+              "type": "object",
+              "description": "Format: GeoJSON Geometry object"
+            },
+            "centroid": {
+              "type": "object",
+              "description": "Format: GeoJSON Point"
+            },
+            "plannedDevelopmentDate": {
+              "type": "string",
+              "description": "Format: YYYY-MM-DD"
+            },
+            "plannedAreaHa": {
+              "type": "number"
+            },
+            "plannedLengthKm": {
+              "type": "number"
+            },
+            "submissionType": {
+              "$ref": "#/components/schemas/SubmissionTypeCode"
+            }
+          },
+          "required": [
+            "featureType",
+            "featureId",
+            "name",
+            "geometry",
+            "centroid",
+            "plannedDevelopmentDate",
+            "plannedAreaHa",
+            "plannedLengthKm",
+            "submissionType"
+          ]
+        },
+        "SpatialFeatureBcgwResponse": {
+          "type": "object",
+          "properties": {
+            "fomId": {
+              "type": "number"
+            },
+            "featureType": {
+              "type": "string",
+              "enum": [
+                "cut_block",
+                "road_section",
+                "retention_area"
+              ]
+            },
+            "featureId": {
+              "type": "number"
+            },
+            "fspHolderName": {
+              "type": "string",
+              "description": "Maximum length is expected to be <= 100"
+            },
+            "lifecycleStatus": {
+              "type": "string",
+              "enum": [
+                "Proposed",
+                "Final"
+              ]
+            },
+            "createDate": {
+              "type": "string",
+              "description": "Format: YYYY-MM-DD",
+              "example": "2021-03-31"
+            },
+            "geometry": {
+              "type": "object",
+              "description": "Format: GeoJSON Geometry as per RFC 7946 https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.",
+              "example": "Cut Block / Retention Area Example: {\"type\":\"Polygon\",\"coordinates\":[[[-121.652853481,51.67951884],[-121.499131212,51.763467947],[-121.363845891,51.668139701],[-121.373301212,51.578595415],[-121.661722435,51.589952346],[-121.652853481,51.67951884]]]} Road Section Example: {\"type\":\"LineString\",\"coordinates\":[[-124.667049923,52.651503193],[-124.739768473,52.697146151],[-124.816364174,52.60827305]]}"
+            },
+            "plannedDevelopmentDate": {
+              "type": "string",
+              "description": "Format: YYYY-MM-DD",
+              "example": "2021-03-31"
+            },
+            "plannedAreaHa": {
+              "type": "number",
+              "example": "1.2345"
+            },
+            "plannedLengthKm": {
+              "type": "number",
+              "example": "1.2345"
+            }
+          },
+          "required": [
+            "fomId",
+            "featureType",
+            "featureId",
+            "fspHolderName",
+            "lifecycleStatus",
+            "createDate",
+            "geometry",
+            "plannedDevelopmentDate",
+            "plannedAreaHa",
+            "plannedLengthKm"
           ]
         }
       }
