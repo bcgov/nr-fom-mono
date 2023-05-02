@@ -17,13 +17,17 @@
     "paths": {
       "@admin-core/*": ["core/*"],
       "@api-client": ["../../libs/client/typescript-ng"],
-      "@utility/*": ["../../libs/utility/src/*"]
+      "@utility/*": ["../../libs/utility/src/*"],
+      "@angular/*": [
+        "../node_modules/@angular/*"
+      ]
     }
   },
   "exclude": ["node_modules", "**/*.spec.ts"],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   }
 }
