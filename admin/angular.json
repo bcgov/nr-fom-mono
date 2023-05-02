@@ -6,12 +6,12 @@
   "projects": {
     "admin": {
       "projectType": "application",
-      "root": "",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
+      "root": "",
       "sourceRoot": "src",
       "prefix": "app",
       "architect": {
@@ -52,9 +52,20 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                    "minify": true,
+                    "inlineCritical": false
+                    },
+                "fonts": true
+              },
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": {
+                "hidden": true,
+                "scripts": true,
+                "styles": true
+              },
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -71,6 +82,12 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "vendorChunk": true
             }
           }
         },
@@ -83,7 +100,15 @@
           },
           "configurations": {
             "production": {
-              "browserTarget": "admin:build:production"
+              "browserTarget": "admin:build:production",
+              "sourceMap": {
+                "hidden": false,
+                "scripts": true,
+                "styles": true
+              }
+            },
+            "development": {
+              "browserTarget": "admin:build:development"
             }
           }
         },
@@ -105,5 +130,12 @@
       }
     }
   },
-  "defaultProject": "admin"
+  "schematics": {
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
+    }
+  }
 }
