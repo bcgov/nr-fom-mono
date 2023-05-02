@@ -14,7 +14,7 @@ import { ModalService } from '@public-core/services/modal.service';
 export class AppComponent implements OnInit, OnDestroy {
     isReady$: Observable<boolean>;
 
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
 
   constructor(public router: Router, private stateSvc: StateService, private modalSvc: ModalService) {
   }

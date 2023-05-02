@@ -55,7 +55,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   @ViewChild('detailsPanel', { static: false }) detailsPanel: DetailsPanelComponent;
   @ViewChild('publicNoticesPanel', { static: false }) publicNoticesPanel: PublicNoticesPanelComponent;
 
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
   private splashModal: NgbModalRef = null;
 
   // necessary to allow referencing the enum in the html

@@ -27,7 +27,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   @Input() loading: boolean; // from projects component
   
   public filterHash: string;
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
   public workflowState: _.Dictionary<WorkflowStateCode>;
   private fomFilters: Map<string, IFilter | IMultiFilter>;
   public forestClientNameFilter = new Filter<string>({ filter: { queryParam: 'fcName', value: null }});
