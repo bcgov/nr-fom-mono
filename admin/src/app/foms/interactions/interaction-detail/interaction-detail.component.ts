@@ -20,7 +20,7 @@ export class InteractionDetailComponent implements OnInit {
   @Input()
   editMode: boolean;
 
-  interactionFormGroup;
+  interactionFormGroup: UntypedFormGroup;
   
   files: any[] = []; // Array type, but only 1 attachment for Interaction.
   maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
