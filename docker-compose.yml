@@ -22,7 +22,7 @@ services:
       retries: 3
       start_period: 60s
       timeout: 5s
-    image: node:14
+    image: node:18
     ports:
       - 4200:4200
     volumes:
