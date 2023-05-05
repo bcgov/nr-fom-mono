@@ -68,15 +68,17 @@ table {
   width: 100%;
 }
 
+/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
+/* TODO(mdc-migration): The following rule targets internal classes of tabs that may no longer apply for the MDC version.*/
 mat-table {
   margin-top: 2em;
 }
 
-.mat-row:nth-child(even){
+.mat-mdc-row:nth-child(even){
   background-color: #e4f0ec;
 }
 
-.mat-row:nth-child(odd){
+.mat-mdc-row:nth-child(odd){
   background-color:#ffffff;
 }
 

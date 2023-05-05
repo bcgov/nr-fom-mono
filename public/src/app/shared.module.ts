@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { MatLegacyProgressBarModule as MatProgressBarModule } from '@angular/material/legacy-progress-bar';
-import { MatLegacySnackBarModule as MatSnackBarModule } from '@angular/material/legacy-snack-bar';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 import { OrderByPipe } from '@public-core/pipes/order-by.pipe';
 import { NewlinesPipe } from '@public-core/pipes/newlines.pipe';
 import { ObjectFilterPipe } from '@public-core/pipes/object-filter.pipe';
-import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { DialogComponent } from '@public-core/components/dialog/dialog.component';
 
 @NgModule({
