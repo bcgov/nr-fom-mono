@@ -5,10 +5,10 @@ import {CommonModule} from '@angular/common';
 import {SharedModule} from '../shared.module';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import {FomRoutingModule} from './fom-routing.module';
-import { MatTableModule } from '@angular/material/table'
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table'
+import { MatLegacySlideToggleModule as MatSlideToggleModule } from '@angular/material/legacy-slide-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { MatCardModule } from '@angular/material/card';
+import { MatLegacyCardModule as MatCardModule } from '@angular/material/legacy-card';
 import { MatBadgeModule } from '@angular/material/badge';
 
 // components
@@ -29,7 +29,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommentsSummaryComponent } from './summary/comments-summary/comments-summary.component';
 import { InteractionsSummaryComponent } from './summary/interactions-summary/interactions-summary.component';
 import {AttachmentResolverSvc} from "../../core/services/AttachmentResolverSvc";
-import { MatSelectModule } from '@angular/material/select';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
 import { SubmissionFormatOverviewComponent } from './fom-submission/submission-format-overview.component';
 import { EnddateChangeModalComponent } from './fom-detail/enddate-change-modal/enddate-change-modal.component';
 import { PublicNoticeEditComponent } from './public-notice/public-notice-edit.component';

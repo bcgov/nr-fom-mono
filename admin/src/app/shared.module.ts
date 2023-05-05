@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatLegacyProgressBarModule as MatProgressBarModule } from '@angular/material/legacy-progress-bar';
+import { MatLegacySlideToggleModule as MatSlideToggleModule } from '@angular/material/legacy-slide-toggle';
+import { MatLegacySnackBarModule as MatSnackBarModule } from '@angular/material/legacy-snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { NewlinesPipe } from '../core/pipes/newlines.pipe';
 import { OrderByPipe } from '../core/pipes/order-by.pipe';
 import { PublishedPipe } from '../core/pipes/published.pipe';
 
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgxDropzoneModule } from 'ngx-dropzone';
