@@ -32,7 +32,12 @@
                 "input": "src/assets/",
                 "ignore": ["**/*.scss"],
                 "output": "/assets/"
-              }
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/leaflet/dist/images/",
+                "output": "/assets/images"
+              }  
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
