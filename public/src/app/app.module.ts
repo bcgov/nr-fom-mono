@@ -10,8 +10,8 @@ import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { SharedModule } from './shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { ProjectsModule } from './applications/projects.module'; 
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { MatLegacyFormFieldModule as MatFormFieldModule } from '@angular/material/legacy-form-field';
 
 // components
 import { HomeProxyComponent } from './home-proxy.component';
