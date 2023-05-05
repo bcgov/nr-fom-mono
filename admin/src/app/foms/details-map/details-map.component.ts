@@ -196,7 +196,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // Remove last label first, so it does not stay when next one is added.
-    this.projectFeatures.removeLayer(this.lastLabelMarker);
+    if (this.lastLabelMarker) this.projectFeatures.removeLayer(this.lastLabelMarker);
 
     // Opacity 0 hides marker so just label is visible.
     this.lastLabelMarker = L.marker(args[1].latlng, { opacity: 0 }); 
