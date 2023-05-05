@@ -42,11 +42,6 @@
 @import "@angular/material/prebuilt-themes/deeppurple-amber.css";
 
 
-.snackbar {
-  background-color: $gold;
-  color: $black;
-  .mat-button-wrapper {color: $black}
-}
 .invalid {
   position: relative;
   font-weight: 600;

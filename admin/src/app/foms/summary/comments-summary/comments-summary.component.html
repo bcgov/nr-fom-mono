@@ -23,7 +23,7 @@
       <mat-icon matBadge="{{addressedPcs?.length}}" matBadgePosition="above before" 
               matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
     </mat-expansion-panel-header>
-    <mat-card *ngFor="let comment of addressedPcs">
+    <mat-card appearance="outlined" *ngFor="let comment of addressedPcs">
       <ng-container [ngTemplateOutlet]="comment_fields_template"
                     [ngTemplateOutletContext]="{ comment: comment }">
       </ng-container>
@@ -44,7 +44,7 @@
       <mat-icon matBadge="{{consideredPcs?.length}}" matBadgePosition="above before" 
               matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
     </mat-expansion-panel-header>
-    <mat-card *ngFor="let comment of consideredPcs">
+    <mat-card appearance="outlined" *ngFor="let comment of consideredPcs">
       <ng-container [ngTemplateOutlet]="comment_fields_template"
                     [ngTemplateOutletContext]="{ comment: comment }">
       </ng-container>
@@ -65,7 +65,7 @@
         <mat-icon matBadge="{{irrelevantPcs?.length}}" matBadgePosition="above before" 
                   matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
       </mat-expansion-panel-header>
-      <mat-card *ngFor="let comment of irrelevantPcs">
+      <mat-card appearance="outlined" *ngFor="let comment of irrelevantPcs">
         <ng-container [ngTemplateOutlet]="comment_fields_template"
                       [ngTemplateOutletContext]="{ comment: comment }">
         </ng-container>
@@ -86,7 +86,7 @@
         <mat-icon matBadge="{{noResponsePcs?.length}}" matBadgePosition="above before" 
                   matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
       </mat-expansion-panel-header>
-      <mat-card *ngFor="let comment of noResponsePcs">
+      <mat-card appearance="outlined" *ngFor="let comment of noResponsePcs">
         <ng-container [ngTemplateOutlet]="comment_fields_template"
                       [ngTemplateOutletContext]="{ comment: comment }">
         </ng-container>
