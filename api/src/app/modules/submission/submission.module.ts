@@ -11,11 +11,13 @@ import { SubmissionTypeCodeService } from './submission-type-code.service';
 import { CutBlock } from './cut-block.entity';
 import { RetentionArea } from './retention-area.entity';
 import { RoadSection } from './road-section.entity';
+import { SecurityModule } from '@api-core/security/security.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Submission, SubmissionTypeCode, CutBlock, RetentionArea, RoadSection]),
     ProjectModule,
+    SecurityModule,
   ],
   controllers: [SubmissionController, SubmissionTypeCodeController],
   providers: [SubmissionService, SubmissionTypeCodeService],
