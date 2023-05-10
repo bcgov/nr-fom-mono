@@ -3,6 +3,9 @@ import { PinoLogger } from 'nestjs-pino';
 import { Observable, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 
+/**
+ * TODO: remove this interceptor. No longer working properly after NestJS v8
+ */
 @Injectable()
 export class AuthInterceptor implements NestInterceptor {
 
