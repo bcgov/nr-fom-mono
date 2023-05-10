@@ -11,20 +11,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { AppRoutingModule } from './app-routing.module';
 import { ProjectsModule } from './applications/projects.module';
-import { SharedModule } from './shared.module';
 
 // components
 import { AppComponent } from './app.component';
-import { CommentModalComponent } from './comment-modal/comment-modal.component';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 
 // services
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApiModule, Configuration } from '@api-client';
 import { ErrorInterceptor } from '@public-core/interceptors/http-error.interceptor';
-import { FOMFiltersService } from '@public-core/services/fomFilters.service';
-import { UrlService } from '@public-core/services/url.service';
-import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
+import { retrieveApiBasePath } from '@utility/services/config.service';
 
 const apiConfig = new Configuration({
   basePath: retrieveApiBasePath()
@@ -38,13 +36,14 @@ const apiConfig = new Configuration({
     HttpClientModule,
     ReactiveFormsModule,
     NgbModule,
-    ApiModule.forRoot(() => apiConfig),
-    SharedModule,
-    ProjectsModule,
     AppRoutingModule,
     RxReactiveFormsModule,
     MatSelectModule,
     MatFormFieldModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    ApiModule.forRoot(() => apiConfig),
+    ProjectsModule,
 
     HeaderComponent,
     FooterComponent
@@ -53,9 +52,6 @@ const apiConfig = new Configuration({
     AppComponent
   ],
   providers: [
-    ConfigService,
-    UrlService,
-    FOMFiltersService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: ErrorInterceptor,

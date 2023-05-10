@@ -38,7 +38,9 @@ export const DEFAULT_FOM_FILTERS = {
 /**
  * Service to sync with FOM filters used by components.
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class FOMFiltersService {
 
   private _filters$: BehaviorSubject<Map<string, IFilter|IMultiFilter>>;

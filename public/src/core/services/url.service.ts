@@ -12,7 +12,9 @@ import { Location } from '@angular/common';
  * @export
  * @class UrlService
  */
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class UrlService {
   public onNavEnd$: Observable<NavigationEnd>; // see details below
   private queryParams: Params = {};

@@ -8,7 +8,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { MatCardModule } from '@angular/material/card';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { SharedModule } from '../shared.module';
 
 // Components
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
@@ -31,8 +30,7 @@ import { DateInputComponent } from './utils/date-input/date-input.component';
     CommonModule, 
     FormsModule, 
     NgbModule, 
-    RouterModule, 
-    SharedModule,
+    RouterModule,
     BrowserAnimationsModule,
     MatTableModule, 
     MatSlideToggleModule,
