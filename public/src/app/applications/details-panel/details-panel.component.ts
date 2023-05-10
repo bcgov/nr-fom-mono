@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {
   AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
@@ -7,8 +8,10 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UrlService } from '@public-core/services/url.service';
 import { ConfigService } from '@utility/services/config.service';
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
+import { DetailsMapComponent } from 'app/applications/details-panel/details-map/details-map.component';
+import { ShapeInfoComponent } from 'app/applications/details-panel/shape-info/shape-info.component';
 import * as _ from 'lodash';
-import { forkJoin, Subject } from 'rxjs';
+import { Subject, forkJoin } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { CommentModalComponent } from '../../comment-modal/comment-modal.component';
 import { Filter } from '../utils/filter';
@@ -23,6 +26,8 @@ import moment = require('moment');
  * @implements {OnDestroy}
  */
 @Component({
+  standalone: true,
+  imports: [CommonModule, ShapeInfoComponent, CommentModalComponent, DetailsMapComponent],
   selector: 'app-details-panel',
   templateUrl: './details-panel.component.html',
   styleUrls: ['./details-panel.component.scss']

@@ -1,8 +1,8 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
-import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { MapLayers } from '@utility/models/map-layers';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
 
@@ -37,10 +37,13 @@ import * as L from 'leaflet';
     (might be some clue here: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env)
 */
 
+import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule],
   selector: 'app-details-map',
   templateUrl: './details-map.component.html',
   styleUrls: ['./details-map.component.scss']

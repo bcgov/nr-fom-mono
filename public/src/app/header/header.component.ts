@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { BrowserModule } from '@angular/platform-browser';
+import { Router, RouterModule } from '@angular/router';
 import { ConfigService } from '@utility/services/config.service';
 
 @Component({
+  standalone: true,
   selector: 'app-header',
+  imports: [BrowserModule, RouterModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss']
 })

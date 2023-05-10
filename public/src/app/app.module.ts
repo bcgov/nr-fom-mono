@@ -1,34 +1,29 @@
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 
 // modules
-import { SharedModule } from './shared.module';
-import { AppRoutingModule } from './app-routing.module';
-import { ProjectsModule } from './applications/projects.module'; 
-import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { AppRoutingModule } from './app-routing.module';
+import { ProjectsModule } from './applications/projects.module';
+import { SharedModule } from './shared.module';
 
 // components
-import { HomeProxyComponent } from './home-proxy.component';
-import { ApplicationsProxyComponent } from './applications-proxy.component';
 import { AppComponent } from './app.component';
 import { CommentModalComponent } from './comment-modal/comment-modal.component';
-import { ContactComponent } from './contact/contact.component';
-import { FileUploadComponent } from './file-upload/file-upload.component';
-import { HeaderComponent } from './header/header.component';
-import { AboutComponent } from './about/about.component';
 import { FooterComponent } from './footer/footer.component';
+import { HeaderComponent } from './header/header.component';
 
 // services
-import { UrlService } from '@public-core/services/url.service';
-import { ApiModule, Configuration } from '@api-client'; 
+import { ApiModule, Configuration } from '@api-client';
 import { ErrorInterceptor } from '@public-core/interceptors/http-error.interceptor';
 import { FOMFiltersService } from '@public-core/services/fomFilters.service';
+import { UrlService } from '@public-core/services/url.service';
 import { ConfigService, retrieveApiBasePath } from '@utility/services/config.service';
 
 const apiConfig = new Configuration({
@@ -49,18 +44,13 @@ const apiConfig = new Configuration({
     AppRoutingModule,
     RxReactiveFormsModule,
     MatSelectModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+
+    HeaderComponent,
+    FooterComponent
   ],
   declarations: [
-    HomeProxyComponent,
-    ApplicationsProxyComponent,
-    AppComponent,
-    CommentModalComponent,
-    ContactComponent,
-    FileUploadComponent,
-    HeaderComponent,
-    AboutComponent,
-    FooterComponent
+    AppComponent
   ],
   providers: [
     ConfigService,
