@@ -32,7 +32,6 @@ export class ForestClientController extends BaseReadOnlyController<
   @AuthGuardMeta(GUARD_OPTIONS.PUBLIC)
   @ApiResponse({ status: HttpStatus.OK, type: ForestClientResponse })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<ForestClientResponse> {
-    console.log("Forest Client findOne: ", id)
     return super.findOne(id);
   }
 }
