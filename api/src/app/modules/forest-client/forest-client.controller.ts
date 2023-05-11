@@ -1,14 +1,15 @@
-import { Controller, Get, HttpStatus, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { UserRequiredHeader } from '@api-core/security/auth.service';
 import { BaseReadOnlyController } from '@controllers';
 import { User } from "@utility/security/user";
 import { ForestClientResponse } from './forest-client.dto';
 import { ForestClient } from './forest-client.entity';
 import { ForestClientService } from './forest-client.service';
+import { AuthGuard, AuthGuardMeta, GUARD_OPTIONS, UserHeader } from '@api-core/security/auth.guard';
 
 @ApiTags('forest-client')
+@UseGuards(AuthGuard)
 @Controller('forest-client')
 export class ForestClientController extends BaseReadOnlyController<
   ForestClient,
@@ -22,12 +23,13 @@ export class ForestClientController extends BaseReadOnlyController<
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: [ForestClientResponse], description: 'Returns only forest clients that the user is authorized for.' })
   async find(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
   ): Promise<ForestClientResponse[]> {
     return this.service.find(user.clientIds);
   }
 
   @Get(':id')
+  @AuthGuardMeta(GUARD_OPTIONS.PUBLIC)
   @ApiResponse({ status: HttpStatus.OK, type: ForestClientResponse })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<ForestClientResponse> {
     return super.findOne(id);

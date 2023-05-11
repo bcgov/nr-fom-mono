@@ -1,11 +1,12 @@
-import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
-import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { AuthGuard, UserHeader } from '@api-core/security/auth.guard';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from "@utility/security/user";
 import { SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest } from './submission.dto';
 import { SubmissionService } from './submission.service';
 
 @ApiTags('submission')
+@UseGuards(AuthGuard)
 @Controller('submission')
 export class SubmissionController {
  
@@ -16,7 +17,7 @@ export class SubmissionController {
   @ApiBody({ type: SubmissionRequest })
   @ApiResponse({ status: HttpStatus.OK })
   async processSpatialSubmission(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Body() dto: SubmissionRequest) {
     await this.service.processSpatialSubmission(dto, user);
   }
@@ -35,7 +36,7 @@ export class SubmissionController {
   @ApiQuery({name: 'spatialObjectCode', type: 'string', enum: SpatialObjectCodeEnum})
   @ApiResponse({ status: HttpStatus.OK })
   async removeSpatialSubmissionByType(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('submissionId', ParseIntPipe) submissionId: number,
     @Query('spatialObjectCode') spatialObjectCode: SpatialObjectCodeEnum) {
     return this.service.removeSubmissionBySpatialObjectType(submissionId, spatialObjectCode, user);
