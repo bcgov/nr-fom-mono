@@ -15,15 +15,12 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
-import { AppMapComponent } from './app-map/app-map.component';
-import { MarkerPopupComponent } from './app-map/marker-popup/marker-popup.component';
+import { AppMapComponent } from 'app/applications/app-map/app-map.component';
 import { PublicNoticesFilterPanelComponent } from './app-public-notices/notices-filter-panel/public-notices-filter-panel.component';
 import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
 import { DetailsPanelComponent } from './details-panel/details-panel.component';
 import { FindPanelComponent } from './find-panel/find-panel.component';
 import { ProjectsComponent } from './projects.component';
-import { SplashModalComponent } from './splash-modal/splash-modal.component';
-import { DateInputComponent } from './utils/date-input/date-input.component';
 
 @NgModule({
   imports: [
@@ -39,18 +36,16 @@ import { DateInputComponent } from './utils/date-input/date-input.component';
     MatTooltipModule,
     BsDatepickerModule.forRoot(),
 
-    DetailsPanelComponent
+    // Standalone-components used in none-standalone module.
+    DetailsPanelComponent,
+    AppMapComponent,
+    ShortenPipe
   ],
   declarations: [
     ProjectsComponent,
-    AppMapComponent,
-    MarkerPopupComponent,
-    DateInputComponent,
     FindPanelComponent,
-    SplashModalComponent,
     PublicNoticesPanelComponent,
     PublicNoticesFilterPanelComponent,
-    ShortenPipe
   ]
 })
 export class ProjectsModule {}

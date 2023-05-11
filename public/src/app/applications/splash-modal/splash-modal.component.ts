@@ -10,6 +10,7 @@ export enum SplashModalResult {
 }
 
 @Component({
+  standalone: true,
   templateUrl: './splash-modal.component.html',
   styleUrls: ['./splash-modal.component.scss']
 })

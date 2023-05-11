@@ -1,16 +1,16 @@
 import {
-  AfterViewInit, ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EventEmitter, Injector, Input, OnChanges,
-  OnDestroy, OnInit, Output, SimpleChanges
+    AfterViewInit, ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EventEmitter, Injector, Input, OnChanges,
+    OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
 import { ProjectPublicSummaryResponse } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
+import { UrlService } from '@public-core/services/url.service';
 import { MapLayers } from '@utility/models/map-layers';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UrlService } from '@public-core/services/url.service';
 import { MarkerPopupComponent } from './marker-popup/marker-popup.component';
 
 
@@ -31,6 +31,7 @@ const markerIcon = L.icon({
 });
 
 @Component({
+  standalone: true,
   selector: 'app-map',
   templateUrl: './app-map.component.html',
   styleUrls: ['./app-map.component.scss']
