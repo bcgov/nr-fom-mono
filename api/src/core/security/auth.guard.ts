@@ -26,7 +26,7 @@ export const GUARD_OPTIONS = {
             // results, depending on internal business logic. In this case, if `authorization` header is present,
             // `AuthGuard` will checks; if not present, will 'skip' the check. Endpoint which uses this option needs
             // to responsible for correct internal business logic for public. 
-    SECURED: 'SECURED' // This case is not needed (Guard validation enforce it by defaul)
+    SECURED: 'SECURED' // This is the default case if @AuthGuardMeta is not provided (to enforce secure token checking.)
 }
 
 /**
