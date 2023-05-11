@@ -1,14 +1,14 @@
-import { Controller, Get, Post, Delete, Param, HttpStatus, Query, UseInterceptors, UploadedFile, Req, Request, Res, ParseIntPipe, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, HttpStatus, Query, UseInterceptors, UploadedFile, Req, Request, Res, ParseIntPipe, BadRequestException, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Express } from 'express';
 import { Multer } from 'multer'; // This is needed, don't know why Visual Studio Code thinks it isn't.
 
 import { AttachmentService } from './attachment.service';
 import { AttachmentCreateRequest, AttachmentResponse } from './attachment.dto';
-import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
 import { User } from "@utility/security/user";
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AttachmentTypeEnum } from './attachment-type-code.entity';
+import { AuthGuard, AuthGuardMeta, GUARD_OPTIONS, UserHeader } from '@api-core/security/auth.guard';
 
 
 // From https://github.com/nestjs/swagger/issues/417#issuecomment-562869578 and https://swagger.io/docs/specification/describing-request-body/file-upload/
@@ -39,6 +39,7 @@ const AttachmentPostBody = (fileName: string = 'file'): MethodDecorator => (
 export const maxFileSizeBytes = 31457280; // 30 MB amx attachment size
 
 @ApiTags('attachment')
+@UseGuards(AuthGuard)
 @Controller('attachment')
 export class AttachmentController {
   
@@ -53,7 +54,7 @@ export class AttachmentController {
   @ApiConsumes('multipart/form-data')
   @AttachmentPostBody() // This provides the OpenAPI documentation.
   async create(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: Request
     ): Promise<AttachmentResponse> {
@@ -90,6 +91,7 @@ export class AttachmentController {
   // Accessible by public (if attachment type not interaction) and by authenticated users.
   @Get(':id')
   @ApiBearerAuth()
+  @AuthGuardMeta(GUARD_OPTIONS.ANONYMOUS_LIMITED)
   @ApiResponse({ status: HttpStatus.OK, type: AttachmentResponse})
   async findOne(
     @UserHeader() user: User,
@@ -99,6 +101,7 @@ export class AttachmentController {
 
   @Get()
   @ApiBearerAuth()
+  @AuthGuardMeta(GUARD_OPTIONS.ANONYMOUS_LIMITED)
   @ApiResponse({ status: HttpStatus.OK, type: [AttachmentResponse] }) 
   async find(
     @UserHeader() user: User,
@@ -110,7 +113,7 @@ export class AttachmentController {
   @Delete(':id')
   @ApiBearerAuth()
   async remove(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
     return this.service.delete(id, user);
   }

@@ -1,13 +1,14 @@
-import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { UserRequiredHeader } from '@api-core/security/auth.service';
 import { User } from "@utility/security/user";
 import { PinoLogger } from 'nestjs-pino';
 import { PublicCommentAdminResponse, PublicCommentAdminUpdateRequest, PublicCommentCreateRequest } from './public-comment.dto';
 import { PublicCommentService } from './public-comment.service';
+import { AuthGuard, AuthGuardMeta, GUARD_OPTIONS, UserHeader } from '@api-core/security/auth.guard';
 
 @ApiTags('public-comment')
+@UseGuards(AuthGuard)
 @Controller('public-comment')
 export class PublicCommentController {
 
@@ -18,6 +19,7 @@ export class PublicCommentController {
 
   // Anonymous users can create comments.
   @Post()
+  @AuthGuardMeta(GUARD_OPTIONS.PUBLIC)
   @ApiResponse({ status: HttpStatus.CREATED })
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) // Explicitly reject requests with extra attributes.
   async create(
@@ -30,7 +32,7 @@ export class PublicCommentController {
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: PublicCommentAdminResponse })
   async update(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: PublicCommentAdminUpdateRequest
   ): Promise<PublicCommentAdminResponse> {
@@ -41,7 +43,7 @@ export class PublicCommentController {
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: [PublicCommentAdminResponse] })
   async find(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Query('projectId', ParseIntPipe) projectId: number): Promise<PublicCommentAdminResponse[]> {
       return this.service.findByProjectId(projectId, user);
   }
@@ -50,7 +52,7 @@ export class PublicCommentController {
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: PublicCommentAdminResponse })
   async findOne(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number): Promise<PublicCommentAdminResponse> {
     return this.service.findOne(id, user);
   }

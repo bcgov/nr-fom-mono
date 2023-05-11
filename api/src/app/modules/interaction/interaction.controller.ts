@@ -1,6 +1,5 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
-import { UserRequiredHeader } from '@api-core/security/auth.service';
-import { BadRequestException, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from "@utility/security/user";
@@ -14,6 +13,7 @@ import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest
 import { InteractionService } from './interaction.service';
 import _ = require('lodash');
 import dayjs = require('dayjs');
+import { AuthGuard, UserHeader } from '@api-core/security/auth.guard';
 // initialize dayjs extensions
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -89,6 +89,7 @@ const AttachmentUpdateBody = (file: string = 'file'): MethodDecorator => (
 };
 
 @ApiTags('interaction')
+@UseGuards(AuthGuard)
 @Controller('interaction')
 export class InteractionController {
 
@@ -109,7 +110,7 @@ export class InteractionController {
   @AttachmentPostBody() // This provides the OpenAPI documentation.
   @ApiResponse({ status: HttpStatus.CREATED })
   async create(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: fetch.Request): Promise<InteractionResponse> {
       const reqDate = _.isEmpty(request.body['communicationDate'])
@@ -141,7 +142,7 @@ export class InteractionController {
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK, type: [InteractionResponse] })
   async find(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Query('projectId', ParseIntPipe) projectId: number): Promise<InteractionResponse[]> {
       return this.service.findByProjectId(projectId, user);
   }
@@ -153,7 +154,7 @@ export class InteractionController {
   @AttachmentUpdateBody()
   @ApiResponse({ status: HttpStatus.OK, type: InteractionResponse })
   async update(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: fetch.Request): Promise<InteractionResponse> {
@@ -186,7 +187,7 @@ export class InteractionController {
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK })
   async remove(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
     this.service.delete(id, user);
   }

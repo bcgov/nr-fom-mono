@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { decode, verify } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
@@ -6,27 +6,6 @@ import { PinoLogger } from 'nestjs-pino';
 
 import { User } from '@utility/security/user';
 import * as aswCognitoEnvJson from '../../assets/aws-cognito-env.json';
-
-// Both of these decorators requires the global AuthInterceptor to add the User object to the request. If no bearer token is provided, the user object will be null.
-/**
- * Use this decorator when anonmyous access is permitted.
- */
-export const UserHeader = createParamDecorator( (data: unknown, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest();
-  return request.headers['user'];
-});
-
-/**
- * Use this decorator when authenticated access is required.
- */
-export const UserRequiredHeader = createParamDecorator( (data: unknown, ctx: ExecutionContext) => {
-  const request = ctx.switchToHttp().getRequest();
-  const user = request.headers['user'];
-  if (user == null) {
-    throw new ForbiddenException(); 
-  }
-  return user;
-});
 
 export class AwsCognitoConfig {
 
@@ -153,7 +132,6 @@ export class AuthService {
             }
             return User.convertAwsCognitoDecodedTokenToUser(decodedToken);
         } catch (err) {
-            console.error("err: ", err)
             this.logger.warn("Invalid token: %o", err);
             return Promise.reject(new ForbiddenException());
         }
