@@ -80,9 +80,10 @@ export class AuthGuard implements CanActivate {
             request.headers['user'] = user;
             return Promise.resolve(true);
         }
-        // Need to catch and switch to .resolve(false) for NestJs Guard for correct 403 status.
+        // Need to catch and return NestJS expected "Promise<boolean>" (as.resolve(false)).
+        // Throwing an exception directly or Promise.reject() will cause NestJS internal 500 error.
         catch (err) {
-            this.logger.info("AuthGuard checks failed: %o", err);
+            this.logger.warn("AuthGuard checks failed: %o", err);
             return Promise.resolve(false);
         }
     }

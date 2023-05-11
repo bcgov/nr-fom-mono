@@ -132,7 +132,6 @@ export class AuthService {
             }
             return User.convertAwsCognitoDecodedTokenToUser(decodedToken);
         } catch (err) {
-            console.error("err: ", err)
             this.logger.warn("Invalid token: %o", err);
             return Promise.reject(new ForbiddenException());
         }
