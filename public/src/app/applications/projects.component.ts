@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, UrlTree } from '@angular/router';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { Observable, Subject, Subscription } from 'rxjs';
 
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { UrlService } from '@public-core/services/url.service';
@@ -16,8 +17,6 @@ import { FindPanelComponent } from './find-panel/find-panel.component';
 import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
 import { Panel } from './utils/panel.enum';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 /**
  * Object emitted by child panel on update.
@@ -84,7 +83,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public commentStatusFilters: MultiFilter<boolean>;
   
   constructor(
-    public snackbar: MatSnackBar,
     private modalService: NgbModal,
     private router: Router,
     private projectService: ProjectService,

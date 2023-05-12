@@ -1,7 +1,6 @@
 import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
 import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { provideRouter } from '@angular/router';
@@ -26,7 +25,6 @@ const coreProviders = [
     importProvidersFrom(BsDatepickerModule.forRoot()),
     importProvidersFrom(BrowserAnimationsModule),
     importProvidersFrom(MatDialogModule),
-    importProvidersFrom(MatSnackBarModule),
     {
         provide: HTTP_INTERCEPTORS,
         useClass: ErrorInterceptor,
