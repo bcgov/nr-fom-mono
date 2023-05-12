@@ -1,9 +1,12 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { WorkflowStateCode } from '@api-client';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { IUpdateEvent } from '../projects.component';
@@ -18,6 +21,12 @@ import { Filter, FilterUtils, IFilter, IMultiFilter, IMultiFilterFields, MultiFi
  * @implements {OnDestroy}
  */
 @Component({
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    BsDatepickerModule
+  ],
   selector: 'app-find-panel',
   templateUrl: './find-panel.component.html',
   styleUrls: ['./find-panel.component.scss']

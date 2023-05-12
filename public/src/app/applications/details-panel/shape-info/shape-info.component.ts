@@ -1,18 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, Input } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 import { MatTableModule } from '@angular/material/table';
-import { BrowserModule } from '@angular/platform-browser';
 import { SpatialFeaturePublicResponse } from '@api-client';
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 
 @Component({
   standalone: true,
-  imports: [BrowserModule, MatTableModule],
+  imports: [CommonModule, MatTableModule],
   selector: 'app-shape-info',
   templateUrl: './shape-info.component.html',
   styleUrls: ['./shape-info.component.scss']
 })
-export class ShapeInfoComponent implements OnInit {
+export class ShapeInfoComponent {
 
   slideColor: ThemePalette = 'primary';
   displayedColumns: string[] = ['shape_id', 'type', 'name', 'submission_type', 'area_length', 'development_date'];
@@ -22,10 +22,6 @@ export class ShapeInfoComponent implements OnInit {
   projectSpatialDetail: SpatialFeaturePublicResponse[];
 
   constructor(private fss: FeatureSelectService) { 
-    // Deliberately empty
-  }
-
-  ngOnInit(): void {
     // Deliberately empty
   }
 

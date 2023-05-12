@@ -16,10 +16,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { AppMapComponent } from 'app/applications/app-map/app-map.component';
+import { PublicNoticesPanelComponent } from 'app/applications/app-public-notices/public-notices-panel.component';
+import { FindPanelComponent } from 'app/applications/find-panel/find-panel.component';
 import { PublicNoticesFilterPanelComponent } from './app-public-notices/notices-filter-panel/public-notices-filter-panel.component';
-import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
 import { DetailsPanelComponent } from './details-panel/details-panel.component';
-import { FindPanelComponent } from './find-panel/find-panel.component';
 import { ProjectsComponent } from './projects.component';
 
 @NgModule({
@@ -39,13 +39,13 @@ import { ProjectsComponent } from './projects.component';
     // Standalone-components used in none-standalone module.
     DetailsPanelComponent,
     AppMapComponent,
+    FindPanelComponent,
+    PublicNoticesFilterPanelComponent,
+    PublicNoticesPanelComponent,
     ShortenPipe
   ],
   declarations: [
-    ProjectsComponent,
-    FindPanelComponent,
-    PublicNoticesPanelComponent,
-    PublicNoticesFilterPanelComponent,
+    ProjectsComponent
   ]
 })
 export class ProjectsModule {}
