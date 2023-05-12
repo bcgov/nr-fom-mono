@@ -16,6 +16,8 @@ import { FindPanelComponent } from './find-panel/find-panel.component';
 import { SplashModalComponent } from './splash-modal/splash-modal.component';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
 import { Panel } from './utils/panel.enum';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 /**
  * Object emitted by child panel on update.
@@ -45,6 +47,15 @@ export interface IUpdateEvent {
  * @implements {OnDestroy}
  */
 @Component({
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule,
+    FindPanelComponent,
+    DetailsPanelComponent,
+    PublicNoticesPanelComponent,
+    AppMapComponent
+  ],
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss']
