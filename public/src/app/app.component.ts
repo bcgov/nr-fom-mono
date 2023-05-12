@@ -1,17 +1,17 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
-import { Subject, Observable } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
-import { StateService } from '@public-core/services/state.service';
 import { ModalService } from '@public-core/services/modal.service';
-import { HeaderComponent } from 'app/header/header.component';
+import { StateService } from '@public-core/services/state.service';
 import { FooterComponent } from 'app/footer/footer.component';
+import { HeaderComponent } from 'app/header/header.component';
 
 @Component({
   standalone: true,
   imports: [
-    RouterModule,
+    RouterOutlet,
     HeaderComponent,
     FooterComponent
   ],
