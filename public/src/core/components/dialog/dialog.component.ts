@@ -1,5 +1,6 @@
+import { CommonModule } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 
 // Migrated from admin
 export interface DialogData {
@@ -19,6 +20,8 @@ export interface DialogData {
 }
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, MatDialogModule],
   selector: 'app-dialog-component',
   template: `
     <h2 mat-dialog-title *ngIf="data['title']">

@@ -1,21 +1,22 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router, UrlTree } from '@angular/router';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
-import { Observable, Subject, Subscription} from 'rxjs';
+import { Observable, Subject, Subscription } from 'rxjs';
 
-import { AppMapComponent } from './app-map/app-map.component';
-import { FindPanelComponent } from './find-panel/find-panel.component';
-import { DetailsPanelComponent } from './details-panel/details-panel.component';
-import { SplashModalComponent } from './splash-modal/splash-modal.component';
-import { UrlService } from '@public-core/services/url.service';
-import { Panel } from './utils/panel.enum';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ProjectPublicSummaryResponse, ProjectService } from '@api-client';
-import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
+import { UrlService } from '@public-core/services/url.service';
 import { takeUntil } from 'rxjs/operators';
+import { AppMapComponent } from './app-map/app-map.component';
 import { PublicNoticesPanelComponent } from './app-public-notices/public-notices-panel.component';
+import { DetailsPanelComponent } from './details-panel/details-panel.component';
+import { FindPanelComponent } from './find-panel/find-panel.component';
+import { SplashModalComponent } from './splash-modal/splash-modal.component';
+import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from './utils/filter';
+import { Panel } from './utils/panel.enum';
 
 /**
  * Object emitted by child panel on update.
@@ -45,6 +46,15 @@ export interface IUpdateEvent {
  * @implements {OnDestroy}
  */
 @Component({
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule,
+    FindPanelComponent,
+    DetailsPanelComponent,
+    PublicNoticesPanelComponent,
+    AppMapComponent
+  ],
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss']
@@ -73,7 +83,6 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   public commentStatusFilters: MultiFilter<boolean>;
   
   constructor(
-    public snackbar: MatSnackBar,
     private modalService: NgbModal,
     private router: Router,
     private projectService: ProjectService,
