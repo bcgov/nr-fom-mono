@@ -1,12 +1,20 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 import { StateService } from '@public-core/services/state.service';
 import { ModalService } from '@public-core/services/modal.service';
+import { HeaderComponent } from 'app/header/header.component';
+import { FooterComponent } from 'app/footer/footer.component';
 
 @Component({
+  standalone: true,
+  imports: [
+    RouterModule,
+    HeaderComponent,
+    FooterComponent
+  ],
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
