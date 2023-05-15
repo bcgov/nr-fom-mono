@@ -1,4 +1,4 @@
-import { HTTP_INTERCEPTORS, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { enableProdMode, importProvidersFrom } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
 import { bootstrapApplication } from '@angular/platform-browser';
@@ -20,11 +20,15 @@ const apiConfig = new Configuration({
 });
 
 const coreProviders = [
-    provideHttpClient(),
-    importProvidersFrom(ApiModule.forRoot(() => apiConfig)),
-    importProvidersFrom(BsDatepickerModule.forRoot()),
-    importProvidersFrom(BrowserAnimationsModule),
-    importProvidersFrom(MatDialogModule),
+    // Note! - Prefer `withInterceptors` and functional interceptors instead, as support for DI-provided
+    // interceptors may be phased out in a later release.
+    provideHttpClient(withInterceptorsFromDi()),
+    importProvidersFrom(
+        ApiModule.forRoot(() => apiConfig),
+        BsDatepickerModule.forRoot(),
+        BrowserAnimationsModule,
+        MatDialogModule
+    ),
     {
         provide: HTTP_INTERCEPTORS,
         useClass: ErrorInterceptor,
