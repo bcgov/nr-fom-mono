@@ -1,8 +1,9 @@
 import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
+import { NgClass, NgIf } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
@@ -10,16 +11,24 @@ import {
 } from '@api-client';
 import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
+import { BsDatepickerConfig, BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { Subject, lastValueFrom } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { PublicNoticeForm } from './public-notice.form';
 import moment = require('moment');
-import { BsDatepickerConfig } from "ngx-bootstrap/datepicker";
 
 @Component({
-  selector: 'app-public-notice-edit',
-  templateUrl: './public-notice-edit.component.html',
-  styleUrls: ['./public-notice-edit.component.scss']
+    standalone: true,
+    imports: [
+        NgIf, 
+        FormsModule, 
+        ReactiveFormsModule, 
+        NgClass, 
+        BsDatepickerModule
+    ],
+    selector: 'app-public-notice-edit',
+    templateUrl: './public-notice-edit.component.html',
+    styleUrls: ['./public-notice-edit.component.scss']
 })
 export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   user: User;

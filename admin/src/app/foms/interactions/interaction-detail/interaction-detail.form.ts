@@ -1,5 +1,5 @@
-import { minLength, prop, required } from "@rxweb/reactive-form-validators"
 import { InteractionResponse } from '@api-client';
+import { minLength, prop, required } from "@rxweb/reactive-form-validators";
 import * as R from 'remeda';
 
 const UPDATE_FIELDS = ['stakeholder', 'communicationDate', 'communicationDetails'] as const;

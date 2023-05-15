@@ -2,11 +2,15 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ThemePalette } from '@angular/material/core';
 import { SpatialFeaturePublicResponse } from '@api-client';
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
+import { NgClass, NgFor, NgIf, DecimalPipe } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
 
 @Component({
-  selector: 'app-shape-info',
-  templateUrl: './shape-info.component.html',
-  styleUrls: ['./shape-info.component.scss']
+    selector: 'app-shape-info',
+    templateUrl: './shape-info.component.html',
+    styleUrls: ['./shape-info.component.scss'],
+    standalone: true,
+    imports: [MatTableModule, NgClass, NgFor, NgIf, DecimalPipe]
 })
 export class ShapeInfoComponent implements OnInit {
 

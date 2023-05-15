@@ -1,13 +1,31 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatAccordion } from '@angular/material/expansion';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { PublicCommentAdminResponse, ResponseCodeEnum } from '@api-client';
-import { StateService } from '../../../../core/services/state.service';
 import * as _ from 'lodash';
+import { StateService } from '../../../../core/services/state.service';
+
+import { NewlinesPipe } from '@admin-core/pipes/newlines.pipe';
+import { DatePipe, NgFor, NgStyle, NgTemplateOutlet } from '@angular/common';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-comments-summary',
-  templateUrl: './comments-summary.component.html',
-  styleUrls: ['./comments-summary.component.scss']
+    standalone: true,
+    imports: [
+        MatExpansionModule, 
+        NgStyle, 
+        MatIconModule, 
+        MatBadgeModule, 
+        NgFor, 
+        MatCardModule, 
+        NgTemplateOutlet, 
+        DatePipe, 
+        NewlinesPipe
+    ],
+    selector: 'app-comments-summary',
+    templateUrl: './comments-summary.component.html',
+    styleUrls: ['./comments-summary.component.scss'],
 })
 export class CommentsSummaryComponent implements OnInit {
 

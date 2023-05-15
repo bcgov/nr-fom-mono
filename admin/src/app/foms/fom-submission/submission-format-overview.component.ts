@@ -1,9 +1,12 @@
 import { Component } from '@angular/core';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
-  selector: 'app-submission-format-overview',
-  templateUrl: './submission-format-overview.component.html',
-  styleUrls: ['./submission-format-overview.component.scss']
+    standalone: true,
+    imports: [MatExpansionModule],
+    selector: 'app-submission-format-overview',
+    templateUrl: './submission-format-overview.component.html',
+    styleUrls: ['./submission-format-overview.component.scss']
 })
 export class SubmissionFormatOverviewComponent {
 

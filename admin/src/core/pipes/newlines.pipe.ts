@@ -1,4 +1,4 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 /**
  * Finds text '\n' characters and replaces them with html <br> tags.
@@ -7,7 +7,10 @@ import {Pipe, PipeTransform} from '@angular/core';
  * @class NewlinesPipe
  * @implements {PipeTransform}
  */
-@Pipe({name: 'newlines'})
+@Pipe({
+    standalone: true,
+    name: 'newlines'
+})
 export class NewlinesPipe implements PipeTransform {
   transform(str: string): string {
     if (!str) {

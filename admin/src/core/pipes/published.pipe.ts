@@ -1,10 +1,11 @@
-import {Pipe, PipeTransform} from '@angular/core';
+import { Pipe, PipeTransform } from '@angular/core';
 
 //
 // Filter to return only published items from an array.
 //
 @Pipe({
-  name: 'published'
+    standalone: true,
+    name: 'published'
 })
 export class PublishedPipe implements PipeTransform {
   transform(items: any[]): any {

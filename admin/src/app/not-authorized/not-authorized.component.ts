@@ -1,12 +1,15 @@
+import { NgIf } from "@angular/common";
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
 
 @Component({
-  selector: "app-not-authorized",
-  templateUrl: "./not-authorized.component.html",
-  styleUrls: ["./not-authorized.component.scss"],
+    standalone: true,
+    imports: [NgIf],
+    selector: "app-not-authorized",
+    templateUrl: "./not-authorized.component.html",
+    styleUrls: ["./not-authorized.component.scss"]
 })
 export class NotAuthorizedComponent implements OnInit {
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();

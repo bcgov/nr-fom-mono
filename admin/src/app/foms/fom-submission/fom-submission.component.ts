@@ -1,5 +1,5 @@
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -12,13 +12,27 @@ import { CognitoService } from "../../../core/services/cognito.service";
 import { ModalService } from '../../../core/services/modal.service';
 import { StateService } from '../../../core/services/state.service';
 import { FomSubmissionForm } from './fom-submission.form';
+import { SubmissionFormatOverviewComponent } from './submission-format-overview.component';
+
+import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @Component({
-  selector: 'app-fom-submission',
-  templateUrl: './fom-submission.component.html',
-  styleUrls: ['./fom-submission.component.scss'],
-  providers: [DatePipe]
+    standalone: true,
+    imports: [
+        NgIf, 
+        FormsModule, 
+        ReactiveFormsModule, 
+        NgFor, 
+        SubmissionFormatOverviewComponent, 
+        DatePipe, 
+        UploadBoxComponent
+    ],
+    selector: 'app-fom-submission',
+    templateUrl: './fom-submission.component.html',
+    styleUrls: ['./fom-submission.component.scss'],
+    providers: [DatePipe]
 })
 export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy {
   public fg: RxFormGroup;

@@ -1,10 +1,13 @@
+import { NgIf, TitleCasePipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { DialogData } from '../../../core/models/dialog';
+import { ButtonComponent } from '../button/button.component';
 
 @Component({
-  selector: 'app-dialog-component',
-  template: `
+    standalone: true,
+    selector: 'app-dialog-component',
+    template: `
     <h2 mat-dialog-title *ngIf="data['title']">
      {{ data['title'] }}
     </h2>
@@ -27,7 +30,13 @@ import { DialogData } from '../../../core/models/dialog';
       </app-button>
     </mat-dialog-actions>
   `,
-  styleUrls: ['./dialog.component.scss'],
+    styleUrls: ['./dialog.component.scss'],
+    imports: [
+        NgIf, 
+        MatDialogModule, 
+        ButtonComponent, 
+        TitleCasePipe
+    ]
 })
 export class DialogComponent {
   message = '';

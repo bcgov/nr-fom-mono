@@ -34,13 +34,16 @@ import * as L from 'leaflet';
         } 
     (might be some clue here: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env)
 */
+import { NgIf } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-details-map',
-  templateUrl: './details-map.component.html',
-  styleUrls: ['./details-map.component.scss']
+    standalone: true,
+    imports: [NgIf],
+    selector: 'app-details-map',
+    templateUrl: './details-map.component.html',
+    styleUrls: ['./details-map.component.scss']
 })
 export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
 

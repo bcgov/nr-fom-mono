@@ -1,9 +1,14 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 
 import { CommonUtil } from '@admin-core/utils/commonUtil';
-import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
+import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants/constantUtils';
+import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import {
     ProjectResponse, ProjectService, PublicCommentAdminResponse,
     PublicCommentAdminUpdateRequest, PublicCommentService, SpatialFeatureService
@@ -26,9 +31,22 @@ export const ERROR_DIALOG = {
 };
 
 @Component({
-  selector: 'app-review-comments',
-  templateUrl: './review-comments.component.html',
-  styleUrls: ['./review-comments.component.scss']
+    standalone: true,
+    imports: [
+        NgIf, 
+        RouterLink, 
+        MatFormFieldModule, 
+        MatSelectModule, 
+        FormsModule, 
+        NgFor, 
+        MatOptionModule, 
+        CommentDetailComponent, 
+        AsyncPipe, 
+        DatePipe
+    ],
+    selector: 'app-review-comments',
+    templateUrl: './review-comments.component.html',
+    styleUrls: ['./review-comments.component.scss']
 })
 export class ReviewCommentsComponent implements OnInit, OnDestroy {
 
