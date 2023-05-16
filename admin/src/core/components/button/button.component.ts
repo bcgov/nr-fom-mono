@@ -1,9 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { StateService } from '../../../core/services/state.service';
+import { Component, Input } from '@angular/core';
+import { StateService } from '@admin-core/services/state.service';
 
 @Component({
-  selector: 'app-button',
-  template: `
+    standalone: true,
+    selector: 'app-button',
+    template: `
         <div class="btn-container">
 
    <button
@@ -19,16 +20,12 @@ import { StateService } from '../../../core/services/state.service';
         </div>
 
   `,
-  styleUrls: ['./button.component.scss']
+    styleUrls: ['./button.component.scss']
 })
-export class ButtonComponent implements OnInit {
+export class ButtonComponent {
   @Input() title: string;
   @Input() disabled: boolean;
 
   constructor(public stateSvc: StateService) { }
-
-  ngOnInit(): void {
-    // Deliberately empty
-  }
 
 }

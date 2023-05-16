@@ -1,11 +1,15 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 
+import { NgFor, NgIf } from '@angular/common';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 import * as R from 'remeda';
 
 @Component({
-  selector: 'app-upload-box',
-  template: `
+    standalone: true,
+    imports: [NgxDropzoneModule, NgFor, NgIf],
+    selector: 'app-upload-box',
+    template: `
     <div class="upload-group">
       <div class="upload-control">
         <ngx-dropzone
@@ -37,7 +41,7 @@ import * as R from 'remeda';
       </div>
     </div>
   `,
-  styleUrls: ['./file-upload-box.component.scss'],
+    styleUrls: ['./file-upload-box.component.scss']
 })
 export class UploadBoxComponent implements OnInit {
   isImageType( type: string ) {

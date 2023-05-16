@@ -1,20 +1,36 @@
-import { Location } from '@angular/common';
+import { DatePipe, Location, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, ParamMap, Params, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Params, Router, RouterLink } from '@angular/router';
 import { ProjectResponse, ProjectService, WorkflowStateEnum } from "@api-client";
+import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
+import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
 import { isNil } from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../core/services/cognito.service";
-import { ModalService } from '../../core/services/modal.service';
-import { StateService } from '../../core/services/state.service';
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
 
 @Component({
-  selector: 'app-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.scss']
+    standalone: true,
+    imports: [
+        FormsModule, 
+        RxReactiveFormsModule, 
+        NgFor, 
+        NgIf, 
+        NgbDropdown, 
+        NgbDropdownToggle, 
+        NgbDropdownMenu, 
+        RouterLink, 
+        TitleCasePipe, 
+        DatePipe
+    ],
+    selector: 'app-search',
+    templateUrl: './search.component.html',
+    styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
   private ngUnsubscribe = new Subject<void>();

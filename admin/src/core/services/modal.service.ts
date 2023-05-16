@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
-import { DialogData } from '../models/dialog';
-import { DialogComponent } from '../components/dialog/dialog.component';
+import { DialogData } from '@admin-core/models/dialog';
+import { DialogComponent } from '@admin-core/components/dialog/dialog.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 export const dialogTypes = ['cancel'] as const;

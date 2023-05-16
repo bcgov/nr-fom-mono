@@ -1,22 +1,26 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
+import { NgIf } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { NgbNavbar } from '@ng-bootstrap/ng-bootstrap';
 import { User } from "@utility/security/user";
 import { ConfigService } from '@utility/services/config.service';
-import { CognitoService } from "../../core/services/cognito.service";
+import { CognitoService } from "@admin-core/services/cognito.service";
 
 @Component({
-  selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss'],
-  animations: [
-    trigger('toggleNav', [
-      state('navClosed', style({height: '0'})),
-      state('navOpen', style({height: '*'})),
-      transition('navOpen => navClosed', [animate('0.2s')]),
-      transition('navClosed => navOpen', [animate('0.2s')])
-    ])
-  ]
+    standalone: true,
+    imports: [NgbNavbar, RouterLink, NgIf],
+    selector: 'app-header',
+    templateUrl: './header.component.html',
+    styleUrls: ['./header.component.scss'],
+    animations: [
+        trigger('toggleNav', [
+            state('navClosed', style({ height: '0' })),
+            state('navOpen', style({ height: '*' })),
+            transition('navOpen => navClosed', [animate('0.2s')]),
+            transition('navClosed => navOpen', [animate('0.2s')])
+        ])
+    ]
 })
 export class HeaderComponent implements OnInit {
   isNavMenuOpen = true; 

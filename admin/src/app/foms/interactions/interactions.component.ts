@@ -1,11 +1,12 @@
+import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { InteractionResponse, InteractionService, ProjectResponse, WorkflowStateEnum } from '@api-client';
 import { User } from "@utility/security/user";
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../../core/services/cognito.service";
-import { ModalService } from '../../../core/services/modal.service';
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
 import { InteractionDetailComponent } from './interaction-detail/interaction-detail.component';
 import { InteractionRequest } from './interaction-detail/interaction-detail.form';
 
@@ -22,9 +23,18 @@ export const ERROR_DIALOG = {
 };
 
 @Component({
-  selector: 'app-interactions',
-  templateUrl: './interactions.component.html',
-  styleUrls: ['./interactions.component.scss']
+    standalone: true,
+    imports: [
+        NgIf, 
+        RouterLink, 
+        NgFor, 
+        InteractionDetailComponent, 
+        AsyncPipe, 
+        DatePipe
+    ],
+    selector: 'app-interactions',
+    templateUrl: './interactions.component.html',
+    styleUrls: ['./interactions.component.scss']
 })
 export class InteractionsComponent implements OnInit, OnDestroy {
 

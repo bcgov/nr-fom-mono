@@ -1,16 +1,30 @@
+import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { Component, Input, OnInit } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
-import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
 import { AttachmentResponse, AttachmentService, InteractionResponse } from '@api-client';
+import { RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { ConfigService } from '@utility/services/config.service';
 import { InteractionDetailForm } from './interaction-detail.form';
-import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
+
+import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
+import { DatePipe, NgClass, NgIf } from '@angular/common';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 @Component({
-  selector: 'app-interaction-detail',
-  templateUrl: './interaction-detail.component.html',
-  styleUrls: ['./interaction-detail.component.scss'],
-  exportAs: 'interactionForm'
+    standalone: true,
+    imports: [
+        NgIf, 
+        FormsModule, 
+        ReactiveFormsModule, 
+        NgClass, 
+        BsDatepickerModule, 
+        DatePipe, 
+        UploadBoxComponent
+    ],
+    selector: 'app-interaction-detail',
+    templateUrl: './interaction-detail.component.html',
+    styleUrls: ['./interaction-detail.component.scss'],
+    exportAs: 'interactionForm'
 })
 export class InteractionDetailComponent implements OnInit {
 

@@ -1,5 +1,5 @@
-import {minLength, prop, required} from '@rxweb/reactive-form-validators';
-import {ProjectResponse, DistrictResponse, ForestClientResponse, WorkflowStateCode} from '@api-client';
+import { DistrictResponse, ForestClientResponse, ProjectResponse, WorkflowStateCode } from '@api-client';
+import { minLength, prop, required } from '@rxweb/reactive-form-validators';
 import * as R from 'remeda';
 
 const updateFields = [

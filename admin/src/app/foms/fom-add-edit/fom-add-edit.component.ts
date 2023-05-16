@@ -3,11 +3,11 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as moment from 'moment';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
 import { switchMap, takeUntil, tap } from 'rxjs/operators';
 
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import {
     AttachmentResponse, DistrictResponse, ForestClientResponse,
     ForestClientService,
@@ -16,21 +16,39 @@ import {
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { AttachmentTypeEnum } from "../../../core/models/attachmentTypeEnum";
-import { AttachmentResolverSvc } from "../../../core/services/AttachmentResolverSvc";
-import { CognitoService } from "../../../core/services/cognito.service";
-import { ModalService } from '../../../core/services/modal.service';
-import { StateService } from '../../../core/services/state.service';
-import { AttachmentUploadService } from "../../../core/utils/attachmentUploadService";
+import { AttachmentTypeEnum } from "@admin-core/models/attachmentTypeEnum";
+import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
+import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadService";
 import { FomAddEditForm } from './fom-add-edit.form';
+
+import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
+import { AppFormControlDirective } from '@admin-core/directives/form-control.directive';
+import { NewlinesPipe } from '@admin-core/pipes/newlines.pipe';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 type ApplicationPageType = 'create' | 'edit';
 
 @Component({
-  selector: 'app-application-add-edit',
-  templateUrl: './fom-add-edit.component.html',
-  styleUrls: ['./fom-add-edit.component.scss'],
-  providers: [DatePipe]
+    standalone: true,
+    imports: [
+        NgIf, 
+        FormsModule, 
+        ReactiveFormsModule, 
+        BsDatepickerModule, 
+        NgClass, 
+        NgFor,
+        AppFormControlDirective,
+        NewlinesPipe,
+        UploadBoxComponent
+    ],
+    selector: 'app-application-add-edit',
+    templateUrl: './fom-add-edit.component.html',
+    styleUrls: ['./fom-add-edit.component.scss'],
+    providers: [DatePipe]
 })
 export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   fg: RxFormGroup;
