@@ -9,7 +9,7 @@ import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../../core/services/cognito.service";
+import { CognitoService } from "@admin-core/services/cognito.service";
 import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
 
 import { NewlinesPipe } from "@admin-core/pipes/newlines.pipe";

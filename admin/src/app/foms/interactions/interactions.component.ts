@@ -5,8 +5,8 @@ import { InteractionResponse, InteractionService, ProjectResponse, WorkflowState
 import { User } from "@utility/security/user";
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../../core/services/cognito.service";
-import { ModalService } from '../../../core/services/modal.service';
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
 import { InteractionDetailComponent } from './interaction-detail/interaction-detail.component';
 import { InteractionRequest } from './interaction-detail/interaction-detail.form';
 

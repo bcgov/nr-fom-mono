@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot } from '@angular/router';
 import { ProjectMetricsResponse, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, SpatialFeatureService } from '@api-client';
-import { ConstantUtils } from '../../core/utils/constants/constantUtils';
+import { ConstantUtils } from '@admin-core/utils/constants/constantUtils';
 
 export const projectDetailResolver: ResolveFn<ProjectResponse> = 
     (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { StateService } from '../../../core/services/state.service';
+import { StateService } from '@admin-core/services/state.service';
 
 @Component({
     standalone: true,

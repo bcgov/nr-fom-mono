@@ -8,9 +8,9 @@ import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from '@utility/security/user';
 import { Observable, Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../../core/services/cognito.service";
-import { ModalService } from '../../../core/services/modal.service';
-import { StateService } from '../../../core/services/state.service';
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
 import { FomSubmissionForm } from './fom-submission.form';
 import { SubmissionFormatOverviewComponent } from './submission-format-overview.component';
 

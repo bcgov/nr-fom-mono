@@ -16,8 +16,8 @@ import {
 import { User } from "@utility/security/user";
 import * as _ from 'lodash';
 import { map, takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../../core/services/cognito.service";
-import { StateService } from '../../../core/services/state.service';
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { StateService } from '@admin-core/services/state.service';
 import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 
 export const ERROR_DIALOG = {

@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpRequest, HttpHandler, HttpEvent, HttpInterceptor } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
-import { ModalService } from '../services/modal.service';
-import { StateService } from '../../core/services/state.service';
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
 
 @Injectable({
   providedIn: 'root',

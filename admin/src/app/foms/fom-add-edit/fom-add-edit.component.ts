@@ -16,12 +16,12 @@ import {
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { AttachmentTypeEnum } from "../../../core/models/attachmentTypeEnum";
-import { AttachmentResolverSvc } from "../../../core/services/AttachmentResolverSvc";
-import { CognitoService } from "../../../core/services/cognito.service";
-import { ModalService } from '../../../core/services/modal.service';
-import { StateService } from '../../../core/services/state.service';
-import { AttachmentUploadService } from "../../../core/utils/attachmentUploadService";
+import { AttachmentTypeEnum } from "@admin-core/models/attachmentTypeEnum";
+import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
+import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadService";
 import { FomAddEditForm } from './fom-add-edit.form';
 
 import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';

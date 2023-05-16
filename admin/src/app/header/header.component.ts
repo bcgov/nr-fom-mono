@@ -5,7 +5,7 @@ import { Router, RouterLink } from '@angular/router';
 import { NgbNavbar } from '@ng-bootstrap/ng-bootstrap';
 import { User } from "@utility/security/user";
 import { ConfigService } from '@utility/services/config.service';
-import { CognitoService } from "../../core/services/cognito.service";
+import { CognitoService } from "@admin-core/services/cognito.service";
 
 @Component({
     standalone: true,

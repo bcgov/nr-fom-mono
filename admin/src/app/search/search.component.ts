@@ -10,9 +10,9 @@ import { User } from "@utility/security/user";
 import { isNil } from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../core/services/cognito.service";
-import { ModalService } from '../../core/services/modal.service';
-import { StateService } from '../../core/services/state.service';
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
 
 @Component({
     standalone: true,

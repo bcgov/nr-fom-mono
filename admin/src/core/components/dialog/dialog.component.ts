@@ -1,8 +1,8 @@
 import { NgIf, TitleCasePipe } from '@angular/common';
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { DialogData } from '../../../core/models/dialog';
-import { ButtonComponent } from '../button/button.component';
+import { DialogData } from '@admin-core/models/dialog';
+import { ButtonComponent } from '@admin-core/components/button/button.component';
 
 @Component({
     standalone: true,
