@@ -3,13 +3,13 @@ import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
 import { NgClass, NgIf } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
     PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum
 } from '@api-client';
-import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { IFormGroup, RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
 import { BsDatepickerConfig, BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { Subject, lastValueFrom } from 'rxjs';
@@ -36,7 +36,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   projectId: number;
   isNewForm: boolean;
   publicNoticeResponse: PublicNoticeResponse;
-  publicNoticeFormGroup: UntypedFormGroup;
+  publicNoticeFormGroup: IFormGroup<PublicNoticeForm>;
   addressLimit: number = 500;
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
@@ -104,7 +104,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
           delete this.publicNoticeResponse?.operationEndYear;
         }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
-        this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
+        this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
         if (!this.editMode) {
           this.publicNoticeFormGroup.disable();
@@ -194,10 +194,10 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   private submitPublicNotice() {
     let body: any;
     if (this.isAddNewNotice()) {
-      body = this.publicNoticeFormGroup.value as PublicNoticeCreateRequest;
+      body = this.publicNoticeFormGroup.value as Partial<PublicNoticeCreateRequest>;
     }
     else {
-      body = this.publicNoticeFormGroup.value as PublicNoticeUpdateRequest;
+      body = this.publicNoticeFormGroup.value as Partial<PublicNoticeUpdateRequest>;
       body.revisionCount = this.publicNoticeResponse.revisionCount;
     }
 

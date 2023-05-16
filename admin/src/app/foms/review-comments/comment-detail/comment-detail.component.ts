@@ -1,8 +1,8 @@
 import { StateService } from '@admin-core/services/state.service';
 import { Component, Input } from '@angular/core';
-import { FormsModule, ReactiveFormsModule, UntypedFormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommentScopeCode, PublicCommentAdminResponse, ResponseCode } from '@api-client';
-import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { IFormGroup, RxFormBuilder } from '@rxweb/reactive-form-validators';
 import * as _ from 'lodash';
 import { CommentDetailForm } from './comment-detail.form';
 
@@ -26,7 +26,7 @@ import { DatePipe, NgFor, NgIf } from '@angular/common';
 })
 export class CommentDetailComponent {
   commentScopeCodes: _.Dictionary<CommentScopeCode>;
-  commentFormGroup: UntypedFormGroup;
+  commentFormGroup: IFormGroup<CommentDetailForm>;
   comment: PublicCommentAdminResponse;
   responseDetailsLimit: number = 4000;
 
@@ -36,7 +36,7 @@ export class CommentDetailComponent {
   @Input() set selectedComment(comment: PublicCommentAdminResponse) {
     this.comment = comment;
     const commentFormGroup = new CommentDetailForm(comment)
-    this.commentFormGroup = this.formBuilder.formGroup(commentFormGroup);
+    this.commentFormGroup = this.formBuilder.formGroup(commentFormGroup) as IFormGroup<CommentDetailForm>;
     if (!this.canReplyComment) {
       this.commentFormGroup.disable();
     }
