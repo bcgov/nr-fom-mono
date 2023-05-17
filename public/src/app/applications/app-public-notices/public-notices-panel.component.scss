@@ -10,10 +10,6 @@
 .mat-expansion-panel-header {
   height: auto;
   padding: 5px 10px 5px 10px;
-  .mat-expansion-panel-header-title {
-    font-size: small;
-    text-align: center;
-  }
   .header {
     text-align: center;
     font-weight: bold;
@@ -29,6 +25,7 @@
 }
 
 .mat-mdc-card {
+  padding: 16px;
   .row {
       padding-bottom: 0.25rem;
   }
