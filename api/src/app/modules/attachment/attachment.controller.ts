@@ -77,6 +77,7 @@ export class AttachmentController {
 
   @Get('/file/:id')
   @ApiBearerAuth()
+  @AuthGuardMeta(GUARD_OPTIONS.PUBLIC)
   @ApiOkResponse() 
   async getFileContents(
     @UserHeader() user: User,
