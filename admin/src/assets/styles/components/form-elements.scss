@@ -138,3 +138,10 @@ label {
 .no-border {
   border: 0;
 }
+
+// After upgrading to Angular v15, 'select dropdown' icon disappears.
+// You might find element style (developer console) has ".form-control {appearance: none}"
+// Not sure if it is a bug within Angular, but this can fix it.
+select.form-control {
+    appearance: menulist;
+}
