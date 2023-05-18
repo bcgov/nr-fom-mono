@@ -6,10 +6,10 @@
           <em class="material-icons md-20">arrow_back </em> Back to FOM Details</a>
       </div>
       <div class="title-container row">
-        <div class="col-md-4 title-container__title">
+        <div class="col col-sm-4 title-container__title">
           <h1>Summary for FOM ID: {{project?.id}}</h1>
         </div>
-        <div class="col-md-3">
+        <div class="col col-sm-4">
           <mat-form-field [style.width.px]=500>
             <mat-label>Comment Scope</mat-label>
             <mat-select [(ngModel)]="selectedScope" name="commentScope"
@@ -20,6 +20,7 @@
             </mat-select>
           </mat-form-field>
         </div>
+        <div class="col-sm-4"></div>
       </div>
     </div>
   </div>
