@@ -9,7 +9,7 @@ import { StateService } from '@admin-core/services/state.service';
 
    <button
             [disabled]="disabled"
-            class="btn btn-primary ml-1"
+            class="btn btn-primary ms-1"
             type="button"
           >
             <i class="spinner rotating" [hidden]="!stateSvc.loading"></i>

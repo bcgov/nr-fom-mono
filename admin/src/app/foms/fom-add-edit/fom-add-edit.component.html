@@ -14,7 +14,7 @@
           Cancel
         </button>
         <button *ngIf="isCreate; else saveButton"
-          class="btn btn-primary ml-1"
+          class="btn btn-primary ms-1"
           type="button"
           title="Create FOM"
           (click)="submit()"
@@ -280,7 +280,7 @@
 
 <ng-template #saveButton>
   <button
-          class="btn btn-primary ml-1"
+          class="btn btn-primary ms-1"
           type="button"
           title="Save your changes"
           (click)="saveApplication()"
