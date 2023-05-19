@@ -54,10 +54,6 @@ $card-shadow: 0.02rem 0 0.2rem rgba(#000, 0.15);
     }
   }
 
-  .doc-list {
-    margin-top: 0.2rem;
-  }
-
   .nv-list {
     margin-top: -0.5rem;
     margin-bottom: -0.5rem;
@@ -75,8 +71,9 @@ $card-shadow: 0.02rem 0 0.2rem rgba(#000, 0.15);
 }
 
 .vert-pipe {
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
+  padding: 0;
+  margin-left: 0.2rem;
+  margin-right: 0.2rem;
   display: inline-block;
   width: 1px;
   border-left: 1px solid #999;

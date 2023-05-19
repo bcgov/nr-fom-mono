@@ -261,7 +261,6 @@
                   <div class="cell doc-list__item-name">{{attachment.fileName}}</div>
                   <div style="text-align: right;margin-right: 5px;">({{attachment.attachmentType.description}})</div>
                 </a>
-                <span *ngIf="isDeleteAttachmentAllowed(attachment)" class="vert-pipe">&nbsp;</span>
                 <button *ngIf="isDeleteAttachmentAllowed(attachment)" class="btn btn-icon row doc-list__item" title="Delete this attachment"
                       (click)="deleteAttachment(attachment.id)"
                       [disabled]="isDeleting">
