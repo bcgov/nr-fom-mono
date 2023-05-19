@@ -199,7 +199,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       const geometry = f.geometry;
       const properties = f.properties;
       let name: string;
-      if (properties && properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
+      if (properties?.hasOwnProperty(OPTIONAL_PROP_NAME)) {
         name = properties[OPTIONAL_PROP_NAME];
       }
       let devDate: string;
@@ -244,7 +244,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
 
     const crs = jsonSpatialSubmission.crs;
     if (!_.isEmpty(crs)) {
-      if (!crs.properties || !crs.properties.name || 
+      if (!crs.properties?.name || 
             !(crs.properties.name.includes(`:${SpatialCoordSystemEnum.BC_ALBERS}`) || 
               crs.properties.name.includes(`:${SpatialCoordSystemEnum.WGS84}`))
           ) {

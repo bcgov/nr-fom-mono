@@ -45,7 +45,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
       const founds: Attachment[] = await this.repository.find({where: { projectId: request.projectId, attachmentTypeCode: attachmentTypeCode } });
       if (founds.length > 0) {
         // Need to do a security check before we actually delete the existing public notice. In this case, create permission implies delete permission.
-        if (!this.isCreateAuthorized(request, user)) {
+        if (!await this.isCreateAuthorized(request, user)) {
           throw new ForbiddenException();
         }
         await this.repository.delete(founds[0].id);
@@ -116,7 +116,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
       return true;
     }
 
-    if (user && user.isMinistry) {
+    if (user?.isMinistry) {
       return true;
     }
 
@@ -173,7 +173,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
       throw new BadRequestException("No entity for the specified id.");
     }
 
-    if (!this.isViewAuthorized(entity, user)) {
+    if (!await this.isViewAuthorized(entity, user)) {
       throw new ForbiddenException();
     }
 
@@ -230,7 +230,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const attachmentFileResponse = await this.findFileDatabase(attachmentId, user);
     const deleted = super.delete(attachmentId, user);
 
-    this.deleteAttachmentObject(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName) ;
+    await this.deleteAttachmentObject(attachmentFileResponse.projectId, attachmentFileResponse.id, attachmentFileResponse.fileName) ;
 
     return deleted;
 

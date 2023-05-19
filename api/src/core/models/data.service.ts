@@ -134,7 +134,7 @@ export abstract class DataService<
 
   protected addCommonRelationsToFindOptions(options?: FindOneOptions<E>): FindOneOptions<E> {
     const revisedOptions = options ? options : {};
-    revisedOptions.relations = options && options.relations ? options.relations : {};
+    revisedOptions.relations = options?.relations ? options.relations : {};
     // this.getCommonRelations() is an 'array', but options.relations is 'object'
     this.getCommonRelations().forEach(cRelation => {
       if (! (cRelation in revisedOptions.relations)) { 

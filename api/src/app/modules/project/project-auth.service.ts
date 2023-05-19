@@ -27,7 +27,8 @@ export class ProjectAuthService {
    */
    async isForestClientUserAccess(projectId: number, user?: User): Promise<boolean> {
 
-    if (!user || !user.isForestClient) {
+    if (!user?.isForestClient) {
+      console.log(`!user?.isForestClient: ${!user?.isForestClient}`)
       return false;
     }
 
@@ -46,7 +47,7 @@ export class ProjectAuthService {
    */
   async isForestClientUserAllowedStateAccess(projectId: number, allowedWorkflowStates: WorkflowStateEnum[], user?: User): Promise<boolean> {
 
-    if (!user || !user.isForestClient) {
+    if (!user?.isForestClient) {
       return false;
     }
 

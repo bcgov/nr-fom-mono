@@ -162,7 +162,7 @@ export class ProjectController {
   async remove(
     @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
-    this.service.delete(id, user);
+    await this.service.delete(id, user);
   }
 
   @Put('/commentClassification/:id')

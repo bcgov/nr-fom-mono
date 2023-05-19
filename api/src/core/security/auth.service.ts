@@ -96,7 +96,7 @@ export class AuthService {
 
     async verifyCognitoToken(authHeader: string):Promise<User> {
         const bearer = 'Bearer ';
-        if (!authHeader || !authHeader.startsWith(bearer) || authHeader.length <= bearer.length) {
+        if (!authHeader?.startsWith(bearer) || authHeader.length <= bearer.length) {
             return Promise.reject(new ForbiddenException());
         }
         const tokenStartIndex = bearer.length;

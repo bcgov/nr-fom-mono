@@ -11,7 +11,7 @@ import { User } from "@utility/security/user";
 import * as dayjs from 'dayjs';
 import { isNil } from 'lodash';
 import { PinoLogger } from 'nestjs-pino';
-import { DataSource, Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
 import { DistrictService } from '../district/district.service';
 import { ForestClientService } from '../forest-client/forest-client.service';
@@ -194,7 +194,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     //Deleting files from Object Storage
     for(const attachmentResponse of attachments ) {
-      this.attachmentService.deleteAttachmentObject(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName) ;
+      await this.attachmentService.deleteAttachmentObject(attachmentResponse.projectId, attachmentResponse.id, attachmentResponse.fileName) ;
     }
 
     const deleted = super.delete(projectId, user);
@@ -312,7 +312,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       throw new BadRequestException("Entity not found.");
     }
 
-    if (!user || !user.isForestClient || !user.isAuthorizedForClientId(entity.forestClientId)) {
+    if (!user?.isForestClient || !user?.isAuthorizedForClientId(entity.forestClientId)) {
       throw new ForbiddenException();
     }
 
@@ -396,7 +396,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       throw new BadRequestException("Entity not found.");
     }
 
-    if (!user || !user.isMinistry) {
+    if (!user?.isMinistry) {
       throw new ForbiddenException();
     }
 
@@ -458,7 +458,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
             Missing FSP ID.`);
     }
 
-    if (!this.isDistrictExist(districtId)) {
+    if (!await this.isDistrictExist(districtId)) {
       throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
             Missing District.`);
     }
@@ -589,7 +589,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
    */
   async findProjectMetrics(id: number, user: User): Promise<ProjectMetricsResponse> {
 
-    this.findOne(id, user); // Verifying id can be found and user has view authority.
+    await this.findOne(id, user); // Verifying id can be found and user has view authority.
 
     const response = new ProjectMetricsResponse();
     response.id = id;
