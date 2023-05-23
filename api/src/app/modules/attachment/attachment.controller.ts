@@ -77,7 +77,8 @@ export class AttachmentController {
 
   @Get('/file/:id')
   @ApiBearerAuth()
-  @AuthGuardMeta(GUARD_OPTIONS.PUBLIC)
+  // TODO: This should have same security level the same as isViewAuthorized().
+  // Frontend: should pass header (from admin), currently it does not. Api service should check with isViewAuthorized().
   @ApiOkResponse() 
   async getFileContents(
     @UserHeader() user: User,
