@@ -1,11 +1,11 @@
+import { PROJECT_ID_PARAM_KEY } from '@admin-core/utils/constants/constantUtils';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot } from '@angular/router';
 import { ProjectMetricsResponse, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, SpatialFeatureService } from '@api-client';
-import { ConstantUtils } from '@admin-core/utils/constants/constantUtils';
 
 export const projectDetailResolver: ResolveFn<ProjectResponse> = 
     (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-        const projectId = parseInt(route.paramMap.get(ConstantUtils.PROJECT_ID_PARAM_KEY));
+        const projectId = parseInt(route.paramMap.get(PROJECT_ID_PARAM_KEY));
         const projectService = inject(ProjectService)
         if (isNaN(projectId)) {
             return projectService.projectControllerFindOne(projectId)
@@ -17,14 +17,14 @@ export const projectDetailResolver: ResolveFn<ProjectResponse> =
 
 export const projectMetricsDetailResolver: ResolveFn<ProjectMetricsResponse> = 
     (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-        const projectId = parseInt(route.paramMap.get(ConstantUtils.PROJECT_ID_PARAM_KEY));
+        const projectId = parseInt(route.paramMap.get(PROJECT_ID_PARAM_KEY));
         const projectService = inject(ProjectService)
         return projectService.projectControllerFindProjectMetrics(projectId);
     };
 
 export const projectSpatialDetailResolver: ResolveFn<Array<SpatialFeaturePublicResponse>> = 
     (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
-        const projectId = parseInt(route.paramMap.get(ConstantUtils.PROJECT_ID_PARAM_KEY));
+        const projectId = parseInt(route.paramMap.get(PROJECT_ID_PARAM_KEY));
         const spatialFeatureService = inject(SpatialFeatureService)
         return spatialFeatureService.spatialFeatureControllerGetForProject(projectId);
     }; 
