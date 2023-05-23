@@ -5,35 +5,19 @@ import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
 /*
-  Leaflet has bug and would show these error on console:
+  Leaflet has bug with these warning/error on console since Angular 11:
   http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)
   http://localhost:4300/public/marker-shadow.png 404 (Not Found)
 
-  Add these import(s) to fix them.
-  (ref: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env: answered by user9547708)
-  import "leaflet/dist/images/marker-shadow.png";
-  import "leaflet/dist/images/marker-icon-2x.png";
-*/
-// import "leaflet/dist/images/marker-icon-2x.png";
-// import "leaflet/dist/images/marker-shadow.png";
-/*
-    Comment out above tow imports from leaflet from the previous solution, it is still showing 404 when clicked on a layer, like 
-    previously comment says but it does not seem to cause any other leaflet problem. The icon we intended to show still there.
-    These are the problem if not commenting out after migrate Angular to 12:
-        ./node_modules/leaflet/dist/images/marker-icon-2x.png:1:0 - Error: Module parse failed: Unexpected character '�' (1:0)
-        You may need an appropriate loader to handle this file type, currently no loaders are configured to process this file. See https://webpack.js.org/concepts#loaders      
-        (Source code omitted for this binary file)
-        ./node_modules/leaflet/dist/images/marker-shadow.png:1:0 - Error: Module parse failed: Unexpected character '�' (1:0)
-    TODO:
-    May need to investigate further if it is annoying. However, one partial solution (still not fixing the issue) is adding this into angular.json into "build":
-    (reference: https://lokeshdaiya.medium.com/how-to-use-node-modules-path-or-third-party-assets-in-angular-files-75906a2ff372)
+  After migrating to Angular 15 and adding below into angular.json into "build" can solve problem for "production" 
+  but serving locally still is having issue.
         ,{
-        "glob": "........"
-        "input": "./node_modules/leaflet/dist/images/",
-        "output": "/assets/images"
+            "glob": "........"
+            "input": "./node_modules/leaflet/dist/images/",
+            "output": "/assets/images"
         } 
+    (reference: https://lokeshdaiya.medium.com/how-to-use-node-modules-path-or-third-party-assets-in-angular-files-75906a2ff372)
     (might be some clue here: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env)
-    => The above solution actually fixed production build, but locally run still shows error.
 */
 import { NgIf } from '@angular/common';
 import { Subject } from 'rxjs';
