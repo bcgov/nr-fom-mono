@@ -1,9 +1,16 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { StateService } from '@admin-core/services/state.service';
 import { CommonUtil } from '@admin-core/utils/commonUtil';
-import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
+import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants/constantUtils';
+import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 import {
     ProjectResponse, ProjectService, PublicCommentAdminResponse,
     PublicCommentAdminUpdateRequest, PublicCommentService, SpatialFeatureService
@@ -11,8 +18,6 @@ import {
 import { User } from "@utility/security/user";
 import * as _ from 'lodash';
 import { map, takeUntil } from 'rxjs/operators';
-import { CognitoService } from "../../../core/services/cognito.service";
-import { StateService } from '../../../core/services/state.service';
 import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 
 export const ERROR_DIALOG = {
@@ -26,9 +31,22 @@ export const ERROR_DIALOG = {
 };
 
 @Component({
-  selector: 'app-review-comments',
-  templateUrl: './review-comments.component.html',
-  styleUrls: ['./review-comments.component.scss']
+    standalone: true,
+    imports: [
+        NgIf, 
+        RouterLink, 
+        MatFormFieldModule, 
+        MatSelectModule, 
+        FormsModule, 
+        NgFor, 
+        MatOptionModule, 
+        CommentDetailComponent, 
+        AsyncPipe, 
+        DatePipe
+    ],
+    selector: 'app-review-comments',
+    templateUrl: './review-comments.component.html',
+    styleUrls: ['./review-comments.component.scss']
 })
 export class ReviewCommentsComponent implements OnInit, OnDestroy {
 
@@ -48,8 +66,8 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
   public selectedScope: CommentScopeOpt;
 
   public publicComments$: Observable<PublicCommentAdminResponse[]>;
-  private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
-  private triggered$ = new Subject(); // To notify when 'save' or scope 'select' happen.
+  private ngUnsubscribe: Subject<void> = new Subject<void>();
+  private triggered$ = new Subject<void>(); // To notify when 'save' or scope 'select' happen.
 
   constructor(
     private route: ActivatedRoute,
@@ -139,7 +157,6 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
       return;
     }
     const {id} = selectedComment;
-    update.revisionCount = selectedComment.revisionCount;
 
     try {
       this.loading = true;

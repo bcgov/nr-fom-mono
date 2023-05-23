@@ -1,23 +1,34 @@
 import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
+import { NgClass, NgIf } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
     ProjectResponse, PublicNoticeCreateRequest, PublicNoticeResponse,
     PublicNoticeService, PublicNoticeUpdateRequest, WorkflowStateEnum
 } from '@api-client';
-import { RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { IFormGroup, RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { lastValueFrom, map, Subject, switchMap } from 'rxjs';
+import { BsDatepickerConfig, BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { Subject, lastValueFrom } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { PublicNoticeForm } from './public-notice.form';
 import moment = require('moment');
 
 @Component({
-  selector: 'app-public-notice-edit',
-  templateUrl: './public-notice-edit.component.html',
-  styleUrls: ['./public-notice-edit.component.scss']
+    standalone: true,
+    imports: [
+        NgIf, 
+        FormsModule, 
+        ReactiveFormsModule, 
+        NgClass, 
+        BsDatepickerModule
+    ],
+    selector: 'app-public-notice-edit',
+    templateUrl: './public-notice-edit.component.html',
+    styleUrls: ['./public-notice-edit.component.scss']
 })
 export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   user: User;
@@ -25,7 +36,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   projectId: number;
   isNewForm: boolean;
   publicNoticeResponse: PublicNoticeResponse;
-  publicNoticeFormGroup: FormGroup;
+  publicNoticeFormGroup: IFormGroup<PublicNoticeForm>;
   addressLimit: number = 500;
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
@@ -37,7 +48,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       minDate: moment().toDate(), 
       maxDate: moment().add(7, 'years').toDate(), // current + 7 years
       containerClass: 'theme-dark-blue'
-  }
+  } as Partial<BsDatepickerConfig>
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   
@@ -93,7 +104,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
           delete this.publicNoticeResponse?.operationEndYear;
         }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
-        this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm);
+        this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
         if (!this.editMode) {
           this.publicNoticeFormGroup.disable();
@@ -183,10 +194,10 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   private submitPublicNotice() {
     let body: any;
     if (this.isAddNewNotice()) {
-      body = this.publicNoticeFormGroup.value as PublicNoticeCreateRequest;
+      body = this.publicNoticeFormGroup.value as Partial<PublicNoticeCreateRequest>;
     }
     else {
-      body = this.publicNoticeFormGroup.value as PublicNoticeUpdateRequest;
+      body = this.publicNoticeFormGroup.value as Partial<PublicNoticeUpdateRequest>;
       body.revisionCount = this.publicNoticeResponse.revisionCount;
     }
 
@@ -207,3 +218,4 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     this.ngUnsubscribe.complete();
   }
 }
+

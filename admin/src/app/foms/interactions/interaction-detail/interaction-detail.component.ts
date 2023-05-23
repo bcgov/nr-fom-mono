@@ -1,25 +1,41 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { RxFormBuilder } from '@rxweb/reactive-form-validators';
-import { AttachmentResponse, AttachmentService, InteractionResponse } from '@api-client';
-import { ConfigService } from '@utility/services/config.service';
-import { InteractionDetailForm } from './interaction-detail.form';
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
+import { Component, Input } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AttachmentResponse, AttachmentService, InteractionResponse } from '@api-client';
+import { IFormGroup, RxFormBuilder } from '@rxweb/reactive-form-validators';
+import { ConfigService } from '@utility/services/config.service';
+import { InteractionDetailForm, InteractionRequest } from './interaction-detail.form';
+
+import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
+import { DatePipe, NgClass, NgIf } from '@angular/common';
+import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 @Component({
-  selector: 'app-interaction-detail',
-  templateUrl: './interaction-detail.component.html',
-  styleUrls: ['./interaction-detail.component.scss'],
-  exportAs: 'interactionForm'
+    standalone: true,
+    imports: [
+        NgIf, 
+        FormsModule, 
+        ReactiveFormsModule, 
+        NgClass, 
+        BsDatepickerModule, 
+        DatePipe, 
+        UploadBoxComponent
+    ],
+    selector: 'app-interaction-detail',
+    templateUrl: './interaction-detail.component.html',
+    styleUrls: ['./interaction-detail.component.scss'],
+    exportAs: 'interactionForm'
 })
-export class InteractionDetailComponent implements OnInit {
+export class InteractionDetailComponent {
 
   today = new Date();
   maxDate = this.today;
   interaction: InteractionResponse;
   @Input()
   editMode: boolean;
-  interactionFormGroup: FormGroup;
+
+  interactionFormGroup: IFormGroup<InteractionRequest>;
+  
   files: any[] = []; // Array type, but only 1 attachment for Interaction.
   maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
   fileContent: any;
@@ -40,14 +56,10 @@ export class InteractionDetailComponent implements OnInit {
     private attachmentSvc: AttachmentService
   ) { }
 
-  ngOnInit(): void {
-    // Blank method is intentional
-  }
-
   @Input() set selectedInteraction(interaction: InteractionResponse) {
     this.interaction = interaction;
     const interactionForm = new InteractionDetailForm(interaction)
-    this.interactionFormGroup = this.formBuilder.formGroup(interactionForm);
+    this.interactionFormGroup = this.formBuilder.formGroup(interactionForm)as IFormGroup<InteractionRequest>;
     if (!this.editMode) {
       this.interactionFormGroup.disable();
     }

@@ -1,15 +1,18 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { UrlService } from '@public-core/services/url.service';
-import { Panel } from '../../../applications/utils/panel.enum';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { ProjectPublicSummaryResponse } from '@api-client';
 import { StateService } from '@public-core/services/state.service';
+import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
+import { Panel } from '../../../applications/utils/panel.enum';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './marker-popup.component.html',
   styleUrls: ['./marker-popup.component.scss']
 })
-export class MarkerPopupComponent implements OnInit, OnDestroy {
+export class MarkerPopupComponent {
   public projectSummary: ProjectPublicSummaryResponse;
   public workflowStatus = _.keyBy(this.stateSvc.getCodeTable('workflowStateCode'), 'code');
 
@@ -17,14 +20,6 @@ export class MarkerPopupComponent implements OnInit, OnDestroy {
     private stateSvc: StateService,
     public urlService: UrlService
   ) {}
-
-  public ngOnInit() {
-    // Deliberately empty
-  }
-
-  public ngOnDestroy() {
-    // Deliberately empty
-  }
 
   public showDetails() {
     this.urlService.setQueryParam('id', this.projectSummary.id.toString());

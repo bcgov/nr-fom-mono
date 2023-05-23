@@ -18,7 +18,7 @@
 *.sublime-workspace
 
 # IDE - VSCode
-.vscode/*
+/**/.vscode/**
 #!.vscode/settings.json
 #!.vscode/tasks.json
 #!.vscode/launch.json
@@ -34,6 +34,7 @@ yarn-error.log
 testem.log
 /typings
 test-report.xml
+/**/.angular/cache
 
 # System Files
 .DS_Store

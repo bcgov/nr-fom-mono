@@ -1,6 +1,10 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormsModule } from '@angular/forms';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatSelectModule } from '@angular/material/select';
 import { PublicCommentCreateRequest, PublicCommentService, SpatialFeaturePublicResponse, SpatialObjectCodeEnum } from '@api-client';
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { SpatialTypeMap } from '@public-core/utils/constants/appUtils';
 
 enum COMMENT_SCOPE_CODE {
@@ -15,6 +19,8 @@ type CommentScopeOpt = {commentScopeCode: COMMENT_SCOPE_CODE,
                         scopeId: number};
 
 @Component({
+  standalone: true,
+  imports: [CommonModule, FormsModule, MatSelectModule, MatProgressBarModule],
   templateUrl: './comment-modal.component.html',
   styleUrls: ['./comment-modal.component.scss'],
   encapsulation: ViewEncapsulation.None

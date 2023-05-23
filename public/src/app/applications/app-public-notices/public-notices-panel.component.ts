@@ -1,13 +1,28 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, OnInit, Output, ViewChild } from '@angular/core';
-import { MatAccordion } from '@angular/material/expansion';
+import { FormsModule } from '@angular/forms';
+import { MatCardModule } from '@angular/material/card';
+import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
+import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
 import { IUpdateEvent } from '../projects.component';
 import { Panel } from '../utils/panel.enum';
-import { NoticeFilter } from './notices-filter-panel/public-notices-filter-panel.component';
+import { NoticeFilter, PublicNoticesFilterPanelComponent } from './notices-filter-panel/public-notices-filter-panel.component';
 import moment = require('moment');
 @Component({
+  standalone: true,
+  imports: [
+    CommonModule, 
+    FormsModule,
+    MatExpansionModule,
+    MatTooltipModule,
+    MatCardModule,
+    ShortenPipe,
+    PublicNoticesFilterPanelComponent
+  ],
   selector: 'app-public-notices-panel',
   templateUrl: './public-notices-panel.component.html',
   styleUrls: ['./public-notices-panel.component.scss']

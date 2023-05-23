@@ -2,8 +2,12 @@ $doc-list-link-color: #007bff;
 
 // Document List Shared Styling
 .doc-list {
-  margin: 0;
   padding: 0;
+  margin-top: 0.2rem;
+
+  button {
+    max-width: 2rem !important;
+  }
 
   li {
     @include flex-box();

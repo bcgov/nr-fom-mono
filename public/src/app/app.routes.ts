@@ -1,13 +1,12 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { Routes } from '@angular/router';
 
 import { AboutComponent } from './about/about.component';
-import { ContactComponent } from './contact/contact.component';
-import { ProjectsComponent } from './applications/projects.component';
-import { HomeProxyComponent } from './home-proxy.component';
 import { ApplicationsProxyComponent } from './applications-proxy.component';
+import { ProjectsComponent } from './applications/projects.component';
+import { ContactComponent } from './contact/contact.component';
+import { HomeProxyComponent } from './home-proxy.component';
 
-const routes: Routes = [
+export const AppRoutes: Routes = [
   {
     // proxy component is needed because fragment in redirectTo doesn't work in Angular v4
     path: 'home/:showSplashModal',
@@ -44,9 +43,3 @@ const routes: Routes = [
     redirectTo: '/home/true'
   }
 ];
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
-})
-export class AppRoutingModule {}

@@ -1,8 +1,8 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import * as dayjs from 'dayjs';
 
-import { UserHeader, UserRequiredHeader } from '@api-core/security/auth.service';
+import { AuthGuard, AuthGuardMeta, GUARD_OPTIONS, UserHeader } from '@api-core/security/auth.guard';
 import { User } from "@utility/security/user";
 import { PinoLogger } from 'nestjs-pino';
 import { ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest, ProjectCreateRequest, ProjectMetricsResponse, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest, ProjectWorkflowStateChangeRequest } from './project.dto';
@@ -11,6 +11,7 @@ import { WorkflowStateEnum } from './workflow-state-code.entity';
 
 
 @ApiTags('project')
+@UseGuards(AuthGuard)
 @Controller('project')
 export class ProjectController {
   constructor(
@@ -20,6 +21,7 @@ export class ProjectController {
 
   // Anonymous access allowed
   @Get('/publicSummary')
+  @AuthGuardMeta(GUARD_OPTIONS.PUBLIC)
   @ApiQuery({ name: 'includeCommentOpen', required: false})
   @ApiQuery({ name: 'includePostCommentOpen', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
@@ -63,6 +65,7 @@ export class ProjectController {
   // Anonymous access allowed
   @Get(':id')
   @ApiBearerAuth()
+  @AuthGuardMeta(GUARD_OPTIONS.ANONYMOUS_LIMITED)
   @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
   async findOne(
     @UserHeader() user: User,
@@ -89,13 +92,12 @@ export class ProjectController {
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectResponse] })
   async find(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Query('fspId') fspId?: string,
     @Query('districtId') districtId?: string,
     @Query('workflowStateCode') workflowStateCode?: string,
     @Query('forestClientName') forestClientName?: string,
     ): Promise<ProjectResponse[]> {
-
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
       if (fspId) {
@@ -124,7 +126,7 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.CREATED, type: ProjectResponse })
   async create(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Body() request: ProjectCreateRequest
     ): Promise<ProjectResponse> {
     return this.service.create(request, user);
@@ -135,7 +137,7 @@ export class ProjectController {
   @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
   @ApiBody({ type: ProjectUpdateRequest })
   async update(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectUpdateRequest
   ): Promise<ProjectResponse> {
@@ -147,7 +149,7 @@ export class ProjectController {
   @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
   @ApiBody({ type: ProjectWorkflowStateChangeRequest })
   async stateChange(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectWorkflowStateChangeRequest
   ): Promise<ProjectResponse> {
@@ -158,9 +160,9 @@ export class ProjectController {
   @ApiBearerAuth()
   @ApiResponse({ status: HttpStatus.OK })
   async remove(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number) {
-    this.service.delete(id, user);
+    await this.service.delete(id, user);
   }
 
   @Put('/commentClassification/:id')
@@ -168,7 +170,7 @@ export class ProjectController {
   @ApiResponse({ status: HttpStatus.OK, type: ProjectResponse })
   @ApiBody({ type: ProjectCommentClassificationMandatoryChangeRequest })
   async commentClassificationMandatoryChange(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectCommentClassificationMandatoryChangeRequest
   ): Promise<ProjectResponse> {
@@ -180,7 +182,7 @@ export class ProjectController {
   @ApiResponse({ status: HttpStatus.OK})
   @ApiBody({ type: ProjectCommentingClosedDateChangeRequest })
   async commentingClosedDateChange(
-    @UserRequiredHeader() user: User,
+    @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @Body() request: ProjectCommentingClosedDateChangeRequest
   ): Promise<boolean> {

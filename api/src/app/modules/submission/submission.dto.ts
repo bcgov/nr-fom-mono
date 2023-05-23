@@ -43,9 +43,23 @@ export class SubmissionRequest {
   jsonSpatialSubmission: FomSpatialJson;
 }
 
-export type SubmissionSpatialObjectDetail = {
-  count: number
-  dateSubmitted: Date,
+/*
+  Prevously this was defined as "export type SubmissionSpatialObjectDetail".
+  And NestJS @ApiProperty cannot take Typescript "type" as "type" field as one configuration option.
+  It has to be a 'value'.
+  As the result, OpenAPI generator cannot generated best type for this response object and when frontend
+  Angular component/template(html) refer to this object (with tsconfig.json => "strictTemplates": true),
+  frontend compilation fail due to some "properties does not exist" (Typescript error).
+  To address this problem, switch from "export type" to "export class".
+  Issue tickets: https://github.com/bcgov/nr-fom/issues/158
+                 https://github.com/bcgov/nr-fom/issues/146
+*/
+export class SubmissionSpatialObjectDetail {
+    @ApiProperty()
+    count: number
+
+    @ApiProperty()
+    dateSubmitted: Date
 }
 
 export class SubmissionDetailResponse {
@@ -64,12 +78,12 @@ export class SubmissionDetailResponse {
   })
   submissionTypeCode: SubmissionTypeCodeEnum;
 
-  @ApiProperty({type: SubmissionDetailResponse})
+  @ApiProperty({type: SubmissionSpatialObjectDetail})
   cutblocks: SubmissionSpatialObjectDetail; 
 
-  @ApiProperty({type: SubmissionDetailResponse})
+  @ApiProperty({type: SubmissionSpatialObjectDetail})
   roadSections: SubmissionSpatialObjectDetail; 
 
-  @ApiProperty({type: SubmissionDetailResponse})
+  @ApiProperty({type: SubmissionSpatialObjectDetail})
   retentionAreas: SubmissionSpatialObjectDetail; 
 }

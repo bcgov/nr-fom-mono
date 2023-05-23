@@ -29,6 +29,7 @@ export * from './spatialFeaturePublicResponse';
 export * from './spatialObjectCodeEnum';
 export * from './submissionDetailResponse';
 export * from './submissionRequest';
+export * from './submissionSpatialObjectDetail';
 export * from './submissionTypeCode';
 export * from './submissionTypeCodeEnum';
 export * from './workflowStateCode';

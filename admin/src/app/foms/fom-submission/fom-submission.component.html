@@ -16,7 +16,7 @@
           <em class="spinner rotating" [hidden]="!isLoading"></em>
         </button>
         <button
-          class="btn btn-primary ml-1"
+          class="btn btn-primary ms-1"
           type="button"
           title="Upload your GeoJSON FOM File"
           (click)="submit()"
@@ -36,7 +36,7 @@
     <form class="mb-3" [formGroup]="fg">
       <fieldset>
         <legend>FOM Spatial Submission</legend>
-        <div class="form-row">
+        <div class="row">
           <div class="form-group col-md-3">
             <label>FOM ID:</label>
           </div>
@@ -52,7 +52,7 @@
           </div>
         </div>
 
-        <div class="form-row">
+        <div class="row">
           <div class="col-md-3">
             <label style="white-space: nowrap;">Submission Type:</label>
           </div>
@@ -64,7 +64,7 @@
           </div>
         </div>
         <p>
-        <div class="form-row">
+        <div class="row">
           <div class="form-group col-md-3">
             <label style="white-space: nowrap;">GeoSpatial Object Type:</label>
           </div>

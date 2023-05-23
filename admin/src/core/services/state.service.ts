@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DistrictService, PublicCommentService, ProjectService } from '@api-client';
-import { CodeTables } from '../../core/models/code-tables';
+import { CodeTables } from '@admin-core/models/code-tables';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 
 // Eagerly loads and caches all code table values.

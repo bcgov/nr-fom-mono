@@ -24,7 +24,7 @@
           <span title="You cannot edit a finalized/expired project"></span>
         </div>
         <div class="btn-container">
-          <button class="btn btn-primary ml-1" type="button" title="Publish FOM"
+          <button class="btn btn-primary ms-1" type="button" title="Publish FOM"
                   [disabled]="isPublishing"
                   [hidden]="!canViewPublishing()"
                   (click)="publishFOM()">
@@ -33,7 +33,7 @@
           </button>
          </div>
          <div class="btn-container">
-          <button class="btn btn-primary ml-1" type="button" title="Finalize FOM"
+          <button class="btn btn-primary ms-1" type="button" title="Finalize FOM"
                   [disabled]="isFinalizing"
                   [hidden]="!canFinalize()"
                   (click)="finalizeFOM()">
@@ -41,7 +41,7 @@
             <span>{{isFinalizing ? 'Finalizing' : 'Finalize'}}</span>
           </button>
          </div>
-        <button class="btn btn-primary ml-1" type="button" title="Summary Report"
+        <button class="btn btn-primary ms-1" type="button" title="Summary Report"
               [routerLink]="['/a', project.id, 'summary']">
               <span>Summary Report</span>
         </button>
@@ -135,7 +135,6 @@
                       <div class="cell doc-list__item-name">{{attachment.fileName}}</div>
                       <div style="text-align: right;margin-right: 5px;">({{attachment.attachmentType.description}})</div>
                     </a>
-                    <span *ngIf="isDeleteAttachmentAllowed(attachment)" class="vert-pipe">&nbsp;</span>
                     <button *ngIf="isDeleteAttachmentAllowed(attachment)" class="btn btn-icon row doc-list__item" 
                             title="Delete this attachment"
                             (click)="deleteAttachment(attachment.id)"

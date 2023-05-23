@@ -1,12 +1,19 @@
 //
 // inspired by http://www.advancesharp.com/blog/1218/angular-4-upload-files-with-data-and-web-api-by-drag-drop
 //
-import {Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild} from '@angular/core';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { Component, ElementRef, EventEmitter, HostListener, Input, Output, ViewChild } from '@angular/core';
 
 @Component({
-  selector: 'app-file-upload',
-  templateUrl: './file-upload.component.html',
-  styleUrls: ['./file-upload.component.scss']
+    standalone: true,
+    imports: [
+        NgIf, 
+        NgClass, 
+        NgFor
+    ],
+    selector: 'app-file-upload',
+    templateUrl: './file-upload.component.html',
+    styleUrls: ['./file-upload.component.scss']
 })
 export class FileUploadComponent {
   public dragDropClass = 'dragarea';

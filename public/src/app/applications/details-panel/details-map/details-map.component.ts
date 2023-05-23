@@ -1,27 +1,33 @@
 import { Component, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { SpatialFeaturePublicResponse, SubmissionTypeCodeEnum } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
-import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { MapLayers } from '@utility/models/map-layers';
+import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { GeoJsonObject } from 'geojson';
 import * as L from 'leaflet';
 
 /*
-  Leaflet has bug and would show these error on console:
+  Leaflet has bug with these warning/error on console since Angular 11:
   http://localhost:4300/public/marker-icon-2x.png 404 (Not Found)
   http://localhost:4300/public/marker-shadow.png 404 (Not Found)
 
-  Add these import(s) to fix them.
-  (ref: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env: answered by user9547708)
-  import "leaflet/dist/images/marker-shadow.png";
-  import "leaflet/dist/images/marker-icon-2x.png";
+  After migrating to Angular 15 and adding below into angular.json into "build" can solve problem for "production" 
+  but serving locally still is having issue.
+        ,{
+            "glob": "........"
+            "input": "./node_modules/leaflet/dist/images/",
+            "output": "/assets/images"
+        } 
+    (reference: https://lokeshdaiya.medium.com/how-to-use-node-modules-path-or-third-party-assets-in-angular-files-75906a2ff372)
+    (might be some clue here: https://stackoverflow.com/questions/41144319/leaflet-marker-not-found-production-env)
 */
-import "leaflet/dist/images/marker-icon-2x.png";
-import "leaflet/dist/images/marker-shadow.png";
+import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
+  standalone: true,
+  imports: [CommonModule],
   selector: 'app-details-map',
   templateUrl: './details-map.component.html',
   styleUrls: ['./details-map.component.scss']
@@ -193,7 +199,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     // Remove last label first, so it does not stay when next one is added.
-    this.projectFeatures.removeLayer(this.lastLabelMarker);
+    if (this.lastLabelMarker) this.projectFeatures.removeLayer(this.lastLabelMarker);
 
     // Opacity 0 hides marker so just label is visible.
     this.lastLabelMarker = L.marker(args[1].latlng, { opacity: 0 }); 

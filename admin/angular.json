@@ -6,6 +6,11 @@
   "projects": {
     "admin": {
       "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -22,16 +27,32 @@
             "aot": true,
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              {
+                "glob": "**/*",
+                "input": "src/assets/",
+                "ignore": ["**/*.scss"],
+                "output": "/assets/"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/leaflet/dist/images/",
+                "output": "/assets/images"
+              }  
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "node_modules/leaflet/dist/leaflet.css",
+              "node_modules/leaflet.markercluster/dist/MarkerCluster.css",
+              "node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css",
               "src/styles.scss"
             ],
             "scripts": [
-              "node_modules/moment/min/moment.min.js"
+              "node_modules/jquery/dist/jquery.min.js",
+              "node_modules/bootstrap/dist/js/bootstrap.min.js",
+              "node_modules/moment/min/moment.min.js",
+              "node_modules/leaflet/dist/leaflet.js",
+              "node_modules/leaflet.markercluster/dist/leaflet.markercluster.js"
             ]
           },
           "configurations": {
@@ -42,9 +63,20 @@
                   "with": "src/environments/environment.prod.ts"
                 }
               ],
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                    "minify": true,
+                    "inlineCritical": false
+                    },
+                "fonts": true
+              },
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": {
+                "hidden": true,
+                "scripts": true,
+                "styles": true
+              },
               "namedChunks": false,
               "extractLicenses": true,
               "vendorChunk": false,
@@ -53,7 +85,7 @@
                 {
                   "type": "initial",
                   "maximumWarning": "5mb",
-                  "maximumError": "5.5mb"
+                  "maximumError": "6.1mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -61,20 +93,33 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "development": {
+              "optimization": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "vendorChunk": true
             }
           }
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "baseHref": "/admin/",
             "browserTarget": "admin:build",
             "port": 4200,
             "host": "0.0.0.0"
           },
           "configurations": {
             "production": {
-              "browserTarget": "admin:build:production"
+              "browserTarget": "admin:build:production",
+              "sourceMap": {
+                "hidden": false,
+                "scripts": true,
+                "styles": true
+              }
+            },
+            "development": {
+              "browserTarget": "admin:build:development"
             }
           }
         },
@@ -96,5 +141,12 @@
       }
     }
   },
-  "defaultProject": "admin"
+  "schematics": {
+    "@angular-eslint/schematics:application": {
+      "setParserOptionsProject": true
+    },
+    "@angular-eslint/schematics:library": {
+      "setParserOptionsProject": true
+    }
+  }
 }

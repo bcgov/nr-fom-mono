@@ -1,18 +1,46 @@
 import { CommonUtil } from '@admin-core/utils/commonUtil';
-import { CommentScopeOpt, COMMENT_SCOPE_CODE } from '@admin-core/utils/constants/constantUtils';
+import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants/constantUtils';
+import { DatePipe, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { AttachmentResponse, AttachmentService, InteractionResponse, InteractionService, 
-        ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService, 
-        SpatialFeaturePublicResponse, SpatialFeatureService } from '@api-client';
+import { FormsModule } from '@angular/forms';
+import { MatOptionModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+    AttachmentResponse, AttachmentService, InteractionResponse, InteractionService,
+    ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService,
+    SpatialFeaturePublicResponse, SpatialFeatureService
+} from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
 import * as _ from 'lodash';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { DetailsMapComponent } from '../details-map/details-map.component';
+import { ShapeInfoComponent } from '../shape-info/shape-info.component';
+import { CommentsSummaryComponent } from './comments-summary/comments-summary.component';
+import { InteractionsSummaryComponent } from './interactions-summary/interactions-summary.component';
 
 @Component({
-  selector: 'app-summary',
-  templateUrl: './summary.component.html',
-  styleUrls: ['./summary.component.scss']
+    standalone: true,
+    imports: [
+        RouterLink, 
+        FormsModule, 
+        NgFor, 
+        NgIf, 
+        TitleCasePipe, 
+        DatePipe,
+        MatFormFieldModule, 
+        MatSelectModule, 
+        MatOptionModule, 
+        DetailsMapComponent, 
+        ShapeInfoComponent, 
+        CommentsSummaryComponent,
+        InteractionsSummaryComponent
+    ],
+    selector: 'app-summary',
+    templateUrl: './summary.component.html',
+    styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit, OnDestroy {
 
@@ -32,7 +60,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
   commentScopeOpts :Array<CommentScopeOpt> = [];
   selectedScope: CommentScopeOpt;
 
-  private ngUnsubscribe$: Subject<boolean> = new Subject<boolean>();
+  private ngUnsubscribe$: Subject<void> = new Subject<void>();
   private scopeOptionChange$ = new Subject<CommentScopeOpt>(); // To notify when scope 'option' changed.
 
   constructor(    

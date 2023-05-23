@@ -4,7 +4,7 @@ import {
   HttpRequest,
 } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { CognitoService } from "../services/cognito.service";
+import { CognitoService } from "@admin-core/services/cognito.service";
 import { Observable, Subject } from "rxjs";
 import { catchError, switchMap, tap } from "rxjs/operators";
 
@@ -19,7 +19,7 @@ import { catchError, switchMap, tap } from "rxjs/operators";
 export class CognitoTokenInterceptor implements HttpInterceptor {
   private refreshTokenInProgress = false;
 
-  private tokenRefreshedSource = new Subject();
+  private tokenRefreshedSource = new Subject<void>();
   private tokenRefreshed$ = this.tokenRefreshedSource.asObservable();
 
   constructor(private cognitoService: CognitoService) {}

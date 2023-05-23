@@ -8,7 +8,7 @@ import { DialogComponent } from '@public-core/components/dialog/dialog.component
 import { ModalService } from '@public-core/services/modal.service';
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
 export class ErrorInterceptor implements HttpInterceptor {
   constructor(

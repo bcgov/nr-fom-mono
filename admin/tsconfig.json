@@ -7,23 +7,37 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es2015",
+    "target": "ES2022",
     "module": "commonjs",
-    "lib": ["es2017", "dom"],
+    "lib": [
+      "es2017",
+      "dom"
+    ],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "outDir": "dist/admin",
     "baseUrl": "./src",
     "paths": {
-      "@admin-core/*": ["core/*"],
-      "@api-client": ["../../libs/client/typescript-ng"],
-      "@utility/*": ["../../libs/utility/src/*"]
-    }
+      "@admin-core/*": [
+        "core/*"
+      ],
+      "@api-client": [
+        "../../libs/client/typescript-ng"
+      ],
+      "@utility/*": [
+        "../../libs/utility/src/*"
+      ],
+      "@angular/*": [
+        "../node_modules/@angular/*"
+      ]
+    },
+    "useDefineForClassFields": false
   },
   "exclude": ["node_modules", "**/*.spec.ts"],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
-    "strictInputAccessModifiers": true
+    "strictInputAccessModifiers": true,
+    "strictTemplates": true
   }
 }

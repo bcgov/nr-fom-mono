@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from "@utility/security/user";
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 
@@ -27,7 +27,8 @@ export class ProjectAuthService {
    */
    async isForestClientUserAccess(projectId: number, user?: User): Promise<boolean> {
 
-    if (!user || !user.isForestClient) {
+    if (!user?.isForestClient) {
+      console.log(`!user?.isForestClient: ${!user?.isForestClient}`)
       return false;
     }
 
@@ -46,7 +47,7 @@ export class ProjectAuthService {
    */
   async isForestClientUserAllowedStateAccess(projectId: number, allowedWorkflowStates: WorkflowStateEnum[], user?: User): Promise<boolean> {
 
-    if (!user || !user.isForestClient) {
+    if (!user?.isForestClient) {
       return false;
     }
 
@@ -85,7 +86,7 @@ export class ProjectAuthService {
   }
 
   private async getProject(projectId: number): Promise<Project> {
-    return this.repository.findOne(projectId);
+    return this.repository.findOne({ where: { id: projectId } } as FindOneOptions);
   }
 
 }

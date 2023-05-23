@@ -1,20 +1,40 @@
 import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
 import { ModalService } from '@admin-core/services/modal.service';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AttachmentResponse, ProjectMetricsResponse, ProjectResponse, ProjectService, ProjectWorkflowStateChangeRequest, SpatialFeaturePublicResponse, WorkflowStateEnum } from "@api-client";
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModal, NgbModalRef, NgbModule, NgbNav } from '@ng-bootstrap/ng-bootstrap';
 import { User } from "@utility/security/user";
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import * as moment from 'moment';
-import { Subject, takeUntil } from 'rxjs';
-import { CognitoService } from "../../../core/services/cognito.service";
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { CognitoService } from "@admin-core/services/cognito.service";
 import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
 
+import { NewlinesPipe } from "@admin-core/pipes/newlines.pipe";
+import { DatePipe, NgClass, NgFor, NgIf, TitleCasePipe } from "@angular/common";
+import { DetailsMapComponent } from "../details-map/details-map.component";
+import { ShapeInfoComponent } from "../shape-info/shape-info.component";
+
 @Component({
-  selector: 'app-application-detail',
-  templateUrl: './fom-detail.component.html',
-  styleUrls: ['./fom-detail.component.scss']
+    standalone: true,
+    imports: [
+        NgIf, 
+        RouterLink, 
+        NgbNav,
+        NgbModule, 
+        NgFor, 
+        DetailsMapComponent, 
+        ShapeInfoComponent,
+        NgClass, 
+        TitleCasePipe, 
+        DatePipe, 
+        NewlinesPipe
+    ],
+    selector: 'app-application-detail',
+    templateUrl: './fom-detail.component.html',
+    styleUrls: ['./fom-detail.component.scss']
 })
 export class FomDetailComponent implements OnInit, OnDestroy {
 

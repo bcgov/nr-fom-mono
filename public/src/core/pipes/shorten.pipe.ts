@@ -7,7 +7,10 @@ import { Pipe, PipeTransform } from '@angular/core';
  * @class ShortenPipe
  * @implements {PipeTransform}
  */
-@Pipe({ name: 'shorten' })
+@Pipe({
+    standalone: true,
+    name: 'shorten' 
+})
 export class ShortenPipe implements PipeTransform {
   transform(value: string, limit: number): string {
     if (!value) {

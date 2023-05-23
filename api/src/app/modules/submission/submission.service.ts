@@ -7,7 +7,7 @@ import * as dayjs from 'dayjs';
 import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import { GeoJsonProperties, Geometry, LineString, Polygon, Position } from 'geojson';
 import { PinoLogger } from 'nestjs-pino';
-import { getConnection, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { flatDeep } from '../../../core/utils';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { ProjectResponse } from '../project/project.dto';
@@ -199,7 +199,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       const geometry = f.geometry;
       const properties = f.properties;
       let name: string;
-      if (properties && properties.hasOwnProperty(OPTIONAL_PROP_NAME)) {
+      if (properties?.hasOwnProperty(OPTIONAL_PROP_NAME)) {
         name = properties[OPTIONAL_PROP_NAME];
       }
       let devDate: string;
@@ -244,7 +244,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
 
     const crs = jsonSpatialSubmission.crs;
     if (!_.isEmpty(crs)) {
-      if (!crs.properties || !crs.properties.name || 
+      if (!crs.properties?.name || 
             !(crs.properties.name.includes(`:${SpatialCoordSystemEnum.BC_ALBERS}`) || 
               crs.properties.name.includes(`:${SpatialCoordSystemEnum.WGS84}`))
           ) {
@@ -426,21 +426,21 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
 
     switch (spatialObjectCode) {
       case SpatialObjectCodeEnum.ROAD_SECTION:
-        await getConnection().createQueryBuilder()
+        await this.getDataSource().createQueryBuilder()
           .update(RoadSection.name)
           .set({ plannedLengthKm: () => 'ST_Length(geometry)/1000' })
           .where("submission_id = :submissionId", { submissionId })
           .execute();
         break;
       case SpatialObjectCodeEnum.WTRA:
-        await getConnection().createQueryBuilder()
+        await this.getDataSource().createQueryBuilder()
           .update(RetentionArea.name)
           .set({ plannedAreaHa: () => 'ST_AREA(geometry)/10000' })
           .where("submission_id = :submissionId", { submissionId })
           .execute();
         break;
       case SpatialObjectCodeEnum.CUT_BLOCK:
-        await getConnection().createQueryBuilder()
+        await this.getDataSource().createQueryBuilder()
           .update(CutBlock.name)
           .set({ plannedAreaHa: () => 'ST_AREA(geometry)/10000' })
           .where("submission_id = :submissionId", { submissionId })
@@ -454,7 +454,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   // Update project location
   async updateProjectLocation(projectId: number, user: User) {
     this.logger.debug(`Updating project location for projectId: ${projectId}`);
-    await getConnection().query(`
+    await this.getDataSource().query(`
       with project_geometries as (
         select s.project_id, cb.geometry from app_fom.cut_block cb join app_fom.submission s on cb.submission_id = s.submission_id 
         union 
@@ -495,7 +495,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   async convertGeometry(geometry: string, srid: number): Promise<string> {
     this.logger.debug(`Coverting geometry to EPSG${srid} with geometry: ${geometry}`)
     try {
-      const convertedGeometryResult = await getConnection()
+      const convertedGeometryResult = await this.getDataSource()
       .query(
         `
           SELECT ST_AsGeoJson(ST_Transform(ST_GeomFromGeoJSON($1), CAST($2 AS INTEGER)))
@@ -561,7 +561,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   }
 
   private async getSpatialObjectsDetail(submissionId: number) {
-    const results = await getConnection()
+    const results = await this.getDataSource()
     .query(
       `
       Select 
@@ -645,7 +645,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     }
 
     // Delete with query instead of using entity cascade deletion to prevent performance issue.
-    await getConnection().createQueryBuilder()
+    await this.getDataSource().createQueryBuilder()
       .delete()
       .from(entityTarget)
       .where("submission_id = :submissionId", { submissionId })
