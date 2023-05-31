@@ -26,7 +26,7 @@ export class InteractionCreateRequest {
   stakeholder: string;
 
   @ApiProperty({ required: true })
-  @IsDateString(null, {message: '"$property" must be ISO-formatted date.'})
+  @IsDateString({}, {message: '"$property" must be ISO-formatted date.'})
   @IsNotEmpty()
   communicationDate?: string;
 
