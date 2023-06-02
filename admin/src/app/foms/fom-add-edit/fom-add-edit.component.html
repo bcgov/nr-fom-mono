@@ -58,7 +58,7 @@
                 placeholder="YYYY-MM-DD"
                 bsDatepicker
                 [minDate]="minOpeningDate"
-                onkeydown="return false"
+                (keydown)="$event.preventDefault()"
                 #openDate="bsDatepicker"
                 id="commentingOpenDate"
                 name="commentingOpenDate"
@@ -86,7 +86,7 @@
                 placeholder="YYYY-MM-DD"
                 bsDatepicker
                 [minDate]="minClosedDate"
-                onkeydown="return false"
+                (keydown)="$event.preventDefault()"
                 #closedDate="bsDatepicker"
                 id="commentingClosedDate"
                 name="commentingClosedDate"

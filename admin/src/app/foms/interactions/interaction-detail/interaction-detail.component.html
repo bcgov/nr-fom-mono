@@ -29,6 +29,7 @@
           formControlName="communicationDate"
           [maxDate]="maxDate"
           readonly
+          (keydown)="$event.preventDefault()"
           [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
           containerClass: 'theme-dark-blue', showWeekNumbers: false  }"
         />
