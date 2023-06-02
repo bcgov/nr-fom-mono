@@ -76,6 +76,11 @@ parameters:
     description: FAM Authentication Cognito logout chain url for Siteminder and Keycloak
     value: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
     required: true
+  - name: LOGS_PVC_SIZE
+    description: Volume space for logs, e.g. 512Mi, 2Gi.
+    displayName: Logs Volume Capacity
+    required: true
+    value: 256Mi
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -115,6 +120,21 @@ objects:
         }
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
+      labels:
+        app: ${NAME}-${ZONE}
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: "${LOGS_PVC_SIZE}"
+      storageClassName: netapp-file-standard
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}-logs
+      labels:
+        app: ${NAME}-${ZONE}
   - apiVersion: v1
     kind: DeploymentConfig
     metadata:
@@ -249,10 +269,16 @@ objects:
                 - mountPath: /app/dist/api/src/assets/aws-cognito-env.json
                   subPath: aws-cognito-env.json
                   name: aws-cognito-env-config
+                - mountPath: /app/logs
+                  name: ${NAME}-${ZONE}-${COMPONENT}-logs
           volumes:
             - name: aws-cognito-env-config
               configMap:
                 name: ${NAME}-${ZONE}-${COMPONENT}
+            - name: ${NAME}-${ZONE}-${COMPONENT}-logs
+              persistentVolumeClaim:
+                claimName: ${NAME}-${ZONE}-${COMPONENT}-logs
+
   - apiVersion: v1
     kind: Service
     metadata:
