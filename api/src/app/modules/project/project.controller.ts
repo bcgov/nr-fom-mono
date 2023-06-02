@@ -70,9 +70,7 @@ export class ProjectController {
   async findOne(
     @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number): Promise<ProjectResponse> {
-    return this.service.findOne(id, user, {
-      relations: ['district', 'forestClient', 'workflowState'],
-    });
+    return this.service.findOne(id, user);
   }
 
   @Get('/metrics/:id')
