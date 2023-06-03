@@ -1,12 +1,13 @@
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
 import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { InteractionResponse, InteractionService, ProjectResponse, WorkflowStateEnum } from '@api-client';
 import { User } from "@utility/security/user";
+import * as moment from 'moment';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "@admin-core/services/cognito.service";
-import { ModalService } from '@admin-core/services/modal.service';
 import { InteractionDetailComponent } from './interaction-detail/interaction-detail.component';
 import { InteractionRequest } from './interaction-detail/interaction-detail.form';
 
@@ -89,6 +90,7 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     this.selectedItem = item;
     this.interactionDetailForm.editMode = this.canModifyInteraction(); // set this first.
     this.interactionDetailForm.selectedInteraction = item;
+    this.interactionDetailForm.minDate = moment(this.project.commentingOpenDate).toDate();
     if (pos) {
       // !! important to wait or will not see the effect.
       setTimeout(() => {
@@ -110,6 +112,7 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     this.selectedItem = null;
     this.interactionDetailForm.editMode = this.canModifyInteraction(); // set this first.
     this.interactionDetailForm.selectedInteraction = {} as InteractionResponse;
+    this.interactionDetailForm.minDate = moment(this.project.commentingOpenDate).toDate();
   }
 
   async saveInteraction(saveReq: InteractionRequest, selectedInteraction: InteractionResponse) {
