@@ -115,15 +115,15 @@ export class InteractionController {
     @Req() request: fetch.Request): Promise<InteractionResponse> {
       /** temp logging */
       this.logger.info(`InteractionController: creating...`)
-      this.logger.info(`InteractionController: request...`, request)
-      this.logger.info("InteractionController: request.body['communicationDate']: ", request.body['communicationDate'])
+      this.logger.info(`InteractionController: request... %o`, request)
+      this.logger.info("InteractionController: request.body['communicationDate']: %o", request.body['communicationDate'])
 
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
                         DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
       /** temp logging */
-      this.logger.info("InteractionController: transformed reqDate: ", reqDate)
+      this.logger.info("InteractionController: transformed reqDate: %o", reqDate)
 
       const createRequest = new InteractionCreateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
@@ -168,15 +168,15 @@ export class InteractionController {
     @Req() request: fetch.Request): Promise<InteractionResponse> {
       /** temp logging */
       this.logger.info(`InteractionController: updating...`)
-      this.logger.info(`InteractionController: request...`, request)
-      this.logger.info("InteractionController: request.body['communicationDate']: ", request.body['communicationDate'])
+      this.logger.info(`InteractionController: request... %o`, request)
+      this.logger.info("InteractionController: request.body['communicationDate']: %o", request.body['communicationDate'])
 
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
                         DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
       /** temp logging */
-      this.logger.info("InteractionController: transformed reqDate: ", reqDate)
+      this.logger.info("InteractionController: transformed reqDate: %o", reqDate)
                    
       const updateRequest = new InteractionUpdateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),

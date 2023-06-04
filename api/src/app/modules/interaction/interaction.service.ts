@@ -97,8 +97,8 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
   // basic fields validation is done using 'class-validator' on request dto, this is further business validation.
   private async businessValidate(request: InteractionCreateRequest | InteractionUpdateRequest) {
     /** temp logging */
-    this.logger.info(`InteractionService-businessValidate, request:`, request);
-    this.logger.info(`InteractionService-businessValidate, communicationDate: ${request.communicationDate}`);
+    this.logger.info(`InteractionService-businessValidate, request: %o`, request);
+    this.logger.info(`InteractionService-businessValidate, communicationDate: %o`, request.communicationDate);
 
     // communication_date: >= commenting_open_date
     const project = await this.projectService.findOne(request.projectId);
@@ -106,9 +106,9 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
     const communicationDate = request.communicationDate;
 
     /** temp logging */
-    this.logger.info(`InteractionService-businessValidate, commentingOpenDate: ${commentingOpenDate}`);
-    this.logger.info(`InteractionService-businessValidate, startOf commentingOpenDate: ${DateTimeUtil.getBcDate(commentingOpenDate).startOf('day')}`);
-    this.logger.info(`InteractionService-businessValidate, startOf communicationDate: ${DateTimeUtil.getBcDate(communicationDate).startOf('day')}`);
+    this.logger.info(`InteractionService-businessValidate, commentingOpenDate: %o`, commentingOpenDate);
+    this.logger.info("InteractionService-businessValidate, startOf commentingOpenDate: %o", DateTimeUtil.getBcDate(commentingOpenDate).startOf('day'));
+    this.logger.info("InteractionService-businessValidate, startOf communicationDate: %o", DateTimeUtil.getBcDate(communicationDate).startOf('day'));
 
     if (DateTimeUtil.getBcDate(commentingOpenDate).startOf('day')
         .isAfter(DateTimeUtil.getBcDate(communicationDate).startOf('day'))) {
