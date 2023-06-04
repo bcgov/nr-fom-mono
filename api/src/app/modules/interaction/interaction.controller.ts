@@ -113,10 +113,18 @@ export class InteractionController {
     @UserHeader() user: User,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: fetch.Request): Promise<InteractionResponse> {
+      /** temp logging */
+      this.logger.info(`InteractionController: creating...`)
+      this.logger.info(`InteractionController: request...`, request)
+      this.logger.info("InteractionController: request.body['communicationDate']: ", request.body['communicationDate'])
+
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
                         DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+      /** temp logging */
+      this.logger.info("InteractionController: transformed reqDate: ", reqDate)
+
       const createRequest = new InteractionCreateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
@@ -135,8 +143,6 @@ export class InteractionController {
         this.logger.debug('Create Interaction validation errors: %o', errMsgs);
         throw new BadRequestException(`Validation failed (${errMsgs})`);
       }
-      /** temp logging */
-      this.logger.info(`InteractionController: creating...`)
       return this.service.create(createRequest, user);
   }
 
@@ -160,10 +166,18 @@ export class InteractionController {
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: fetch.Request): Promise<InteractionResponse> {
+      /** temp logging */
+      this.logger.info(`InteractionController: updating...`)
+      this.logger.info(`InteractionController: request...`, request)
+      this.logger.info("InteractionController: request.body['communicationDate']: ", request.body['communicationDate'])
+
       const reqDate = _.isEmpty(request.body['communicationDate'])
                       ? null
                       : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
-                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);                     
+                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+      /** temp logging */
+      this.logger.info("InteractionController: transformed reqDate: ", reqDate)
+                   
       const updateRequest = new InteractionUpdateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
@@ -182,8 +196,6 @@ export class InteractionController {
         this.logger.debug('Update Interaction validation errors: %o', errMsgs);
         throw new BadRequestException(`Validation failed (${errMsgs})`);
       }
-      /** temp logging */
-      this.logger.info(`InteractionController: updating...`)
       return this.service.update(id, updateRequest, user);
   }
 

@@ -97,7 +97,7 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
   // basic fields validation is done using 'class-validator' on request dto, this is further business validation.
   private async businessValidate(request: InteractionCreateRequest | InteractionUpdateRequest) {
     /** temp logging */
-    this.logger.info(`InteractionService-businessValidate, request: ${request}`);
+    this.logger.info(`InteractionService-businessValidate, request:`, request);
     this.logger.info(`InteractionService-businessValidate, communicationDate: ${request.communicationDate}`);
 
     // communication_date: >= commenting_open_date
