@@ -135,6 +135,8 @@ export class InteractionController {
         this.logger.debug('Create Interaction validation errors: %o', errMsgs);
         throw new BadRequestException(`Validation failed (${errMsgs})`);
       }
+      /** temp logging */
+      this.logger.info(`InteractionController: creating...`)
       return this.service.create(createRequest, user);
   }
 
@@ -180,6 +182,8 @@ export class InteractionController {
         this.logger.debug('Update Interaction validation errors: %o', errMsgs);
         throw new BadRequestException(`Validation failed (${errMsgs})`);
       }
+      /** temp logging */
+      this.logger.info(`InteractionController: updating...`)
       return this.service.update(id, updateRequest, user);
   }
 
