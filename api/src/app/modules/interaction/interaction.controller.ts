@@ -215,10 +215,17 @@ export class InteractionController {
   }
 
   private toLocalDate(dateString: string) {
+    // const reqDate = _.isEmpty(dateString)
+    //     ? null
+    //     : dayjs.tz(dayjs(dateString).utc(), 
+    //     DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+    // return reqDate;
     const reqDate = _.isEmpty(dateString)
         ? null
-        : dayjs.tz(dayjs(dateString).utc(), 
-        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+        : dayjs(dateString, DateTimeUtil.DATE_FORMAT, true).isValid()
+            ? dateString 
+            : dayjs.tz(dayjs(dateString).utc(), DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER)
+                .format(DateTimeUtil.DATE_FORMAT);
     return reqDate;
   }
 }
