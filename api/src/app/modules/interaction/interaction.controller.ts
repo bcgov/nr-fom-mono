@@ -118,10 +118,13 @@ export class InteractionController {
       this.logger.info(`InteractionController: request... %o`, request)
       this.logger.info("InteractionController: request.body['communicationDate']: %o", request.body['communicationDate'])
 
-      const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? null
-                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
-                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+    //   const reqDate = _.isEmpty(request.body['communicationDate'])
+    //                   ? null
+    //                   : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
+    //                     DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+    
+      const reqDate = this.toLocalDate(request.body['communicationDate']);
+
       /** temp logging */
       this.logger.info("InteractionController: transformed reqDate: %o", reqDate)
 
@@ -171,10 +174,13 @@ export class InteractionController {
       this.logger.info(`InteractionController: request... %o`, request)
       this.logger.info("InteractionController: request.body['communicationDate']: %o", request.body['communicationDate'])
 
-      const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? null
-                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
-                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+      // const reqDate = _.isEmpty(request.body['communicationDate'])
+      //                 ? null
+      //                 : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
+      //                   DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+
+      const reqDate = this.toLocalDate(request.body['communicationDate']);
+      
       /** temp logging */
       this.logger.info("InteractionController: transformed reqDate: %o", reqDate)
                    
@@ -208,4 +214,11 @@ export class InteractionController {
     await this.service.delete(id, user);
   }
 
+  private toLocalDate(dateString: string) {
+    const reqDate = _.isEmpty(dateString)
+        ? null
+        : dayjs.tz(dayjs(dateString).utc(), 
+        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
+    return reqDate;
+  }
 }
