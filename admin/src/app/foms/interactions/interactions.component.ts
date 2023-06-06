@@ -117,6 +117,7 @@ export class InteractionsComponent implements OnInit, OnDestroy {
 
   async saveInteraction(saveReq: InteractionRequest, selectedInteraction: InteractionResponse) {
     const {id} = selectedInteraction;
+    saveReq.communicationDate = moment(saveReq.communicationDate).format('YYYY-MM-DD'); // convert datePicker value to YYYY-MM-DD string.
     const resultPromise = this.prepareSaveRequest(id, this.projectId, saveReq, selectedInteraction);
     resultPromise
       .then((result) => this.handleSaveSuccess(result))
