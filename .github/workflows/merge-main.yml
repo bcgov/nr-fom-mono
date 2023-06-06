@@ -109,7 +109,7 @@ jobs:
 
   deploy-prod:
     name: PROD Deploys
-    needs: [codeql]
+    needs: [codeql, deploy-test]
     environment: prod
     env:
       ZONE: prod
