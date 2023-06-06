@@ -90,7 +90,7 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     this.selectedItem = item;
     this.interactionDetailForm.editMode = this.canModifyInteraction(); // set this first.
     this.interactionDetailForm.selectedInteraction = item;
-    this.interactionDetailForm.minDate = moment(this.project.commentingOpenDate).toDate();
+    this.setMinDate();
     if (pos) {
       // !! important to wait or will not see the effect.
       setTimeout(() => {
@@ -112,6 +112,10 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     this.selectedItem = null;
     this.interactionDetailForm.editMode = this.canModifyInteraction(); // set this first.
     this.interactionDetailForm.selectedInteraction = {} as InteractionResponse;
+    this.setMinDate();
+  }
+
+  setMinDate() {
     this.interactionDetailForm.minDate = moment(this.project.commentingOpenDate).toDate();
   }
 

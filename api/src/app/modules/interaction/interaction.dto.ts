@@ -14,6 +14,7 @@ export function IsISODateOnlyString(validationOptions?: ValidationOptions) {
             options: validationOptions,
             validator: {
               validate(value: any, _args: ValidationArguments) {
+                // validate if dto property value (such as 'communicationDate') passes date string format 'YYYY-MM-DD'
                 return !_.isEmpty(value) && dayjs(value, DateTimeUtil.DATE_FORMAT, true).isValid();
               },
             },

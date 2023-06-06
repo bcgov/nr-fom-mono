@@ -112,11 +112,6 @@ export class InteractionController {
     @UserHeader() user: User,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: fetch.Request): Promise<InteractionResponse> {
-      /** temp logging */
-      this.logger.info(`InteractionController: creating...`)
-      this.logger.info(`InteractionController: request... %o`, request)
-      this.logger.info("InteractionController: request.body['communicationDate']: %o", request.body['communicationDate'])
-
       const createRequest = new InteractionCreateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
@@ -157,12 +152,7 @@ export class InteractionController {
     @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile('file') file: Express.Multer.File,
-    @Req() request: fetch.Request): Promise<InteractionResponse> {
-      /** temp logging */
-      this.logger.info(`InteractionController: updating...`)
-      this.logger.info(`InteractionController: request... %o`, request)
-      this.logger.info("InteractionController: request.body['communicationDate']: %o", request.body['communicationDate'])
-             
+    @Req() request: fetch.Request): Promise<InteractionResponse> {     
       const updateRequest = new InteractionUpdateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
