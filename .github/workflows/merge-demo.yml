@@ -38,7 +38,7 @@ jobs:
             triggers: ('public/', 'libs/')
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.2
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
@@ -84,7 +84,7 @@ jobs:
             overwrite: true
             parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca -p CERTBOT=false
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.3
+      - uses: bcgov-nr/action-deployer-openshift@v1.1.1
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
