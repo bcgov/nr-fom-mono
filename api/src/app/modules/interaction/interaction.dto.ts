@@ -1,6 +1,25 @@
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNotEmpty, IsPositive, MaxLength, Min, MinLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive, MaxLength, Min, MinLength, ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator';
+import dayjs = require('dayjs');
 import _ = require('lodash');
+
+// Ref - class-validator: custom validator.
+export function IsISODateOnlyString(validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+        registerDecorator({
+            name: 'isISODateOnlyString',
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            validator: {
+              validate(value: any, _args: ValidationArguments) {
+                return !_.isEmpty(value) && dayjs(value, DateTimeUtil.DATE_FORMAT, true).isValid();
+              },
+            },
+        });
+    }    
+}
 
 export class InteractionCreateRequest {
   constructor(projectId = null, 
@@ -26,7 +45,7 @@ export class InteractionCreateRequest {
   stakeholder: string;
 
   @ApiProperty({ required: true })
-  @IsDateString({}, {message: '"$property" must be ISO-formatted date.'})
+  @IsISODateOnlyString({message: `"$property" must be ISO-formatted date. (Required format: ${DateTimeUtil.DATE_FORMAT})`})
   @IsNotEmpty()
   communicationDate?: string;
 
