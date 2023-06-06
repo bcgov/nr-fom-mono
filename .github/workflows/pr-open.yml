@@ -51,20 +51,20 @@ jobs:
           - package: admin
             build_context: ./
             build_file: admin/Dockerfile
-            triggers: ('admin/', 'libs/')
+            triggers: ('admin/' 'libs/')
           - package: api
             build_context: ./
             build_file: api/Dockerfile
-            triggers: ('api/', 'libs/')
+            triggers: ('api/' 'libs/')
           - package: db
             triggers: ('db')
           - package: public
             build_context: ./
             build_file: public/Dockerfile
-            triggers: ('public/', 'libs/')
+            triggers: ('public/' 'libs/')
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.2
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
@@ -107,7 +107,7 @@ jobs:
             overwrite: true
             parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.3
+      - uses: bcgov-nr/action-deployer-openshift@v1.1.1
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
