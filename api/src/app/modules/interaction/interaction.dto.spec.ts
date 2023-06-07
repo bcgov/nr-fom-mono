@@ -23,6 +23,5 @@ describe('interaction.dto', () => {
         it (`Date string ${jsDateStringIsInvalid} is invalid for format ${DateTimeUtil.DATE_FORMAT} `, async () => {
             expect(isValidDateOnlyString(jsDateStringIsInvalid)).toBe(false);
         });
-
     })
 });

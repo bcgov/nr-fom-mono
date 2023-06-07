@@ -3,6 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsPositive, MaxLength, Min, MinLength, ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator';
 import dayjs = require('dayjs');
 import _ = require('lodash');
+import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 
 // Ref - class-validator: custom validator.
 export function IsISODateOnlyString(validationOptions?: ValidationOptions) {
@@ -30,6 +31,7 @@ Note: "2023-06-07" and "06-07-2023" and "2023/06/07" etc are treated valid from 
 For now it does not provide flexbility to check other format.
 */
 export function isValidDateOnlyString(value: string): boolean {
+    dayjs.extend(customParseFormat);
     return !_.isEmpty(value) && value.length == 10 && dayjs(value, DateTimeUtil.DATE_FORMAT, true).isValid();
 }
 
