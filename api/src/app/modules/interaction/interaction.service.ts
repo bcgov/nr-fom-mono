@@ -96,11 +96,11 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
 
   // basic fields validation is done using 'class-validator' on request dto, this is further business validation.
   private async businessValidate(request: InteractionCreateRequest | InteractionUpdateRequest) {
-
     // communication_date: >= commenting_open_date
     const project = await this.projectService.findOne(request.projectId);
     const commentingOpenDate = project.commentingOpenDate;
     const communicationDate = request.communicationDate;
+
     if (DateTimeUtil.getBcDate(commentingOpenDate).startOf('day')
         .isAfter(DateTimeUtil.getBcDate(communicationDate).startOf('day'))) {
       throw new BadRequestException("Engagement Date should be on or after commenting start date.");

@@ -33,6 +33,8 @@ export class InteractionDetailComponent {
   interaction: InteractionResponse;
   @Input()
   editMode: boolean;
+  @Input()
+  minDate: Date;
 
   interactionFormGroup: IFormGroup<InteractionRequest>;
   
