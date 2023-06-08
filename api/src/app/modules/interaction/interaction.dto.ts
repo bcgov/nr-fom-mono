@@ -1,9 +1,9 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsPositive, MaxLength, Min, MinLength, ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator';
+import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 import dayjs = require('dayjs');
 import _ = require('lodash');
-import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 
 // Ref - class-validator: custom validator.
 export function IsISODateOnlyString(validationOptions?: ValidationOptions) {
