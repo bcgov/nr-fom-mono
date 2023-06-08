@@ -9,6 +9,10 @@ RUN dnf install -y ca-certificates && \
     cd libs && npm ci && cd .. && \
     cd api && npm ci && npm run build:api
 
+# Logs directory setup
+RUN mkdir -p /app/logs
+#RUN chmod 755 /app/logs
+#RUN chown 1001:1001 /app/logs
 
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro

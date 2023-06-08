@@ -136,6 +136,15 @@ objects:
       labels:
         app: ${NAME}-${ZONE}
   - apiVersion: v1
+    kind: ConfigMap
+    data:
+      foo.txt: |-
+        data
+    metadata:
+      name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit-configmap
+      labels:
+        app: ${NAME}-${ZONE}
+  - apiVersion: v1
     kind: DeploymentConfig
     metadata:
       labels:
@@ -175,7 +184,7 @@ objects:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
               imagePullPolicy: Always
-              name: ${NAME}
+              name: ${NAME}-api
               env:
                 - name: BYPASS_CORS
                   value: "false"
@@ -271,6 +280,43 @@ objects:
                   name: aws-cognito-env-config
                 - mountPath: /app/logs
                   name: ${NAME}-${ZONE}-${COMPONENT}-logs
+
+            - image: cr.fluentbit.io/fluent/fluent-bit:2.1.4
+              name: ${NAME}-api-fluent-bit-sidecar
+              imagePullPolicy: Always
+              volumeMounts:
+                - mountPath: /mnt/log
+                  name: ${NAME}-${ZONE}-${COMPONENT}-logs
+                - mountPath: /fluent-bit/etc/
+                  name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit-config-volume
+              readinessProbe:
+                tcpSocket:
+                  port: 2020
+                initialDelaySeconds: 10
+                periodSeconds: 30
+                timeoutSeconds: 5
+                failureThreshold: 5
+                successThreshold: 1
+              livenessProbe:
+                httpGet:
+                  path: /
+                  port: 2020
+                initialDelaySeconds: 10
+                periodSeconds: 30
+                timeoutSeconds: 5
+                failureThreshold: 5
+                successThreshold: 1
+              ports:
+                - containerPort: 2020
+                  protocol: TCP
+                  name: metrics
+              resources:
+                requests:
+                  cpu: "25m"
+                  memory: "50Mi"
+                limits:
+                  cpu: "50m"
+                  memory: "100Mi"             
           volumes:
             - name: aws-cognito-env-config
               configMap:
@@ -278,6 +324,9 @@ objects:
             - name: ${NAME}-${ZONE}-${COMPONENT}-logs
               persistentVolumeClaim:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}-logs
+            - name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit-config-volume
+              configMap:
+                name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit-configmap
 
   - apiVersion: v1
     kind: Service
