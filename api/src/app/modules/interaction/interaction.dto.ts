@@ -1,6 +1,39 @@
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsDateString, IsInt, IsNotEmpty, IsPositive, MaxLength, Min, MinLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsPositive, MaxLength, Min, MinLength, ValidationArguments, ValidationOptions, registerDecorator } from 'class-validator';
+import * as customParseFormat from 'dayjs/plugin/customParseFormat';
+import dayjs = require('dayjs');
 import _ = require('lodash');
+
+// Ref - class-validator: custom validator.
+export function IsISODateOnlyString(validationOptions?: ValidationOptions) {
+    return function (object: Object, propertyName: string) {
+        registerDecorator({
+            name: 'isISODateOnlyString',
+            target: object.constructor,
+            propertyName: propertyName,
+            options: validationOptions,
+            validator: {
+              validate(value: any, _args: ValidationArguments) {
+                // validate if dto property value (such as 'communicationDate') passes date string format 'YYYY-MM-DD'
+                return isValidDateOnlyString(value);
+              },
+            },
+        });
+    }    
+}
+
+/*
+Limited to only check date string value with backend defined date format: DateTimeUtil.DATE_FORMAT.
+Valid date string like "2023-06-07" has length: 10 (so, no time portion).
+Note: "2023-06-07" and "06-07-2023" and "2023/06/07" etc are treated valid from dayjs library and all
+    are translated into "2023-06-07" by the dayjs library.
+For now it does not provide flexbility to check other format.
+*/
+export function isValidDateOnlyString(value: string): boolean {
+    dayjs.extend(customParseFormat);
+    return !_.isEmpty(value) && value.length == 10 && dayjs(value, DateTimeUtil.DATE_FORMAT, true).isValid();
+}
 
 export class InteractionCreateRequest {
   constructor(projectId = null, 
@@ -26,7 +59,7 @@ export class InteractionCreateRequest {
   stakeholder: string;
 
   @ApiProperty({ required: true })
-  @IsDateString({}, {message: '"$property" must be ISO-formatted date.'})
+  @IsISODateOnlyString({message: `"$property" must be ISO-formatted date. (Required format: ${DateTimeUtil.DATE_FORMAT})`})
   @IsNotEmpty()
   communicationDate?: string;
 

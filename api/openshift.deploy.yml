@@ -66,11 +66,11 @@ parameters:
     required: true
   - name: AWS_USER_POOLS_ID
     description: FAM Authentication Cognito user pools ID
-    value: "ca-central-1_RCQQWwBBS"
+    value: "ca-central-1_t2HSZBHur"
     required: true
   - name: AWS_USER_POOLS_WEB_CLIENT_ID
     description: FAM Authentication Cognito user pools client ID
-    value: "lsg00u7bv7qm2p92qf1f8t255"
+    value: "7hpo4qa7j0hs0rkfl2pm0sto5k"
     required: true
   - name: LOGOUT_CHAIN_URL
     description: FAM Authentication Cognito logout chain url for Siteminder and Keycloak

@@ -1,4 +1,4 @@
-import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import { AuthGuard, UserHeader } from '@api-core/security/auth.guard';
 import { BadRequestException, Controller, Delete, Get, HttpStatus, Param, ParseIntPipe, Post, Put, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -13,7 +13,6 @@ import { InteractionCreateRequest, InteractionResponse, InteractionUpdateRequest
 import { InteractionService } from './interaction.service';
 import _ = require('lodash');
 import dayjs = require('dayjs');
-import { AuthGuard, UserHeader } from '@api-core/security/auth.guard';
 // initialize dayjs extensions
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -113,14 +112,10 @@ export class InteractionController {
     @UserHeader() user: User,
     @UploadedFile('file') file: Express.Multer.File,
     @Req() request: fetch.Request): Promise<InteractionResponse> {
-      const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? null
-                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
-                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);
       const createRequest = new InteractionCreateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
-        reqDate,
+        request.body['communicationDate'],
         request.body['communicationDetails'],
         // Note, the generated api-client has little issue; it uses 'FormData' to append a file, but did not provide third
         // argument for 'filename'. To still use generated api-client, 'filename' could be found from extra formData property.
@@ -157,15 +152,11 @@ export class InteractionController {
     @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
     @UploadedFile('file') file: Express.Multer.File,
-    @Req() request: fetch.Request): Promise<InteractionResponse> {
-      const reqDate = _.isEmpty(request.body['communicationDate'])
-                      ? null
-                      : dayjs.tz(dayjs(request.body['communicationDate']).utc(), 
-                        DateTimeUtil.DATE_FORMAT, DateTimeUtil.TIMEZONE_VANCOUVER).format(DateTimeUtil.DATE_FORMAT);                     
+    @Req() request: fetch.Request): Promise<InteractionResponse> {     
       const updateRequest = new InteractionUpdateRequest(
         await new ParseIntPipe().transform(request.body['projectId'], null),
         request.body['stakeholder'],
-        reqDate,
+        request.body['communicationDate'],
         request.body['communicationDetails'],
         file?.originalname?.includes(".")? file.originalname: request.body['filename'],
         file? file.buffer: request.body['file']['buffer'],

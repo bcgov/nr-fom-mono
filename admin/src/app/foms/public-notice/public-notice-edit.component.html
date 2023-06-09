@@ -159,7 +159,7 @@
             placeholder="YYYY"
             formControlName="opStartDate"
             bsDatepicker
-            onkeydown="return false"
+            (keydown)="$event.preventDefault()"
             [bsConfig]="bsConfig"
           />
           <div class="invalid-feedback" 
@@ -183,7 +183,7 @@
             placeholder="YYYY"
             formControlName="opEndDate"
             bsDatepicker
-            onkeydown="return false"
+            (keydown)="$event.preventDefault()"
             [bsConfig]="bsConfig"
           />
           <div class="invalid-feedback" 

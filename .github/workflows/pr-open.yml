@@ -51,20 +51,20 @@ jobs:
           - package: admin
             build_context: ./
             build_file: admin/Dockerfile
-            triggers: ('admin/', 'libs/')
+            triggers: ('admin/' 'libs/')
           - package: api
             build_context: ./
             build_file: api/Dockerfile
-            triggers: ('api/', 'libs/')
+            triggers: ('api/' 'libs/')
           - package: db
             triggers: ('db')
           - package: public
             build_context: ./
             build_file: public/Dockerfile
-            triggers: ('public/', 'libs/')
+            triggers: ('public/' 'libs/')
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.0
+      - uses: bcgov-nr/action-builder-ghcr@v1.1.2
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
@@ -90,7 +90,7 @@ jobs:
               -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
               -p DB_TESTDATA=true
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="lsg00u7bv7qm2p92qf1f8t255"
+              -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
           - name: admin
             file: admin/openshift.deploy.yml
@@ -107,7 +107,7 @@ jobs:
             overwrite: true
             parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.0.3
+      - uses: bcgov-nr/action-deployer-openshift@v1.1.1
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
