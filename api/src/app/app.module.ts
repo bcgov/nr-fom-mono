@@ -14,7 +14,7 @@ import { SubmissionModule } from './modules/submission/submission.module';
 import { SpatialFeatureModule } from './modules/spatial-feature/spatial-feature.module';
 
 // Other Modules
-import { LoggerModule } from 'nestjs-pino';
+import { LoggerModule, Params } from 'nestjs-pino';
 import { AppConfigModule } from './modules/app-config/app-config.module';
 import { AppConfigService } from './modules/app-config/app-config.provider';
 import { SecurityModule } from '../core/security/security.module'
@@ -23,22 +23,47 @@ function getLogLevel():string {
   return process.env.LOG_LEVEL || 'info';
 }
 
+const logParams: Params = { 
+    pinoHttp: {
+        // level: getLogLevel(),
+        // timestamp: () => { 
+        //     const time = new Date().toISOString();
+        //     return `,"time": ${time}`;
+        // },
+        // formatters: {
+        //     level: (label) => { return { level: label }; }
+        // },
+
+        transport: {
+            targets: [
+                {
+                    target: 'pino/file',
+                    options: {
+                        destination: './app.log',
+                        mkdir: true,
+                        // timestamp: stdTimeFunctions.isoTime // does not work
+                    },
+                    level: 'info'
+                },
+                {
+                    target: 'pino-pretty',
+                    options: {
+                        translateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+                    },
+                    level: getLogLevel()
+                },
+            ]
+        }
+    }
+}
+
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     // Config
     AppConfigModule,
     SecurityModule,
-    LoggerModule.forRoot({ pinoHttp: {
-        level: getLogLevel(),
-        timestamp: () => { 
-          const time = new Date().toISOString();
-          return `,"time": ${time}`;
-        },
-        formatters: {
-          level: (label) => { return { level: label }; }
-        }
-      }}),
+    LoggerModule.forRoot(logParams),
     TypeOrmModule.forRootAsync({
       imports: [AppConfigModule],
       useFactory: (configService: AppConfigService) => ({
