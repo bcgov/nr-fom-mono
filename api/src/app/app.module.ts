@@ -39,16 +39,18 @@ const logParams: Params = {
                 {
                     target: 'pino/file',
                     options: {
-                        destination: './app.log',
+                        destination: process.env.LOG_LOCATION || './app.log',
                         mkdir: true,
                         // timestamp: stdTimeFunctions.isoTime // does not work
                     },
-                    level: 'info'
+                    level: getLogLevel()
                 },
                 {
                     target: 'pino-pretty',
                     options: {
-                        translateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'"
+                        translateTime: "UTC:yyyy-mm-dd'T'HH:MM:ss'Z'",
+                        colorize: false,
+                        singleLine: true
                     },
                     level: getLogLevel()
                 },
