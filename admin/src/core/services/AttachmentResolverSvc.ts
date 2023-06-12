@@ -26,8 +26,11 @@ export class AttachmentResolverSvc {
     return this.attachmentService.attachmentControllerRemove(attachmentId).toPromise();
   }
 
-  public async getFileContents(fileId: number): Promise<any> {
-    return this.attachmentService.attachmentControllerGetFileContents(fileId).toPromise();
+  public async getFileContents(fileId: number): Promise<void> {
+    this.attachmentService.attachmentControllerGetFileContents(fileId)
+        .subscribe((res) => {
+            console.log("res: ", res)
+        })
   }
 
   getAttachmentUrl(id: number): string {
