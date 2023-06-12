@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Delete, Param, HttpStatus, Query, UseInterceptors, UploadedFile, Req, Request, Res, ParseIntPipe, BadRequestException, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Express } from 'express';
 import { Multer } from 'multer'; // This is needed, don't know why Visual Studio Code thinks it isn't.
 
@@ -75,10 +75,15 @@ export class AttachmentController {
     return this.service.create(createRequest, user);
   }
 
+	@ApiResponse({
+		schema: {
+			type: 'string',
+			format: 'binary',
+		},
+		status: HttpStatus.OK,
+	})
   @Get('/file/:id')
   @ApiBearerAuth()
-  // TODO: This should have same security level the same as isViewAuthorized().
-  // Frontend: should pass header (from admin), currently it does not. Api service should check with isViewAuthorized().
   @ApiOkResponse() 
   async getFileContents(
     @UserHeader() user: User,
