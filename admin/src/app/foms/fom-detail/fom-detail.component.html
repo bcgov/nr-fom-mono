@@ -124,8 +124,7 @@
                 <section *ngIf="attachments.length > 0">
                  <div class="doc-list row" *ngFor="let attachment of attachments">
                     <!-- <button (click)="attachmentResolverSvc.getFileContents(attachment.id)">Downlad</button> -->
-                    <a class="doc-list__item" style="width: 90%;"
-                        href="#"
+                    <a class="doc-list__item" style="width: 90%;cursor:pointer"
                        (click)="attachmentResolverSvc.getFileContents(attachment.id)"
                        [title]="attachment.fileName || ''"
                        target="_blank" rel="noopener">
