@@ -75,16 +75,13 @@ export class AttachmentController {
     return this.service.create(createRequest, user);
   }
 
-	@ApiResponse({
-		schema: {
-			type: 'string',
-			format: 'binary',
-		},
-		status: HttpStatus.OK,
-	})
+	@ApiProduces('application/octet-stream')
   @Get('/file/:id')
   @ApiBearerAuth()
-  @ApiOkResponse() 
+  @ApiOkResponse({	schema: {
+			type: 'string',
+			format: 'binary',
+		}}) 
   async getFileContents(
     @UserHeader() user: User,
     @Param('id', ParseIntPipe) id: number,
