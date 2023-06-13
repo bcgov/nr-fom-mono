@@ -94,10 +94,6 @@ export class InteractionDetailComponent {
                       .attachmentControllerFindOne(attachmentId).toPromise();
   }
 
-  getAttachmentUrl(id: number): string {
-    return this.configSvc.getAttachmentUrl(id);
-  }
-
   isValid(controlName: string): boolean {
     return this.interactionFormGroup.controls[controlName]?.errors == null;
   }

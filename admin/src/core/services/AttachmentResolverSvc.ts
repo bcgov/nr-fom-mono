@@ -1,12 +1,10 @@
 import { AttachmentTypeEnum } from "@admin-core/models/attachmentTypeEnum";
-import { HttpResponse } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import {
     AttachmentResponse,
     AttachmentService,
     WorkflowStateEnum,
 } from '@api-client';
-import { ConfigService } from "@utility/services/config.service";
 import { saveAs } from "file-saver";
 
 @Injectable({
@@ -15,9 +13,7 @@ import { saveAs } from "file-saver";
 export class AttachmentResolverSvc {
 
   constructor(
-    public attachmentService: AttachmentService,
-    private configSvc: ConfigService
-
+    public attachmentService: AttachmentService
   ) {  }
 
   public async getAttachments(projectId: number): Promise<AttachmentResponse[]> {
@@ -38,10 +34,6 @@ export class AttachmentResolverSvc {
               // file-saver:saveAs will download the file.
               saveAs(data, filename);
         });
-  }
-
-  getAttachmentUrl(id: number): string {
-    return this.configSvc.getAttachmentUrl(id);
   }
 
   /**
