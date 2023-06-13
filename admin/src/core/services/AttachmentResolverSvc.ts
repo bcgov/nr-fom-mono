@@ -28,12 +28,12 @@ export class AttachmentResolverSvc {
     return this.attachmentService.attachmentControllerRemove(attachmentId).toPromise();
   }
 
+  // Used for (click) event from <a>/<button> at Angular page to download a file.
   public async getFileContents(fileId: number, filename: string): Promise<void> {
     this.attachmentService.attachmentControllerGetFileContents(fileId)
-        .subscribe((res: HttpResponse<Blob>) => {
-            console.log("res: ", res)
-            const data: Blob = new Blob([res.body], {
-                type: res.body.type
+        .subscribe((value: Blob) => {
+            const data: Blob = new Blob([value], {
+                type: value.type
               });
               // file-saver:saveAs will download the file.
               saveAs(data, filename);
