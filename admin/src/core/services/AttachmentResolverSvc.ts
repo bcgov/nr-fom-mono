@@ -6,6 +6,7 @@ import {
   WorkflowStateEnum,
 } from '@api-client';
 import {ConfigService} from "@utility/services/config.service";
+import { saveAs } from "file-saver";
 
 @Injectable({
   providedIn: 'root'
@@ -26,11 +27,15 @@ export class AttachmentResolverSvc {
     return this.attachmentService.attachmentControllerRemove(attachmentId).toPromise();
   }
 
-  public async getFileContents(fileId: number): Promise<void> {
+  public async getFileContents(fileId: number, filename: string): Promise<void> {
     this.attachmentService.attachmentControllerGetFileContents(fileId)
         .subscribe((res) => {
             console.log("res: ", res)
-        })
+            const data: Blob = new Blob([res], {
+                type: res.type
+              });
+              saveAs(data, filename);
+        });
   }
 
   getAttachmentUrl(id: number): string {

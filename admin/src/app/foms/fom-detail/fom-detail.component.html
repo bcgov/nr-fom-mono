@@ -125,7 +125,7 @@
                  <div class="doc-list row" *ngFor="let attachment of attachments">
                     <!-- <button (click)="attachmentResolverSvc.getFileContents(attachment.id)">Downlad</button> -->
                     <a class="doc-list__item" style="width: 90%;cursor:pointer"
-                       (click)="attachmentResolverSvc.getFileContents(attachment.id)"
+                       (click)="attachmentResolverSvc.getFileContents(attachment.id, attachment.fileName)"
                        [title]="attachment.fileName || ''"
                        target="_blank" rel="noopener">
                       <div class="cell doc-list__item-icon">
