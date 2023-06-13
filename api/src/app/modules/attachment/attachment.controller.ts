@@ -75,9 +75,10 @@ export class AttachmentController {
     return this.service.create(createRequest, user);
   }
 
-	@ApiProduces('application/octet-stream')
+  @ApiProduces('application/octet-stream')
   @Get('/file/:id')
   @ApiBearerAuth()
+  @AuthGuardMeta(GUARD_OPTIONS.ANONYMOUS_LIMITED)
   @ApiOkResponse({	schema: {
 			type: 'string',
 			format: 'binary',
