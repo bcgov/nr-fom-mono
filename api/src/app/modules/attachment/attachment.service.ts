@@ -111,9 +111,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async isViewAuthorized(entity: Attachment, user?: User): Promise<boolean> {
-    console.log("Attachment entity:", entity)
     const attachmentTypeCode = entity.attachmentType?.code;
-    console.log("attachmentTypeCode:", attachmentTypeCode)
     if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE || attachmentTypeCode == AttachmentTypeEnum.SUPPORTING_DOC) {
       // These document types are viewable by the public.
       return true;
