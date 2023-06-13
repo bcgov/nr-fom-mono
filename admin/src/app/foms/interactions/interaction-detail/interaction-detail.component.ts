@@ -7,6 +7,7 @@ import { ConfigService } from '@utility/services/config.service';
 import { InteractionDetailForm, InteractionRequest } from './interaction-detail.form';
 
 import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
+import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSvc';
 import { DatePipe, NgClass, NgIf } from '@angular/common';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
@@ -55,7 +56,8 @@ export class InteractionDetailComponent {
   constructor(
     private formBuilder: RxFormBuilder,
     private configSvc: ConfigService,
-    public attachmentSvc: AttachmentService
+    public attachmentSvc: AttachmentService,
+    public attachmentResolverSvc: AttachmentResolverSvc,
   ) { }
 
   @Input() set selectedInteraction(interaction: InteractionResponse) {

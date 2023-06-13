@@ -95,7 +95,7 @@
       <label for="upload">Attachment</label>
       <a class="doc-list__item"
           style="cursor:pointer"
-          (click)="attachmentSvc.attachmentControllerGetFileContents(attachment.id)"
+          (click)="attachmentResolverSvc.getFileContents(attachment.id, attachment.fileName)"
           [title]="attachment.fileName || ''"
           rel="noopener">
         <div class="cell doc-list__item-icon">
