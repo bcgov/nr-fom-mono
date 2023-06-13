@@ -94,7 +94,7 @@
           *ngIf="attachment">
       <label for="upload">Attachment</label>
       <a class="doc-list__item"
-          [href]="getAttachmentUrl(attachment.id)"
+          (click)="attachmentSvc.attachmentControllerGetFileContents(attachment.id)"
           [title]="attachment.fileName || ''"
           target="_blank" rel="noopener">
         <div class="cell doc-list__item-icon">

@@ -55,7 +55,7 @@ export class InteractionDetailComponent {
   constructor(
     private formBuilder: RxFormBuilder,
     private configSvc: ConfigService,
-    private attachmentSvc: AttachmentService
+    public attachmentSvc: AttachmentService
   ) { }
 
   @Input() set selectedInteraction(interaction: InteractionResponse) {
