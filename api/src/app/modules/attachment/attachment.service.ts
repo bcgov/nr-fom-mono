@@ -92,14 +92,15 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async isDeleteAuthorized(entity: Attachment, user?: User):Promise<boolean> {
+    const attachmentTypeCode = entity.attachmentType?.code;
     // for Interaction.
-    if (entity.attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
+    if (attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
       return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
         [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
     }
 
     // for public notice; public notice can't be deleted but can be replaced after initial state.
-    if (entity.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
+    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
       return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
         [WorkflowStateEnum.INITIAL], user);
     }
@@ -111,8 +112,9 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
 
   async isViewAuthorized(entity: Attachment, user?: User): Promise<boolean> {
     console.log("Attachment entity:", entity)
-    console.log("entity.attachmentTypeCode:", entity.attachmentTypeCode)
-    if (entity.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE || entity.attachmentTypeCode == AttachmentTypeEnum.SUPPORTING_DOC) {
+    const attachmentTypeCode = entity.attachmentType?.code;
+    console.log("attachmentTypeCode:", attachmentTypeCode)
+    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE || attachmentTypeCode == AttachmentTypeEnum.SUPPORTING_DOC) {
       // These document types are viewable by the public.
       return true;
     }
