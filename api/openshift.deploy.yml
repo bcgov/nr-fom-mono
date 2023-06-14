@@ -215,6 +215,8 @@ objects:
                   value: "${PORT}"
                 - name: SECURITY_ENABLED
                   value: "true"
+                - name: LOG_LOCATION
+                  value: "/app/logs/app.log"
                 - name: SMTP_SERVER
                   value: ${SMTP_SERVER}
                 - name: OBJECT_STORAGE_ACCESS_ID
