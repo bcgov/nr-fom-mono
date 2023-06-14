@@ -283,7 +283,7 @@ objects:
                 - mountPath: /app/logs
                   name: ${NAME}-${ZONE}-${COMPONENT}-logs
 
-            - image: cr.fluentbit.io/fluent/fluent-bit:2.1.4
+            - image: artifacts.developer.gov.bc.ca/docker-remote/fluent/fluent-bit:2.1.4
               name: ${NAME}-api-fluent-bit-sidecar
               imagePullPolicy: Always
               volumeMounts:
