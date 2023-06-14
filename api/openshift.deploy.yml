@@ -200,7 +200,7 @@ objects:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}
               imagePullPolicy: Always
-              name: ${NAME}-${COMPONENT}
+              name: ${NAME}
               env:
                 - name: BYPASS_CORS
                   value: "false"
@@ -298,7 +298,7 @@ objects:
                   name: aws-cognito-env-config
                 - mountPath: /app/logs
                   name: ${NAME}-${ZONE}-${COMPONENT}-logs
-              # OpenShift needs extra configuration to pull from Docker directly as part of the container image definition, so Derek provided this workaround. 
+              # OpenShift needs extra configuration to pull from Docker directly as part of the container image definition, so Derek provided this workaround.
               # TODO: Talk to Derek when he's back on putting this back into the container definition.
             - image: ${NAME}-${ZONE}-${COMPONENT}-fluentbit:${ZONE}-${COMPONENT}-fluentbit
               name: ${NAME}-${COMPONENT}-fluent-bit-sidecar
@@ -306,7 +306,7 @@ objects:
               volumeMounts:
                 - mountPath: /mnt/log
                   name: ${NAME}-${ZONE}-${COMPONENT}-logs
-                  readOnly: true                  
+                  readOnly: true
                 - mountPath: /fluent-bit/etc/
                   name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit-config-volume
               readinessProbe:
