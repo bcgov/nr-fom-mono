@@ -141,7 +141,6 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async getFileContent(id: number, user?: User): Promise<AttachmentFileResponse> {
-
     const attachmentFileResponse = await this.findFileDatabase(id, user);
 
     //Creating the objectName for the Object Storage
@@ -165,8 +164,9 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     // NestJS/TypeORM has breaking change for find API which only accespts 'option' argument and
     // no 'id' for findOne(id, options) like before. We need to specifically build the 'options.where'
     // for the TypeORM api now.
-    const revisedOptions = this.addCommonRelationsToFindOptions(this.addCommonRelationsToFindOptions(
-        { select: [ 'id', 'projectId', 'fileName', 'attachmentType' ] }));
+    const revisedOptions = this.addCommonRelationsToFindOptions(
+        { select: [ 'id', 'projectId', 'fileName', 'attachmentType']}
+    );
     revisedOptions.where = { ...revisedOptions.where, id } as unknown as FindOptionsWhere<Attachment>;
     const entity:Attachment = await this.repository.findOne(revisedOptions);
 
