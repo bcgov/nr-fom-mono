@@ -304,6 +304,7 @@ objects:
               volumeMounts:
                 - mountPath: /mnt/log
                   name: ${NAME}-${ZONE}-${COMPONENT}-logs
+                  readOnly: true                  
                 - mountPath: /fluent-bit/etc/
                   name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit-config-volume
               readinessProbe:
