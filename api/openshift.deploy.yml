@@ -92,10 +92,26 @@ objects:
       lookupPolicy:
         local: false
       tags:
-        - name: ${ZONE}-api
+        - name: ${ZONE}-${COMPONENT}
           from:
             kind: DockerImage
             name: ${REGISTRY}/${PROMOTE}
+          referencePolicy:
+            type: Local
+  - apiVersion: v1
+    kind: ImageStream
+    metadata:
+      labels:
+        app: ${NAME}-${ZONE}
+      name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: ${ZONE}-${COMPONENT}-fluentbit
+          from:
+            kind: DockerImage
+            name: cr.fluentbit.io/fluent/fluent-bit:2.1.4
           referencePolicy:
             type: Local
   - apiVersion: v1
@@ -172,7 +188,7 @@ objects:
               - ${NAME}
             from:
               kind: ImageStreamTag
-              name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+              name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       template:
@@ -182,9 +198,9 @@ objects:
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
-            - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+            - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}
               imagePullPolicy: Always
-              name: ${NAME}-api
+              name: ${NAME}-${COMPONENT}
               env:
                 - name: BYPASS_CORS
                   value: "false"
@@ -282,9 +298,8 @@ objects:
                   name: aws-cognito-env-config
                 - mountPath: /app/logs
                   name: ${NAME}-${ZONE}-${COMPONENT}-logs
-
-            - image: artifacts.developer.gov.bc.ca/docker-remote/fluent/fluent-bit:2.1.4
-              name: ${NAME}-api-fluent-bit-sidecar
+            - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}-fluentbit
+              name: ${NAME}-${COMPONENT}-fluent-bit-sidecar
               imagePullPolicy: Always
               volumeMounts:
                 - mountPath: /mnt/log
@@ -318,7 +333,7 @@ objects:
                   memory: "50Mi"
                 limits:
                   cpu: "50m"
-                  memory: "100Mi"             
+                  memory: "100Mi"
           volumes:
             - name: aws-cognito-env-config
               configMap:
