@@ -300,8 +300,8 @@ objects:
                   name: ${NAME}-${ZONE}-${COMPONENT}-logs
               # OpenShift needs extra configuration to pull from Docker directly as part of the container image definition, so Derek provided this workaround.
               # TODO: Talk to Derek when he's back on putting this back into the container definition.
-            - image: ${NAME}-${ZONE}-${COMPONENT}-fluentbit:${ZONE}-${COMPONENT}-fluentbit
-              name: ${NAME}-${COMPONENT}-fluent-bit-sidecar
+            - image: image-registry.apps.silver.devops.gov.bc.ca/a4b31c-dev/${NAME}-${ZONE}-${COMPONENT}-fluentbit:${ZONE}-${COMPONENT}-fluentbit
+              name: ${NAME}-${COMPONENT}-fluentbit
               imagePullPolicy: Always
               volumeMounts:
                 - mountPath: /mnt/log
