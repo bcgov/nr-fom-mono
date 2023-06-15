@@ -309,23 +309,23 @@ objects:
                   readOnly: true
                 - mountPath: /fluent-bit/etc/
                   name: ${NAME}-${ZONE}-${COMPONENT}-fluentbit-config-volume
-              readinessProbe:
-                tcpSocket:
-                  port: 2020
-                initialDelaySeconds: 10
-                periodSeconds: 30
-                timeoutSeconds: 5
-                failureThreshold: 5
-                successThreshold: 1
-              livenessProbe:
-                httpGet:
-                  path: /
-                  port: 2020
-                initialDelaySeconds: 10
-                periodSeconds: 30
-                timeoutSeconds: 5
-                failureThreshold: 5
-                successThreshold: 1
+#              readinessProbe:
+#                tcpSocket:
+#                  port: 2020
+#                initialDelaySeconds: 10
+#                periodSeconds: 30
+#                timeoutSeconds: 5
+#                failureThreshold: 5
+#                successThreshold: 1
+#              livenessProbe:
+#                httpGet:
+#                  path: /
+#                  port: 2020
+#                initialDelaySeconds: 10
+#                periodSeconds: 30
+#                timeoutSeconds: 5
+#               failureThreshold: 5
+#                successThreshold: 1
               ports:
                 - containerPort: 2020
                   protocol: TCP
