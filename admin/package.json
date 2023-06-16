@@ -26,6 +26,7 @@
     "@rxweb/reactive-form-validators": "~13.0.0",
     "aws-amplify": "^5.1.4",
     "bootstrap": "~5.2.0",
+    "file-saver": "^2.0.5",
     "jquery": "^3.6.0",
     "leaflet": "~1.9.0",
     "leaflet.markercluster": "~1.5.3",

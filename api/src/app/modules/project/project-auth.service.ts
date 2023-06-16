@@ -28,7 +28,6 @@ export class ProjectAuthService {
    async isForestClientUserAccess(projectId: number, user?: User): Promise<boolean> {
 
     if (!user?.isForestClient) {
-      console.log(`!user?.isForestClient: ${!user?.isForestClient}`)
       return false;
     }
 

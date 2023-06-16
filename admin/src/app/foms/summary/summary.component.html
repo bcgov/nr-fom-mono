@@ -131,9 +131,10 @@
                   </td>
                   <td data-label="File Name">
                     <a id="attachment-link"
-                      [href]="getAttachmentUrl(attachment.id)"
+                      style="cursor:pointer"
+                      (click)="attachmentResolverSvc.getFileContents(attachment.id, attachment.fileName)"
                       [title]="attachment.fileName || ''"
-                      target="_blank" rel="noopener">
+                      rel="noopener">
                       {{attachment.fileName}}
                     </a>
                   </td>

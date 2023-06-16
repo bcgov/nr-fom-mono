@@ -290,10 +290,10 @@ export class AttachmentService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public attachmentControllerGetFileContents(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<any>;
-    public attachmentControllerGetFileContents(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpResponse<any>>;
-    public attachmentControllerGetFileContents(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: undefined}): Observable<HttpEvent<any>>;
-    public attachmentControllerGetFileContents(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: undefined}): Observable<any> {
+    public attachmentControllerGetFileContents(id: number, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream'}): Observable<Blob>;
+    public attachmentControllerGetFileContents(id: number, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream'}): Observable<HttpResponse<Blob>>;
+    public attachmentControllerGetFileContents(id: number, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/octet-stream'}): Observable<HttpEvent<Blob>>;
+    public attachmentControllerGetFileContents(id: number, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/octet-stream'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling attachmentControllerGetFileContents.');
         }
@@ -311,6 +311,7 @@ export class AttachmentService {
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
+                'application/octet-stream'
             ];
             httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -319,14 +320,9 @@ export class AttachmentService {
         }
 
 
-        let responseType: 'text' | 'json' = 'json';
-        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<any>(`${this.configuration.basePath}/api/attachment/file/${encodeURIComponent(String(id))}`,
+        return this.httpClient.get(`${this.configuration.basePath}/api/attachment/file/${encodeURIComponent(String(id))}`,
             {
-                responseType: <any>responseType,
+                responseType: "blob",
                 withCredentials: this.configuration.withCredentials,
                 headers: headers,
                 observe: observe,
