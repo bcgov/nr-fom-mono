@@ -231,7 +231,7 @@ objects:
                   value: "${PORT}"
                 - name: SECURITY_ENABLED
                   value: "true"
-                - name: LOG_LOCATION
+                - name: LOG_PATH
                   value: "/app/logs/app.log"
                 - name: SMTP_SERVER
                   value: ${SMTP_SERVER}
