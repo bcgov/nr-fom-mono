@@ -18,7 +18,7 @@ RUN mkdir -p /app/logs
 FROM registry.access.redhat.com/ubi8/ubi-micro
 
 # Install tools
-RUN yum install -y logrotate 
+RUN microdnf install -y logrotate 
 
 # Node packages and dependencies
 COPY --from=builder /usr/bin/node /usr/bin/
