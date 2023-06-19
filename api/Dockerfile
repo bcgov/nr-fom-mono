@@ -17,6 +17,9 @@ RUN mkdir -p /app/logs
 # Deployment container
 FROM registry.access.redhat.com/ubi8/ubi-micro
 
+# Install tools
+RUN dnf install -y logrotate 
+
 # Node packages and dependencies
 COPY --from=builder /usr/bin/node /usr/bin/
 COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
