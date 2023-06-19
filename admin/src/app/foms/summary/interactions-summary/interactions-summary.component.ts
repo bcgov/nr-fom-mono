@@ -4,7 +4,8 @@ import { InteractionResponse } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
 
 import { NewlinesPipe } from '@admin-core/pipes/newlines.pipe';
-import { DatePipe, NgFor, NgStyle, NgTemplateOutlet } from '@angular/common';
+import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSvc';
+import { DatePipe, NgFor, NgIf, NgStyle, NgTemplateOutlet } from '@angular/common';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 @Component({
     standalone: true,
     imports: [
+        NgIf,
         MatExpansionModule, 
         NgStyle, 
         MatIconModule, 
@@ -36,7 +38,10 @@ export class InteractionsSummaryComponent implements OnInit {
   @ViewChild(MatAccordion) 
   accordion: MatAccordion;
   
-  constructor(private configSvc: ConfigService) { }
+  constructor(
+    private configSvc: ConfigService,
+    public attachmentResolverSvc: AttachmentResolverSvc
+  ) { }
 
   ngOnInit(): void {
     // Deliberately empty
@@ -46,7 +51,4 @@ export class InteractionsSummaryComponent implements OnInit {
     this.interactions = interactions;
   }
 
-  getAttachmentUrl(id: number): string {
-    return this.configSvc.getAttachmentUrl(id);
-  }
 }

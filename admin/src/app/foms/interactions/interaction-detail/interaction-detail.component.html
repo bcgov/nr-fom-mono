@@ -94,9 +94,10 @@
           *ngIf="attachment">
       <label for="upload">Attachment</label>
       <a class="doc-list__item"
-          [href]="getAttachmentUrl(attachment.id)"
+          style="cursor:pointer"
+          (click)="attachmentResolverSvc.getFileContents(attachment.id, attachment.fileName)"
           [title]="attachment.fileName || ''"
-          target="_blank" rel="noopener">
+          rel="noopener">
         <div class="cell doc-list__item-icon">
           <em class="material-icons">
               insert_drive_file

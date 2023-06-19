@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from "@utility/security/user";
 import { PinoLogger } from 'nestjs-pino';
 import { Stream } from 'node:stream';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { minioClient } from '../../../minio';
 import { ProjectAuthService } from '../project/project-auth.service';
 import { WorkflowStateEnum } from '../project/workflow-state-code.entity';
@@ -92,14 +92,15 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async isDeleteAuthorized(entity: Attachment, user?: User):Promise<boolean> {
+    const attachmentTypeCode = entity.attachmentType?.code;
     // for Interaction.
-    if (entity.attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
+    if (attachmentTypeCode == AttachmentTypeEnum.INTERACTION) {
       return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
         [WorkflowStateEnum.COMMENT_OPEN, WorkflowStateEnum.COMMENT_CLOSED], user);
     }
 
     // for public notice; public notice can't be deleted but can be replaced after initial state.
-    if (entity.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
+    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE) {
       return this.projectAuthService.isForestClientUserAllowedStateAccess(entity.projectId, 
         [WorkflowStateEnum.INITIAL], user);
     }
@@ -110,8 +111,8 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async isViewAuthorized(entity: Attachment, user?: User): Promise<boolean> {
-
-    if (entity.attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE || entity.attachmentTypeCode == AttachmentTypeEnum.SUPPORTING_DOC) {
+    const attachmentTypeCode = entity.attachmentType?.code;
+    if (attachmentTypeCode == AttachmentTypeEnum.PUBLIC_NOTICE || attachmentTypeCode == AttachmentTypeEnum.SUPPORTING_DOC) {
       // These document types are viewable by the public.
       return true;
     }
@@ -140,7 +141,6 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   }
 
   async getFileContent(id: number, user?: User): Promise<AttachmentFileResponse> {
-
     const attachmentFileResponse = await this.findFileDatabase(id, user);
 
     //Creating the objectName for the Object Storage
@@ -161,14 +161,7 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
   async findFileDatabase(id: number, user?: User): Promise<AttachmentFileResponse> {
     // Works, but fileContents being treated as a Buffer...
 
-    // NestJS/TypeORM has breaking change for find API which only accespts 'option' argument and
-    // no 'id' for findOne(id, options) like before. We need to specifically build the 'options.where'
-    // for the TypeORM api now.
-    const revisedOptions = this.addCommonRelationsToFindOptions(this.addCommonRelationsToFindOptions(
-        { select: [ 'id', 'projectId', 'fileName', 'attachmentType' ] }));
-    revisedOptions.where = { ...revisedOptions.where, id } as unknown as FindOptionsWhere<Attachment>;
-    const entity:Attachment = await this.repository.findOne(revisedOptions);
-
+    const entity:Attachment = await this.findEntityWithCommonRelations(id);
     if (!entity) {
       throw new BadRequestException("No entity for the specified id.");
     }
@@ -181,7 +174,6 @@ export class AttachmentService extends DataService<Attachment, Repository<Attach
     const attachmentFileResponse = { ...attachmentResponse} as AttachmentFileResponse;
 
     return attachmentFileResponse;
-
   }
 
   createObjectUrl(projectId: number, attachmentId: number, fileName: string): string {

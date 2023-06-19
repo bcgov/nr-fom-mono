@@ -20,6 +20,7 @@ import { DetailsMapComponent } from '../details-map/details-map.component';
 import { ShapeInfoComponent } from '../shape-info/shape-info.component';
 import { CommentsSummaryComponent } from './comments-summary/comments-summary.component';
 import { InteractionsSummaryComponent } from './interactions-summary/interactions-summary.component';
+import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSvc';
 
 @Component({
     standalone: true,
@@ -70,7 +71,8 @@ export class SummaryComponent implements OnInit, OnDestroy {
     private spatialFeatureSvc: SpatialFeatureService,
     private interactionSvc: InteractionService,
     private attachmentSvc: AttachmentService,
-    private configSvc: ConfigService
+    private configSvc: ConfigService,
+    public attachmentResolverSvc: AttachmentResolverSvc
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -84,10 +86,6 @@ export class SummaryComponent implements OnInit, OnDestroy {
     this.scopeOptionChange$.pipe(takeUntil(this.ngUnsubscribe$)).subscribe((nextScope) => {
       this.doFiltering(nextScope);
     });
-  }
-
-  getAttachmentUrl(id: number): string {
-    return this.configSvc.getAttachmentUrl(id);
   }
 
   private async getProject(projectId: number) {
