@@ -10,6 +10,7 @@ import { ConfigService } from '@utility/services/config.service';
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { DetailsMapComponent } from 'app/applications/details-panel/details-map/details-map.component';
 import { ShapeInfoComponent } from 'app/applications/details-panel/shape-info/shape-info.component';
+import { saveAs } from "file-saver";
 import * as _ from 'lodash';
 import { Subject, forkJoin } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
@@ -177,6 +178,18 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
         }
       });
   }
+
+  // Used for (click) event from <a>/<button> at Angular page to download a file.
+  public async getFileContents(fileId: number, filename: string): Promise<void> {
+    this.attachmentService.attachmentControllerGetFileContents(fileId)
+        .subscribe((value: Blob) => {
+            const data: Blob = new Blob([value], {
+                type: value.type
+                });
+                // file-saver:saveAs will download the file.
+                saveAs(data, filename);
+        });
+    }
 
   /**
    * On component destroy.

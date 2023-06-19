@@ -16,7 +16,7 @@
     "target": "es2015",
     "sourceMap": true,
     "outDir": "./dist",
-    "types": ["jest", "node"],
+    "types": ["node"],
     "baseUrl": ".",
     "paths": {
       "@core": ["src/core"],

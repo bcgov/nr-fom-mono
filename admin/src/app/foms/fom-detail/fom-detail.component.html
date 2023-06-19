@@ -123,10 +123,10 @@
                 <h2>Attachments</h2>
                 <section *ngIf="attachments.length > 0">
                  <div class="doc-list row" *ngFor="let attachment of attachments">
-                    <a class="doc-list__item" style="width: 90%;"
-                       [href]="attachmentResolverSvc.getAttachmentUrl(attachment.id)"
+                    <a class="doc-list__item" style="width: 90%;cursor:pointer"
+                       (click)="attachmentResolverSvc.getFileContents(attachment.id, attachment.fileName)"
                        [title]="attachment.fileName || ''"
-                       target="_blank" rel="noopener">
+                       rel="noopener">
                       <div class="cell doc-list__item-icon">
                         <em class="material-icons">
                            insert_drive_file

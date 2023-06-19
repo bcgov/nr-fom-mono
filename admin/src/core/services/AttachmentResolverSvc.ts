@@ -1,11 +1,11 @@
 import { AttachmentTypeEnum } from "@admin-core/models/attachmentTypeEnum";
-import {Injectable} from "@angular/core";
+import { Injectable } from "@angular/core";
 import {
-  AttachmentService,
-  AttachmentResponse,
-  WorkflowStateEnum,
+    AttachmentResponse,
+    AttachmentService,
+    WorkflowStateEnum,
 } from '@api-client';
-import {ConfigService} from "@utility/services/config.service";
+import { saveAs } from "file-saver";
 
 @Injectable({
   providedIn: 'root'
@@ -13,9 +13,7 @@ import {ConfigService} from "@utility/services/config.service";
 export class AttachmentResolverSvc {
 
   constructor(
-    public attachmentService: AttachmentService,
-    private configSvc: ConfigService
-
+    public attachmentService: AttachmentService
   ) {  }
 
   public async getAttachments(projectId: number): Promise<AttachmentResponse[]> {
@@ -26,8 +24,16 @@ export class AttachmentResolverSvc {
     return this.attachmentService.attachmentControllerRemove(attachmentId).toPromise();
   }
 
-  getAttachmentUrl(id: number): string {
-    return this.configSvc.getAttachmentUrl(id);
+  // Used for (click) event from <a>/<button> at Angular page to download a file.
+  public async getFileContents(fileId: number, filename: string): Promise<void> {
+    this.attachmentService.attachmentControllerGetFileContents(fileId)
+        .subscribe((value: Blob) => {
+            const data: Blob = new Blob([value], {
+                type: value.type
+              });
+              // file-saver:saveAs will download the file.
+              saveAs(data, filename);
+        });
   }
 
   /**

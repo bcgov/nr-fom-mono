@@ -56,7 +56,7 @@ export class InteractionService extends DataService<Interaction, Repository<Inte
       }
       const prviousAttachmentId = entity.attachmentId;
       if (prviousAttachmentId) {
-        const updateCount = (await super.updateEntity(id, {attachmentId: undefined}, entity)).affected; // remove previous attachment from Interaction first.
+        const updateCount = (await super.updateEntity(id, {attachmentId: null}, entity)).affected; // remove previous attachment from Interaction first.
         if (updateCount != 1) {
           throw new InternalServerErrorException("Error removing previous attachment");
         }
