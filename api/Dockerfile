@@ -5,7 +5,7 @@ FROM registry.access.redhat.com/ubi8/nodejs-18:1-47.1684740189 AS builder
 WORKDIR /app
 COPY . ./
 USER root
-RUN dnf install -y ca-certificates && \
+RUN dnf install -y ca-certificates logrotate && \
     cd libs && npm ci && cd .. && \
     cd api && npm ci && npm run build:api
 
@@ -28,6 +28,7 @@ COPY --from=builder /usr/lib64/libstdc++.so.6 /usr/lib64/
 COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 COPY --from=builder /etc/pki /etc/pki
+COPY --from=builder /usr/sbin/logrotate /usr/sbin/
 
 # Copy over app
 WORKDIR /app
@@ -35,6 +36,9 @@ COPY --from=builder /app/api/node_modules ./node_modules
 COPY --from=builder /app/api/dist ./dist
 COPY --from=builder /app/api/src/migrations/main ./dist/api/src/migrations/main
 COPY --from=builder /app/api/src/migrations/test ./dist/api/src/migrations/test
+
+# Copy over logrotate
+
 
 # Expose port - mostly a convention, for readability
 EXPOSE 3333
