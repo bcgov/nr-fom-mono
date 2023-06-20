@@ -39,7 +39,7 @@ const logParams: Params = {
                 {
                     target: 'pino/file',
                     options: {
-                        destination: process.env.LOG_LOCATION || './app.log',
+                        destination: process.env.LOG_PATH || './logs/app.log',
                         mkdir: true,
                         // timestamp: stdTimeFunctions.isoTime // does not work
                     },
