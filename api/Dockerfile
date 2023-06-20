@@ -40,7 +40,7 @@ COPY --from=builder /app/api/node_modules ./node_modules
 COPY --from=builder /app/api/dist ./dist
 COPY --from=builder /app/api/src/migrations/main ./dist/api/src/migrations/main
 COPY --from=builder /app/api/src/migrations/test ./dist/api/src/migrations/test
-COPY --from=builder /app/api/api-logrotate.conf /etc/logrotate.d/
+COPY --from=builder /app/api/api-logrotate /etc/logrotate.d/
 
 # Logs directory setup
 RUN mkdir -p /app/logs

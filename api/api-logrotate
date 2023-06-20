@@ -1,8 +1,7 @@
 /app/logs/*.log {
-    hourly
     rotate 7
     compress
-    size=1M
+    size 100k
     missingok
     delaycompress
     copytruncate
