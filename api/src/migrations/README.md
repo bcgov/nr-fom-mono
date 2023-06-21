@@ -8,8 +8,7 @@ Migration scripts are written in javascript (.js) and not typescript deliberatel
 On build, migration scripts are treated similar to assets and copied into the dist directory.
 On execution, the migration config (in ormconfig-migration-{main|test}.ts loads migration directories for both the source working tree and for the dist setup.
 
-### To create a new migration
-
-- npm run typeorm migration:create -- -o -f ./src/migrations/ormconfig-migration-{test|main}.ts -n {name}
-(Need to ensure a .js javascript migration is created, not a .ts typescript, to run migrations at startup).
+### To create a new migration empty template
+- npm run typeorm migration:create -- -o ./src/migrations/{main|test}/{name-of-new-migration-file}
+  ( -o option: Need to ensure a .js javascript migration is created, not a .ts typescript, to run migrations at startup).
 
