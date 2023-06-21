@@ -5,13 +5,14 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from "@utility/security/user";
+import * as dayjs from 'dayjs';
 import { PinoLogger } from 'nestjs-pino';
 import * as R from 'remeda';
 import { Repository } from 'typeorm';
 import { ProjectService } from './project.service';
 import {
-	PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
-	PublicNoticeResponse, PublicNoticeUpdateRequest
+    PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
+    PublicNoticeResponse, PublicNoticeUpdateRequest
 } from './public-notice.dto';
 import { PublicNotice } from './public-notice.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
@@ -187,11 +188,11 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
 	async convertDto(dto: PublicNoticeCreateRequest) {
 
 		// find project info
-		const commentingOpenDate: string = (await this.getDataSource().getRepository(Project)
+		const commentingOpenDate: string = dayjs((await this.getDataSource().getRepository(Project)
 			.createQueryBuilder()
 			.select("commenting_open_date")
 			.where("project_id = :projectId", {projectId: dto.projectId})
-			.getRawOne())['commenting_open_date']
+			.getRawOne())['commenting_open_date']).format(DateTimeUtil.DATE_FORMAT);
 		const postDate = dto.postDate;
 
 		// postDate validation: on or before commenting start date.
