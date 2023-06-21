@@ -65,6 +65,9 @@ export class PublicNoticeForm {
   @prop()
   opEndDate: Date;
 
+  @prop()
+  postDate: string = null; 
+
   constructor(publicNoticeResponse?: PublicNoticeResponse) {
     const pn = publicNoticeResponse;
     if (pn) {
@@ -79,7 +82,8 @@ export class PublicNoticeForm {
           'receiveCommentsAddress',
           'receiveCommentsBusinessHours',
           'mailingAddress',
-          'email'
+          'email',
+          'postDate'
         ]
       ));
     }
