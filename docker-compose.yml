@@ -24,6 +24,7 @@ services:
       timeout: 5s
     image: node:18
     ports:
+      # Ensure no port conflict on host as docker-compose won't fail if there is a conflict.
       - 4200:4200
     volumes:
       - .:/app:z
@@ -44,6 +45,7 @@ services:
       - DB_HOST=db
       - DB_NAME=fom
       - DB_PASSWORD=test
+      - DB_PORT=5432
       - DB_SSL=false
       - DB_TESTDATA=true
       - DB_TYPE=postgres
@@ -84,7 +86,6 @@ services:
       - POSTGRES_PASSWORD=test
       - POSTGRES_DB=fom
       - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_PORT=5342
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -94,6 +95,7 @@ services:
     volumes:
       - postgres-data:/var/lib/postgres/data
     ports:
+      # Ensure no port conflict on host as docker-compose won't fail if there is a conflict.
       - 5432:5432
 
   public:
@@ -115,6 +117,7 @@ services:
       timeout: 5s
     image: node:18
     ports:
+      # Ensure no port conflict on host as docker-compose won't fail if there is a conflict.
       - 4300:4300
     volumes:
       - .:/app:z
