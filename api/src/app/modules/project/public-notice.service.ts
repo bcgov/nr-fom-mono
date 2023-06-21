@@ -1,5 +1,7 @@
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import { Project } from '@api-modules/project/project.entity';
 import { DataService } from '@core';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { Cron } from "@nestjs/schedule";
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from "@utility/security/user";
@@ -8,8 +10,8 @@ import * as R from 'remeda';
 import { Repository } from 'typeorm';
 import { ProjectService } from './project.service';
 import {
-  PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
-  PublicNoticeResponse, PublicNoticeUpdateRequest
+	PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
+	PublicNoticeResponse, PublicNoticeUpdateRequest
 } from './public-notice.dto';
 import { PublicNotice } from './public-notice.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
@@ -177,8 +179,33 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     response.revisionCount = entity.revisionCount;
     response.operationStartYear = entity.operationStartYear;
     response.operationEndYear = entity.operationEndYear;
+		response.postDate = entity.postDate;
     return response;
   }
 
+	// Override: for some dto property business values transformation.
+	async convertDto(dto: PublicNoticeCreateRequest) {
+
+		// find project info
+		const commentingOpenDate: string = (await this.getDataSource().getRepository(Project)
+			.createQueryBuilder()
+			.select("commenting_open_date")
+			.where("project_id = :projectId", {projectId: dto.projectId})
+			.getRawOne())['commenting_open_date']
+		const postDate = dto.postDate;
+
+		// postDate validation: on or before commenting start date.
+		if (postDate && (
+			DateTimeUtil.getBcDate(postDate).startOf('day').isAfter(
+			DateTimeUtil.getBcDate(commentingOpenDate).startOf('day'))
+		)) {
+			throw new BadRequestException(`Online Public Notice post date ${postDate} 
+				should be on or before commenting start date ${commentingOpenDate}.`);
+		}
+
+		// deafult to project.commentingOpenDate if post_date is empty.
+		dto.postDate = postDate? postDate : commentingOpenDate;
+		return super.convertDto(dto);
+	}
 }
 

@@ -94,13 +94,13 @@ export abstract class DataService<
 
     requestDto.createUser = user ? user.userName : 'Anonymous';
 
-    const entityToCreate = this.entity.factory(this.convertDto(requestDto));
+    const entityToCreate = this.entity.factory(await this.convertDto(requestDto));
     const savedEntity = await this.saveEntity(entityToCreate);
 
     return this.convertEntity(savedEntity);
   }
 
-  protected convertDto(dto: any, existingEntity?: Partial<E>): QueryDeepPartialEntity<E> {
+  protected async convertDto(dto: any, existingEntity?: Partial<E>): Promise<QueryDeepPartialEntity<E>> {
     const entity = existingEntity ? existingEntity : {} as E;
     return mapToEntity(dto, entity);
   }
@@ -117,7 +117,7 @@ export abstract class DataService<
   
   // A hook on updating entity for other service to override if it needs extra operation, like db column encryption.
   protected async updateEntity(id: string | number, dto: Partial<any>, entity: E): Promise<UpdateResult> {
-    return this.repository.update(id, this.convertDto(dto, entity));
+    return this.repository.update(id, await this.convertDto(dto, entity));
   }
 
   // Deliberately exclude loading relations for updates. TypeORM gets confused if an entity has both the id field and the relation field populated on update.
@@ -158,6 +158,7 @@ export abstract class DataService<
    * @memberof DataService
    */
   async update(id: number | string, requestDto: any, user?: User): Promise<O> {
+    console.log("****** update: ", requestDto)
     requestDto.updateUser = user ? user.userName : 'Anonymous';
     // Saving update timestamp in UTC format is fine.
     requestDto.updateTimestamp = dayjs().format();
