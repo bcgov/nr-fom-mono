@@ -41,7 +41,8 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   addressLimit: number = 500;
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
-  maxPostDate: Date
+  maxPostDate: Date;
+  minPostDate: Date = moment().add(1, 'days').toDate();
 
   // bsDatepicker config object
   readonly opYearBsConfig = {
@@ -107,8 +108,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
           delete this.publicNoticeResponse?.operationEndYear;
         }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
-        publicNoticeForm.postDate = publicNoticeForm.postDate? publicNoticeForm.postDate : this.project.commentingOpenDate;
-        this.maxPostDate =  moment(this.project.commentingOpenDate).toDate();
+        this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
         if (!this.editMode) {
@@ -209,7 +209,10 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     body.operationStartYear = parseInt(moment(body['opStartDate']).format('YYYY'));
     body.operationEndYear = parseInt(moment(body['opEndDate']).format('YYYY'));
     body.projectId = this.project.id;
-    body.postDate = this.datePipe.transform(body.postDate,'yyyy-MM-dd');
+
+    if (body.pnPostDate) {
+      body.postDate = this.datePipe.transform(body.pnPostDate,'yyyy-MM-dd');
+    }
     if (this.isAddNewNotice()) {
       return this.publicNoticeService.publicNoticeControllerCreate(body);
     }

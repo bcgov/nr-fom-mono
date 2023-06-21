@@ -204,8 +204,6 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
 				should be on or before commenting start date ${commentingOpenDate}.`);
 		}
 
-		// deafult to project.commentingOpenDate if post_date is empty.
-		dto.postDate = postDate? postDate : commentingOpenDate;
 		return super.convertDto(dto);
 	}
 }

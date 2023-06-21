@@ -66,14 +66,20 @@
                 style="width: 10rem;"
                 placeholder="YYYY-MM-DD"
                 bsDatepicker
+                [minDate]="minPostDate"
                 [maxDate]="maxPostDate"
                 (keydown)="$event.preventDefault()"
                 id="post-date"
-                name="postDate"
-                formControlName="postDate"
+                name="pn-post-date"
+                formControlName="pnPostDate"
                 [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
                               containerClass: 'theme-dark-blue', showWeekNumbers: false }"
               />
+            <div class="invalid-feedback" 
+              *ngIf="(form.submitted || fieldTouchedOrDirty('pnPostDate')) 
+                && getErrorMessage('pnPostDate', 'minDate')">
+                {{getErrorMessage('pnPostDate', 'minDate')}}
+            </div>
         </div>
         
       </div>

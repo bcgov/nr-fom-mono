@@ -65,8 +65,11 @@ export class PublicNoticeForm {
   @prop()
   opEndDate: Date;
 
+  @minDate({
+    value: moment().add(1, 'days').format('YYYY-MM-DD'), 
+    message: 'Must post notice one day in the future'})
   @prop()
-  postDate: string = null; 
+  pnPostDate: Date;
 
   constructor(publicNoticeResponse?: PublicNoticeResponse) {
     const pn = publicNoticeResponse;
@@ -82,8 +85,7 @@ export class PublicNoticeForm {
           'receiveCommentsAddress',
           'receiveCommentsBusinessHours',
           'mailingAddress',
-          'email',
-          'postDate'
+          'email'
         ]
       ));
     }
@@ -108,6 +110,10 @@ export class PublicNoticeForm {
       this.opEndDate = moment().set('year', pn.operationEndYear)
                                   .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
                                   .toDate();
+    }
+
+    if (pn?.postDate) {
+        this.pnPostDate = moment(pn.postDate).toDate();
     }
   }
 }
