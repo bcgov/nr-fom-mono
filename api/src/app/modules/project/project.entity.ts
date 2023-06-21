@@ -66,5 +66,11 @@ export class Project extends ApiBaseEntity<Project> {
   
   @OneToMany(type => PublicNotice, (publicNotice) => publicNotice.project, {cascade: true}) 
   publicNotices: PublicNotice[];
+
+  @Column({ name: 'operation_start_year'})
+  operationStartYear: number;
+
+  @Column({ name: 'operation_end_year'})
+  operationEndYear: number;
   
 }
