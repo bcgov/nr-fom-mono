@@ -22,6 +22,10 @@ export interface PublicNoticeUpdateRequest {
     email: string;
     operationStartYear: number;
     operationEndYear: number;
+    /**
+     * Date planed for online public notice posted.
+     */
+    postDate: string;
     revisionCount: number;
 }
 
