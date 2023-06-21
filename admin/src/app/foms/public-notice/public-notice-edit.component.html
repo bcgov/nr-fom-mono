@@ -56,6 +56,28 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="form-group col-md-12">
+            <label for="post-date">Online Notice Post Date</label>
+            <input
+                readonly
+                type="text"
+                class="form-control readonly-normal"
+                style="width: 10rem;"
+                placeholder="YYYY-MM-DD"
+                bsDatepicker
+                [maxDate]="maxPostDate"
+                (keydown)="$event.preventDefault()"
+                id="post-date"
+                name="postDate"
+                formControlName="postDate"
+                [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+                              containerClass: 'theme-dark-blue', showWeekNumbers: false }"
+              />
+        </div>
+        
+      </div>
+
       <div class="row" >
         <div class="form-group col-md-12">
           <label for="review-fom-address" [ngClass]="{'required': editMode}">Physical address to review FOM</label>
@@ -160,7 +182,7 @@
             formControlName="opStartDate"
             bsDatepicker
             (keydown)="$event.preventDefault()"
-            [bsConfig]="bsConfig"
+            [bsConfig]="opYearBsConfig"
           />
           <div class="invalid-feedback" 
             *ngIf="(form.submitted || fieldTouchedOrDirty('opStartDate')) 
@@ -184,7 +206,7 @@
             formControlName="opEndDate"
             bsDatepicker
             (keydown)="$event.preventDefault()"
-            [bsConfig]="bsConfig"
+            [bsConfig]="opYearBsConfig"
           />
           <div class="invalid-feedback" 
             *ngIf="(form.submitted || fieldTouchedOrDirty('opEndDate')) 

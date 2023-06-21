@@ -1,7 +1,7 @@
 import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
-import { NgClass, NgIf } from "@angular/common";
+import { DatePipe, NgClass, NgIf } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,7 +28,8 @@ import moment = require('moment');
     ],
     selector: 'app-public-notice-edit',
     templateUrl: './public-notice-edit.component.html',
-    styleUrls: ['./public-notice-edit.component.scss']
+    styleUrls: ['./public-notice-edit.component.scss'],
+    providers: [DatePipe]
 })
 export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   user: User;
@@ -40,9 +41,10 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   addressLimit: number = 500;
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
-  
+  maxPostDate: Date
+
   // bsDatepicker config object
-  readonly bsConfig = {
+  readonly opYearBsConfig = {
       dateInputFormat: 'YYYY', 
       minMode: 'year', 
       minDate: moment().toDate(), 
@@ -59,7 +61,8 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     public stateSvc: StateService,
     private cognitoService: CognitoService,
     private modalSvc: ModalService,
-    private publicNoticeService: PublicNoticeService
+    private publicNoticeService: PublicNoticeService,
+    private datePipe: DatePipe
   ) {
     this.user = this.cognitoService.getUser();
   }
@@ -104,6 +107,8 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
           delete this.publicNoticeResponse?.operationEndYear;
         }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
+        publicNoticeForm.postDate = publicNoticeForm.postDate? publicNoticeForm.postDate : this.project.commentingOpenDate;
+        this.maxPostDate =  moment(this.project.commentingOpenDate).toDate();
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
         if (!this.editMode) {
@@ -204,7 +209,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     body.operationStartYear = parseInt(moment(body['opStartDate']).format('YYYY'));
     body.operationEndYear = parseInt(moment(body['opEndDate']).format('YYYY'));
     body.projectId = this.project.id;
-
+    body.postDate = this.datePipe.transform(body.postDate,'yyyy-MM-dd');
     if (this.isAddNewNotice()) {
       return this.publicNoticeService.publicNoticeControllerCreate(body);
     }
