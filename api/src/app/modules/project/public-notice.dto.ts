@@ -2,6 +2,7 @@ import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, MaxLength, Min, registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 import { ProjectResponse } from './project.dto';
+import { IsISODateOnlyString } from '@api-modules/interaction/interaction.dto';
 
 export class PublicNoticeCreateRequest {
 
@@ -50,6 +51,11 @@ export class PublicNoticeCreateRequest {
     message: "Must be equal to or later than the Start of Operations",
   })
   operationEndYear: number;
+
+  @ApiProperty({ description: 'Date planed for online public notice posted.'})
+  @IsOptional()
+  @IsISODateOnlyString({message: `"$property" must be ISO-formatted date. (Required format: ${DateTimeUtil.DATE_FORMAT})`})
+  postDate?: string; 
 }
 
 export class PublicNoticeUpdateRequest extends PublicNoticeCreateRequest {
