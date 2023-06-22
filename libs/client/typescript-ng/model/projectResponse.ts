@@ -41,5 +41,7 @@ export interface ProjectResponse {
     createTimestamp: string;
     commentClassificationMandatory: boolean;
     publicNoticeId: number;
+    operationStartYear: number;
+    operationEndYear: number;
 }
 

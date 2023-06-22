@@ -83,6 +83,9 @@
           <div>
             <div class="status-msg">
               Commenting opened for this FOM on {{project.commentingOpenDate | date:'longDate'}}.
+              <div *ngIf="project.operationStartYear && project.operationEndYear">
+                Period of operations for this FOM is from {{project.operationStartYear}} to {{project.operationEndYear}}.
+              </div>
               <div *ngIf="project.workflowState.code === workflowStatus['COMMENT_OPEN'].code">
                 This FOM is currently accepting comments until {{project.commentingClosedDate | date:'longDate'}}.
               </div>

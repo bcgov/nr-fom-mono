@@ -227,6 +227,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     if (entity.publicNotices && entity.publicNotices.length > 0) {
       response.publicNoticeId = entity.publicNotices[0].id; // Currently one public notice for a project.
     }
+    response.operationStartYear = entity.operationStartYear;
+    response.operationEndYear = entity.operationEndYear;
     return response;
   }
 
