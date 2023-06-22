@@ -107,6 +107,9 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
           delete this.publicNoticeResponse?.operationStartYear;
           delete this.publicNoticeResponse?.operationEndYear;
         }
+        if (this.isNewForm) {
+          this.publicNoticeResponse.postDate = null;
+        }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;

@@ -9,14 +9,15 @@ import * as dayjs from 'dayjs';
 import { PinoLogger } from 'nestjs-pino';
 import * as R from 'remeda';
 import { Repository } from 'typeorm';
-import { ProjectService } from './project.service';
+import { ProjectService, isPNPostdateOnOrBeforeCommentingOpenDate } from '@api-modules/project/project.service';
 import {
-    PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
-    PublicNoticeResponse, PublicNoticeUpdateRequest
-} from './public-notice.dto';
+	PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
+	PublicNoticeResponse, PublicNoticeUpdateRequest
+} from '@api-modules/project/public-notice.dto';
 import { PublicNotice } from './public-notice.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
+import _ = require('lodash');
 
 @Injectable()
 export class PublicNoticeService extends DataService<PublicNotice, Repository<PublicNotice>, PublicNoticeResponse> {
@@ -196,10 +197,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
 		const postDate = dto.postDate;
 
 		// postDate validation: on or before commenting start date.
-		if (postDate && (
-			DateTimeUtil.getBcDate(postDate).startOf('day').isAfter(
-			DateTimeUtil.getBcDate(commentingOpenDate).startOf('day'))
-		)) {
+		if (postDate && !isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
 			throw new BadRequestException(`Online Public Notice post date ${postDate} 
 				should be on or before commenting start date ${commentingOpenDate}.`);
 		}
@@ -207,4 +205,3 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
 		return super.convertDto(dto);
 	}
 }
-
