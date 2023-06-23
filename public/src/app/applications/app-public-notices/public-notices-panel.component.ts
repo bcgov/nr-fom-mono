@@ -86,7 +86,7 @@ export class PublicNoticesPanelComponent implements OnInit {
   }
 
   isFomAvailable(commentingOpenDate) {
-    return moment(commentingOpenDate).startOf('day') < moment().startOf('day');
+    return moment(commentingOpenDate).startOf('day') <= moment().startOf('day');
   }
 
   private compareFn() {
