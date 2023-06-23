@@ -197,7 +197,9 @@ describe('PublicNoticeService', () => {
         const projectResponseData = getSimpleProjectResponseData();
         const createQueryBuilder: any = {
           leftJoinAndSelect: () => createQueryBuilder,
+          where: () => createQueryBuilder,
           andWhere: () => createQueryBuilder,
+          orWhere: () => createQueryBuilder,
           addOrderBy: () => createQueryBuilder,
           getMany: () => [publicNoticeEntityData],
         };
