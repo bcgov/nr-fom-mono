@@ -158,7 +158,6 @@ export abstract class DataService<
    * @memberof DataService
    */
   async update(id: number | string, requestDto: any, user?: User): Promise<O> {
-    console.log("****** update: ", requestDto)
     requestDto.updateUser = user ? user.userName : 'Anonymous';
     // Saving update timestamp in UTC format is fine.
     requestDto.updateTimestamp = dayjs().format();
