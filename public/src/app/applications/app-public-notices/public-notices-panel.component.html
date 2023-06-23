@@ -71,9 +71,14 @@
               </mat-expansion-panel-header>
               <mat-card appearance="outlined">
                 <ng-container [ngTemplateOutlet]="pNotice_fields_template"
-                              [ngTemplateOutletContext]="{ pNotice: pn }">
+                              [ngTemplateOutletContext]="{ 
+                                pNotice: pn, 
+                                isFomAvailable: isFomAvailable(pn.project.commentingOpenDate
+                              )}">
                 </ng-container>
-                <button class="app-link btn btn-primary" (click)="showDetails(pn.projectId)">View Details</button>
+                <button class="app-link btn btn-primary"
+                    *ngIf="isFomAvailable(pn.project.commentingOpenDate)"
+                    (click)="showDetails(pn.projectId)">View Details</button>
               </mat-card>
             </mat-expansion-panel>
             <pre></pre>
@@ -88,7 +93,7 @@
     </ng-template>
 
     <!-- Public Notice item display template -->
-    <ng-template #pNotice_fields_template let-pn="pNotice">
+    <ng-template #pNotice_fields_template let-pn="pNotice" let-isFomAvailable="isFomAvailable">
       <div class="row">
         <div class="col-5 col-sm-1 bold">FOM #: </div>
         <div class="col-7 col-sm-4 no-padding" style="text-align: left;">{{pn.projectId}}</div>
@@ -136,19 +141,19 @@
 
       <div class="row">
         <div class="col-sm-4 bold">
-          {{pn.isReceiveCommentsSameAsReview == false? 'Physical address to review FOM': 'Physical address to review FOM and submit FOM comments'}}:
+          {{pn.isReceiveCommentsSameAsReview === false? 'Physical address to review FOM': 'Physical address to review FOM and submit FOM comments'}}:
         </div>
         <div class="col-sm-8">{{pn.reviewAddress}}</div>
       </div>
 
       <div class="row">
         <div class="col-sm-4 bold">
-          {{pn.isReceiveCommentsSameAsReview == false? 'Business hours to physically review FOM': 'Business hours to physically review FOM and submit FOM comments'}}:
+          {{pn.isReceiveCommentsSameAsReview === false? 'Business hours to physically review FOM': 'Business hours to physically review FOM and submit FOM comments'}}:
         </div>
         <div class="col-sm-8">{{pn.reviewBusinessHours}}</div>
       </div>
 
-      <div *ngIf="pn.isReceiveCommentsSameAsReview != true">
+      <div *ngIf="pn.isReceiveCommentsSameAsReview !== true">
         <div class="row">
           <div class="col-sm-4 bold">Physical address to submit comments: </div>
           <div class="col-sm-8">{{pn.receiveCommentsAddress}}</div>
@@ -174,7 +179,11 @@
         Road construction and harvesting of cutblocks depicted on this Forest Operations Map is scheduled to be conducted between {{pn.operationStartYear}} and {{pn.operationEndYear}}.
       </div>
 
-      <div class="validity-txt">
+      <div class="validity-txt" *ngIf="!isFomAvailable">
+        FOM will be available on [{{pn.project.commentingOpenDate | date: 'longDate'}}].
+      </div>
+
+      <div class="validity-txt" *ngIf="isFomAvailable">
         This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road
         permit application, or the issuance of a Timber Sales License until the date three years
         after commencement of the public review and commenting period.
