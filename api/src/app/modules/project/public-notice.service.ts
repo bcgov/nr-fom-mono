@@ -1,5 +1,10 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { Project } from '@api-modules/project/project.entity';
+import { ProjectService, isPNPostdateOnOrBeforeCommentingOpenDate } from '@api-modules/project/project.service';
+import {
+    PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
+    PublicNoticeResponse, PublicNoticeUpdateRequest
+} from '@api-modules/project/public-notice.dto';
 import { DataService } from '@core';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { Cron } from "@nestjs/schedule";
@@ -8,14 +13,9 @@ import { User } from "@utility/security/user";
 import * as dayjs from 'dayjs';
 import { PinoLogger } from 'nestjs-pino';
 import * as R from 'remeda';
-import { Repository } from 'typeorm';
-import { ProjectService, isPNPostdateOnOrBeforeCommentingOpenDate } from '@api-modules/project/project.service';
-import {
-	PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
-	PublicNoticeResponse, PublicNoticeUpdateRequest
-} from '@api-modules/project/public-notice.dto';
-import { PublicNotice } from './public-notice.entity';
-import { WorkflowStateEnum } from './workflow-state-code.entity';
+import { Brackets, Repository } from 'typeorm';
+import { PublicNotice } from '@api-modules/project/public-notice.entity';
+import { WorkflowStateEnum } from '@api-modules/project/workflow-state-code.entity';
 import NodeCache = require('node-cache');
 import _ = require('lodash');
 
@@ -108,12 +108,18 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     if (cacheResult != undefined) {
       return cacheResult as PublicNoticePublicFrontEndResponse[];
     }
-
     const query = this.repository.createQueryBuilder("pn")
       .leftJoinAndSelect("pn.project", "p")
       .leftJoinAndSelect("p.forestClient", "forestClient")
       .leftJoinAndSelect("p.district", "district")
-      .andWhere("p.workflow_state_code IN (:...workflowStateCodes)", { workflowStateCodes: [WorkflowStateEnum.COMMENT_OPEN]})
+			// public notices posted earlier than commenting open (in published state with post_date on before today).
+			.where(new Brackets(qb => {
+				qb.where("p.workflow_state_code =:workflowStateCode", {workflowStateCode: WorkflowStateEnum.PUBLISHED})
+				.andWhere("pn.post_date <=:today", {today: DateTimeUtil.nowBC().toDate().toISOString()})
+			}))
+			// public notices for commenting open.
+			.orWhere("p.workflow_state_code IN (:...workflowStateCodes)",
+				{ workflowStateCodes: [WorkflowStateEnum.COMMENT_OPEN]})
       .addOrderBy('p.project_id', 'DESC'); // Newest first
 
     const entityResult: PublicNotice[] = await query.getMany();
@@ -131,7 +137,8 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
           'mailingAddress',
           'email',
           'operationStartYear',
-          'operationEndYear'
+          'operationEndYear',
+					'postDate'
         ]
       ));
       response.project = this.projectService.convertEntity(entity.project);
@@ -142,7 +149,6 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     // to reset the cache shortly after the batch runs.
     const ttl = 24*60*60; // 24 hours
     this.cache.set(this.cacheKey, results, ttl);
-    
     return results;
   }
 
