@@ -191,7 +191,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     return response;
   }
 
-	// Override: for some dto property business values transformation.
+	// Override: for some dto property business values check.
 	async convertDto(dto: PublicNoticeCreateRequest) {
 
 		// find project info
@@ -201,7 +201,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
 			.where("project_id = :projectId", {projectId: dto.projectId})
 			.getRawOne())['commenting_open_date']).format(DateTimeUtil.DATE_FORMAT);
 		const postDate = dto.postDate;
-
+		
 		// postDate validation: on or before commenting start date.
 		if (postDate && !isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
 			throw new BadRequestException(`Online Public Notice post date ${postDate} 
