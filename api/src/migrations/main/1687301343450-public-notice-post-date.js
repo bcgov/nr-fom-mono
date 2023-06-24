@@ -12,10 +12,20 @@ module.exports = class PublicNoticePostDate1687301343450 {
         -- comment on column - post_date
             COMMENT ON COLUMN app_fom.public_notice.post_date IS
             'Date planed for online public notice posted (visible to public) before the FOM reaches the commenting open period';
+            
+        `);
 
+        console.log('Starting data migration to set initial public_notice (post_date) for past records.');
+        await queryRunner.query(`
         -- set post_date value to app_fom.project.commenting_open_date for the past data as default value.
+            with project_for_update as (
+                select *
+                from app_fom.project
+                where workflow_state_code != 'INITIAL' 
+            )
             update app_fom.public_notice pn set post_date = (
-                select p.commenting_open_date from app_fom.project p where p.project_id = pn.project_id );
+            select p.commenting_open_date from project_for_update p 
+                where p.project_id = pn.project_id );
         `);
     }
 
