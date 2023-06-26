@@ -515,9 +515,9 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         if (!_.isEmpty(postDate)) {
 					const commentingOpenDate = entity.commentingOpenDate;
 					if (postDate && !DateTimeUtil.isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
-							throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}. 
-							Online Public Notice post date ${postDate} should be on or before commenting start date 
-							${commentingOpenDate}.`);
+						throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}. 
+						Online Public Notice post date ${postDate} should be on or before commenting start date 
+						${commentingOpenDate}.`);
 					}
 					// Must be at least one day after publish is pushed
 					const dayDiff = DateTimeUtil.diffNow(postDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
