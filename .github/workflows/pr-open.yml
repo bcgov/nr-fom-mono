@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: PR Greeting
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
         env:
           DOMAIN: apps.silver.devops.gov.bc.ca
         uses: bcgov-nr/action-pr-description-add@v0.0.2
