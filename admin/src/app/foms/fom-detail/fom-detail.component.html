@@ -186,6 +186,23 @@
           </div>
         </div>
 
+        <div *ngIf="project.operationStartYear && project.operationEndYear" class="aside-card">
+          <h3 class="title">Operations Period</h3>
+          <div class="body">
+            <ul class="nv-list">
+              <li>
+                <span class="name">Start Year:</span>
+                <span class="value" [ngClass]="{'invalid-type-msg': !project.operationStartYear }">
+                  {{project.operationStartYear }}</span>
+              </li>
+              <li>
+                <span class="name">End Year:</span>
+                <span class="value">{{project.operationEndYear }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <div class="aside-card">
           <h3 class="title">Comment Period Details</h3>
           <div class="body">
