@@ -92,20 +92,25 @@ jobs:
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+            triggers: ('db/' 'libs/' 'api/')
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
             parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+            triggers: ('db/' 'libs/' 'api/' 'admin/')
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
+            triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: init
             file: libs/openshift.init.yml
             overwrite: false
+            triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
             overwrite: true
             parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+            triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.1.1
         with:
@@ -118,3 +123,4 @@ jobs:
           parameters:
             -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
+          triggers: ${{ matrix.triggers }} 
