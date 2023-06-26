@@ -8,6 +8,7 @@ import { ProjectCreateRequest, ProjectUpdateRequest } from '@api-modules/project
 import { Project } from '@api-modules/project/project.entity';
 import { WorkflowStateEnum } from '@api-modules/project/workflow-state-code.entity';
 import { PublicNotice } from "@api-modules/project/public-notice.entity";
+import { BadRequestException } from "@nestjs/common";
 
 describe('ProjectService', () => {
   let service: ProjectService;
@@ -175,18 +176,30 @@ describe('ProjectService', () => {
     let entity: Partial<Project> = getSampleProjectEntityData();
     let districtSpy: jest.SpyInstance<Promise<boolean>>;
     let postdateOnOrBeforeCommentingOpenDateSpy: jest.SpyInstance<boolean>;
-    beforeEach(async () => {
-      districtSpy = jest.spyOn(service, 'isDistrictExist').mockResolvedValue(true); // not important, return true for testing.
-      postdateOnOrBeforeCommentingOpenDateSpy = jest.spyOn(DateTimeUtil, 'isPNPostdateOnOrBeforeCommentingOpenDate');
-    });
+    const stateTransition = WorkflowStateEnum.PUBLISHED;
+    let openingDateInFutureDays = 10;
+    const closeDateAfterOpeningDateDays = 30;
 
     describe('"PUBLISHED" transition', () => {
-        it('with no public-notice pass', async () => {
-            entity.submissions = [new Submission()] // setup only, not important.
+        beforeEach(async () => {
+            districtSpy = jest.spyOn(service, 'isDistrictExist').mockResolvedValue(true); // not important, return true for testing.
+            postdateOnOrBeforeCommentingOpenDateSpy = jest.spyOn(DateTimeUtil, 'isPNPostdateOnOrBeforeCommentingOpenDate');
             entity.workflowStateCode = "INITIAL";
+            entity.submissions = [new Submission()] // setup only, not important.
+            // FOM entity can only has 1 publicNotice
+            const publicNoticeWithNoPostDate = new PublicNotice()
+            entity.publicNotices = [publicNoticeWithNoPostDate];
+        });
+      
+        afterEach(() => {
+            jest.resetAllMocks(); // very important if using mock/spy
+        });
+
+        it('with no public-notice pass', async () => {
             entity.commentingOpenDate = dayjs().add(1, 'day').format(DateTimeUtil.DATE_FORMAT);
-            entity.commentingClosedDate = dayjs(entity.commentingOpenDate).add(30, 'day').format(DateTimeUtil.DATE_FORMAT);
-            const stateTransition = WorkflowStateEnum.PUBLISHED;
+            entity.commentingClosedDate = dayjs(entity.commentingOpenDate)
+                .add(closeDateAfterOpeningDateDays, 'day')
+                .format(DateTimeUtil.DATE_FORMAT);
             entity.publicNotices = null; // no public-notice.
       
             // note, validator is a void.
@@ -199,14 +212,11 @@ describe('ProjectService', () => {
         });
       
         it('with public-notice and no post_date pass', async () => {
-            entity.submissions = [new Submission()] // setup only, not important.
-            entity.workflowStateCode = "INITIAL";
             entity.commentingOpenDate = dayjs().add(1, 'day').format(DateTimeUtil.DATE_FORMAT);
-            entity.commentingClosedDate = dayjs(entity.commentingOpenDate).add(30, 'day').format(DateTimeUtil.DATE_FORMAT);
-            const stateTransition = WorkflowStateEnum.PUBLISHED;
-            const publicNoticeWithNoPostDate = new PublicNotice()
-            publicNoticeWithNoPostDate.postDate = null;
-            entity.publicNotices = [publicNoticeWithNoPostDate]; // User leaves post_date empty.
+            entity.commentingClosedDate = dayjs(entity.commentingOpenDate)
+                .add(closeDateAfterOpeningDateDays, 'day')
+                .format(DateTimeUtil.DATE_FORMAT);
+            entity.publicNotices[0].postDate = null; // User leaves post_date empty.
     
             // note, validator is a void.
             await service.validateWorkflowTransitionRules(entity as Project, stateTransition, user)
@@ -217,15 +227,12 @@ describe('ProjectService', () => {
         });
       
         it('with public-notice post_date same as commenting_open_date pass', async () => {
-            entity.submissions = [new Submission()] // setup only, not important.
-            entity.workflowStateCode = "INITIAL";
-            const stateTransition = WorkflowStateEnum.PUBLISHED;
             entity.commentingOpenDate = dayjs().add(1, 'day').format(DateTimeUtil.DATE_FORMAT);
-            entity.commentingClosedDate = dayjs(entity.commentingOpenDate).add(30, 'day').format(DateTimeUtil.DATE_FORMAT);
-            const publicNoticeWithPostDate = new PublicNotice()
-            // set and test on: post_date = commenting_open_date
-            publicNoticeWithPostDate.postDate = dayjs(entity.commentingOpenDate).format(DateTimeUtil.DATE_FORMAT);
-            entity.publicNotices = [publicNoticeWithPostDate]; 
+            entity.commentingClosedDate = dayjs(entity.commentingOpenDate)
+                .add(closeDateAfterOpeningDateDays, 'day')
+                .format(DateTimeUtil.DATE_FORMAT);
+            // post_date same as commenting_open_date
+            entity.publicNotices[0].postDate = dayjs(entity.commentingOpenDate).format(DateTimeUtil.DATE_FORMAT);
     
             // note, validator is a void.
             await service.validateWorkflowTransitionRules(entity as Project, stateTransition, user)
@@ -239,37 +246,113 @@ describe('ProjectService', () => {
             expect(districtSpy).toBeCalledWith(entity.districtId);
             expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalled();
             expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledWith(
-                publicNoticeWithPostDate.postDate, entity.commentingOpenDate);
+                entity.publicNotices[0].postDate, entity.commentingOpenDate);
         });
       
         it('with public-notice post_date before commenting_open_date and one day after PUBLISH (today) pass', async () => {
-            entity.submissions = [new Submission()] // setup only, not important.
-            entity.workflowStateCode = "INITIAL";
-            const stateTransition = WorkflowStateEnum.PUBLISHED;
-            const openingDateInFutureDays = 10;
             entity.commentingOpenDate = dayjs().add(openingDateInFutureDays, 'day').format(DateTimeUtil.DATE_FORMAT);
-            entity.commentingClosedDate = dayjs(entity.commentingOpenDate).add(30, 'day').format(DateTimeUtil.DATE_FORMAT);
-            const publicNoticeWithPostDate = new PublicNotice()
+            entity.commentingClosedDate = dayjs(entity.commentingOpenDate)
+                .add(closeDateAfterOpeningDateDays, 'day')
+                .format(DateTimeUtil.DATE_FORMAT);
             // set and test on: post_date = commenting_open_date
-            publicNoticeWithPostDate.postDate = dayjs(entity.commentingOpenDate).subtract(openingDateInFutureDays - 5, 'days').format(DateTimeUtil.DATE_FORMAT);
-            console.log("commentingOpenDate: ", entity.commentingOpenDate);
-            console.log("postdate: ", publicNoticeWithPostDate.postDate);
-            entity.publicNotices = [publicNoticeWithPostDate]; 
+            entity.publicNotices[0].postDate = dayjs(entity.commentingOpenDate)
+                .subtract(openingDateInFutureDays - 5, 'days')
+                .format(DateTimeUtil.DATE_FORMAT); 
     
             await service.validateWorkflowTransitionRules(entity as Project, stateTransition, user)
     
             expect(DateTimeUtil.diff(
                 dayjs().format(DateTimeUtil.DATE_FORMAT),
-                publicNoticeWithPostDate.postDate,
+                entity.publicNotices[0].postDate,
                 DateTimeUtil.TIMEZONE_VANCOUVER, 'day')
             ).toBeGreaterThan(1);
             expect(districtSpy).toBeCalled();
             expect(districtSpy).toBeCalledWith(entity.districtId);
             expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalled();
             expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledWith(
-                publicNoticeWithPostDate.postDate, entity.commentingOpenDate);
+                entity.publicNotices[0].postDate, entity.commentingOpenDate);
+        });
+
+        it('with public-notice post_date greater than commenting_open_date fail', async () => {
+            entity.commentingOpenDate = dayjs().add(openingDateInFutureDays, 'day').format(DateTimeUtil.DATE_FORMAT);
+            entity.commentingClosedDate = dayjs(entity.commentingOpenDate)
+                .add(closeDateAfterOpeningDateDays, 'day')
+                .format(DateTimeUtil.DATE_FORMAT);
+            // set and test on: post_date = PUBLISH pushed date (today)
+            entity.publicNotices[0].postDate = dayjs(entity.commentingOpenDate)
+                .add(1, 'days')
+                .format(DateTimeUtil.DATE_FORMAT);
+    
+            // Note, to expect an error from async fuction, use ".rejects" before ".toThrow" (strange in jest)
+            await expect(() => service.validateWorkflowTransitionRules(entity as Project, stateTransition, user))
+                .rejects
+                .toThrow(BadRequestException);
+
+            expect(DateTimeUtil.diff(
+                entity.commentingOpenDate,
+                entity.publicNotices[0].postDate,
+                DateTimeUtil.TIMEZONE_VANCOUVER, 'day')
+            ).toBeGreaterThan(0);
+            expect(districtSpy).toBeCalled();
+            expect(districtSpy).toBeCalledWith(entity.districtId);
+            expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledTimes(1);
+            expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledWith(
+                entity.publicNotices[0].postDate, entity.commentingOpenDate);
+        });
+
+        it('with public-notice post_date before PUBLISH date (today) fail', async () => {
+            entity.commentingOpenDate = dayjs().add(openingDateInFutureDays, 'day').format(DateTimeUtil.DATE_FORMAT);
+            entity.commentingClosedDate = dayjs(entity.commentingOpenDate)
+                .add(closeDateAfterOpeningDateDays, 'day')
+                .format(DateTimeUtil.DATE_FORMAT);
+            // set and test on: post_date < PUBLISH pushed date (today)
+            entity.publicNotices[0].postDate = dayjs()
+                .subtract(5, 'days')
+                .format(DateTimeUtil.DATE_FORMAT);
+    
+            // Note, to expect an error from async fuction, use ".rejects" before ".toThrow" (strange in jest)
+            await expect(() => service.validateWorkflowTransitionRules(entity as Project, stateTransition, user))
+                .rejects
+                .toThrow(BadRequestException);
+
+            expect(DateTimeUtil.diff(
+                dayjs().format(DateTimeUtil.DATE_FORMAT),
+                entity.publicNotices[0].postDate,
+                DateTimeUtil.TIMEZONE_VANCOUVER, 'day')
+            ).toBeLessThan(0);
+            expect(districtSpy).toBeCalled();
+            expect(districtSpy).toBeCalledWith(entity.districtId);
+            expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledTimes(1);
+            expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledWith(
+                entity.publicNotices[0].postDate, entity.commentingOpenDate);
+        });
+
+        it('with public-notice post_date the same as PUBLISH date (today) fail', async () => {
+            entity.commentingOpenDate = dayjs().add(openingDateInFutureDays, 'day').format(DateTimeUtil.DATE_FORMAT);
+            entity.commentingClosedDate = dayjs(entity.commentingOpenDate)
+                .add(closeDateAfterOpeningDateDays, 'day')
+                .format(DateTimeUtil.DATE_FORMAT);
+            // set and test on: post_date = PUBLISH pushed date (today)
+            entity.publicNotices[0].postDate = dayjs().format(DateTimeUtil.DATE_FORMAT);
+    
+            // Note, to expect an error from async fuction, use ".rejects" before ".toThrow" (strange in jest)
+            await expect(() => service.validateWorkflowTransitionRules(entity as Project, stateTransition, user))
+                .rejects
+                .toThrow(BadRequestException);
+
+            expect(DateTimeUtil.diff(
+                dayjs().format(DateTimeUtil.DATE_FORMAT),
+                entity.publicNotices[0].postDate,
+                DateTimeUtil.TIMEZONE_VANCOUVER, 'day')
+            ).toEqual(0);
+            expect(districtSpy).toBeCalled();
+            expect(districtSpy).toBeCalledWith(entity.districtId);
+            expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledTimes(1);
+            expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalledWith(
+                entity.publicNotices[0].postDate, entity.commentingOpenDate);
         });
     });
+
   });
 
   function getSampleProjectEntityData(): Partial<Project> {
