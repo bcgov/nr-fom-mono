@@ -10,13 +10,12 @@ concurrency:
 jobs:
   prep:
     name: Prep
-    outputs:
-      url: ${{ steps.vars.outputs.url }}
     permissions:
       pull-requests: write
     runs-on: ubuntu-22.04
     steps:
       - name: PR Greeting
+        if: github.event.action == 'opened' || github.event.action == 'reopened'
         env:
           DOMAIN: apps.silver.devops.gov.bc.ca
         uses: bcgov-nr/action-pr-description-add@v0.0.2
@@ -34,10 +33,16 @@ jobs:
             Once merged, code will be promoted and handed off to following workflow run.
              - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-      # This is a workaround, because matrix parameters can use outputs, but not vars
-      - name: Variables
-        id: vars
-        run: echo "url=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
+      - name: OpenShift Init
+        uses: bcgov-nr/action-deployer-openshift@v1.1.1
+        with:
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          file: libs/openshift.init.yml
+          overwrite: false
+          parameters: -p ZONE=${{ github.event.number }}
+          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
 
   builds:
     name: Builds
@@ -81,31 +86,32 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        name: [api, admin, db, init, public]
+        name: [api, admin, db, public]
         include:
           - name: api
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+              -p CERTBOT=false -p REPLICA_COUNT=1
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+            triggers: ('db/' 'libs/' 'api/')
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+            parameters: -p CERTBOT=false -p REPLICA_COUNT=1
+            triggers: ('db/' 'libs/' 'api/' 'admin/')
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
-          - name: init
-            file: libs/openshift.init.yml
-            overwrite: false
+            triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=${{ needs.prep.outputs.url }} -p CERTBOT=false -p REPLICA_COUNT=1
+            parameters: -p CERTBOT=false -p REPLICA_COUNT=1
+            triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v1.1.1
         with:
@@ -117,4 +123,6 @@ jobs:
           penetration_test: false
           parameters:
             -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
+            -p URL=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
+          triggers: ${{ matrix.triggers }}
