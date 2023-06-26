@@ -1,6 +1,6 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { Project } from '@api-modules/project/project.entity';
-import { ProjectService, isPNPostdateOnOrBeforeCommentingOpenDate } from '@api-modules/project/project.service';
+import { ProjectService } from '@api-modules/project/project.service';
 import {
     PublicNoticeCreateRequest, PublicNoticePublicFrontEndResponse,
     PublicNoticeResponse, PublicNoticeUpdateRequest
@@ -203,7 +203,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
 		const postDate = dto.postDate;
 		
 		// postDate validation: on or before commenting start date.
-		if (postDate && !isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
+		if (postDate && !DateTimeUtil.isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
 			throw new BadRequestException(`Online Public Notice post date ${postDate} 
 				should be on or before commenting start date ${commentingOpenDate}.`);
 		}

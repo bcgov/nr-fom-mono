@@ -25,7 +25,6 @@ import { Project } from './project.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
 import _ = require('lodash');
-import { isValidDateOnlyString } from '@api-modules/interaction/interaction.dto';
 import { PublicNotice } from '@api-modules/project/public-notice.entity';
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
@@ -515,7 +514,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         const postDate = publicNotices[0].postDate;
         if (!_.isEmpty(postDate)) {
 					const commentingOpenDate = entity.commentingOpenDate;
-					if (postDate && !isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
+					if (postDate && !DateTimeUtil.isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
 							throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}. 
 							Online Public Notice post date ${postDate} should be on or before commenting start date 
 							${commentingOpenDate}.`);
@@ -691,7 +690,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return true;
   }
 
-
   /**
    * Find FOM Ids by 'workflowStateCode' and 'commentingOpenDate'/'commenting_closed_date' equal or before the 'date' passed for search.
    * @param workflowStateCode 
@@ -776,28 +774,4 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 			}
 		}
   }	
-}
-
-// --- utility validation functions
-
-/**
- * Public Notice postDate validation: on or before commenting start date.
- * This is exported validation to be conveniently used in other service.
- * @param postDate YYYY-MM-DD date string for public notice post date.
- * @param commentingOpenDate YYYY-MM-DD date string for FOM (Project) commentingOpenDate
- * @returns true only if postDate on or before commentingOpenDate; 
- */
-export function isPNPostdateOnOrBeforeCommentingOpenDate(postDate: string, commentingOpenDate: string) {
-	if (_.isEmpty(commentingOpenDate) || !isValidDateOnlyString(commentingOpenDate)) {
-			throw new InternalServerErrorException(`Invalid argument commentingOpenDate: ${commentingOpenDate}`)
-	}
-
-	if (!_.isEmpty(postDate) && !isValidDateOnlyString(postDate)) {
-		throw new InternalServerErrorException(`Invalid argument postDate: ${postDate}`)
-	}
-
-	return postDate && !(
-		DateTimeUtil.getBcDate(postDate).startOf('day').isAfter(
-		DateTimeUtil.getBcDate(commentingOpenDate).startOf('day'))
-	)
 }
