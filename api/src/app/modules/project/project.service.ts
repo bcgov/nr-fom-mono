@@ -765,13 +765,13 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 					updateTimestamp: new Date(),
 					revisionCount: () => "revision_count + 1"
 				}
-				const updatedCount = (await this.repository
+				await this.repository
 					.createQueryBuilder()
 					.update(PublicNotice)
 					.set(updateFields)
 					.where('id =:pnId', {pnId: pnId})
-					.execute()).affected;
-				this.logger.debug(`${updatedCount} FOM (${projectEntity.id}) is updated for public notice (${pnId}) 
+					.execute();
+				this.logger.debug(`FOM (${projectEntity.id}) is updated for public notice (${pnId}) 
 					post_date set to ${projectEntity.commentingOpenDate}`);
 			}
 		}
