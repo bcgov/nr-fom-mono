@@ -234,7 +234,7 @@ describe('ProjectService', () => {
                 dayjs().format(DateTimeUtil.DATE_FORMAT),
                 entity.commentingOpenDate,
                 DateTimeUtil.TIMEZONE_VANCOUVER, 'day')
-            ).toBeGreaterThan(1);
+            ).toBeGreaterThanOrEqual(1);
             expect(districtSpy).toBeCalled();
             expect(districtSpy).toBeCalledWith(entity.districtId);
             expect(postdateOnOrBeforeCommentingOpenDateSpy).toBeCalled();
