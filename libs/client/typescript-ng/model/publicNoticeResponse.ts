@@ -22,7 +22,5 @@ export interface PublicNoticeResponse {
     email: string;
     revisionCount: number;
     id: number;
-    operationStartYear: number;
-    operationEndYear: number;
 }
 

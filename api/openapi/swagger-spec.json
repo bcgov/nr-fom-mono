@@ -2094,12 +2094,6 @@
             },
             "id": {
               "type": "number"
-            },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
             }
           },
           "required": [
@@ -2112,9 +2106,7 @@
             "mailingAddress",
             "email",
             "revisionCount",
-            "id",
-            "operationStartYear",
-            "operationEndYear"
+            "id"
           ]
         },
         "PublicNoticeCreateRequest": {
