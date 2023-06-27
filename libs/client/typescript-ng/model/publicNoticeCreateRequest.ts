@@ -20,7 +20,5 @@ export interface PublicNoticeCreateRequest {
     isReceiveCommentsSameAsReview: boolean;
     mailingAddress: string;
     email: string;
-    operationStartYear: number;
-    operationEndYear: number;
 }
 

@@ -2046,12 +2046,6 @@
             "email": {
               "type": "string"
             },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
             "project": {
               "$ref": "#/components/schemas/ProjectResponse"
             }
@@ -2065,8 +2059,6 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
-            "operationStartYear",
-            "operationEndYear",
             "project"
           ]
         },
@@ -2097,16 +2089,16 @@
             "email": {
               "type": "string"
             },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
             "revisionCount": {
               "type": "number"
             },
             "id": {
+              "type": "number"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
               "type": "number"
             }
           },
@@ -2119,10 +2111,10 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
-            "operationStartYear",
-            "operationEndYear",
             "revisionCount",
-            "id"
+            "id",
+            "operationStartYear",
+            "operationEndYear"
           ]
         },
         "PublicNoticeCreateRequest": {
@@ -2151,12 +2143,6 @@
             },
             "email": {
               "type": "string"
-            },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
             }
           },
           "required": [
@@ -2167,9 +2153,7 @@
             "receiveCommentsBusinessHours",
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
-            "email",
-            "operationStartYear",
-            "operationEndYear"
+            "email"
           ]
         },
         "PublicNoticeUpdateRequest": {
@@ -2199,12 +2183,6 @@
             "email": {
               "type": "string"
             },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
             "revisionCount": {
               "type": "number"
             }
@@ -2218,8 +2196,6 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
-            "operationStartYear",
-            "operationEndYear",
             "revisionCount"
           ]
         },

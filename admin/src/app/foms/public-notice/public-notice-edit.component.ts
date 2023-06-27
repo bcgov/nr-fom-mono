@@ -98,11 +98,6 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       .subscribe((result) => {
         this.project = result.data.projectDetail;
         this.publicNoticeResponse = result.publicNotice;
-        if (this.isNewForm) {
-          // Don't inherit operation years from previous public notice from the forest client.
-          delete this.publicNoticeResponse?.operationStartYear;
-          delete this.publicNoticeResponse?.operationEndYear;
-        }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
@@ -201,8 +196,6 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       body.revisionCount = this.publicNoticeResponse.revisionCount;
     }
 
-    body.operationStartYear = parseInt(moment(body['opStartDate']).format('YYYY'));
-    body.operationEndYear = parseInt(moment(body['opEndDate']).format('YYYY'));
     body.projectId = this.project.id;
 
     if (this.isAddNewNotice()) {

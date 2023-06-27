@@ -20,9 +20,9 @@ export interface PublicNoticeResponse {
     isReceiveCommentsSameAsReview: boolean;
     mailingAddress: string;
     email: string;
-    operationStartYear: number;
-    operationEndYear: number;
     revisionCount: number;
     id: number;
+    operationStartYear: number;
+    operationEndYear: number;
 }
 

@@ -54,17 +54,6 @@ export class PublicNoticeForm {
   @prop()
   email: string;
 
-  // Special case. It is at form control, but will be convert into request body for 'operationStartYear' (number).
-  @required({message: 'Start of Operations Year is required.'})
-  @prop()
-  opStartDate: Date;
-
-  // Special case. It is at form control, but will be convert into request body for 'operationEndYear' (number).
-  @required({message: 'Operation End Year is required.'})
-  @minDate({fieldName:'opStartDate', message: 'Must be equal to or later than the Start of Operations'})
-  @prop()
-  opEndDate: Date;
-
   constructor(publicNoticeResponse?: PublicNoticeResponse) {
     const pn = publicNoticeResponse;
     if (pn) {
@@ -82,28 +71,6 @@ export class PublicNoticeForm {
           'email'
         ]
       ));
-    }
-
-    this.initProposedOperations(pn);
-  }
-
-  initProposedOperations(pn: PublicNoticeResponse) {
-    // Extra conversion for form: 'opStartDate' and 'opEndDate'
-    if (pn?.operationStartYear) {
-      this.opStartDate = moment().set('year', pn.operationStartYear)
-                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
-                                  .toDate();
-    }
-    // Setting default year 
-    else {
-      this.opStartDate = moment().set('date', 1)
-                                  .toDate();
-    }
-
-    if (pn?.operationEndYear) {
-      this.opEndDate = moment().set('year', pn.operationEndYear)
-                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
-                                  .toDate();
     }
   }
 }
