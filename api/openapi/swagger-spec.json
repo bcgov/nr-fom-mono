@@ -1830,6 +1830,12 @@
             },
             "publicNoticeId": {
               "type": "number"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
             }
           },
           "required": [
@@ -1846,7 +1852,9 @@
             "revisionCount",
             "createTimestamp",
             "commentClassificationMandatory",
-            "publicNoticeId"
+            "publicNoticeId",
+            "operationStartYear",
+            "operationEndYear"
           ]
         },
         "ProjectMetricsResponse": {
@@ -1897,6 +1905,12 @@
             },
             "districtId": {
               "type": "number"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
             }
           },
           "required": [
@@ -1906,7 +1920,9 @@
             "commentingClosedDate",
             "forestClientNumber",
             "fspId",
-            "districtId"
+            "districtId",
+            "operationStartYear",
+            "operationEndYear"
           ]
         },
         "ProjectUpdateRequest": {
@@ -1930,6 +1946,12 @@
               "type": "number"
             },
             "districtId": {
+              "type": "number"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
               "type": "number"
             },
             "revisionCount": {
@@ -2599,4 +2621,4 @@
         }
       }
     }
-  }
+}

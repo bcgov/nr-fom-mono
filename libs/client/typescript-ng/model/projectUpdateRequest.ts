@@ -24,6 +24,8 @@ export interface ProjectUpdateRequest {
     commentingClosedDate?: string;
     fspId?: number;
     districtId?: number;
+    operationStartYear?: number;
+    operationEndYear?: number;
     revisionCount: number;
 }
 

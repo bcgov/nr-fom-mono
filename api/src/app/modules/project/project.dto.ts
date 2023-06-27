@@ -40,6 +40,20 @@ export class ProjectCreateRequest {
   @IsNumber()
   districtId: number;
 
+  @ApiProperty({ required: true })
+  @IsNumber()
+  @Min(DateTimeUtil.now(DateTimeUtil.TIMEZONE_VANCOUVER).year(), {
+    message: "Just testing if this validator is triggered",
+  })
+  operationStartYear: number;
+
+  @ApiProperty({ required: true })
+  @IsNumber()
+  @IsGreaterOrEqualTo('operationStartYear', {
+    message: "Must be equal to or later than the Start of Operations",
+  })
+  operationEndYear: number;
+
 }
 
 export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequest), ['forestClientNumber']) {
@@ -49,7 +63,6 @@ export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequ
   @ApiProperty()
   @IsNumber()
   revisionCount: number;
-
 }
 
 export class ProjectWorkflowStateChangeRequest {

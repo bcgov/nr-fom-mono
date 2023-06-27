@@ -28,7 +28,7 @@ import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-
 import { AppFormControlDirective } from '@admin-core/directives/form-control.directive';
 import { NewlinesPipe } from '@admin-core/pipes/newlines.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 
 type ApplicationPageType = 'create' | 'edit';
 
@@ -89,6 +89,15 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+  // bsDatepicker config object
+  readonly bsConfig = {
+    dateInputFormat: 'YYYY', 
+    minMode: 'year', 
+    minDate: moment().toDate(), 
+    maxDate: moment().add(7, 'years').toDate(), // current + 7 years
+    containerClass: 'theme-dark-blue'
+  } as Partial<BsDatepickerConfig>
 
   constructor(
     private route: ActivatedRoute,
@@ -245,6 +254,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     const cmcDateVal = this.fg.get('commentingClosedDate').value;
     projectCreate.commentingOpenDate = cmoDateVal? moment(cmoDateVal).format('YYYY-MM-DD'): null;
     projectCreate.commentingClosedDate = cmcDateVal? moment(cmcDateVal).format('YYYY-MM-DD'): null;
+    projectCreate.operationStartYear = parseInt(moment(this.fg.get('opStartDate').value).format('YYYY'));
+    projectCreate.operationEndYear = parseInt(moment(this.fg.get('opEndDate').value).format('YYYY'));
+
     this.projectSvc.projectControllerCreate(projectCreate)
         .toPromise()
         .then(result => this.onSuccess(result.id))
@@ -271,6 +283,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       const cmcDateVal = this.fg.get('commentingClosedDate').value;
       projectUpdateRequest.commentingOpenDate = cmoDateVal? moment(cmoDateVal).format('YYYY-MM-DD'): null;
       projectUpdateRequest.commentingClosedDate = cmcDateVal? moment(cmcDateVal).format('YYYY-MM-DD'): null;
+      projectUpdateRequest.operationStartYear = parseInt(moment(this.fg.get('opStartDate').value).format('YYYY'));
+      projectUpdateRequest.operationEndYear = parseInt(moment(this.fg.get('opEndDate').value).format('YYYY'));
+
       await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).toPromise();
 
       let file: any = null;
@@ -420,4 +435,19 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     fg.get('district').setValue(project?.district.id);
   }
+
+  getErrorMessage(controlName: string, messageKey: string = null): string {
+    const errors = this.fg.controls[controlName]?.errors;
+    if (errors !== null) {
+      const { [messageKey]: messages } = errors;
+      if (messages) return messages.message;
+    }
+    return null;
+  }
+
+  fieldTouchedOrDirty(controlName: string): boolean {
+    const control = this.fg.controls[controlName];
+    return control?.touched || control?.dirty;
+  }
+
 }
