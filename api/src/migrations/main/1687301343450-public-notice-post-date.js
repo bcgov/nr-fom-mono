@@ -24,9 +24,10 @@ module.exports = class PublicNoticePostDate1687301343450 {
                 where workflow_state_code != 'INITIAL' 
             )
             update app_fom.public_notice pn set post_date = (
-            select p.commenting_open_date from project_for_update p 
+                select p.commenting_open_date from project_for_update p 
                 where p.project_id = pn.project_id )
-            where post_date is null;
+            from project_for_update pu
+            where post_date is null and pn.project_id = pu.project_id;
         `);
     }
 
