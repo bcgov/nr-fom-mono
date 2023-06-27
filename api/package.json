@@ -22,7 +22,7 @@
   },
   "private": true,
   "dependencies": {
-    "@nestjs/cli": "~9.5.0",
+    "@nestjs/cli": "~9.4.0",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
