@@ -25,7 +25,8 @@ module.exports = class PublicNoticePostDate1687301343450 {
             )
             update app_fom.public_notice pn set post_date = (
             select p.commenting_open_date from project_for_update p 
-                where p.project_id = pn.project_id );
+                where p.project_id = pn.project_id )
+            where post_date is null;
         `);
     }
 
