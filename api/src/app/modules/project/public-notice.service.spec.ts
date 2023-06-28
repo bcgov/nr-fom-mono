@@ -264,9 +264,7 @@ function getSimplePublicNoticeCreateRequestData() {
     "receiveCommentsBusinessHours": "9 to 12 am Monday to Friday",
     "isReceiveCommentsSameAsReview": true,
     "mailingAddress": "#1 some mailing address",
-    "email": "a1@test.com",
-    "operationStartYear": 2028,
-    "operationEndYear": 2031
+    "email": "a1@test.com"
   };
   return data;
 }
@@ -297,7 +295,9 @@ function getSimpleProjectResponseData() {
     "revisionCount": 1,
     "createTimestamp": "2022-08-29 20:18:37.921048+00",
     "commentClassificationMandatory": false,
-    "publicNoticeId": 10001
+    "publicNoticeId": 10001,
+    "operationStartYear": 2028,
+    "operationEndYear": 2031
   }
   return data;
 }
@@ -325,15 +325,15 @@ function getSamplePublicNoticeEntity() {
     mailingAddress: pncr.mailingAddress,
     email: pncr.email,
     revisionCount: 1,
-    operationStartYear: pncr.operationStartYear,
-    operationEndYear: pncr.operationEndYear,
     project: {
       id: pncr.project.id,
       fspId: pncr.project.fspId,
       name: pncr.project.name,
       revisionCount: pncr.project.revisionCount,
       workflowState: pncr.project.workflowState,
-      publicNotices: [{id:pncr.project.publicNoticeId}]
+      publicNotices: [{id:pncr.project.publicNoticeId}],
+      operationStartYear: pncr.project.operationStartYear,
+      operationEndYear: pncr.project.operationEndYear
     }
   } as PublicNotice;
   return entity;
