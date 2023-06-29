@@ -222,6 +222,14 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     }
   }
 
+  isPostDateSelectionAvailable(postDatePicker) {
+    if (!this.project.commentingOpenDate) {
+        postDatePicker.toggle(); // bsDatepicker seems to have strange behaviour. hide() won't work, use toggle() instead.
+        this.modalSvc.openWarningDialog(`Commenting Start Date must be entered first before 
+        Public Notice Publishing Date is available for selection.`);
+    }
+  }
+
   ngOnDestroy() {
     this.ngUnsubscribe.next(true);
     this.ngUnsubscribe.complete();

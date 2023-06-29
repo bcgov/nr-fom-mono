@@ -58,7 +58,7 @@
 
       <div class="row">
         <div class="form-group col-md-12">
-            <label for="post-date">Notice Post Date</label>
+            <label for="post-date">Notice Publishing Date</label>
             <input
                 readonly
                 type="text"
@@ -66,9 +66,11 @@
                 style="width: 10rem;"
                 placeholder="YYYY-MM-DD"
                 bsDatepicker
+                #postDatePicker="bsDatepicker"
                 [minDate]="minPostDate"
                 [maxDate]="maxPostDate"
                 (keydown)="$event.preventDefault()"
+                (click)="isPostDateSelectionAvailable(postDatePicker)"
                 id="post-date"
                 name="pn-post-date"
                 formControlName="pnPostDate"
