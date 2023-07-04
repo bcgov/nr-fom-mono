@@ -210,8 +210,14 @@ objects:
                     secretKeyRef:
                       key: data-encryption-key
                       name: ${NAME}-${ZONE}-${COMPONENT}
-                - name: LOG_PATH
-                  value: "/app/logs/app.log"
+                - name: LOG_BASEPATH
+                  value: "/app/logs"
+                - name: LOG_FILENAME
+                  value: "app.log"
+                - name: LOG_ROTATE_FILESIZE
+                  value: "10M"
+                - name: LOG_ROTATE_MAXFILES
+                  value: 15
               ports:
                 - containerPort: ${{PORT}}
                   protocol: TCP
