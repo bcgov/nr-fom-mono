@@ -3,46 +3,24 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 // Core Modules
-import { AttachmentModule } from './modules/attachment/attachment.module';
-import { DistrictModule } from './modules/district/district.module';
-import { ForestClientModule } from './modules/forest-client/forest-client.module';
-import { InteractionModule } from './modules/interaction/interaction.module';
-import { ProjectAuthModule } from './modules/project/project-auth.module';
-import { ProjectModule } from './modules/project/project.module';
-import { PublicCommentModule } from './modules/public-comment/public-comment.module';
-import { SpatialFeatureModule } from './modules/spatial-feature/spatial-feature.module';
-import { SubmissionModule } from './modules/submission/submission.module';
+import { AttachmentModule } from '@api-modules/attachment/attachment.module';
+import { DistrictModule } from '@api-modules/district/district.module';
+import { ForestClientModule } from '@api-modules/forest-client/forest-client.module';
+import { InteractionModule } from '@api-modules/interaction/interaction.module';
+import { ProjectAuthModule } from '@api-modules/project/project-auth.module';
+import { ProjectModule } from '@api-modules/project/project.module';
+import { PublicCommentModule } from '@api-modules/public-comment/public-comment.module';
+import { SpatialFeatureModule } from '@api-modules/spatial-feature/spatial-feature.module';
+import { SubmissionModule } from '@api-modules/submission/submission.module';
 
 // Other Modules
 import { LoggerModule, Params } from 'nestjs-pino';
 import pino from 'pino';
-import { SecurityModule } from '../core/security/security.module';
-import { AppConfigModule } from './modules/app-config/app-config.module';
-import { AppConfigService } from './modules/app-config/app-config.provider';
+import { SecurityModule } from '@api-core/security/security.module';
+import { AppConfigModule } from '@api-modules/app-config/app-config.module';
+import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 import ecsFormat = require('@elastic/ecs-pino-format')
-
-function getLogLevel():string {
-  return process.env.LOG_LEVEL || 'info';
-}
-
-const ecsOptions = ecsFormat();
-const streams = [
-  { stream: pino.destination(1) }, // terminal stdout.
-  { stream: pino.destination({ dest: './logs/app.log' }) }
-]
-
-const logParams: Params = { 
-  pinoHttp: [{
-    ...ecsOptions, // default options
-    customAttributeKeys: { // some other ecs format using custom override.
-        req: 'http.request',
-        res: 'http.response',
-        responseTime: 'event.duration',
-    },
-    level: getLogLevel(),
-  },
-  pino.multistream(streams)] // multistream so can have stdout & file
-}
+import rfs = require("rotating-file-stream");
 
 @Module({
   imports: [
@@ -50,7 +28,7 @@ const logParams: Params = {
     // Config
     AppConfigModule,
     SecurityModule,
-    LoggerModule.forRoot(logParams),
+    LoggerModule.forRoot(configureLogParam()),
     TypeOrmModule.forRootAsync({
       imports: [AppConfigModule],
       useFactory: (configService: AppConfigService) => ({
@@ -82,6 +60,45 @@ const logParams: Params = {
 })
 export class AppModule {
   constructor(private appConfigService: AppConfigService) {}
+}
+
+function getLogLevel(): string {
+  return process.env.LOG_LEVEL || 'info';
+}
+
+function configureLogParam(): Params {
+  const rotationOptions = {
+    size: process.env.LOG_ROTATE_FILESIZE || '10M',
+    path: process.env.LOG_BASEPATH || "logs", // path to the logs folder
+    compress: "gzip",
+    maxFiles: process.env.LOG_ROTATE_MAXFILES ? Number(process.env.LOG_ROTATE_MAXFILES) : 5
+  }
+
+  process.env.LOG_ROTATE_INTERVAL? rotationOptions["interval"]=process.env.LOG_ROTATE_INTERVAL : undefined;
+
+  const fileRotateStream = rfs.createStream(process.env.LOG_BASEPATH || "app.log", /*filename can be a function(time,index)*/ 
+    rotationOptions);
+
+  const streams = [
+    { stream: pino.destination(1) }, // terminal stdout.
+    // { stream: pino.destination({ dest: process.env.LOG_PATH || './logs/app.log' }) } // deafult pino file stream
+    { stream: fileRotateStream }
+  ]
+
+  const logParams: Params = { 
+    pinoHttp: [{
+      ...ecsFormat(), // default ecs options
+      customAttributeKeys: { // some other ecs format using custom override.
+          req: 'http.request',
+          res: 'http.response',
+          responseTime: 'event.duration',
+      },
+      level: getLogLevel(),
+    },
+    pino.multistream(streams)] // multistream so can have stdout & file
+  }
+
+  return logParams;
 }
 
 /*
