@@ -76,7 +76,7 @@ function configureLogParam(): Params {
 
   process.env.LOG_ROTATE_INTERVAL? rotationOptions["interval"]=process.env.LOG_ROTATE_INTERVAL : undefined;
 
-  const fileRotateStream = rfs.createStream(process.env.LOG_BASEPATH || "app.log", /*filename can be a function(time,index)*/ 
+  const fileRotateStream = rfs.createStream(process.env.LOG_FILENAME || "app.log", /*filename can be a function(time,index)*/ 
     rotationOptions);
 
   const streams = [
