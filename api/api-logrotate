@@ -1,8 +1,0 @@
-/app/logs/*.log {
-    rotate 7
-    compress
-    size 100k
-    missingok
-    delaycompress
-    copytruncate
-}
