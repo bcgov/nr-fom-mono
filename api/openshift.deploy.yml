@@ -215,9 +215,9 @@ objects:
                 - name: LOG_FILENAME
                   value: "app.log"
                 - name: LOG_ROTATE_FILESIZE
-                  value: "10M"
+                  value: "10K"
                 - name: LOG_ROTATE_MAXFILES
-                  value: "15"
+                  value: "5"
               ports:
                 - containerPort: ${{PORT}}
                   protocol: TCP
