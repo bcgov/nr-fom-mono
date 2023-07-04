@@ -29,6 +29,8 @@ parameters:
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
+  - name: URL
+    description: Dummy parameter to make workflows easier
   ### Backup-Container starts here ###
   - name: BACKUP_COMPONENT
     description: BACKUP_COMPONENT name
