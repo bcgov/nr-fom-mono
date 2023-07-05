@@ -42,9 +42,7 @@ export class ProjectCreateRequest {
 
   @ApiProperty({ required: true })
   @IsNumber()
-  @Min(DateTimeUtil.now(DateTimeUtil.TIMEZONE_VANCOUVER).year(), {
-    message: "Just testing if this validator is triggered",
-  })
+  @Min(DateTimeUtil.now(DateTimeUtil.TIMEZONE_VANCOUVER).year())
   operationStartYear: number;
 
   @ApiProperty({ required: true })
@@ -142,15 +140,9 @@ export class ProjectResponse {
   publicNoticeId: number; // Online Public Notice (if any)
 
   @ApiProperty({ required: true })
-  @IsNumber()
-  @Min(DateTimeUtil.now(DateTimeUtil.TIMEZONE_VANCOUVER).year())
   operationStartYear: number;
 
   @ApiProperty({ required: true })
-  @IsNumber()
-  @IsGreaterOrEqualTo('operationStartYear', {
-    message: "Must be equal to or later than the Start of Operations",
-  })
   operationEndYear: number;
 }
 
