@@ -516,14 +516,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 					const commentingOpenDate = entity.commentingOpenDate;
 					if (postDate && !DateTimeUtil.isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
 						throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}. 
-						Online Public Notice post date ${postDate} should be on or before commenting start date 
+						Online Public Notice Publish Date ${postDate} should be on or before commenting start date 
 						${commentingOpenDate}.`);
 					}
 					// Must be at least one day after publish is pushed
 					const dayDiff = DateTimeUtil.diffNow(postDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
 					if (dayDiff < 1) {
 							throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
-							Public Notice Post Date: must be at least one day after publish is pushed.`);
+							Online Public Notice Publish Date: must be at least one day after publish is pushed.`);
 					}
         }
       }
