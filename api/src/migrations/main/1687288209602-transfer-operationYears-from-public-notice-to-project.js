@@ -1,6 +1,6 @@
 const { MigrationInterface, QueryRunner } = require("typeorm");
 
-module.exports = class transferOperationYearsFromPublicNoticeToProjet1687288209602 {
+module.exports = class transferOperationYearsFromPublicNoticeToProject1687288209602 {
 
   async up(queryRunner) {
 		console.log('Starting project (add new columns - operation_start_year, operation_end_year) migration');
