@@ -23,6 +23,7 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   name: string;
 
   @prop()
+  @required({message: 'FOM Description is required.'})
   description: string;
 
   @prop()

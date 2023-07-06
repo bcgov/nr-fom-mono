@@ -247,6 +247,11 @@
             >
             </textarea>
             <small>{{descriptionLimit-fg.get('description').value?.length}} characters remaining.</small>
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('description')) 
+              && getErrorMessage('description', 'required')">
+              {{getErrorMessage('description', 'required')}}
+            </div>
           </div>
         </div>
       <section *ngIf="!this.isCreate && isCreateAttachmentAllowed()">

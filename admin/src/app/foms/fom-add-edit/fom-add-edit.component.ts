@@ -269,9 +269,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   async saveApplication() {
     this.isSubmitSaveClicked = true;
-    if(!this.descriptionValue){
-      this.fg.get('description').setErrors({incorrect: true})
-    }
     this.validate();
     const {id, forestClient, workflowState, ...rest} = this.originalProjectResponse;
     let projectUpdateRequest = {...rest, ...this.fg.value}
