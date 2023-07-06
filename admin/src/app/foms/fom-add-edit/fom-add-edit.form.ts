@@ -18,8 +18,8 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   typeof updateFields[number]> {
 
   @prop()
-  @required()
-  @minLength({value: 5})
+  @required({message: 'FOM Name is required.'})
+  @minLength({value: 5, message: 'Minimum length is 5'})
   name: string;
 
   @prop()
@@ -32,18 +32,17 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   commentingClosedDate: string = null; 
 
   @prop()
-  @required()
+  @required({message: 'FSP ID is required.'})
   @minLength({value: 1})
-
   fspId: number;
 
   @prop()
-  @required()
+  @required({message: 'District is required.'})
   @minLength({value: 1})
   district: DistrictResponse;
 
   @prop()
-  @required()
+  @required({message: 'FOM Holder is required.'})
   @minLength({value: 1})
   forestClient: ForestClientResponse;
 

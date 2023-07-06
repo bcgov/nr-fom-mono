@@ -171,6 +171,11 @@
               formControlName="fspId"
               [appFormControl]="fg.get('fspId')"
             />
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('fspId')) 
+              && getErrorMessage('fspId', 'required')">
+              {{getErrorMessage('fspId', 'required')}}
+            </div>
           </div>
           <div class="form-group col">
             <label for="fsp-id" style="white-space: nowrap;">District</label>
@@ -178,6 +183,11 @@
               <option *ngIf="this.isCreate || !districtIdSelect">  </option>
               <option  [value]="district.id" *ngFor="let district of districts" [selected]="district.id === districtIdSelect" [innerHTML]=" district.name "> </option>
             </select>
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('district')) 
+              && getErrorMessage('district', 'required')">
+              {{getErrorMessage('district', 'required')}}
+            </div>
           </div>
         </div>
         <div class="row">
@@ -191,6 +201,16 @@
               formControlName="name"
               [appFormControl]="fg.get('name')"
             />
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('name')) 
+              && getErrorMessage('name', 'required')">
+              {{getErrorMessage('name', 'required')}}
+            </div>
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('name')) 
+                && getErrorMessage('name', 'minLength')">
+                {{getErrorMessage('name', 'minLength')}}
+            </div>
           </div>
           <div class="form-group col">
             <label>FOM Holder</label>
@@ -206,6 +226,11 @@
               disabled
               [value]="originalProjectResponse.forestClient.name"
             />
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('forestClient')) 
+              && getErrorMessage('forestClient', 'required')">
+              {{getErrorMessage('forestClient', 'required')}}
+            </div>
          </div>
         </div>
         <div class="row">
