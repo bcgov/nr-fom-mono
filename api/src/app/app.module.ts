@@ -85,12 +85,12 @@ function configureLogParam(): Params {
     { stream: fileRotateStream }
   ]
 
-  const logParams: Params = { 
+  const logParams: Params = {
     pinoHttp: [{
-      ...ecsFormat(), // default ecs options
+        // {convertReqRes: true } does log http:{response} but not the request for some reason.
+      ...ecsFormat({convertReqRes: true }), // default ecs options
       customAttributeKeys: { // some other ecs format using custom override.
           req: 'http.request',
-          res: 'http.response',
           responseTime: 'event.duration',
       },
       level: getLogLevel(),
