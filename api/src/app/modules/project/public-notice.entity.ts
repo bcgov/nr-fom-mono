@@ -38,4 +38,7 @@ export class PublicNotice extends ApiBaseEntity<PublicNotice> {
 
   @Column()
   email: string
+
+  @Column({ name: 'post_date', type: 'date'})
+  postDate: string; 
 }

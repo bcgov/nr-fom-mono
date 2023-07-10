@@ -2046,6 +2046,10 @@
             "email": {
               "type": "string"
             },
+            "postDate": {
+                "type": "string",
+                "description": "Date planed for online public notice posted."
+            },
             "project": {
               "$ref": "#/components/schemas/ProjectResponse"
             }
@@ -2059,6 +2063,7 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
+            "postDate",
             "project"
           ]
         },
@@ -2089,6 +2094,10 @@
             "email": {
               "type": "string"
             },
+            "postDate": {
+                "type": "string",
+                "description": "Date planed for online public notice posted."
+            },
             "revisionCount": {
               "type": "number"
             },
@@ -2105,6 +2114,7 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
+            "postDate",
             "revisionCount",
             "id"
           ]
@@ -2135,6 +2145,10 @@
             },
             "email": {
               "type": "string"
+            },
+            "postDate": {
+              "type": "string",
+              "description": "Date planed for online public notice posted."
             }
           },
           "required": [
@@ -2145,7 +2159,8 @@
             "receiveCommentsBusinessHours",
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
-            "email"
+            "email",
+            "postDate"
           ]
         },
         "PublicNoticeUpdateRequest": {
@@ -2175,6 +2190,10 @@
             "email": {
               "type": "string"
             },
+            "postDate": {
+                "type": "string",
+                "description": "Date planed for online public notice posted."
+            },
             "revisionCount": {
               "type": "number"
             }
@@ -2188,6 +2207,7 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
+            "postDate",
             "revisionCount"
           ]
         },

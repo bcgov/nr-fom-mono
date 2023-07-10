@@ -21,6 +21,10 @@ export interface PublicNoticePublicFrontEndResponse {
     isReceiveCommentsSameAsReview: boolean;
     mailingAddress: string;
     email: string;
+    /**
+     * Date planed for online public notice posted.
+     */
+    postDate: string;
     project: ProjectResponse;
 }
 

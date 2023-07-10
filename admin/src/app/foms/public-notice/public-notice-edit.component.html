@@ -56,6 +56,36 @@
         </div>
       </div>
 
+      <div class="row">
+        <div class="form-group col-md-12">
+            <label for="post-date">Notice Publishing Date</label>
+            <input
+                readonly
+                type="text"
+                class="form-control readonly-normal"
+                style="width: 10rem;"
+                placeholder="YYYY-MM-DD"
+                bsDatepicker
+                #postDatePicker="bsDatepicker"
+                [minDate]="minPostDate"
+                [maxDate]="maxPostDate"
+                (keydown)="$event.preventDefault()"
+                (click)="isPostDateSelectionAvailable(postDatePicker)"
+                id="post-date"
+                name="pn-post-date"
+                formControlName="pnPostDate"
+                [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+                              containerClass: 'theme-dark-blue', showWeekNumbers: false }"
+              />
+            <div class="invalid-feedback" 
+              *ngIf="(form.submitted || fieldTouchedOrDirty('pnPostDate')) 
+                && getErrorMessage('pnPostDate', 'minDate')">
+                {{getErrorMessage('pnPostDate', 'minDate')}}
+            </div>
+        </div>
+        
+      </div>
+
       <div class="row" >
         <div class="form-group col-md-12">
           <label for="review-fom-address" [ngClass]="{'required': editMode}">Physical address to review FOM</label>

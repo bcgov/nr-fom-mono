@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNumber, IsOptional, MaxLength } from 'class-validator';
 import { ProjectResponse } from './project.dto';
+import { IsISODateOnlyString } from '@api-modules/interaction/interaction.dto';
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 export class PublicNoticeCreateRequest {
 
@@ -37,7 +39,11 @@ export class PublicNoticeCreateRequest {
   @ApiProperty()
   @MaxLength(100) 
   email: string;
-  
+
+  @ApiProperty({ description: 'Date planed for online public notice posted.'})
+  @IsOptional()
+  @IsISODateOnlyString({message: `"$property" must be ISO-formatted date. (Required format: ${DateTimeUtil.DATE_FORMAT})`})
+  postDate?: string; 
 }
 
 export class PublicNoticeUpdateRequest extends PublicNoticeCreateRequest {

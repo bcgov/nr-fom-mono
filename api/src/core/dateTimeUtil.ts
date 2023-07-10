@@ -2,6 +2,8 @@ import * as dayjs from 'dayjs';
 import * as utc from 'dayjs/plugin/utc';
 import * as timezone from 'dayjs/plugin/timezone';
 import * as advancedFormat from 'dayjs/plugin/advancedFormat'
+import _ = require('lodash');
+import * as customParseFormat from 'dayjs/plugin/customParseFormat';
 
 /**
  * This util acts as a wrapper for some date/time munipulation functions, especially for timezone related transform.
@@ -73,6 +75,40 @@ export class DateTimeUtil {
         const now = this.now(inTimezone);
         const endDate = this.get(endDateSt, inTimezone);
         return endDate.startOf(unit).diff(now.startOf(unit), unit);
+    }
+
+    /*
+    Limited to only check date string value with backend defined date format: DateTimeUtil.DATE_FORMAT.
+    Valid date string like "2023-06-07" has length: 10 (so, no time portion).
+    Note: "2023-06-07" and "06-07-2023" and "2023/06/07" etc are treated valid from dayjs library and all
+        are translated into "2023-06-07" by the dayjs library.
+    For now it does not provide flexbility to check other format.
+    */
+    public static isValidDateOnlyString(value: string): boolean {
+        dayjs.extend(customParseFormat);
+        return !_.isEmpty(value) && value.length == 10 && dayjs(value, DateTimeUtil.DATE_FORMAT, true).isValid();
+    }
+
+    /**
+     * Public Notice postDate validation: on or before commenting start date.
+     * This is exported validation to be conveniently used in other service.
+     * @param postDate YYYY-MM-DD date string for public notice post date.
+     * @param commentingOpenDate YYYY-MM-DD date string for FOM (Project) commentingOpenDate
+     * @returns true only if postDate on or before commentingOpenDate; 
+     */
+    public static isPNPostdateOnOrBeforeCommentingOpenDate(postDate: string, commentingOpenDate: string) {
+        if (_.isEmpty(commentingOpenDate) || !DateTimeUtil.isValidDateOnlyString(commentingOpenDate)) {
+            throw new Error(`Invalid argument commentingOpenDate: ${commentingOpenDate}`)
+        }
+
+        if (!_.isEmpty(postDate) && !DateTimeUtil.isValidDateOnlyString(postDate)) {
+            throw new Error(`Invalid argument postDate: ${postDate}`)
+        }
+
+        return postDate && !(
+            DateTimeUtil.getBcDate(postDate).startOf('day').isAfter(
+            DateTimeUtil.getBcDate(commentingOpenDate).startOf('day'))
+        )
     }
 
     private static init() {

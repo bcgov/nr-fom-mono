@@ -20,6 +20,10 @@ export interface PublicNoticeUpdateRequest {
     isReceiveCommentsSameAsReview: boolean;
     mailingAddress: string;
     email: string;
+    /**
+     * Date planed for online public notice posted.
+     */
+    postDate: string;
     revisionCount: number;
 }
 
