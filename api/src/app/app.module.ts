@@ -89,7 +89,7 @@ function configureLogParam(): Params {
     pinoHttp: [{
         // {convertReqRes: true } does log http:{response} but not the request for some reason.
       ...ecsFormat({convertReqRes: true }), // default ecs options
-      customAttributeKeys: { // some other ecs format using custom override.
+      customAttributeKeys: {
           req: 'http.request',
           responseTime: 'event.duration',
       },
