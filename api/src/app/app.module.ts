@@ -25,7 +25,10 @@ function getLogLevel():string {
   return process.env.LOG_LEVEL || 'info';
 }
 
-const ecsOptions = ecsFormat();
+// {convertReqRes: true } from '@elastic/ecs-pino-format' is supposed to work but only work for "res"=> http:{reponse}.
+// This is the limitation when using "pino-http" (which is the case in FOM). See ref @ bottom: 
+// https://www.elastic.co/guide/en/ecs-logging/nodejs/current/pino.html 
+const ecsOptions = ecsFormat({convertReqRes: true });
 const streams = [
   { stream: pino.destination(1) }, // terminal stdout.
   { stream: pino.destination({ dest: process.env.LOG_PATH || './logs/app.log' }) }
@@ -34,9 +37,8 @@ const streams = [
 const logParams: Params = { 
   pinoHttp: [{
     ...ecsOptions, // default options
-    customAttributeKeys: { // some other ecs format using custom override.
+    customAttributeKeys: { // some other custom override.
         req: 'http.request',
-        res: 'http.response',
         responseTime: 'event.duration',
     },
     level: getLogLevel(),
