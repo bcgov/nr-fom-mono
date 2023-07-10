@@ -65,6 +65,12 @@ export class PublicNoticeForm {
   @prop()
   opEndDate: Date;
 
+  @minDate({
+    value: moment().add(1, 'days').format('YYYY-MM-DD'), 
+    message: 'Must post notice one day in the future'})
+  @prop()
+  pnPostDate: Date;
+
   constructor(publicNoticeResponse?: PublicNoticeResponse) {
     const pn = publicNoticeResponse;
     if (pn) {
@@ -104,6 +110,10 @@ export class PublicNoticeForm {
       this.opEndDate = moment().set('year', pn.operationEndYear)
                                   .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
                                   .toDate();
+    }
+
+    if (pn?.postDate) {
+        this.pnPostDate = moment(pn.postDate).toDate();
     }
   }
 }

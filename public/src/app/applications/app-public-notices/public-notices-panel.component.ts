@@ -85,6 +85,10 @@ export class PublicNoticesPanelComponent implements OnInit {
     this.pNotices = [...filteredResult];
   }
 
+  isFomAvailable(commentingOpenDate) {
+    return moment(commentingOpenDate).startOf('day') <= moment().startOf('day');
+  }
+
   private compareFn() {
     // If 'value'(filter value) is null or underfined, consider this as to include all.
     return {

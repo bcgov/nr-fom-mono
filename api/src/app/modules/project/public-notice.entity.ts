@@ -44,4 +44,7 @@ export class PublicNotice extends ApiBaseEntity<PublicNotice> {
 
   @Column({ name: 'operation_end_year'})
   operationEndYear: number;
+
+  @Column({ name: 'post_date', type: 'date'})
+  postDate: string; 
 }

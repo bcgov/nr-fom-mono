@@ -2030,6 +2030,10 @@
             "operationEndYear": {
               "type": "number"
             },
+            "postDate": {
+              "type": "string",
+              "description": "Date planed for online public notice posted."
+            },
             "project": {
               "$ref": "#/components/schemas/ProjectResponse"
             }
@@ -2045,6 +2049,7 @@
             "email",
             "operationStartYear",
             "operationEndYear",
+            "postDate",
             "project"
           ]
         },
@@ -2081,6 +2086,10 @@
             "operationEndYear": {
               "type": "number"
             },
+            "postDate": {
+              "type": "string",
+              "description": "Date planed for online public notice posted."
+            },
             "revisionCount": {
               "type": "number"
             },
@@ -2099,6 +2108,7 @@
             "email",
             "operationStartYear",
             "operationEndYear",
+            "postDate",
             "revisionCount",
             "id"
           ]
@@ -2135,6 +2145,10 @@
             },
             "operationEndYear": {
               "type": "number"
+            },
+            "postDate": {
+              "type": "string",
+              "description": "Date planed for online public notice posted."
             }
           },
           "required": [
@@ -2147,7 +2161,8 @@
             "mailingAddress",
             "email",
             "operationStartYear",
-            "operationEndYear"
+            "operationEndYear",
+            "postDate"
           ]
         },
         "PublicNoticeUpdateRequest": {
@@ -2183,6 +2198,10 @@
             "operationEndYear": {
               "type": "number"
             },
+            "postDate": {
+              "type": "string",
+              "description": "Date planed for online public notice posted."
+            },
             "revisionCount": {
               "type": "number"
             }
@@ -2198,6 +2217,7 @@
             "email",
             "operationStartYear",
             "operationEndYear",
+            "postDate",
             "revisionCount"
           ]
         },

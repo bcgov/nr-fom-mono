@@ -12,19 +12,20 @@ import * as dayjs from 'dayjs';
 import { isNil } from 'lodash';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { AttachmentTypeEnum } from '../attachment/attachment-type-code.entity';
-import { DistrictService } from '../district/district.service';
-import { ForestClientService } from '../forest-client/forest-client.service';
-import { PublicCommentService } from '../public-comment/public-comment.service';
-import { SubmissionTypeCodeEnum } from '../submission/submission-type-code.entity';
+import { AttachmentTypeEnum } from '@api-modules/attachment/attachment-type-code.entity';
+import { DistrictService } from '@api-modules/district/district.service';
+import { ForestClientService } from '@api-modules/forest-client/forest-client.service';
+import { PublicCommentService } from '@api-modules/public-comment/public-comment.service';
+import { SubmissionTypeCodeEnum } from '@api-modules/submission/submission-type-code.entity';
 import {
-  ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest, ProjectCreateRequest, ProjectMetricsResponse, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest,
-  ProjectWorkflowStateChangeRequest
+    ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest, ProjectCreateRequest, ProjectMetricsResponse, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest,
+    ProjectWorkflowStateChangeRequest
 } from './project.dto';
 import { Project } from './project.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
-
+import _ = require('lodash');
+import { PublicNotice } from '@api-modules/project/public-notice.entity';
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
   likeForestClientName?: string;
@@ -307,6 +308,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 
     const options = {relations: []};
     options.relations.push('submissions'); // add this extra relation for later use.
+		options.relations.push('publicNotices');
     const entity:Project = await this.findEntityWithCommonRelations(projectId, options);
     if (! entity) {
       throw new BadRequestException("Entity not found.");
@@ -334,7 +336,8 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
           throw new BadRequestException("Can only publish if workflow state is Initial.");
         }
 
-        await this.validateWorkflowTransitionRules(entity, WorkflowStateEnum.PUBLISHED, user);   
+        await this.validateWorkflowTransitionRules(entity, WorkflowStateEnum.PUBLISHED, user);
+				await this.updatePublicNoticeIfRequired(entity, WorkflowStateEnum.PUBLISHED);
         break;
 
       case WorkflowStateEnum.COMMENT_OPEN:
@@ -503,6 +506,28 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
         throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
         Proposed submission is required.`);
       }
+
+      // Checks postDate on or before commenting open date and 1 day later than today (before published)
+      // However, it could be empty = then no check.
+      const publicNotices = entity.publicNotices;
+      if (!_.isEmpty(publicNotices)) {
+        const postDate = publicNotices[0].postDate;
+        if (!_.isEmpty(postDate)) {
+					const commentingOpenDate = entity.commentingOpenDate;
+					if (postDate && !DateTimeUtil.isPNPostdateOnOrBeforeCommentingOpenDate(postDate, commentingOpenDate)) {
+						throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}. 
+						Online Public Notice Publish Date ${postDate} should be on or before commenting start date 
+						${commentingOpenDate}.`);
+					}
+					// Must be at least one day after publish is pushed
+					const dayDiff = DateTimeUtil.diffNow(postDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
+					if (dayDiff < 1) {
+							throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
+							Online Public Notice Publish Date: must be at least one day after publish is pushed.`);
+					}
+        }
+      }
+
     } // end validating PUBLISHED transitioning
 
     // validating FINALIZED transitioning
@@ -665,7 +690,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     return true;
   }
 
-
   /**
    * Find FOM Ids by 'workflowStateCode' and 'commentingOpenDate'/'commenting_closed_date' equal or before the 'date' passed for search.
    * @param workflowStateCode 
@@ -725,5 +749,29 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     this.logger.debug(`${updatedCounts} FOM(s) for ${projectIds} were updated to ${workflowStateCode}`);
   }
 
+  private async updatePublicNoticeIfRequired(projectEntity: Project, stateTransition: WorkflowStateEnum) {
+		if (WorkflowStateEnum.PUBLISHED == stateTransition) {
+			const publicNotices = projectEntity.publicNotices;
+			// set public notice post date to project commenting open date if post date is not set.
+			if (!_.isEmpty(publicNotices) && !publicNotices[0].postDate) {
+				const pnId = publicNotices[0].id;
+				const commentingOpenDate = projectEntity.commentingOpenDate;
+				const updateFields = 
+				{
+					postDate: commentingOpenDate,
+					updateUser: 'system',
+					updateTimestamp: new Date(),
+					revisionCount: () => "revision_count + 1"
+				}
+				await this.repository
+					.createQueryBuilder()
+					.update(PublicNotice)
+					.set(updateFields)
+					.where('id =:pnId', {pnId: pnId})
+					.execute();
+				this.logger.debug(`FOM (${projectEntity.id}) is updated for public notice (${pnId}) 
+					post_date set to ${projectEntity.commentingOpenDate}`);
+			}
+		}
+  }	
 }
-

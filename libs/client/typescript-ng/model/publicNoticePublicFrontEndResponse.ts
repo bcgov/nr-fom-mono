@@ -23,6 +23,10 @@ export interface PublicNoticePublicFrontEndResponse {
     email: string;
     operationStartYear: number;
     operationEndYear: number;
+    /**
+     * Date planed for online public notice posted.
+     */
+    postDate: string;
     project: ProjectResponse;
 }
 
