@@ -1,5 +1,6 @@
 import { PublicNoticeResponse } from "@api-client";
-import { email, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
+import { email, minDate, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
+import moment = require("moment");
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
@@ -53,6 +54,12 @@ export class PublicNoticeForm {
   @prop()
   email: string;
 
+  @minDate({
+    value: moment().add(1, 'days').format('YYYY-MM-DD'), 
+    message: 'Must post notice one day in the future'})
+  @prop()
+  pnPostDate: Date;
+  
   constructor(publicNoticeResponse?: PublicNoticeResponse) {
     const pn = publicNoticeResponse;
     if (pn) {
@@ -70,6 +77,14 @@ export class PublicNoticeForm {
           'email'
         ]
       ));
+    }
+
+    this.initProposedOperations(pn);
+  }
+
+  initProposedOperations(pn: PublicNoticeResponse) {
+    if (pn?.postDate) {
+        this.pnPostDate = moment(pn.postDate).toDate();
     }
   }
 }
