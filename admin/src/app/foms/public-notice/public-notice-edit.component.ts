@@ -102,6 +102,10 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       .subscribe((result) => {
         this.project = result.data.projectDetail;
         this.publicNoticeResponse = result.publicNotice;
+        if (this.isNewForm) {
+            // Don't inherit operation years from previous public notice from the forest client.
+            delete this.publicNoticeResponse?.postDate;
+        }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
