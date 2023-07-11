@@ -124,9 +124,9 @@
         <div class="col-sm-8">{{pn.project.commentingOpenDate | date: 'longDate'}} to {{pn.project.validityEndDate | date: 'longDate'}}</div>
       </div>
 
-      <div class="row" *ngIf="pn.operationStartYear && pn.operationEndYear">
+      <div class="row" *ngIf="pn.project.operationStartYear && pn.project.operationEndYear">
         <div class="col-sm-4 bold">Period of Operations: </div>
-        <div class="col-sm-8">{{pn.operationStartYear}} - {{pn.operationEndYear}}</div>
+        <div class="col-sm-8">{{pn.project.operationStartYear}} - {{pn.project.operationEndYear}}</div>
       </div>
 
       <div class="row">

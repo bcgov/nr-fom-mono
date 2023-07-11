@@ -1,9 +1,11 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
-import { IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, 
+  MinLength, Min, registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
 export class ProjectCreateRequest {
   @ApiProperty()
@@ -38,6 +40,18 @@ export class ProjectCreateRequest {
   @IsNumber()
   districtId: number;
 
+  @ApiProperty({ required: true })
+  @IsNumber()
+  @Min(DateTimeUtil.now(DateTimeUtil.TIMEZONE_VANCOUVER).year())
+  operationStartYear: number;
+
+  @ApiProperty({ required: true })
+  @IsNumber()
+  @IsGreaterOrEqualTo('operationStartYear', {
+    message: "Must be equal to or later than the Start of Operations",
+  })
+  operationEndYear: number;
+
 }
 
 export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequest), ['forestClientNumber']) {
@@ -47,7 +61,6 @@ export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequ
   @ApiProperty()
   @IsNumber()
   revisionCount: number;
-
 }
 
 export class ProjectWorkflowStateChangeRequest {
@@ -125,6 +138,12 @@ export class ProjectResponse {
 
   @ApiProperty()
   publicNoticeId: number; // Online Public Notice (if any)
+
+  @ApiProperty({ required: true })
+  operationStartYear: number;
+
+  @ApiProperty({ required: true })
+  operationEndYear: number;
 }
 
 export class ProjectMetricsResponse {
@@ -164,4 +183,28 @@ export class ProjectCommentingClosedDateChangeRequest {
   @ApiProperty()
   @IsNumber()
   revisionCount: number;
+}
+
+/**
+* Custom validation decorator: @IsGreaterOrEqualTo - check number_1 >= number_2
+*/
+export function IsGreaterOrEqualTo(property: string, validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'isGreaterOrEqualTo',
+      target: object.constructor,
+      propertyName: propertyName,
+      constraints: [property],
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          const [relatedPropertyName] = args.constraints;
+          const relatedValue = (args.object as any)[relatedPropertyName];
+          return typeof value === 'number' 
+              && typeof relatedValue === 'number' 
+              && value >= relatedValue;
+        },
+      },
+    });
+  };
 }

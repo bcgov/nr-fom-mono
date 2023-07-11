@@ -21,8 +21,6 @@ export interface PublicNoticePublicFrontEndResponse {
     isReceiveCommentsSameAsReview: boolean;
     mailingAddress: string;
     email: string;
-    operationStartYear: number;
-    operationEndYear: number;
     /**
      * Date planed for online public notice posted.
      */

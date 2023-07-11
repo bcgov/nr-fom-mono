@@ -1,8 +1,8 @@
-import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNumber, IsOptional, MaxLength, Min, registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, MaxLength } from 'class-validator';
 import { ProjectResponse } from './project.dto';
 import { IsISODateOnlyString } from '@api-modules/interaction/interaction.dto';
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
 
 export class PublicNoticeCreateRequest {
 
@@ -39,18 +39,6 @@ export class PublicNoticeCreateRequest {
   @ApiProperty()
   @MaxLength(100) 
   email: string;
-  
-  @ApiProperty({ required: true })
-  @IsNumber()
-  @Min(DateTimeUtil.now(DateTimeUtil.TIMEZONE_VANCOUVER).year())
-  operationStartYear: number;
-
-  @ApiProperty({ required: true })
-  @IsNumber()
-  @IsGreaterOrEqualTo('operationStartYear', {
-    message: "Must be equal to or later than the Start of Operations",
-  })
-  operationEndYear: number;
 
   @ApiProperty({ description: 'Date planed for online public notice posted.'})
   @IsOptional()
@@ -78,28 +66,4 @@ export class PublicNoticePublicFrontEndResponse extends PublicNoticeCreateReques
   @ApiProperty()
   project: ProjectResponse;
 
-}
-
-/**
- * Custom validation decorator: @IsGreaterOrEqualTo - check number_1 >= number_2
- */
-export function IsGreaterOrEqualTo(property: string, validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
-    registerDecorator({
-      name: 'isGreaterOrEqualTo',
-      target: object.constructor,
-      propertyName: propertyName,
-      constraints: [property],
-      options: validationOptions,
-      validator: {
-        validate(value: any, args: ValidationArguments) {
-          const [relatedPropertyName] = args.constraints;
-          const relatedValue = (args.object as any)[relatedPropertyName];
-          return typeof value === 'number' 
-              && typeof relatedValue === 'number' 
-              && value >= relatedValue;
-        },
-      },
-    });
-  };
 }

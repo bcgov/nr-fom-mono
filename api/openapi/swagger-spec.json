@@ -1830,6 +1830,12 @@
             },
             "publicNoticeId": {
               "type": "number"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
             }
           },
           "required": [
@@ -1846,7 +1852,9 @@
             "revisionCount",
             "createTimestamp",
             "commentClassificationMandatory",
-            "publicNoticeId"
+            "publicNoticeId",
+            "operationStartYear",
+            "operationEndYear"
           ]
         },
         "ProjectMetricsResponse": {
@@ -1897,6 +1905,12 @@
             },
             "districtId": {
               "type": "number"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
+              "type": "number"
             }
           },
           "required": [
@@ -1906,7 +1920,9 @@
             "commentingClosedDate",
             "forestClientNumber",
             "fspId",
-            "districtId"
+            "districtId",
+            "operationStartYear",
+            "operationEndYear"
           ]
         },
         "ProjectUpdateRequest": {
@@ -1930,6 +1946,12 @@
               "type": "number"
             },
             "districtId": {
+              "type": "number"
+            },
+            "operationStartYear": {
+              "type": "number"
+            },
+            "operationEndYear": {
               "type": "number"
             },
             "revisionCount": {
@@ -2024,15 +2046,9 @@
             "email": {
               "type": "string"
             },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
             "postDate": {
-              "type": "string",
-              "description": "Date planed for online public notice posted."
+                "type": "string",
+                "description": "Date planed for online public notice posted."
             },
             "project": {
               "$ref": "#/components/schemas/ProjectResponse"
@@ -2047,8 +2063,6 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
-            "operationStartYear",
-            "operationEndYear",
             "postDate",
             "project"
           ]
@@ -2080,15 +2094,9 @@
             "email": {
               "type": "string"
             },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
             "postDate": {
-              "type": "string",
-              "description": "Date planed for online public notice posted."
+                "type": "string",
+                "description": "Date planed for online public notice posted."
             },
             "revisionCount": {
               "type": "number"
@@ -2106,8 +2114,6 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
-            "operationStartYear",
-            "operationEndYear",
             "postDate",
             "revisionCount",
             "id"
@@ -2140,12 +2146,6 @@
             "email": {
               "type": "string"
             },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
             "postDate": {
               "type": "string",
               "description": "Date planed for online public notice posted."
@@ -2160,8 +2160,6 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
-            "operationStartYear",
-            "operationEndYear",
             "postDate"
           ]
         },
@@ -2192,15 +2190,9 @@
             "email": {
               "type": "string"
             },
-            "operationStartYear": {
-              "type": "number"
-            },
-            "operationEndYear": {
-              "type": "number"
-            },
             "postDate": {
-              "type": "string",
-              "description": "Date planed for online public notice posted."
+                "type": "string",
+                "description": "Date planed for online public notice posted."
             },
             "revisionCount": {
               "type": "number"
@@ -2215,8 +2207,6 @@
             "isReceiveCommentsSameAsReview",
             "mailingAddress",
             "email",
-            "operationStartYear",
-            "operationEndYear",
             "postDate",
             "revisionCount"
           ]
@@ -2619,4 +2609,4 @@
         }
       }
     }
-  }
+}

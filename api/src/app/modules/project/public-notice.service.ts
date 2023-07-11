@@ -136,9 +136,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
           'isReceiveCommentsSameAsReview',
           'mailingAddress',
           'email',
-          'operationStartYear',
-          'operationEndYear',
-					'postDate'
+          'postDate'
         ]
       ));
       response.project = this.projectService.convertEntity(entity.project);
@@ -185,9 +183,7 @@ export class PublicNoticeService extends DataService<PublicNotice, Repository<Pu
     response.mailingAddress = entity.mailingAddress;
     response.email = entity.email;
     response.revisionCount = entity.revisionCount;
-    response.operationStartYear = entity.operationStartYear;
-    response.operationEndYear = entity.operationEndYear;
-		response.postDate = entity.postDate;
+    response.postDate = entity.postDate;
     return response;
   }
 

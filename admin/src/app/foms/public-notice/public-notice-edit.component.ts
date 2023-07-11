@@ -103,10 +103,8 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
         this.project = result.data.projectDetail;
         this.publicNoticeResponse = result.publicNotice;
         if (this.isNewForm) {
-          // Don't inherit operation years from previous public notice from the forest client.
-          delete this.publicNoticeResponse?.operationStartYear;
-          delete this.publicNoticeResponse?.operationEndYear;
-          delete this.publicNoticeResponse?.postDate;
+            // Don't inherit operation years from previous public notice from the forest client.
+            delete this.publicNoticeResponse?.postDate;
         }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
@@ -207,8 +205,6 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       body.revisionCount = this.publicNoticeResponse.revisionCount;
     }
 
-    body.operationStartYear = parseInt(moment(body['opStartDate']).format('YYYY'));
-    body.operationEndYear = parseInt(moment(body['opEndDate']).format('YYYY'));
     body.projectId = this.project.id;
 
     if (body.pnPostDate) {

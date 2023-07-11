@@ -25,5 +25,7 @@ export interface ProjectCreateRequest {
     forestClientNumber: string;
     fspId: number;
     districtId: number;
+    operationStartYear: number;
+    operationEndYear: number;
 }
 
