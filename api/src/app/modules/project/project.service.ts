@@ -526,7 +526,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 					const dayDiff = DateTimeUtil.diffNow(postDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
 					if (dayDiff < 1) {
 							throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
-							Online Public Notice Publish Date: must be at least one day after publish is pushed.`);
+							Online Public Notice Publish Date: must be at least one day in the future.`);
 					}
         }
       }
