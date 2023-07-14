@@ -55,8 +55,8 @@ export class PublicNoticeForm {
   email: string;
 
   @minDate({
-    value: moment().add(1, 'days').format('YYYY-MM-DD'), 
-    message: 'Must post notice one day in the future'})
+    value: moment().add(1, 'days').format('YYYY-MM-DD'),
+    message: 'Must publish notice one day in the future'})
   @prop()
   pnPostDate: Date;
   
