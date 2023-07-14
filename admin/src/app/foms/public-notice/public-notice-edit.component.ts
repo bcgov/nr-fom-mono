@@ -42,16 +42,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
   maxPostDate: Date;
-  minPostDate: Date = moment().add(1, 'days').toDate();
-
-  // bsDatepicker config object
-  readonly opYearBsConfig = {
-      dateInputFormat: 'YYYY', 
-      minMode: 'year', 
-      minDate: moment().toDate(), 
-      maxDate: moment().add(7, 'years').toDate(), // current + 7 years
-      containerClass: 'theme-dark-blue'
-  } as Partial<BsDatepickerConfig>
+  minPostDate: Date = moment(moment().format('YYYY-MM-DD')).add(1, 'days').toDate();
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   
@@ -102,12 +93,24 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       .subscribe((result) => {
         this.project = result.data.projectDetail;
         this.publicNoticeResponse = result.publicNotice;
+        this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
         if (this.isNewForm) {
             // Don't inherit operation years from previous public notice from the forest client.
             delete this.publicNoticeResponse?.postDate;
         }
+        else { // a case there was public notice saved for the project.
+            // This is a tricky case. "bsDatepicker" when (minDate=maxDate) and when previous field date falls
+            // outside of the date range, "bsDatepicker" has problem initializing it and even if you trying picking from UI.
+            // So, specifically set it here. In this tricky case: commentingOpenDate=1 day in future from today => 
+            // so maxDate = minDate for datePicker. (which means notice publishing date can only have 1 choice: same as commentingOpenDate) 
+            const pnPostDate = this.publicNoticeResponse?.postDate
+            if (pnPostDate && moment(this.project.commentingOpenDate).isSame(
+                moment(moment().add(1, 'days').format('YYYY-MM-DD'))
+            )) {
+                this.publicNoticeResponse.postDate = this.project.commentingOpenDate;
+            }
+        }
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
-        this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
         if (!this.editMode) {
