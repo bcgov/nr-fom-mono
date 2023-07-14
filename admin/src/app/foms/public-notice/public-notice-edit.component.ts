@@ -119,11 +119,13 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       // So, specifically set it here. In this tricky case: commentingOpenDate=1 day in future from today => 
       // maxDate = minDate for datePicker. (which means notice publishing date can only have 1 choice: minPostDate) 
       const pnPostDate = this.publicNoticeResponse?.postDate
-      if (pnPostDate 
-          && moment(this.minPostDate).isSameOrBefore(this.maxPostDate)
-          && (moment(pnPostDate).isBefore(moment(this.minPostDate)) || moment(pnPostDate).isAfter(this.maxPostDate))
-      ) {
+      if (pnPostDate && moment(this.minPostDate).isSameOrBefore(this.maxPostDate)) {
+        if (moment(pnPostDate).isBefore(moment(this.minPostDate)) || moment(pnPostDate).isAfter(this.maxPostDate)){
           this.publicNoticeResponse.postDate = moment(this.minPostDate).format('YYYY-MM-DD');
+        }
+      }
+      else if (pnPostDate && moment(this.project.commentingOpenDate).isBefore(moment(this.minPostDate))) {
+        this.publicNoticeResponse.postDate = null;
       }
     }
   }
@@ -220,6 +222,9 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
 
     if (body.pnPostDate) {
       body.postDate = this.datePipe.transform(body.pnPostDate,'yyyy-MM-dd');
+    }
+    else {
+      body.postDate = null;
     }
     if (this.isAddNewNotice()) {
       return this.publicNoticeService.publicNoticeControllerCreate(body);
