@@ -140,7 +140,7 @@ export class ProjectResponse {
   publicNoticeId: number; // Online Public Notice (if any)
 
   @ApiProperty()
-  noticePostDate: string;
+  noticePostDate?: string;
 
   @ApiProperty({ required: true })
   operationStartYear: number;
