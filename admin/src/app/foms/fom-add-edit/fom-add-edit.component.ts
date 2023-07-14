@@ -71,7 +71,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public attachments: AttachmentResponse[] = [];
   public attachmentsInitialNotice: AttachmentResponse[] = [];
   public isDeleting = false;
-  public minOpeningDate: Date = new Date();
+  public minOpeningDate: Date = moment(moment().format('YYYY-MM-DD')).add(1, 'days').toDate(); // 1 day in the future.
   public minClosedDate: Date;
   public fileTypesParentInitial: string[] =
     ['image/png', 'image/jpeg', 'image/jpg', 'image/tiff',
