@@ -116,15 +116,14 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     else { // a case there was public notice saved for the project.
       // This is a tricky case. "bsDatepicker" when (minDate=maxDate) and when previous field date falls
       // outside of the date range, "bsDatepicker" has problem initializing it and even if you trying picking from UI.
-      // So, specifically set it here. In this tricky case: commentingOpenDate=1 day in future from today => 
-      // maxDate = minDate for datePicker. (which means notice publishing date can only have 1 choice: minPostDate) 
+      // So, specifically set it here for corner cases.
       const pnPostDate = this.publicNoticeResponse?.postDate
-      if (pnPostDate && moment(this.minPostDate).isSameOrBefore(this.maxPostDate)) {
+      if (pnPostDate && moment(this.minPostDate).isSameOrBefore(moment(this.project.commentingOpenDate))) {
         if (moment(pnPostDate).isBefore(moment(this.minPostDate)) || moment(pnPostDate).isAfter(this.maxPostDate)){
           this.publicNoticeResponse.postDate = moment(this.minPostDate).format('YYYY-MM-DD');
         }
       }
-      else if (pnPostDate && moment(this.project.commentingOpenDate).isBefore(moment(this.minPostDate))) {
+      else if (pnPostDate && moment(this.minPostDate).isAfter(moment(this.project.commentingOpenDate))) {
         this.publicNoticeResponse.postDate = null;
       }
     }
@@ -234,11 +233,13 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  isPostDateSelectionAvailable(postDatePicker) {
-    if (!this.project.commentingOpenDate) {
-        postDatePicker.toggle(); // bsDatepicker seems to have strange behaviour. hide() won't work, use toggle() instead.
-        this.modalSvc.openWarningDialog(`Commenting Start Date must be entered first before 
-        Public Notice Publishing Date is available for selection.`);
+  warnIfPostDateSelectionNotAvailable(postDatePicker) {
+    if (!this.project.commentingOpenDate ||
+      moment(this.minPostDate).isAfter(moment(this.project.commentingOpenDate))
+    ) {
+      postDatePicker.toggle(); // bsDatepicker seems to have strange behaviour. hide() won't work, use toggle() instead.
+      this.modalSvc.openWarningDialog(`Commenting Start Date must be entered first or at least one day in the future before 
+        Notice Publishing Date is available for selection.`);
     }
   }
 

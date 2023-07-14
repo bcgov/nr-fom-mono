@@ -70,7 +70,7 @@
                 [minDate]="minPostDate"
                 [maxDate]="maxPostDate"
                 (keydown)="$event.preventDefault()"
-                (click)="isPostDateSelectionAvailable(postDatePicker)"
+                (click)="warnIfPostDateSelectionNotAvailable(postDatePicker)"
                 id="post-date"
                 name="pn-post-date"
                 formControlName="pnPostDate"
