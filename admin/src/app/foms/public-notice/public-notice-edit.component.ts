@@ -11,7 +11,7 @@ import {
 } from '@api-client';
 import { IFormGroup, RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { BsDatepickerConfig, BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { Subject, lastValueFrom } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { PublicNoticeForm } from './public-notice.form';
@@ -42,7 +42,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
   maxPostDate: Date;
-  minPostDate: Date = moment(moment().format('YYYY-MM-DD')).add(1, 'days').toDate();
+  minPostDate: Date = moment(moment().format('YYYY-MM-DD')).add(1, 'days').toDate(); // 1 day in the future.
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   
@@ -94,22 +94,8 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
         this.project = result.data.projectDetail;
         this.publicNoticeResponse = result.publicNotice;
         this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
-        if (this.isNewForm) {
-            // Don't inherit operation years from previous public notice from the forest client.
-            delete this.publicNoticeResponse?.postDate;
-        }
-        else { // a case there was public notice saved for the project.
-            // This is a tricky case. "bsDatepicker" when (minDate=maxDate) and when previous field date falls
-            // outside of the date range, "bsDatepicker" has problem initializing it and even if you trying picking from UI.
-            // So, specifically set it here. In this tricky case: commentingOpenDate=1 day in future from today => 
-            // so maxDate = minDate for datePicker. (which means notice publishing date can only have 1 choice: same as commentingOpenDate) 
-            const pnPostDate = this.publicNoticeResponse?.postDate
-            if (pnPostDate && moment(this.project.commentingOpenDate).isSame(
-                moment(moment().add(1, 'days').format('YYYY-MM-DD'))
-            )) {
-                this.publicNoticeResponse.postDate = this.project.commentingOpenDate;
-            }
-        }
+        this.processBeforeFormGroupInitialized()
+        
         let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
@@ -118,6 +104,28 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  processBeforeFormGroupInitialized() {
+    if (!this.editMode) return;
+    
+    if (this.isNewForm) {
+      // Don't inherit operation years from previous public notice from the forest client.
+      delete this.publicNoticeResponse?.postDate;
+    }
+    else { // a case there was public notice saved for the project.
+      // This is a tricky case. "bsDatepicker" when (minDate=maxDate) and when previous field date falls
+      // outside of the date range, "bsDatepicker" has problem initializing it and even if you trying picking from UI.
+      // So, specifically set it here. In this tricky case: commentingOpenDate=1 day in future from today => 
+      // maxDate = minDate for datePicker. (which means notice publishing date can only have 1 choice: minPostDate) 
+      const pnPostDate = this.publicNoticeResponse?.postDate
+      if (pnPostDate 
+          && moment(this.minPostDate).isSameOrBefore(this.maxPostDate)
+          && (moment(pnPostDate).isBefore(moment(this.minPostDate)) || moment(pnPostDate).isAfter(this.maxPostDate))
+      ) {
+          this.publicNoticeResponse.postDate = moment(this.minPostDate).format('YYYY-MM-DD');
+      }
+    }
   }
 
   get isLoading() {
