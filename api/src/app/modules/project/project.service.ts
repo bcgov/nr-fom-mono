@@ -227,6 +227,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     response.commentClassificationMandatory = entity.commentClassificationMandatory;
     if (entity.publicNotices && entity.publicNotices.length > 0) {
       response.publicNoticeId = entity.publicNotices[0].id; // Currently one public notice for a project.
+      response.noticePostDate = entity.publicNotices[0].postDate;
     }
     response.operationStartYear = entity.operationStartYear;
     response.operationEndYear = entity.operationEndYear;
