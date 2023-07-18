@@ -11,7 +11,7 @@ import {
 } from '@api-client';
 import { IFormGroup, RxFormBuilder } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { BsDatepickerConfig, BsDatepickerModule } from "ngx-bootstrap/datepicker";
+import { BsDatepickerModule } from "ngx-bootstrap/datepicker";
 import { Subject, lastValueFrom } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { PublicNoticeForm } from './public-notice.form';
@@ -42,16 +42,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
   businessHoursLimit: number = 100;
   editMode: boolean; // 'edit'/'view' mode.
   maxPostDate: Date;
-  minPostDate: Date = moment().add(1, 'days').toDate();
-
-  // bsDatepicker config object
-  readonly opYearBsConfig = {
-      dateInputFormat: 'YYYY', 
-      minMode: 'year', 
-      minDate: moment().toDate(), 
-      maxDate: moment().add(7, 'years').toDate(), // current + 7 years
-      containerClass: 'theme-dark-blue'
-  } as Partial<BsDatepickerConfig>
+  minPostDate: Date = moment(moment().format('YYYY-MM-DD')).add(1, 'days').toDate(); // 1 day in the future.
 
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
   
@@ -102,12 +93,10 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       .subscribe((result) => {
         this.project = result.data.projectDetail;
         this.publicNoticeResponse = result.publicNotice;
-        if (this.isNewForm) {
-            // Don't inherit operation years from previous public notice from the forest client.
-            delete this.publicNoticeResponse?.postDate;
-        }
-        let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.maxPostDate = moment(this.project.commentingOpenDate).toDate();
+        this.processBeforeFormGroupInitialized()
+        
+        let publicNoticeForm = new PublicNoticeForm(this.publicNoticeResponse);
         this.publicNoticeFormGroup = this.formBuilder.formGroup(publicNoticeForm) as IFormGroup<PublicNoticeForm>;
         this.onSameAsReviewIndToggled();
         if (!this.editMode) {
@@ -115,6 +104,29 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
         }
       }
     );
+  }
+
+  processBeforeFormGroupInitialized() {
+    if (!this.editMode) return;
+    
+    if (this.isNewForm) {
+      // Don't inherit operation years from previous public notice from the forest client.
+      delete this.publicNoticeResponse?.postDate;
+    }
+    else { // a case there was public notice saved for the project.
+      // This is a tricky case. "bsDatepicker" when (minDate=maxDate) and when previous field date falls
+      // outside of the date range, "bsDatepicker" has problem initializing it and even if you trying picking from UI.
+      // So, specifically set it here for corner cases.
+      const pnPostDate = this.publicNoticeResponse?.postDate
+      if (pnPostDate && moment(this.minPostDate).isSameOrBefore(moment(this.project.commentingOpenDate))) {
+        if (moment(pnPostDate).isBefore(moment(this.minPostDate)) || moment(pnPostDate).isAfter(this.maxPostDate)){
+          this.publicNoticeResponse.postDate = moment(this.minPostDate).format('YYYY-MM-DD');
+        }
+      }
+      else if (pnPostDate && moment(this.minPostDate).isAfter(moment(this.project.commentingOpenDate))) {
+        this.publicNoticeResponse.postDate = null;
+      }
+    }
   }
 
   get isLoading() {
@@ -210,6 +222,9 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     if (body.pnPostDate) {
       body.postDate = this.datePipe.transform(body.pnPostDate,'yyyy-MM-dd');
     }
+    else {
+      body.postDate = null;
+    }
     if (this.isAddNewNotice()) {
       return this.publicNoticeService.publicNoticeControllerCreate(body);
     }
@@ -218,11 +233,13 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  isPostDateSelectionAvailable(postDatePicker) {
-    if (!this.project.commentingOpenDate) {
-        postDatePicker.toggle(); // bsDatepicker seems to have strange behaviour. hide() won't work, use toggle() instead.
-        this.modalSvc.openWarningDialog(`Commenting Start Date must be entered first before 
-        Public Notice Publishing Date is available for selection.`);
+  warnIfPostDateSelectionNotAvailable(postDatePicker) {
+    if (!this.project.commentingOpenDate ||
+      moment(this.minPostDate).isAfter(moment(this.project.commentingOpenDate))
+    ) {
+      postDatePicker.toggle(); // bsDatepicker seems to have strange behaviour. hide() won't work, use toggle() instead.
+      this.modalSvc.openWarningDialog(`Commenting Start Date must be entered first or at least one day in the future before 
+        Notice Publishing Date is available for selection.`);
     }
   }
 

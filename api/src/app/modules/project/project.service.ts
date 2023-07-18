@@ -227,6 +227,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     response.commentClassificationMandatory = entity.commentClassificationMandatory;
     if (entity.publicNotices && entity.publicNotices.length > 0) {
       response.publicNoticeId = entity.publicNotices[0].id; // Currently one public notice for a project.
+      response.noticePostDate = entity.publicNotices[0].postDate;
     }
     response.operationStartYear = entity.operationStartYear;
     response.operationEndYear = entity.operationEndYear;
@@ -525,7 +526,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 					const dayDiff = DateTimeUtil.diffNow(postDate, DateTimeUtil.TIMEZONE_VANCOUVER, 'day');
 					if (dayDiff < 1) {
 							throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  
-							Online Public Notice Publish Date: must be at least one day after publish is pushed.`);
+							Online Public Notice Publish Date: must be at least one day in the future.`);
 					}
         }
       }
