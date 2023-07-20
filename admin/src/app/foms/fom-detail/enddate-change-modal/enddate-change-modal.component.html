@@ -37,6 +37,7 @@
               bsDatepicker
               [bsValue]="minDate"
               [minDate]="minDate"
+              (keydown)="$event.preventDefault()"
               [(ngModel)]="newCommentingClosedDate"
               #nccdDatepicker="bsDatepicker"
               id="newCommentingClosedDate"
