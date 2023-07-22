@@ -238,7 +238,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
       moment(this.minPostDate).isAfter(moment(this.project.commentingOpenDate))
     ) {
       postDatePicker.toggle(); // bsDatepicker seems to have strange behaviour. hide() won't work, use toggle() instead.
-      this.modalSvc.openWarningDialog(`Commenting Start Date must be entered first or at least one day in the future before 
+      this.modalSvc.openWarningDialog(`Commenting Start Date must be entered first and at least one day in the future before 
         Notice Publishing Date is available for selection.`);
     }
   }
