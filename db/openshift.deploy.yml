@@ -26,6 +26,10 @@ parameters:
     value: 1Gi
   - name: REGISTRY
     value: ghcr.io
+  - name: CPU_REQUEST
+    value: 10m
+  - name: MEMORY_REQUEST
+    value: 0.1Gi
   - name: PROMOTE
     description: Image (namespace/name:tag) to promote/import
     required: true
@@ -185,6 +189,10 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-user
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
               volumeMounts:
                 - name: ${NAME}-${ZONE}-${COMPONENT}
                   mountPath: /var/lib/postgresql

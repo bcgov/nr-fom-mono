@@ -39,9 +39,9 @@ parameters:
     description: Is certbot handling these certs [true/false]?
     value: "true"
   - name: CPU_REQUEST
-    value: 100m
+    value: 10m
   - name: MEMORY_REQUEST
-    value: 0.5Gi
+    value: 0.12Gi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
