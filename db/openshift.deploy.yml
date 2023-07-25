@@ -27,7 +27,7 @@ parameters:
   - name: REGISTRY
     value: ghcr.io
   - name: CPU_REQUEST
-    value: 10m
+    value: 30m
   - name: MEMORY_REQUEST
     value: 0.1Gi
   - name: PROMOTE
