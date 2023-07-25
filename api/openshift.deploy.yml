@@ -39,7 +39,7 @@ parameters:
     description: Is certbot handling these certs [true/false]?
     value: "true"
   - name: CPU_REQUEST
-    value: 10m
+    value: 30m
   - name: MEMORY_REQUEST
     value: 0.12Gi
   - name: REGISTRY
