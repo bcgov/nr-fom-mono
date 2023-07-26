@@ -1,0 +1,51 @@
+---
+data_management_roles:
+  data_custodian: Julius Huhs
+  product_owner: Pete Tollestrup
+product_external_dependencies:
+  identity_authorization:
+    - IDIR
+    - Business-BceId
+    - BCGov-SSO-Keycloak
+  notification_standard:
+    - Common-Hosted-Email-Service
+product_information:
+  api_specifications:
+    - https://fom.nrs.gov.bc.ca/api/
+  ministry:
+    - Forests
+  product_acronym: FOM
+  product_description: >-
+    Division 3.1 of Bill21-Forest and Range Practices Amendment Act requires
+    Forest Stewardship Plan holders to make a Forest Operations Map available
+    for public review and comment. Public engagement in the management of Crown
+    resources is encouraged and this site offers a platform for members of the
+    public to submit comments for consideration.
+  product_name: Forest Operations Map
+  product_status: maturing
+  product_urls:
+    - https://fom.nrs.gov.bc.ca/public/
+    - https://fom.nrs.gov.bc.ca/admin/
+  program_area: Forest Science, Planning, & Practices Branch
+product_technology_information:
+  backend_frameworks:
+    - name: NestJS
+      version: '10'
+  backend_languages_version:
+    - name: TypeScript
+      version: '4.8'
+  ci_cd_tools:
+    - GitHub-Actions
+  data_storage_platforms:
+    - Postgis
+    - Postgresql
+    - Object-Storage
+  frontend_frameworks:
+    - name: Angular
+      version: '15'
+  frontend_languages: []
+  hosting_platforms:
+    - Private-Cloud-Openshift
+  spatial_mapping_technologies:
+    - Leaflet
+version: 1
