@@ -257,8 +257,10 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   public canChangeEndDate(): boolean {
-    return this.user.isMinistry && (this.project.workflowState.code == WorkflowStateEnum.Initial
-            || this.project.workflowState.code == WorkflowStateEnum.CommentOpen);
+    return this.user.isMinistry && 
+        (this.project.workflowState.code == WorkflowStateEnum.Initial
+            || this.project.workflowState.code == WorkflowStateEnum.CommentOpen
+        ) && !!this.project.commentingOpenDate;
   }
 
   public canEditFOM(): boolean {
@@ -347,7 +349,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   private calculateDaysRemaining(){
-    this.daysRemaining =
+    this.daysRemaining = (this.project.workflowState.code === WorkflowStateEnum.Initial) ?
+      moment(this.project.commentingClosedDate).diff(moment(this.project.commentingOpenDate), 'days') :
       moment(this.project.commentingClosedDate).diff(moment(this.today), 'days');
     if(this.daysRemaining < 0){
       this.daysRemaining = 0;

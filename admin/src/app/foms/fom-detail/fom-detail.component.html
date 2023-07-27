@@ -117,6 +117,10 @@
                         {{project.publicNoticeId? 'Yes' : 'No'}}
                       </span>
                     </li>
+                    <li *ngIf="project.publicNoticeId">
+                        <span class="name">Notice Publishing Date:</span>
+                        <span class="value">{{project.noticePostDate}}</span>
+                    </li>
                   </ul>
                 </section>
                 <br />
