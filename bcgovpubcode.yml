@@ -1,6 +1,7 @@
 ---
 data_management_roles:
   data_custodian: Office of the Chief Forester
+  data_steward: Julius Huhs
   product_owner: Pete Tollestrup
 product_external_dependencies:
   identity_authorization:
@@ -12,6 +13,8 @@ product_external_dependencies:
 product_information:
   api_specifications:
     - https://fom.nrs.gov.bc.ca/api/
+  business_capabilities_standard:
+    - Stakeholder Engagement
   ministry:
     - Forests
   product_acronym: FOM
