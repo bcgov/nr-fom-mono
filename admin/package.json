@@ -34,7 +34,7 @@
     "moment": "^2.29.2",
     "ngx-bootstrap": "^10.0.0",
     "ngx-dropzone": "^3.1.0",
-    "remeda": "^0.2.0",
+    "remeda": "^1.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.5.0",
     "zone.js": "^0.13.0"
