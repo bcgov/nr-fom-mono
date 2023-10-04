@@ -195,11 +195,11 @@
       </div>
 
       <div class="row" >
-        <div class="form-group col-md-6">
+        <div class="form-group col-md-12">
           <label for="email" [ngClass]="{'required': editMode}">Email for Public Comment</label>
           <input type="text"
             id="email" name="email"
-            maxlength="50"
+            maxlength="100"
             [placeholder]="editMode? 'name@industry.com': ''"
             class="form-control"
             formControlName="email"/>
