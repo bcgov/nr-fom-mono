@@ -112,7 +112,7 @@
                 <strong>{{project.id }}</strong>
               </td>
               <td
-                [innerHTML]="project.name ? (project.name | titlecase) : '<em>No FOM name on this File</em>'">
+                [innerHTML]="project.name ? project.name : '<em>No FOM name on this File</em>'">
               </td>
               <td>
                 {{project.fspId}}
