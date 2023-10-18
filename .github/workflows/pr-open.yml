@@ -118,6 +118,11 @@ jobs:
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
+      - name: Set the deployment number
+        env:
+          NUM: ${{ github.event.number }}
+        run: |
+          echo "ZONE=$(($NUM % 10))" >> $GITHUB_ENV
       - uses: bcgov-nr/action-deployer-openshift@v1.1.1
         with:
           file: ${{ matrix.file }}
