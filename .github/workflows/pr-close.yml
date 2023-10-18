@@ -23,7 +23,7 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ github.event.number % 10 }}
+          target: ${{ github.event.number }}
           tags: test
 
   cleanup-openshift:
@@ -39,5 +39,5 @@ jobs:
           oc project ${{ vars.OC_NAMESPACE }}
 
           # Remove old build runs, build pods and deployment pods
-          oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ github.event.number % 10 }}
+          oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ github.event.number }}
 

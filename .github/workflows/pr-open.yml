@@ -124,5 +124,5 @@ jobs:
           parameters:
             -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.event.number }}
             -p URL=fom-${{ github.event.number }}.apps.silver.devops.gov.bc.ca
-            -p ZONE=${{ github.event.number % 10 }} ${{ matrix.parameters }}
+            -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
           triggers: ${{ matrix.triggers }}
