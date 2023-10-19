@@ -7,9 +7,6 @@ concurrency:
   group: pr-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  ZONE: ${{ github.event.number }}
-
 jobs:
   setup:
     name: Reset the deployment number
@@ -20,7 +17,7 @@ jobs:
       - name: Calculate the deployment number
         id: calculate
         run: |
-          echo "zone=$((${{ env.ZONE }} % 100))" >> $GITHUB_OUTPUT
+          echo "zone=$((${{ github.event.number }} % 100))" >> $GITHUB_OUTPUT
 
   prep:
     name: Prep
