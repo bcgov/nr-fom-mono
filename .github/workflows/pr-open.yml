@@ -98,9 +98,8 @@ jobs:
 
   deploys:
     name: Deploys
-    needs: [prep, builds]
+    needs: [prep, builds, setup]
     runs-on: ubuntu-22.04
-    needs: setup
     env:
       ZONE: needs.setup.outputs.zone
     timeout-minutes: 10
