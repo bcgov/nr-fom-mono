@@ -19,7 +19,7 @@ jobs:
       - name: Calculate the deployment number
         id: calculate
         run: |
-          echo "zone=$((${{ github.event.number }} % 100))" >> $GITHUB_OUTPUT
+          echo "zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
 
   # Tag images for promotion on GitHub Container Registry (ghcr.io)
   image-promotions:
