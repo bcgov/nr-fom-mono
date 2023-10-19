@@ -100,10 +100,10 @@ jobs:
     name: Deploys
     needs: [prep, builds]
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
     needs: setup
     env:
       ZONE: needs.setup.outputs.zone
+    timeout-minutes: 10
     strategy:
       matrix:
         name: [api, admin, db, public]
