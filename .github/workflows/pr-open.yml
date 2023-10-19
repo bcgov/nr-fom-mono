@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: setup
     env:
-      ZONE: needs.setup.outputs.zone
+      ZONE: ${{ needs.setup.outputs.zone }}
     steps:
       - name: PR Greeting
         if: github.event.action == 'opened' || github.event.action == 'reopened'
@@ -65,7 +65,7 @@ jobs:
       packages: write
     needs: setup
     env:
-      ZONE: needs.setup.outputs.zone
+      ZONE: ${{ needs.setup.outputs.zone }}
     strategy:
       matrix:
         package: [admin, api, db, public]
@@ -101,7 +101,7 @@ jobs:
     needs: [prep, builds, setup]
     runs-on: ubuntu-22.04
     env:
-      ZONE: needs.setup.outputs.zone
+      ZONE: ${{ needs.setup.outputs.zone }}
     timeout-minutes: 10
     strategy:
       matrix:
