@@ -7,18 +7,30 @@ concurrency:
   group: pr-${{ github.ref }}
   cancel-in-progress: true
 
-jobs:  
+env:
+  ZONE: ${{ github.event.number }}
+
+jobs:
+  setup:
+    name: Reset the deployment number
+    runs-on: ubuntu-22.04
+    outputs:
+      zone: ${{ steps.calculate.outputs.zone }}
+    steps:
+      - name: Calculate the deployment number
+        id: calculate
+        run: |
+          echo "zone=$((${{ env.ZONE }} % 100))" >> $GITHUB_OUTPUT
+
   prep:
     name: Prep
     permissions:
       pull-requests: write
     runs-on: ubuntu-22.04
+    needs: setup
+    env:
+      ZONE: needs.setup.outputs.zone
     steps:
-      - name: Set the deployment number
-        env:
-          NUM: ${{ github.event.number }}
-        run: |
-          echo "ZONE=$(($NUM % 10))" >> $GITHUB_ENV
       - name: PR Greeting
         if: github.event.action == 'opened' || github.event.action == 'reopened'
         env:
@@ -32,7 +44,7 @@ jobs:
 
             Any successful deployments (not always required) will be available below.
              - [api](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/api)
-             - [admin](https://fom-${{env.ZONE }}.${{ env.DOMAIN }}/admin)
+             - [admin](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/admin)
              - [public](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/public)
 
             Once merged, code will be promoted and handed off to following workflow run.
@@ -54,6 +66,9 @@ jobs:
     runs-on: ubuntu-22.04
     permissions:
       packages: write
+    needs: setup
+    env:
+      ZONE: needs.setup.outputs.zone
     strategy:
       matrix:
         package: [admin, api, db, public]
@@ -73,11 +88,6 @@ jobs:
             build_file: public/Dockerfile
             triggers: ('public/' 'libs/')
     steps:
-      - name: Set the deployment number
-        env:
-          NUM: ${{ github.event.number }}
-        run: |
-          echo "ZONE=$(($NUM % 10))" >> $GITHUB_ENV
       - uses: actions/checkout@v3
       - uses: bcgov-nr/action-builder-ghcr@v1.1.2
         with:
@@ -94,6 +104,9 @@ jobs:
     needs: [prep, builds]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
+    needs: setup
+    env:
+      ZONE: needs.setup.outputs.zone
     strategy:
       matrix:
         name: [api, admin, db, public]
@@ -123,11 +136,6 @@ jobs:
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
-      - name: Set the deployment number
-        env:
-          NUM: ${{ github.event.number }}
-        run: |
-          echo "ZONE=$(($NUM % 10))" >> $GITHUB_ENV
       - uses: bcgov-nr/action-deployer-openshift@v1.1.1
         with:
           file: ${{ matrix.file }}
