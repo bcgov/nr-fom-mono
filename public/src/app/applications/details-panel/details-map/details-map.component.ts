@@ -124,6 +124,9 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
       this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
     });
 
+    this.map.on('click', () => { this.map.scrollWheelZoom.enable(); });
+    this.map.on('blur', () => { this.map.scrollWheelZoom.disable(); });
+
     // Initialize current app-map layers state (for the first time when this component map is shown)
     this.mapLayersService.applyCurrentMapLayers(this.map, this.mapLayers);
   }
