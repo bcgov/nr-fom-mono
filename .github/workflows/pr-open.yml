@@ -78,7 +78,7 @@ jobs:
           tag: ${{ github.event.number }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+          # triggers: ${{ matrix.triggers }}
 
   deploys:
     name: Deploys
