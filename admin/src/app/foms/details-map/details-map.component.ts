@@ -108,6 +108,9 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
       maxBounds: L.latLngBounds(L.latLng(-90, -180), L.latLng(90, 180)) // restrict view to "the world"
     });
 
+    this.map.on('click', () => { this.map.scrollWheelZoom.enable(); });
+    this.map.on('blur', () => { this.map.scrollWheelZoom.disable(); });
+    
     mapLayers.addLayerControl(this.map);
     this.map.on('baselayerchange', (e: L.LayersControlEvent) => {
       mapLayers.setActiveBaseLayerName(e.name);
