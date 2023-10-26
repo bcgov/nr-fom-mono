@@ -139,7 +139,7 @@ jobs:
     steps:
       - uses: actions/delete-package-versions@v4
         with:
-          package-name: "${{ github.event.repository.name }}/${{ inputs.name }}"
+          package-name: bcgov/nr-fom
           package-type: "container"
           min-versions-to-keep: 100
           ignore-versions: "^(prod|test|demo)$"
