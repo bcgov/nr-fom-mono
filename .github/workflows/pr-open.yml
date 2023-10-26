@@ -137,9 +137,10 @@ jobs:
       matrix:
         name: [api, admin, db, public]
     steps:
-      - uses: actions/delete-package-versions@v4
+      - uses: actions/delete-package-versions@v4.1.1
         with:
           package-name: bcgov/nr-fom/${{ matrix.name }}
           package-type: "container"
           min-versions-to-keep: 100
           ignore-versions: "^(prod|test|demo)$"
+          token: ${{ github.token }}
