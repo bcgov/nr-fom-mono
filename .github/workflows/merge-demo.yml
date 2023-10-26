@@ -38,11 +38,12 @@ jobs:
             triggers: ('public/' 'libs/')
     steps:
       - uses: actions/checkout@v3
-      - uses: bcgov-nr/action-builder-ghcr@v1.1.2
+      - uses: bcgov-nr/action-builder-ghcr@v2.0.0
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
           build_file: ${{ matrix.build_file }}
+          keep_versions: 100
           tag: ${{ env.ZONE }}
           tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
