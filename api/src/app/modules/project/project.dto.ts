@@ -5,7 +5,7 @@ import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
 import { IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, 
-  MinLength, Min, registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+  MinLength, Min, registerDecorator, ValidationArguments, ValidationOptions, IsNotEmpty, ValidateIf } from 'class-validator';
 
 export class ProjectCreateRequest {
   @ApiProperty()
@@ -52,6 +52,11 @@ export class ProjectCreateRequest {
   })
   operationEndYear: number;
 
+  @ApiProperty()
+  @ValidateIf(o => o.forestClientNumber.toUpperCase().includes('TIMBER SALES MANAGER'))
+  @IsNotEmpty()
+  @MaxLength(50)
+  bctsMgrName: string;
 }
 
 export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequest), ['forestClientNumber']) {
@@ -147,6 +152,9 @@ export class ProjectResponse {
 
   @ApiProperty({ required: true })
   operationEndYear: number;
+
+  @ApiProperty()
+  bctsMgrName: string;
 }
 
 export class ProjectMetricsResponse {
