@@ -26,6 +26,7 @@ export interface ProjectUpdateRequest {
     districtId?: number;
     operationStartYear?: number;
     operationEndYear?: number;
+    bctsMgrName?: string;
     revisionCount: number;
 }
 

@@ -27,5 +27,6 @@ export interface ProjectCreateRequest {
     districtId: number;
     operationStartYear: number;
     operationEndYear: number;
+    bctsMgrName: string;
 }
 
