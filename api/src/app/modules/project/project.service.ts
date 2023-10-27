@@ -231,6 +231,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
     response.operationStartYear = entity.operationStartYear;
     response.operationEndYear = entity.operationEndYear;
+    response.bctsMgrName = entity.bctsMgrName;
     return response;
   }
 
