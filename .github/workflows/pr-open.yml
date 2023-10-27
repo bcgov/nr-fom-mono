@@ -135,7 +135,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        name: [api, admin, db, public]
+        name: [api, admin, public]
     steps:
       - uses: actions/delete-package-versions@v4.1.1
         with:
