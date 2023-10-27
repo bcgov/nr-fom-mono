@@ -143,4 +143,3 @@ jobs:
           package-type: "container"
           min-versions-to-keep: 100
           ignore-versions: "^(prod|test|demo)$"
-          token: ${{ github.token }}
