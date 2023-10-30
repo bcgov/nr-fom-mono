@@ -214,9 +214,17 @@
           </div>
           <div class="form-group col">
             <label>FOM Holder</label>
-            <select *ngIf="this.isCreate" class="sort-comments form-control" [ngClass]="{'is-invalid': !forestClientSelect && isSubmitSaveClicked}" (change)="changeForestClientId($event)" id="forestClient-list">
+            <select *ngIf="this.isCreate" 
+                class="sort-comments form-control"
+                formControlName="forestClient"
+                [ngClass]="{'is-invalid': !forestClientSelect && isSubmitSaveClicked}" 
+                (change)="onForestClientChange($event)" 
+                id="forestClient-list">
               <option *ngIf="this.isCreate">  </option>
-              <option  [value]="client.id" *ngFor="let client of forestClients" [selected]="client.id === forestClientSelect" [innerHTML]=" client.name"> </option>
+              <option *ngFor="let client of forestClients" 
+                [ngValue]="client"  
+                [selected]="client.id === forestClientSelect" 
+                [innerHTML]=" client.name"> </option>
             </select>
             <input *ngIf="!this.isCreate"
                    type="text"
@@ -231,7 +239,41 @@
               && getErrorMessage('forestClient', 'required')">
               {{getErrorMessage('forestClient', 'required')}}
             </div>
-         </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col">
+            <label [ngClass]="{'required': isHolderBctsManger()}">
+                Timber Sales Manager Name
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              id="mgr-name-id"
+              name="bctsMgrName"
+              maxlength="50"
+              formControlName="bctsMgrName"
+              [appFormControl]="fg.get('bctsMgrName')"
+            />
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
+              && getErrorMessage('bctsMgrName', 'required')">
+              {{getErrorMessage('bctsMgrName', 'required')}}
+            </div>
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
+                && getErrorMessage('bctsMgrName', 'minLength')">
+                {{getErrorMessage('bctsMgrName', 'minLength')}}
+            </div>
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
+                && getErrorMessage('bctsMgrName', 'maxLength')">
+                {{getErrorMessage('bctsMgrName', 'maxLength')}}
+            </div>
+          </div>
+
+
+
         </div>
         <div class="row">
           <div class="form-group col-md">
