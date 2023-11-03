@@ -169,7 +169,34 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async create(request: any, user: User): Promise<ProjectResponse> {
     request.workflowStateCode = WorkflowStateEnum.INITIAL;
     request.forestClientId = request.forestClientNumber;
+    await this.validateTimberSalesManager(request.bctsMgrName, request.forestClientNumber, null);
     return super.create(request, user);
+  }
+
+  async update(projectId: number, request: any, user: User): Promise<ProjectResponse> {
+    await this.validateTimberSalesManager(request.bctsMgrName, null, projectId);
+    return super.update(projectId, request, user);
+  }
+
+  async validateTimberSalesManager(bctsMgrName: string, forestClientNumber?: string, projectId?: number) {
+    let forestClientName = null;
+    if (projectId) {
+			const projectEntity = await this.findEntityWithCommonRelations(projectId)
+			forestClientName = projectEntity.forestClient.name;
+    }
+    else {
+			const fcl = await this.forestClientService.find([forestClientNumber]);
+			if (fcl && fcl.length == 1) {
+					forestClientName = fcl[0].name;
+			}
+    }
+
+    // Timber Manager's name is required when the holder (foreset client name) starts with "TIMBER SALES MANAGER" 
+    if (forestClientName && forestClientName.toUpperCase().includes('TIMBER SALES MANAGER')) {
+			if (!bctsMgrName || bctsMgrName.length == 0) {
+					throw new BadRequestException("Timber Sales Manager name is required for Timber Sales FOM.");
+			}
+    }
   }
 
   async find(findCriteria: ProjectFindCriteria):Promise<ProjectResponse[]> {
