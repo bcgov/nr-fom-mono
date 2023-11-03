@@ -53,10 +53,10 @@ export class ProjectCreateRequest {
   operationEndYear: number;
 
   @ApiProperty()
-  @ValidateIf(o => o.forestClientNumber.toUpperCase().includes('TIMBER SALES MANAGER'))
-  @IsNotEmpty()
+  @ValidateIf(o => o.bctsMgrName && o.bctsMgrName.length > 0) // validate when not empty.
+  @MinLength(3)
   @MaxLength(50)
-  bctsMgrName: string;
+  bctsMgrName?: string;
 }
 
 export class ProjectUpdateRequest extends OmitType(PartialType(ProjectCreateRequest), ['forestClientNumber']) {
