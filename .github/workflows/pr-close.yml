@@ -10,11 +10,25 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  setup:
+    name: Reset the deployment number
+    runs-on: ubuntu-22.04
+    outputs:
+      zone: ${{ steps.calculate.outputs.zone }}
+    steps:
+      - name: Calculate the deployment number
+        id: calculate
+        run: |
+          echo "zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+
   # Tag images for promotion on GitHub Container Registry (ghcr.io)
   image-promotions:
     name: Tag images
     if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-22.04
+    needs: setup
+    env:
+      ZONE: ${{ needs.setup.outputs.zone }}
     strategy:
       matrix:
         package: [api, admin, db, public]
@@ -23,14 +37,16 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.package }}
-          target: ${{ github.event.number }}
+          target: ${{ env.ZONE }}
           tags: test
 
   cleanup-openshift:
     name: Cleanup OpenShift
     runs-on: ubuntu-22.04
+    needs: setup
     env:
       NAME: fom
+      ZONE: ${{ needs.setup.outputs.zone }}      
     steps:
       - uses: actions/checkout@v3
       - name: Remove OpenShift artifacts
@@ -39,5 +55,5 @@ jobs:
           oc project ${{ vars.OC_NAMESPACE }}
 
           # Remove old build runs, build pods and deployment pods
-          oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ github.event.number }}
+          oc delete all,pvc,secret,cm -l app=${{ env.NAME }}-${{ env.ZONE }}
 
