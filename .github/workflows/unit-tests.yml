@@ -22,19 +22,20 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - uses: bcgov-nr/action-test-and-analyse@v0.0.1
+      - uses: bcgov-nr/action-test-and-analyse@v1.1.0
         with:
           commands: |
             npm ci
             npm run test-unit
           dir: api
+          node_version: 16
           sonar_args: >
             -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
             -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info   
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.project.monorepo.enabled=false
             -Dsonar.projectKey=nr-fom
-          sonar_project_token: ${{ secrets.SONAR_TOKEN }}
+          sonar_project: ${{ secrets.SONAR_TOKEN }}
 
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy:
