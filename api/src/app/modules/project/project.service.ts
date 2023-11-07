@@ -181,21 +181,21 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async validateTimberSalesManager(bctsMgrName: string, forestClientNumber?: string, projectId?: number) {
     let forestClientName = null;
     if (projectId) {
-			const projectEntity = await this.findEntityWithCommonRelations(projectId)
-			forestClientName = projectEntity.forestClient.name;
+      const projectEntity = await this.findEntityWithCommonRelations(projectId)
+      forestClientName = projectEntity.forestClient.name;
     }
     else {
-			const fcl = await this.forestClientService.find([forestClientNumber]);
-			if (fcl && fcl.length == 1) {
-					forestClientName = fcl[0].name;
-			}
+      const fcl = await this.forestClientService.find([forestClientNumber]);
+      if (fcl && fcl.length == 1) {
+          forestClientName = fcl[0].name;
+      }
     }
 
-    // Timber Manager's name is required when the holder (foreset client name) starts with "TIMBER SALES MANAGER" 
+    // Timber Manager's name is required when the holder (foreset client name) contains "TIMBER SALES MANAGER" 
     if (forestClientName && forestClientName.toUpperCase().includes('TIMBER SALES MANAGER')) {
-			if (!bctsMgrName || bctsMgrName.length == 0) {
-					throw new BadRequestException("Timber Sales Manager name is required for Timber Sales FOM.");
-			}
+      if (!bctsMgrName || bctsMgrName.length == 0) {
+          throw new BadRequestException("Timber Sales Manager name is required for Timber Sales FOM.");
+      }
     }
   }
 
