@@ -44,5 +44,6 @@ export interface ProjectResponse {
     noticePostDate: string;
     operationStartYear: number;
     operationEndYear: number;
+    bctsMgrName: string;
 }
 

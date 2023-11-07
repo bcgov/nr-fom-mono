@@ -55,6 +55,9 @@
           <li>
             FOM Holder:&nbsp;&nbsp;{{project.forestClient.name | titlecase}}
           </li>
+          <li *ngIf="project.bctsMgrName && project.bctsMgrName.length > 0">
+            Timber Sales Manager Name:&nbsp;&nbsp;{{project.bctsMgrName | titlecase}}
+          </li>
           <li>
             <strong>FSP ID:&nbsp;&nbsp;{{project.fspId}}</strong>
           </li>

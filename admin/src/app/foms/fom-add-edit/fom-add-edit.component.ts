@@ -249,7 +249,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.stateSvc.loading) return;
     let projectCreate = this.fg.value as ProjectCreateRequest
     projectCreate['districtId'] = this.districtIdSelect;
-    projectCreate.forestClientNumber = this.fg.get('forestClient').value;
+    projectCreate.forestClientNumber = this.fg.get('forestClient').value.id;
     const cmoDateVal = this.fg.get('commentingOpenDate').value;
     const cmcDateVal = this.fg.get('commentingClosedDate').value;
     projectCreate.commentingOpenDate = cmoDateVal? moment(cmoDateVal).format('YYYY-MM-DD'): null;
@@ -318,9 +318,22 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.districtIdSelect = parseInt(e.target.value);
   }
 
-  changeForestClientId(e) {
-    this.fg.get('forestClient').setValue(e.target.value);
-    this.forestClientSelect = parseInt(e.target.value);
+  onForestClientChange(e) {
+    const forestClientField = this.fg.get('forestClient');
+    this.fg.get('forestClient').setValue(forestClientField.value);
+    this.forestClientSelect = parseInt(forestClientField.value.id);
+
+    // 'TIMBER SALES MANAGER' name field is required (to be validated) based on forestClient name 
+    // conditionally. Due to it's validation is annotation-based in fom-add-edit.form.ts 
+    // (using @rxweb/reactive-form-validators), when forestClient is changed, bctsMgrName does not get
+    // rerenderred (no ngIf, ngFor etc on this field).
+    // Just trigger the dynamic form field (with enable()) is probably easier than using 'ChangeDetectorRef'. 
+    this.fg.get('bctsMgrName').enable();
+  }
+
+  isHolderBctsManger() {
+    const forestClientField = this.fg.get('forestClient');
+    return forestClientField.value?.name?.toUpperCase().includes('TIMBER SALES MANAGER');
   }
 
   changeDescription(e) {

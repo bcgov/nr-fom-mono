@@ -1,5 +1,5 @@
 import { DistrictResponse, ForestClientResponse, ProjectResponse, WorkflowStateCode } from '@api-client';
-import { minLength, prop, required, minDate } from '@rxweb/reactive-form-validators';
+import { minLength, prop, required, minDate, maxLength } from '@rxweb/reactive-form-validators';
 import moment = require("moment");
 import * as R from 'remeda';
 
@@ -11,7 +11,8 @@ const updateFields = [
   'fspId',
   'district',
   'forestClient',
-  'workflowState'
+  'workflowState',
+  'bctsMgrName'
 ] as const;
 
 export class FomAddEditForm implements Pick<ProjectResponse,
@@ -44,7 +45,6 @@ export class FomAddEditForm implements Pick<ProjectResponse,
 
   @prop()
   @required({message: 'FOM Holder is required.'})
-  @minLength({value: 1})
   forestClient: ForestClientResponse;
 
   @prop()
@@ -60,6 +60,17 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   @minDate({fieldName:'opStartDate', message: 'Must be equal to or later than the Start of Operations'})
   @prop()
   opEndDate: Date;
+
+  @prop()
+  @required({
+    conditionalExpression: x => {
+        return x.forestClient?.name.toUpperCase().includes('TIMBER SALES MANAGER')
+    },
+    message: 'Timber Sales Manager Name is required.', 
+  })
+  @minLength({value: 3, message: 'Minimum length is 3'})
+  @maxLength({value: 50, message: 'Maximum length is 50'})
+  bctsMgrName: string;
 
   constructor(project?: Partial<ProjectResponse>) {
     if (project) {

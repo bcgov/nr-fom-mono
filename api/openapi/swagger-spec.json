@@ -1839,6 +1839,9 @@
             },
             "operationEndYear": {
               "type": "number"
+            },
+            "bctsMgrName": {
+              "type": "string"
             }
           },
           "required": [
@@ -1858,7 +1861,8 @@
             "publicNoticeId",
             "noticePostDate",
             "operationStartYear",
-            "operationEndYear"
+            "operationEndYear",
+            "bctsMgrName"
           ]
         },
         "ProjectMetricsResponse": {
@@ -1915,6 +1919,9 @@
             },
             "operationEndYear": {
               "type": "number"
+            },
+            "bctsMgrName": {
+              "type": "string"
             }
           },
           "required": [
@@ -1926,7 +1933,8 @@
             "fspId",
             "districtId",
             "operationStartYear",
-            "operationEndYear"
+            "operationEndYear",
+            "bctsMgrName"
           ]
         },
         "ProjectUpdateRequest": {
@@ -1957,6 +1965,9 @@
             },
             "operationEndYear": {
               "type": "number"
+            },
+            "bctsMgrName": {
+              "type": "string"
             },
             "revisionCount": {
               "type": "number"

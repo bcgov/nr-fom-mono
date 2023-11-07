@@ -299,7 +299,8 @@ function getSimpleProjectResponseData() {
     "commentClassificationMandatory": false,
     "publicNoticeId": 10001,
     "operationStartYear": 2028,
-    "operationEndYear": 2031
+    "operationEndYear": 2031,
+    "bctsMgrName": null
   }
   return data;
 }

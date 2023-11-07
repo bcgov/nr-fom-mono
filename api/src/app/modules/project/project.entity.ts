@@ -73,4 +73,6 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'operation_end_year'})
   operationEndYear: number;
   
+  @Column({ name: 'bcts_manager_name'})
+  bctsMgrName: string;
 }
