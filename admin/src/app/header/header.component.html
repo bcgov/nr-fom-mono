@@ -16,14 +16,14 @@
     </button>
 
     <div class="navbar-collapse" [@toggleNav]="isNavMenuOpen ? 'navOpen' : 'navClosed'" id="mainNav">
-      <ul class="navbar-nav">
-        <li *ngIf="user && user.isForestClient" class="nav-item">
+      <ul *ngIf="user" class="navbar-nav">
+        <li *ngIf="user.isForestClient" class="nav-item">
           <a class="nav-link" routerLink="/a/create" title="Add a new FOM" tabindex="0">
             <span>Add new FOM</span>
           </a>
         </li>
         <div class="v-bar"><div></div></div>
-        <li *ngIf="user && (user.isMinistry || user.isForestClient)" class="nav-item">
+        <li *ngIf="user.isMinistry || user.isForestClient" class="nav-item">
           <a class="nav-link" routerLink="/search" title="Search for FOMs" tabindex="1">
             <span>Search for FOM</span>
           </a>
@@ -42,7 +42,7 @@
           </a>
         </li>
   
-        <li *ngIf="user" class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" (click)="navigateToLogout()" title="Log out" tabindex="3">
             <span>Logout</span> 
           </a>
