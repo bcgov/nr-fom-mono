@@ -278,3 +278,13 @@
   font-weight: 700;
   vertical-align: top;
 }
+
+// Vertical separator
+div.v-bar {
+  display: flex;
+  div {
+    align-self: center; // place itself at middle of flex container.
+    height: 2rem;
+    border-right: 2px solid grey;
+  }
+}
