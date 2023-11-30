@@ -23,7 +23,7 @@ import { CognitoService } from "@admin-core/services/cognito.service";
     ]
 })
 export class HeaderComponent implements OnInit {
-  isNavMenuOpen = true; 
+  isNavMenuOpen = false; 
   environmentDisplay: string;
   user: User;
 
@@ -57,7 +57,4 @@ export class HeaderComponent implements OnInit {
     this.isNavMenuOpen = !this.isNavMenuOpen;
   }
 
-  closeNav() {
-    this.isNavMenuOpen = false;
-  }
 }

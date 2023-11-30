@@ -243,6 +243,8 @@
   }
 
   .navbar-collapse {
+    overflow: visible;
+    height: auto !important;
     flex-grow: 0;
   }
 }
