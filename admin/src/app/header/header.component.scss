@@ -76,15 +76,6 @@
   }
 }
 
-@media (min-width: 420px) {
-  .navbar-toggler {
-    i {
-      + span {
-        display: inline-block;
-      }
-    }
-  }
-}
 
 // NAVBAR
 .navbar {
@@ -234,6 +225,15 @@
           }
         }
       }
+
+      // Vertical separator
+      div.v-bar {
+        padding: 0.8rem 0;
+        div {
+          border-right: 2px solid grey; height:2.5rem;
+        }
+      }
+
     }
   }
 

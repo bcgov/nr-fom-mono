@@ -19,25 +19,29 @@
       <ul class="navbar-nav">
         <li *ngIf="user && user.isForestClient" class="nav-item">
           <a class="nav-link" routerLink="/a/create" title="Add a new FOM" tabindex="0">
-            <span>Add New FOM</span>
+            <span>Add new FOM</span>
           </a>
         </li>
+        <div class="v-bar"><div></div></div>
         <li *ngIf="user && (user.isMinistry || user.isForestClient)" class="nav-item">
           <a class="nav-link" routerLink="/search" title="Search for FOMs" tabindex="1">
-            <span>Search for FOMs</span>
+            <span>Search for FOM</span>
           </a>
         </li>
+        <div class="v-bar"><div></div></div>
         <li class="nav-item">
           <a class="nav-link" routerLink="/about" title="Training modules" tabindex="2">
               <span>Training modules</span>
           </a>
         </li>
+        <div class="v-bar"><div></div></div>
         <li class="nav-item">
           <!-- disable link, just displaying name -->
           <a class="nav-link" title="Login User" style="pointer-events: none">
             <span>{{user.displayName}}</span>
           </a>
-        </li>        
+        </li>
+  
         <li *ngIf="user" class="nav-item">
           <a class="nav-link" (click)="navigateToLogout()" title="Log out" tabindex="3">
             <span>Logout</span> 
