@@ -41,41 +41,47 @@
   }
 }
 
-// Navbar Toggle Button
-.navbar-toggler {
-  margin-right: 0.5rem;
-  padding: 0.5rem 0.4rem;
-  border: 2px solid $gold;
-  color: $gold;
-  font-size: medium;
-  font-weight: 600;
-  outline: none; // override user agent stylesheet default
+@media (max-width: 767px) {
+  // Navbar Toggle Button
+  .navbar-toggler {
+    margin-right: 0.5rem;
+    padding: 0.5rem 0.4rem;
+    border: 2px solid $gold;
+    color: $gold;
+    font-size: medium;
+    font-weight: 600;
+    outline: none; // override user agent stylesheet default
+    display: flex;
 
-  &:hover {
-    cursor: pointer;
-  }
+    span {
+        align-self: center;
+    }
+    
+    &:hover {
+        cursor: pointer;
+    }
 
-  &.collapsed {
-    border: 2px solid transparent;
-    color: $white;
-  }
+    &.collapsed {
+        border: 2px solid transparent;
+        color: $white;
+    }
 
-  i {
-    float: left;
-    margin-top: -0.25rem;
-    margin-bottom: -0.25rem;
+    i {
+        float: left;
+        margin-top: -0.25rem;
+        margin-bottom: -0.25rem;
 
-    + span {
-      display: none;
-      margin-top: 1px;
-      margin-left: 0.25rem;
-      font-size: $mn-font-size;
-      font-weight: 700;
-      vertical-align: top;
+        + span {
+        display: none;
+        margin-top: 1px;
+        margin-left: 0.25rem;
+        font-size: $mn-font-size;
+        font-weight: 700;
+        vertical-align: top;
+        }
     }
   }
 }
-
 
 // NAVBAR
 .navbar {
