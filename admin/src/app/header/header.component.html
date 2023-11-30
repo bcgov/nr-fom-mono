@@ -1,7 +1,9 @@
 <header class="app-header app-header--solid" id="header">
   <nav class="navbar navbar-expand-md justify-content-between">
     <a class="navbar-brand" title="Forest Operations Map - FOM" routerLink="/home">
-      <span class="navbar-brand__title">Forest Operations Map - Admin </span>
+      <span class="navbar-brand__title">
+        Forest Operations Map - Admin 
+      </span>
     </a>
     <span class="navbar-environment" *ngIf="environmentDisplay">{{environmentDisplay}}</span>
     <button class="navbar-toggler" type="button" title="Toggle Main Navigation"
@@ -29,10 +31,16 @@
           <a class="nav-link" routerLink="/about" title="Training modules" tabindex="2">
               <span>Training modules</span>
           </a>
+        </li>
+        <li class="nav-item">
+          <!-- disable link, just displaying name -->
+          <a class="nav-link" title="Login User" style="pointer-events: none">
+            <span>{{user.displayName}}</span>
+          </a>
         </li>        
         <li *ngIf="user" class="nav-item">
-          <a class="nav-link" (click)="navigateToLogout()" title="Log out" tabindex="0">
-            <span>Logout</span>
+          <a class="nav-link" (click)="navigateToLogout()" title="Log out" tabindex="3">
+            <span>Logout</span> 
           </a>
         </li>
       </ul>
