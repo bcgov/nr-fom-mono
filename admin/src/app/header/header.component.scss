@@ -178,7 +178,8 @@
 @media (min-width: 768px) {
   .navbar {
     background: transparent;
-
+    font-size: medium;
+    
     .navbar-nav {
       margin-top: 0;
 
@@ -260,6 +261,7 @@
   background-position: 8px center;
   background-repeat: no-repeat;
   white-space: normal;
+  font-size: inherit;
   display: flex;
 }
 
@@ -268,7 +270,6 @@
   display: inline-block;
   color: $mn-color;
   line-height: 1.1rem;
-  font-size: 1rem;
   align-self: center;
 
   .wb {
