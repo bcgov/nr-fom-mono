@@ -23,9 +23,8 @@ import { CognitoService } from "@admin-core/services/cognito.service";
     ]
 })
 export class HeaderComponent implements OnInit {
-  isNavMenuOpen = true; 
+  isNavMenuOpen = false; 
   environmentDisplay: string;
-  logoutMsg: string = "Logout";
   user: User;
 
   constructor(
@@ -35,9 +34,6 @@ export class HeaderComponent implements OnInit {
   ) {
     this.environmentDisplay = configService.getEnvironmentDisplay();
     this.user = this.cognitoService.getUser();
-    if (this.user) {
-      this.logoutMsg += ' ' + this.user.displayName;
-    }
   }
 
   ngOnInit() {
@@ -61,7 +57,4 @@ export class HeaderComponent implements OnInit {
     this.isNavMenuOpen = !this.isNavMenuOpen;
   }
 
-  closeNav() {
-    this.isNavMenuOpen = false;
-  }
 }

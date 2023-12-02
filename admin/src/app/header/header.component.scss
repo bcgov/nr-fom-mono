@@ -49,31 +49,32 @@
   font-size: medium;
   font-weight: 600;
   outline: none; // override user agent stylesheet default
-
+  
   &:hover {
-    cursor: pointer;
+      cursor: pointer;
   }
 
   &.collapsed {
-    border: 2px solid transparent;
-    color: $white;
+      border: 2px solid transparent;
+      color: $white;
   }
 
   i {
-    float: left;
-    margin-top: -0.25rem;
-    margin-bottom: -0.25rem;
+      float: left;
+      margin-top: -0.25rem;
+      margin-bottom: -0.25rem;
 
-    + span {
+      + span {
       display: none;
       margin-top: 1px;
       margin-left: 0.25rem;
       font-size: $mn-font-size;
       font-weight: 700;
       vertical-align: top;
-    }
+      }
   }
 }
+
 
 @media (min-width: 420px) {
   .navbar-toggler {
@@ -90,6 +91,7 @@
   padding: 0;
   background-color: $header-bg;
   z-index: 1000;
+  flex:1 1 0;
 
   .navbar-nav {
     margin-top: 0.5rem;
@@ -100,9 +102,6 @@
       padding: 0.875rem 1rem;
       border-top: 1px solid $mn-border-color;
       color: $mn-color;
-      text-transform: uppercase;
-      font-size: $mn-font-size;
-      font-weight: 700;
       cursor: pointer;
     }
 
@@ -158,20 +157,29 @@
   .navbar-environment {
     padding: 0 2rem;
     font-weight: 700;
-    font-size: 2rem;
+    font-size: 1.5rem;
     background-color: #063;
     border-radius: 1.5rem;
+    text-transform: uppercase;
   }
-}
 
-.navbar-collapse {
-  overflow: hidden;
+  .navbar-collapse {
+    overflow: hidden;
+  }
+
+  @media screen and (max-width: 440px) {
+    .navbar-environment {
+      padding: 0 1em;
+      font-size: 1em;
+    }
+  }
 }
 
 @media (min-width: 768px) {
   .navbar {
     background: transparent;
-
+    font-size: medium;
+    
     .navbar-nav {
       margin-top: 0;
 
@@ -235,6 +243,7 @@
           }
         }
       }
+
     }
   }
 
@@ -248,19 +257,20 @@
 // Navbar Brand
 .navbar-brand {
   height: 3.4375rem;
-  background-image: url(../../assets/images/bcgov-header-vert-SM.png);
+  background-image: url(../../assets/images/bcgov-header-vert-MD.png);
   background-position: 8px center;
   background-repeat: no-repeat;
   white-space: normal;
+  font-size: inherit;
+  display: flex;
 }
 
 .navbar-brand__title {
-  margin-top: 0.35rem;
   margin-left: 75px;
   display: inline-block;
-  color: #fff;
+  color: $mn-color;
   line-height: 1.1rem;
-  font-size: 0.875rem;
+  align-self: center;
 
   .wb {
     display: block;
@@ -276,22 +286,12 @@
   vertical-align: top;
 }
 
-@media (min-width: 1200px) {
-  .navbar-brand {
-    height: 4.2rem;
-    background-image: url(../../assets/images/bcgov-header-vert-MD.png);
-    background-position: 10px center;
-  }
-
-  .navbar-brand__title {
-    margin-left: 88px;
-    margin-top: 0.65rem;
-    line-height: 1.2rem;
-    font-size: 1rem;
-    font-weight: 400;
-  }
-
-  .navbar-brand__version {
-    font-size: 0.6rem;
+// Vertical separator
+div.v-bar {
+  display: flex;
+  div {
+    align-self: center; // place itself at middle of flex container.
+    height: 2rem;
+    border-right: 2px solid grey;
   }
 }

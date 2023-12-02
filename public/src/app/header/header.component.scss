@@ -3,7 +3,6 @@
 .app-header {
   @include clearfix;
 
-  position: relative;
   padding: 0;
   border-bottom: 2px solid $gold;
   background: $header-bg;
@@ -91,6 +90,7 @@
   padding: 0;
   background-color: $header-bg;
   z-index: 1000;
+  flex:1 1 0;
 
   .navbar-nav {
     margin-top: 0.5rem;
@@ -101,10 +101,7 @@
       padding: 0.875rem 1rem;
       border-top: 1px solid $mn-border-color;
       color: $mn-color;
-      text-transform: uppercase;
       white-space: nowrap;
-      font-size: $mn-font-size;
-      font-weight: 700;
       cursor: pointer;
     }
 
@@ -161,9 +158,10 @@
   .navbar-environment {
     padding: 0 2rem;
     font-weight: 700;
-    font-size: 2rem;
+    font-size: 1.5rem;
     background-color: #063;
     border-radius: 1.5rem;
+    text-transform: uppercase;
   }
 
   .navbar-collapse {
@@ -181,6 +179,7 @@
 @media (min-width: 768px) {
   .navbar {
     background: transparent;
+    font-size: medium;
 
     .navbar-nav {
       margin-top: 0;
@@ -245,6 +244,8 @@
   }
 
   .navbar-collapse {
+    overflow: visible;
+    height: auto !important;
     flex-grow: 0;
   }
 }
@@ -252,19 +253,20 @@
 // Navbar Brand
 .navbar-brand {
   height: 3.4375rem;
-  background-image: url("../../assets/images/bcgov-header-vert-SM.png");
+  background-image: url("../../assets/images/bcgov-header-vert-MD.png");
   background-position: 8px center;
   background-repeat: no-repeat;
   white-space: normal;
+  font-size: inherit;
+  display: flex;
 }
 
 .navbar-brand__title {
-  margin-top: 0.35rem;
   margin-left: 75px;
   display: inline-block;
   color: #fff;
   line-height: 1.1rem;
-  font-size: 0.875rem;
+  align-self: center;
 
   .wb {
     display: block;
@@ -280,22 +282,12 @@
   vertical-align: top;
 }
 
-@media (min-width: 1200px) {
-  .navbar-brand {
-    height: 4.2rem;
-    background-image: url("../../assets/images/bcgov-header-vert-MD.png");
-    background-position: 10px center;
-  }
-
-  .navbar-brand__title {
-    margin-left: 88px;
-    margin-top: 0.65rem;
-    line-height: 1.2rem;
-    font-size: 1rem;
-    font-weight: 400;
-  }
-
-  .navbar-brand__version {
-    font-size: 0.6rem;
+// Vertical separator
+div.v-bar {
+  display: flex;
+  div {
+    align-self: center; // place itself at middle of flex container.
+    height: 2rem;
+    border-right: 2px solid grey;
   }
 }

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { AboutComponent } from 'app/about/about.component';
 import { FomAddEditComponent } from 'app/foms/fom-add-edit/fom-add-edit.component';
 import { FomDetailComponent } from 'app/foms/fom-detail/fom-detail.component';
 import { FomSubmissionComponent } from 'app/foms/fom-submission/fom-submission.component';
@@ -25,7 +26,10 @@ export const AppRoutes: Routes = [
     path: 'search',
     component: SearchComponent
   },
-
+  {
+    path: 'about',
+    component: AboutComponent
+  },
   // Note! From previous fom-routing.modules.ts
   // Probably can be improved with lazy loaded routing.
   {
