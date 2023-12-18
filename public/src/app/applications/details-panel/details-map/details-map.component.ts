@@ -100,8 +100,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     this.map = L.map('map', {
       layers: this.mapLayers.getAllLayers(),
       zoomControl: false, // will be added manually below
-      attributionControl: true, 
-      scrollWheelZoom: false, // not desired in thumbnail
+      attributionControl: true,
       doubleClickZoom: false, // not desired in thumbnail
       zoomSnap: 0.1, // for greater granularity when fitting bounds
       zoomDelta: 1, 
@@ -123,8 +122,7 @@ export class DetailsMapComponent implements OnInit, OnChanges, OnDestroy {
     this.map.on('overlayremove', (e: L.LayersControlEvent) => {
       this.mapLayersService.notifyLayersChange({overlay: {action: OverlayAction.Remove, layerName: e.name}});
     });
-
-    this.map.on('click', () => { this.map.scrollWheelZoom.enable(); });
+    
     this.map.on('blur', () => { this.map.scrollWheelZoom.disable(); });
 
     // Initialize current app-map layers state (for the first time when this component map is shown)
