@@ -8,11 +8,11 @@ import { MaxLength } from "class-validator";
 */
 export class ClientAppIntegrationResponse {
 
-  // Map to api "clientNumber".
+  // Map to CLIENT app "clientNumber".
   @MaxLength(8)
-  forestClientNumber: string;
+  id: string;
 
-  // Map to api "clientName".
+  // Map to CLIENT app "clientName".
   // Note, this could be single blan ' ' string on TEST environment, but PROD does not have empty name record.
   @MaxLength(500)
   name: string;

@@ -65,12 +65,12 @@ export class ClientAppIntegrationService {
   private mapClientDetailsResData(data: []): Array<ClientAppIntegrationResponse> {
     const mapResult = data.map((resItem) => {
       const record = new ClientAppIntegrationResponse();
-      record.forestClientNumber = resItem["clientNumber"];
+      record.id = resItem["clientNumber"];
       record.name = resItem["clientName"];
       record.clientStatusCode = resItem["clientStatusCode"];
       record.clientTypeCode = resItem["clientTypeCode"];
       return record
     });
-    return mapResult;
+    return mapResult || [];
   }
 }

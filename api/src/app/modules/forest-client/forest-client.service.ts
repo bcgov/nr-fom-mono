@@ -1,9 +1,8 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
-import { DataService } from '@core';
+import { DataService, mapToEntity } from '@core';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PinoLogger } from 'nestjs-pino';
-import { Subject } from 'rxjs';
 import { Repository } from 'typeorm';
 import { ForestClientResponse } from './forest-client.dto';
 import { ForestClient } from './forest-client.entity';
@@ -48,6 +47,7 @@ export class ForestClientService extends DataService<ForestClient, Repository<Fo
     this.logger.info(`Starting batch data refreshing on ${DateTimeUtil.nowBC()} for app_fom.forest_client records...`);
     let fetchedData: Array<ClientAppIntegrationResponse> = [];
     let currentPage = 0;
+    let totalRecordsCount = 0;
     do {
       // TODO: error catch and skip.
       fetchedData = await this.clientAppIntegrationService.fetchClientNonIndividuals(
@@ -56,10 +56,26 @@ export class ForestClientService extends DataService<ForestClient, Repository<Fo
         ClientAppIntegrationService.SORT_BY_CLIENT_NUMBER
       );
 
-      // TODO insert data
+      fetchedData.forEach(async (item) => {
+        let entity = await this.repository.findOne({ where: { id: item.id } })
+        if (!entity) {
+          entity = mapToEntity(item, new ForestClient());
+          entity.createUser = "postgres";
+        }
+        else {
+          entity.revisionCount++;
+          entity.updateUser = "postgres";
+          entity.updateTimestamp = new Date();
+        }
+
+        // Insert or Update to app_fom.forest_client table using TypeORM-"upsert".
+        await this.repository.upsert(entity, ["id"]);
+      });
+
+      totalRecordsCount+=fetchedData.length;
       currentPage++;
     } while(fetchedData.length > 0)
-    this.logger.info(`Completed batch data refreshing on ${DateTimeUtil.nowBC()}`);
+    this.logger.info(`Completed batch data refreshing for total counts: ${totalRecordsCount}, on ${DateTimeUtil.nowBC()}`);
   }
 
   convertEntity(entity: ForestClient):ForestClientResponse {
