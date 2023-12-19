@@ -22,4 +22,4 @@ import { Module } from '@nestjs/common';
   providers: [ClientAppIntegrationService],
   exports: [ClientAppIntegrationService],
 })
-export class ForestClientApiModule {}
+export class ClientAppIntegrationModule {}

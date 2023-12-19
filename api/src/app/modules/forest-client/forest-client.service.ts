@@ -1,17 +1,25 @@
+import { DateTimeUtil } from '@api-core/dateTimeUtil';
+import { DataService } from '@core';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { ForestClient } from './forest-client.entity';
-import { DataReadOnlyService } from '@core';
 import { PinoLogger } from 'nestjs-pino';
+import { Subject } from 'rxjs';
+import { Repository } from 'typeorm';
 import { ForestClientResponse } from './forest-client.dto';
+import { ForestClient } from './forest-client.entity';
+import { AppConfigService } from '@api-modules/app-config/app-config.provider';
+import { ClientAppIntegrationService } from '@api-core/client-app-integration/client-app-integration.service';
+import { ClientAppIntegrationResponse } from '@api-core/client-app-integration/client-app-integration.dto';
 
 @Injectable()
-export class ForestClientService extends DataReadOnlyService<ForestClient, Repository<ForestClient>> {
+export class ForestClientService extends DataService<ForestClient, Repository<ForestClient>, ForestClientResponse> {
+
   constructor(
     @InjectRepository(ForestClient)
     repository: Repository<ForestClient>,
-    logger: PinoLogger
+    logger: PinoLogger,
+    private configService: AppConfigService,
+    private clientAppIntegrationService: ClientAppIntegrationService
   ) {
     super(repository, new ForestClient(), logger);
   }
@@ -31,6 +39,27 @@ export class ForestClientService extends DataReadOnlyService<ForestClient, Repos
     const result:ForestClient[] = await query.getMany();
 
     return result.map(forestClient => this.convertEntity(forestClient));
+  }
+
+  /**
+   * Forest_Client data refreshing to app_fom.forest_client table.
+   */
+  async batchClientDataRefresh(): Promise<void> {
+    this.logger.info(`Starting batch data refreshing on ${DateTimeUtil.nowBC()} for app_fom.forest_client records...`);
+    let fetchedData: Array<ClientAppIntegrationResponse> = [];
+    let currentPage = 0;
+    do {
+      // TODO: error catch and skip.
+      fetchedData = await this.clientAppIntegrationService.fetchClientNonIndividuals(
+        currentPage, 
+        this.configService.get("fcApiBatchSerchPageSize"),
+        ClientAppIntegrationService.SORT_BY_CLIENT_NUMBER
+      );
+
+      // TODO insert data
+      currentPage++;
+    } while(fetchedData.length > 0)
+    this.logger.info(`Completed batch data refreshing on ${DateTimeUtil.nowBC()}`);
   }
 
   convertEntity(entity: ForestClient):ForestClientResponse {
