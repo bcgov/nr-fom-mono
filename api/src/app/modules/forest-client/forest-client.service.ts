@@ -49,8 +49,8 @@ export class ForestClientService extends DataService<ForestClient, Repository<Fo
     let fetchedData: Array<ClientAppIntegrationResponse> = [];
     let currentPage = 0;
     let totalRecordsCount = 0;
+
     do {
-      // TODO: error catch and skip to next one?.
       fetchedData = await this.clientAppIntegrationService.fetchClientNonIndividuals(
         currentPage, 
         this.configService.get("fcApiBatchSerchPageSize"),
