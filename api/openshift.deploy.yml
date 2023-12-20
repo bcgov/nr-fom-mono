@@ -309,7 +309,7 @@ objects:
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
                   image: ${REGISTRY}/${PROMOTE}
                   imagePullPolicy: Always
-                  args: ["-batch"]
+                  args: ["-batchWorkflowStateChange"]
                   env:
                     - name: DB_HOST
                       value: ${NAME}-${ZONE}-db

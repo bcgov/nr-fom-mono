@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "start:api": "nest start --watch",
-    "start:batch": "nest start -- -batch",
+    "start:batchWorkflowStateChange": "nest start -- -batchWorkflowStateChange",
+    "start:batchForestClientDataRefresh": "nest start -- -batchForestClientDataRefresh",
     "build:api": "nest build",
     "gen:client-api:ng": "openapi-generator-cli generate -g typescript-angular -i openapi/swagger-spec.json -o ../libs/client/typescript-ng",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",

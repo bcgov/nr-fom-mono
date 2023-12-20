@@ -146,12 +146,19 @@ async function startApi() {
   }  
 }
 
-async function runBatch() {
+const BatchJobEnum = {
+    WorkFlowStateChange: '-batchWorkflowStateChange',
+    ForestClientDataRefresh: '-batchForestClientDataRefresh'
+}; 
+async function runBatch(arg: string) {
   try {
     const app = await createApp();
     app.get(Logger).log("Done startup.");
-    await app.get(ProjectService).batchDateBasedWorkflowStateChange();
-    // await app.get(ForestClientService).batchClientDataRefresh();
+    if (arg == BatchJobEnum.WorkFlowStateChange)
+        await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    else if (arg == BatchJobEnum.ForestClientDataRefresh) {
+        await app.get(ForestClientService).batchClientDataRefresh();
+    }
     process.exit(0);
   } catch (error) {
     console.error('Error during batch execution: ' + JSON.stringify(error));
@@ -172,10 +179,13 @@ async function standaloneRunTestDataMigrations() {
   }
 }
 
-
-if (process.argv.length > 2 && '-batch' == process.argv[2]) {
+if (process.argv.length > 2 &&
+    (BatchJobEnum.WorkFlowStateChange == process.argv[2] || 
+        BatchJobEnum.ForestClientDataRefresh == process.argv[2]
+    )) 
+{
   console.log("Running batch process at " + new Date().toISOString() + " ...");
-  runBatch();
+  runBatch(process.argv[2]);
 } else if (process.argv.length > 2 && '-testdata' == process.argv[2]) {
   // Due to long delays running test migrations during normal startup, this provides a way to run them out-of-band, via an OpenShift batch job.
   console.log("Running test data migrations at " + new Date().toISOString() + " ...");
