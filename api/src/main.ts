@@ -1,18 +1,19 @@
-import 'dotenv/config';
+import { AppConfigService } from '@api-modules/app-config/app-config.provider';
+import { ForestClientService } from '@api-modules/forest-client/forest-client.service';
+import { ProjectService } from '@api-modules/project/project.service';
+import { PublicNoticeService } from '@api-modules/project/public-notice.service';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import 'dotenv/config';
+import { json, urlencoded } from 'express';
+import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
+import { BatchJobEnum } from 'src/app-constants';
+import { ConnectionOptions, createConnection } from 'typeorm';
 import { AppModule } from './app/app.module';
-import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
-import helmet from 'helmet';
-import { ProjectService } from '@api-modules/project/project.service';
-import { AppConfigService } from '@api-modules/app-config/app-config.provider';
-import { urlencoded, json } from 'express';
-import { PublicNoticeService } from '@api-modules/project/public-notice.service';
-import { ForestClientService } from '@api-modules/forest-client/forest-client.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -146,17 +147,13 @@ async function startApi() {
   }  
 }
 
-const BatchJobEnum = {
-    WorkFlowStateChange: '-batchWorkflowStateChange',
-    ForestClientDataRefresh: '-batchForestClientDataRefresh'
-}; 
-async function runBatch(arg: string) {
+async function runBatch(batchType: string) {
   try {
     const app = await createApp();
     app.get(Logger).log("Done startup.");
-    if (arg == BatchJobEnum.WorkFlowStateChange)
+    if (batchType == BatchJobEnum.WorkFlowStateChange)
         await app.get(ProjectService).batchDateBasedWorkflowStateChange();
-    else if (arg == BatchJobEnum.ForestClientDataRefresh) {
+    else if (batchType == BatchJobEnum.ForestClientDataRefresh) {
         await app.get(ForestClientService).batchClientDataRefresh();
     }
     process.exit(0);

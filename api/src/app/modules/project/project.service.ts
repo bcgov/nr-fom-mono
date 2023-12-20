@@ -26,6 +26,7 @@ import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
 import _ = require('lodash');
 import { PublicNotice } from '@api-modules/project/public-notice.entity';
+import { USER_SYSTEM } from 'src/app-constants';
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
   likeForestClientName?: string;
@@ -761,7 +762,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const updateFields = 
       {
         workflowStateCode: workflowStateCode,
-        updateUser: 'system',
+        updateUser: USER_SYSTEM,
         updateTimestamp: new Date(),
         revisionCount: () => "revision_count + 1"
       }
@@ -790,7 +791,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
 				const updateFields = 
 				{
 					postDate: commentingOpenDate,
-					updateUser: 'system',
+					updateUser: USER_SYSTEM,
 					updateTimestamp: new Date(),
 					revisionCount: () => "revision_count + 1"
 				}
