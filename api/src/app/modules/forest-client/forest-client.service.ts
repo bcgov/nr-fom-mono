@@ -49,7 +49,7 @@ export class ForestClientService extends DataService<ForestClient, Repository<Fo
     let currentPage = 0;
     let totalRecordsCount = 0;
     do {
-      // TODO: error catch and skip.
+      // TODO: error catch and skip to next one?.
       fetchedData = await this.clientAppIntegrationService.fetchClientNonIndividuals(
         currentPage, 
         this.configService.get("fcApiBatchSerchPageSize"),

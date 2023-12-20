@@ -12,6 +12,7 @@ import { ProjectService } from '@api-modules/project/project.service';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 import { urlencoded, json } from 'express';
 import { PublicNoticeService } from '@api-modules/project/public-notice.service';
+import { ForestClientService } from '@api-modules/forest-client/forest-client.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -150,6 +151,7 @@ async function runBatch() {
     const app = await createApp();
     app.get(Logger).log("Done startup.");
     await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    // await app.get(ForestClientService).batchClientDataRefresh();
     process.exit(0);
   } catch (error) {
     console.error('Error during batch execution: ' + JSON.stringify(error));
