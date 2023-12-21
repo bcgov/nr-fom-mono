@@ -23,10 +23,10 @@ export const appValidationSchema = Joi.object({
   DB_USERNAME: Joi.string().default('postgres'),
   DB_PASSWORD: Joi.string().default(''),
   entities: [__dirname + '/**/*.entity{.ts,.js}'],
-  FC_API_BASE_URL: Joi.string().default('https://nr-forest-client-api-test.api.gov.bc.ca/'),
-  FC_API_TOKEN: Joi.string().default('thisisasecret'),
-  FC_API_REQ_TIMEOUT: Joi.number().default(5000), //Milliseconds
-  FC_API_BTH_PAGE_SIZE: Joi.number().default(1000)
+  CLIENT_API_BASE_URL: Joi.string().default('https://nr-forest-client-api-test.api.gov.bc.ca/'),
+  CLIENT_API_TOKEN: Joi.string().default('thisisasecret'),
+  CLIENT_API_REQ_TIMEOUT: Joi.number().default(5000), //Milliseconds
+  CLIENT_API_BTH_PAGE_SIZE: Joi.number().default(1000)
 });
 
 export default registerAs('app', () => ({
@@ -38,8 +38,8 @@ export default registerAs('app', () => ({
   title: process.env.APP_TITLE,
 
   // Forest Client APP Integration
-  fcApiBaseUrl: process.env.FC_API_BASE_URL,
-  fcApiApiToken: process.env.FC_API_TOKEN,
-  fcApiReqTimeOut: process.env.FC_API_REQ_TIMEOUT,
-  fcApiBatchSerchPageSize: process.env.FC_API_BTH_PAGE_SIZE,
+  fcApiBaseUrl: process.env.CLIENT_API_BASE_URL,
+  fcApiApiToken: process.env.CLIENT_API_TOKEN,
+  fcApiReqTimeOut: process.env.CLIENT_API_REQ_TIMEOUT,
+  fcApiBatchSerchPageSize: process.env.CLIENT_API_BTH_PAGE_SIZE,
 }));
