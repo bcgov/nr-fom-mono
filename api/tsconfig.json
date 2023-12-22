@@ -19,6 +19,7 @@
     "types": ["jest", "node"],
     "baseUrl": ".",
     "paths": {
+      "@src/*": ["src/*"],
       "@core": ["src/core"],
       "@api-core/*": ["src/core/*"],
       "@controllers": ["src/core/controllers"],

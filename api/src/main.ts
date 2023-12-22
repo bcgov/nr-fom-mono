@@ -1,17 +1,19 @@
-import 'dotenv/config';
+import { AppConfigService } from '@api-modules/app-config/app-config.provider';
+import { ForestClientService } from '@api-modules/forest-client/forest-client.service';
+import { ProjectService } from '@api-modules/project/project.service';
+import { PublicNoticeService } from '@api-modules/project/public-notice.service';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import 'dotenv/config';
+import { json, urlencoded } from 'express';
+import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
+import { BatchJobEnum } from '@src/app-constants';
+import { ConnectionOptions, createConnection } from 'typeorm';
 import { AppModule } from './app/app.module';
-import { createConnection, ConnectionOptions } from 'typeorm';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';
 import * as ormConfigTest from './migrations/ormconfig-migration-test';
-import helmet from 'helmet';
-import { ProjectService } from '@api-modules/project/project.service';
-import { AppConfigService } from '@api-modules/app-config/app-config.provider';
-import { urlencoded, json } from 'express';
-import { PublicNoticeService } from '@api-modules/project/public-notice.service';
 
 async function dbmigrate(config: ConnectionOptions) {
     const connection = await createConnection(config);
@@ -145,11 +147,15 @@ async function startApi() {
   }  
 }
 
-async function runBatch() {
+async function runBatch(batchType: string) {
   try {
     const app = await createApp();
     app.get(Logger).log("Done startup.");
-    await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    if (batchType == BatchJobEnum.WorkFlowStateChange)
+        await app.get(ProjectService).batchDateBasedWorkflowStateChange();
+    else if (batchType == BatchJobEnum.ForestClientDataRefresh) {
+        await app.get(ForestClientService).batchClientDataRefresh();
+    }
     process.exit(0);
   } catch (error) {
     console.error('Error during batch execution: ' + JSON.stringify(error));
@@ -170,10 +176,13 @@ async function standaloneRunTestDataMigrations() {
   }
 }
 
-
-if (process.argv.length > 2 && '-batch' == process.argv[2]) {
+if (process.argv.length > 2 &&
+    (BatchJobEnum.WorkFlowStateChange == process.argv[2] || 
+        BatchJobEnum.ForestClientDataRefresh == process.argv[2]
+    )) 
+{
   console.log("Running batch process at " + new Date().toISOString() + " ...");
-  runBatch();
+  runBatch(process.argv[2]);
 } else if (process.argv.length > 2 && '-testdata' == process.argv[2]) {
   // Due to long delays running test migrations during normal startup, this provides a way to run them out-of-band, via an OpenShift batch job.
   console.log("Running test data migrations at " + new Date().toISOString() + " ...");
