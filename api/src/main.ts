@@ -9,7 +9,7 @@ import 'dotenv/config';
 import { json, urlencoded } from 'express';
 import helmet from 'helmet';
 import { Logger } from 'nestjs-pino';
-import { BatchJobEnum } from 'src/app-constants';
+import { BatchJobEnum } from '@src/app-constants';
 import { ConnectionOptions, createConnection } from 'typeorm';
 import { AppModule } from './app/app.module';
 import * as ormConfigMain from './migrations/ormconfig-migration-main';

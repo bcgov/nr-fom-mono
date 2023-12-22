@@ -9,7 +9,8 @@ import { ForestClient } from './forest-client.entity';
 import { AppConfigService } from '@api-modules/app-config/app-config.provider';
 import { ClientAppIntegrationService } from '@api-core/client-app-integration/client-app-integration.service';
 import { ClientAppIntegrationResponse } from '@api-core/client-app-integration/client-app-integration.dto';
-import { USER_SYSTEM } from 'src/app-constants';
+import { USER_SYSTEM } from '@src/app-constants';
+
 
 @Injectable()
 export class ForestClientService extends DataService<ForestClient, Repository<ForestClient>, ForestClientResponse> {

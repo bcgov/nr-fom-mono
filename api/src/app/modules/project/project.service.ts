@@ -26,7 +26,7 @@ import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
 import _ = require('lodash');
 import { PublicNotice } from '@api-modules/project/public-notice.entity';
-import { USER_SYSTEM } from 'src/app-constants';
+import { USER_SYSTEM } from '@src/app-constants';
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
   likeForestClientName?: string;
