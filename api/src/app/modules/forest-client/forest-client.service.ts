@@ -54,10 +54,9 @@ export class ForestClientService extends DataService<ForestClient, Repository<Fo
     do {
       fetchedData = await this.clientAppIntegrationService.fetchClientNonIndividuals(
         currentPage, 
-        this.configService.get("fcApiBatchSerchPageSize"),
+        this.configService.get("fcApiBatchSearchPageSize"),
         ClientAppIntegrationService.SORT_BY_CLIENT_NUMBER
       );
-
       fetchedData.forEach(async (item) => {
         let entity = await this.repository.findOne({ where: { id: item.id } })
         if (!entity) {

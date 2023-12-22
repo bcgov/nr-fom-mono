@@ -41,5 +41,5 @@ export default registerAs('app', () => ({
   fcApiBaseUrl: process.env.CLIENT_API_BASE_URL,
   fcApiApiToken: process.env.CLIENT_API_TOKEN,
   fcApiReqTimeOut: process.env.CLIENT_API_REQ_TIMEOUT,
-  fcApiBatchSerchPageSize: process.env.CLIENT_API_BTH_PAGE_SIZE,
+  fcApiBatchSearchPageSize: process.env.CLIENT_API_BTH_PAGE_SIZE,
 }));
