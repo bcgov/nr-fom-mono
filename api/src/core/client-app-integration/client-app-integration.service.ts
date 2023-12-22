@@ -39,7 +39,7 @@ export class ClientAppIntegrationService {
       size: pageSize,
       sortedColumnName
     }
-    this.logger.info(`Featching ${API_PATH} CLIENT data with params: ${JSON.stringify(params)}`);
+    this.logger.info(`Fetching ${API_PATH} CLIENT data with params: ${JSON.stringify(params)}`);
 
     return lastValueFrom(
       this.http.get(API_PATH, {params})
@@ -58,12 +58,12 @@ export class ClientAppIntegrationService {
   }
 
   /**
-   * Mapping api response data ("ClientDetails") to our know DTO:
+   * Mapping api response data ("ClientDetails") to our DTO:
    * ClientAppIntegrationResponse type.
    * @param data CLIENT response as an array;
    */
   private mapClientDetailsResData(data: []): Array<ClientAppIntegrationResponse> {
-    const mapResult = data.map((resItem) => {
+    const mapResult = data?.map((resItem) => {
       const record = new ClientAppIntegrationResponse();
       record.id = resItem["clientNumber"];
       record.name = resItem["clientName"];
