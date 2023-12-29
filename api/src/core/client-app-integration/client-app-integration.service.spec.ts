@@ -8,7 +8,7 @@ import { ClientAppIntegrationService } from './client-app-integration.service';
 
 describe('ClientAppIntegrationService', () => {
   let service: ClientAppIntegrationService;
-  let httpService; HttpService;
+  let httpService: HttpService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
