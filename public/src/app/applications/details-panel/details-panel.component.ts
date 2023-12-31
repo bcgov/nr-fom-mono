@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {
-  AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
-  SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
+    AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
+    SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
 } from '@api-client';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UrlService } from '@public-core/services/url.service';
@@ -56,27 +56,21 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     private projectService: ProjectService,
     private spatialFeatureService: SpatialFeatureService,
     private attachmentService: AttachmentService,
-    private fss: FeatureSelectService
-  ) {}
+    private fss: FeatureSelectService,
+  ) {
+    // Subscribe eariler before event onNavEnd.
+    this.urlService.onNavEnd$.pipe(takeUntil(this.ngUnsubscribe))
+        .subscribe(() => {
+            this.loadQueryParameters();
+            this.getProjectDetails();
+        });
+  }
 
   ngOnInit(): void {
     // Note, can't seem to get stateService.ts to get codeTable working here. Instead, subscribe to it.
     this.projectService.workflowStateCodeControllerFindAll()
     .pipe(take(1)).subscribe((data) => {
       this.workflowStatus = _.keyBy(data, 'code');
-    });
-    
-    // subscribe and watch for URL param changes
-    this.urlService.onNavEnd$.pipe(takeUntil(this.ngUnsubscribe))
-    .subscribe(() => {
-      this.loadQueryParameters();
-      if (!this.projectIdFilter.filter.value) {
-        // no project to display
-        this.project = null;
-      } else if (!this.project || this.project.id.toString() !== this.projectIdFilter.filter.value) {
-        // no project yet selected, or different project selected
-        this.getProjectDetails();
-      }
     });
 
     this.subscribeToFeatureSelectChange();
@@ -87,6 +81,11 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
    * @memberof DetailsPanelComponent
    */
   public getProjectDetails() {
+    if (!this.projectIdFilter.filter.value) {
+        // no project to display
+        this.project = null;
+        return;
+    }
     const projectId = parseInt(this.projectIdFilter.filter.value);
     this.isAppLoading = true;
     forkJoin({
