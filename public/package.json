@@ -62,5 +62,8 @@
     "ts-jest": "^29.1.0",
     "ts-node": "~9.1.1",
     "typescript": "^4.8.0"
+  },
+  "overrides": {
+    "postcss@<8.4.31": "8.4.31"
   }
 }
