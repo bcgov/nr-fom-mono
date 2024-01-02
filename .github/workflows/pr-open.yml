@@ -32,7 +32,7 @@ jobs:
         if: github.event.action == 'opened' || github.event.action == 'reopened'
         env:
           DOMAIN: apps.silver.devops.gov.bc.ca
-        uses: bcgov-nr/action-pr-description-add@v0.0.2
+        uses: bcgov-nr/action-pr-description-add@v1.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           add_markdown: |
@@ -48,7 +48,7 @@ jobs:
              - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
       - name: OpenShift Init
-        uses: bcgov-nr/action-deployer-openshift@v1.4.0
+        uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
@@ -85,7 +85,7 @@ jobs:
             build_file: public/Dockerfile
             triggers: ('public/' 'libs/')
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: bcgov-nr/action-builder-ghcr@v2.0.1
         with:
           package: ${{ matrix.package }}
@@ -133,7 +133,7 @@ jobs:
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.4.0
+      - uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
