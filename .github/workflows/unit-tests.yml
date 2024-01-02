@@ -35,7 +35,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.project.monorepo.enabled=false
             -Dsonar.projectKey=nr-fom
-          sonar_project: ${{ secrets.SONAR_TOKEN }}
+          sonar_token: ${{ secrets.SONAR_TOKEN }}
 
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy:
