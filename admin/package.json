@@ -32,7 +32,7 @@
     "leaflet.markercluster": "~1.5.3",
     "lodash": "^4.17.21",
     "moment": "^2.29.2",
-    "ngx-bootstrap": "^10.0.0",
+    "ngx-bootstrap": "^12.0.0",
     "ngx-dropzone": "^3.1.0",
     "remeda": "^1.0.0",
     "rxjs": "~7.8.0",
