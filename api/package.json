@@ -23,7 +23,7 @@
   },
   "private": true,
   "dependencies": {
-    "@nestjs-modules/mailer": "^1.8.1",
+    "@nestjs-modules/mailer": "^1.10.3",
     "@nestjs/axios": "^3.0.1",
     "@nestjs/cli": "~10.0.0",
     "@nestjs/common": "^9.4.0",
@@ -71,6 +71,7 @@
     "typescript": "^4.8.0"
   },
   "overrides": {
-    "semver@<5.7.2": "^5.7.2"
+    "semver@<5.7.2": "5.7.2",
+    "word-wrap@<1.2.4": "1.2.4"
   }
 }
