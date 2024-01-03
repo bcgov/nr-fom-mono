@@ -2,14 +2,9 @@ name: Unit Tests and Analysis
 
 on:
   pull_request:
-    types:
-      - opened
-      - reopened
-      - synchronize
-      - ready_for_review
+    types: [opened, reopened, synchronize, ready_for_review]
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -28,7 +23,7 @@ jobs:
             npm ci
             npm run test-unit
           dir: api
-          node_version: 16
+          node_version: 18.18.2
           sonar_args: >
             -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
             -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info   
