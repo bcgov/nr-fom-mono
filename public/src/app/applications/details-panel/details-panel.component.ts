@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {
-    AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
-    SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
+  AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
+  SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
 } from '@api-client';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UrlService } from '@public-core/services/url.service';
@@ -57,21 +57,30 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     private spatialFeatureService: SpatialFeatureService,
     private attachmentService: AttachmentService,
     private fss: FeatureSelectService,
-  ) {
+  ) {}
+
+  ngOnInit(): void {
+    // Note, can't seem to get stateService.ts to get codeTable working here. Instead, subscribe to it.
+    // Subscribe to this first, seems to be slower and can cause minor page render issue due to no code.
+    this.projectService.workflowStateCodeControllerFindAll()
+    .pipe(take(1)).subscribe((data) => {
+      this.workflowStatus = _.keyBy(data, 'code');
+    });
+
+    // First time component init. The `urlService.onNavEnd$` already ends, so 
+    // do this initially first since queryParam is ready from route. 
+    // Works if user has bookmarks the detail link.
+    this.loadQueryParameters();
+    if (this.projectIdFilter.filter.value) {
+      this.getProjectDetails();
+    }
+
     // Subscribe eariler before event onNavEnd.
     this.urlService.onNavEnd$.pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
             this.loadQueryParameters();
             this.getProjectDetails();
         });
-  }
-
-  ngOnInit(): void {
-    // Note, can't seem to get stateService.ts to get codeTable working here. Instead, subscribe to it.
-    this.projectService.workflowStateCodeControllerFindAll()
-    .pipe(take(1)).subscribe((data) => {
-      this.workflowStatus = _.keyBy(data, 'code');
-    });
 
     this.subscribeToFeatureSelectChange();
   }
@@ -81,11 +90,6 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
    * @memberof DetailsPanelComponent
    */
   public getProjectDetails() {
-    if (!this.projectIdFilter.filter.value) {
-        // no project to display
-        this.project = null;
-        return;
-    }
     const projectId = parseInt(this.projectIdFilter.filter.value);
     this.isAppLoading = true;
     forkJoin({
