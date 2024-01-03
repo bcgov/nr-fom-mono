@@ -70,16 +70,12 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     // First time component init. The `urlService.onNavEnd$` already ends, so 
     // do this initially first since queryParam is ready from route. 
     // Works if user has bookmarks the detail link.
-    this.loadQueryParameters();
-    if (this.projectIdFilter.filter.value) {
-      this.getProjectDetails();
-    }
+    this.getProjectDetails();
 
-    // Subscribe eariler before event onNavEnd.
+    // Subscribe to onNavEnd so the component knoews subsequent clicks on other details.
     this.urlService.onNavEnd$.pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
-            this.loadQueryParameters();
-            this.getProjectDetails();
+          this.getProjectDetails();
         });
 
     this.subscribeToFeatureSelectChange();
@@ -90,7 +86,14 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
    * @memberof DetailsPanelComponent
    */
   public getProjectDetails() {
+    this.loadQueryParameters();
     const projectId = parseInt(this.projectIdFilter.filter.value);
+    if (!projectId) {
+      // no project to display
+      this.project = null;
+      return;
+    }
+
     this.isAppLoading = true;
     forkJoin({
       project: this.projectService.projectControllerFindOne(projectId),
