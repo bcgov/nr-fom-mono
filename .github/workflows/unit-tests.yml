@@ -35,7 +35,7 @@ jobs:
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.project.monorepo.enabled=false
             -Dsonar.projectKey=nr-fom
-          sonar_project: ${{ secrets.SONAR_TOKEN }}
+          sonar_token: ${{ secrets.SONAR_TOKEN }}
 
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy:
@@ -43,19 +43,19 @@ jobs:
     if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@0.9.2
+        uses: aquasecurity/trivy-action@0.16.1
         with:
           format: "sarif"
           output: "trivy-results.sarif"
           ignore-unfixed: true
           scan-type: "fs"
-          security-checks: "vuln,secret,config"
+          scanners: "vuln,secret,config"
           severity: "CRITICAL,HIGH"
 
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-results.sarif"

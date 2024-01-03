@@ -27,20 +27,20 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Initialize
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: javascript
 
       # Autobuild attempts to build any compiled languages  (C/C++, C#, or Java).
       # If this step fails, then you should remove it and run the build manually (see below)
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v3
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
 
   deploy-test:
     name: TEST Deploys
@@ -78,7 +78,7 @@ jobs:
             overwrite: true
             parameters: -p URL=fom-test.nrs.gov.bc.ca
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.1.1
+      - uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
@@ -141,7 +141,7 @@ jobs:
             overwrite: true
             parameters: -p URL=fom.nrs.gov.bc.ca
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v1.1.1
+      - uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
