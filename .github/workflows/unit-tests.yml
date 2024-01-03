@@ -23,7 +23,7 @@ jobs:
             npm ci
             npm run test-unit
           dir: api
-          node_version: 18
+          node_version: 18.18.2
           sonar_args: >
             -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
             -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info   
