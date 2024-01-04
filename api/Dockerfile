@@ -5,9 +5,11 @@ FROM registry.access.redhat.com/ubi8/nodejs-18:1-81 AS builder
 WORKDIR /app
 COPY . ./
 USER root
-RUN dnf install -y ca-certificates && \
-    cd libs && npm ci && cd .. && \
-    cd api && npm ci && npm run build:api
+RUN dnf install -y ca-certificates && dnf clean all
+WORKDIR /app/libs
+RUN npm ci --omit=dev
+WORKDIR /app/api
+RUN npm ci --omit=dev && npm run build:api
 
 
 # Deployment container
