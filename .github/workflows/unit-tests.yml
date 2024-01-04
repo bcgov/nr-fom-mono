@@ -25,7 +25,7 @@ jobs:
           dir: api
           node_version: 18.18.2
           sonar_args: >
-            -Dsonar.exclusions=**/test/**/*,.github/**/*,**/migrations/**/*
+            -Dsonar.exclusions=**/*.spec.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info   
             -Dsonar.organization=bcgov-sonarcloud
             -Dsonar.project.monorepo.enabled=false
