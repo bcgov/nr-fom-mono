@@ -192,7 +192,7 @@ describe('ProjectService', () => {
         });
       
         afterEach(() => {
-            jest.resetAllMocks(); // very important if using mock/spy
+            jest.restoreAllMocks(); // very important if using mock/spy
         });
 
         it('with no public-notice pass', async () => {
