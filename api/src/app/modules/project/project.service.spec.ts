@@ -192,7 +192,9 @@ describe('ProjectService', () => {
         });
       
         afterEach(() => {
-            jest.restoreAllMocks(); // very important if using mock/spy
+            // restoreAllmocks() will reset mocks and restore to original implementataion
+            // and in beforeEach, we set the spy again
+            jest.restoreAllMocks();
         });
 
         it('with no public-notice pass', async () => {
