@@ -72,7 +72,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     // Works if user has bookmarks the detail link.
     this.getProjectDetails();
 
-    // Subscribe to onNavEnd so the component knoews subsequent clicks on other details.
+    // Subscribe to onNavEnd so the component knows subsequent clicks on other details.
     this.urlService.onNavEnd$.pipe(takeUntil(this.ngUnsubscribe))
         .subscribe(() => {
           this.getProjectDetails();
