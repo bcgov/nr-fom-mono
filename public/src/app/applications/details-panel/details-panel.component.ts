@@ -56,28 +56,27 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     private projectService: ProjectService,
     private spatialFeatureService: SpatialFeatureService,
     private attachmentService: AttachmentService,
-    private fss: FeatureSelectService
+    private fss: FeatureSelectService,
   ) {}
 
   ngOnInit(): void {
     // Note, can't seem to get stateService.ts to get codeTable working here. Instead, subscribe to it.
+    // Subscribe to this first, seems to be slower and can cause minor page render issue due to no code.
     this.projectService.workflowStateCodeControllerFindAll()
     .pipe(take(1)).subscribe((data) => {
       this.workflowStatus = _.keyBy(data, 'code');
     });
-    
-    // subscribe and watch for URL param changes
+
+    // First time component init. The `urlService.onNavEnd$` already ends, so 
+    // do this initially first since queryParam is ready from route. 
+    // Works if user has bookmarks the detail link.
+    this.getProjectDetails();
+
+    // Subscribe to onNavEnd so the component knows subsequent clicks on other details.
     this.urlService.onNavEnd$.pipe(takeUntil(this.ngUnsubscribe))
-    .subscribe(() => {
-      this.loadQueryParameters();
-      if (!this.projectIdFilter.filter.value) {
-        // no project to display
-        this.project = null;
-      } else if (!this.project || this.project.id.toString() !== this.projectIdFilter.filter.value) {
-        // no project yet selected, or different project selected
-        this.getProjectDetails();
-      }
-    });
+        .subscribe(() => {
+          this.getProjectDetails();
+        });
 
     this.subscribeToFeatureSelectChange();
   }
@@ -87,7 +86,14 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
    * @memberof DetailsPanelComponent
    */
   public getProjectDetails() {
+    this.loadQueryParameters();
     const projectId = parseInt(this.projectIdFilter.filter.value);
+    if (!projectId) {
+      // no project to display
+      this.project = null;
+      return;
+    }
+
     this.isAppLoading = true;
     forkJoin({
       project: this.projectService.projectControllerFindOne(projectId),
