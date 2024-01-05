@@ -27,5 +27,7 @@ module.exports = {
     "cobertura"
   ],
   testResultsProcessor: "jest-sonar-reporter",
-  testEnvironment: "node"
+  testEnvironment: "node",
+  resetMocks: true,
+  restoreMocks: true
 };
