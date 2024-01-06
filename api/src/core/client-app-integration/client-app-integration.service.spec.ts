@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ClientAppIntegrationResponse } from '@src/core/client-app-integration/client-app-integration.dto';
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { PinoLogger } from 'nestjs-pino';
 import { of } from 'rxjs';
 import { ClientAppIntegrationService } from './client-app-integration.service';
@@ -120,6 +120,24 @@ describe('ClientAppIntegrationService', () => {
       expect(result3.length).toBe(0);
     });
 
+    it('Should throw error when api returns error.', async () => {
+      const failed403Error = new AxiosError(
+        'You cannot consume this service', // CLIENT message for 403.
+        '403'
+      );
+      httpGetSpy.mockImplementation((_url, _config) => {
+        throw failed403Error;
+      });
+
+      const resultExpect = await expect(
+        () => service.fetchClientNonIndividuals(
+          sampleParams.page, sampleParams.size, sampleParams.sortedColumnName
+        )
+      )
+
+      resultExpect.rejects.toBeInstanceOf(AxiosError);
+      resultExpect.rejects.toThrow(failed403Error);
+    });
   });
 
 });
