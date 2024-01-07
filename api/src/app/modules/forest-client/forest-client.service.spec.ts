@@ -35,7 +35,6 @@ describe('ForestClientService', () => {
     let configServiceGetPageSizeSpy;
     const PAGE_SIZE_DEFAULT = 1000;
     beforeEach(async () => {
-      jest.resetAllMocks();
       repositoryFindOneSpy = jest.spyOn(repository, 'findOne');
       repositoryUpsertSpy = jest.spyOn(repository, 'upsert');
       fetchClientNonIndividualsSpy = jest.spyOn(clientAppIntegrationService, 'fetchClientNonIndividuals');
