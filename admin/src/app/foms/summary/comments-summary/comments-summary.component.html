@@ -24,9 +24,11 @@
               matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
     </mat-expansion-panel-header>
     <mat-card appearance="outlined" *ngFor="let comment of addressedPcs">
-      <ng-container [ngTemplateOutlet]="comment_fields_template"
-                    [ngTemplateOutletContext]="{ comment: comment }">
-      </ng-container>
+      <mat-card-content>
+        <ng-container [ngTemplateOutlet]="comment_fields_template"
+                      [ngTemplateOutletContext]="{ comment: comment }">
+        </ng-container>
+      </mat-card-content>
     </mat-card>
   </mat-expansion-panel>
 
@@ -45,9 +47,11 @@
               matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
     </mat-expansion-panel-header>
     <mat-card appearance="outlined" *ngFor="let comment of consideredPcs">
-      <ng-container [ngTemplateOutlet]="comment_fields_template"
-                    [ngTemplateOutletContext]="{ comment: comment }">
-      </ng-container>
+      <mat-card-content>
+        <ng-container [ngTemplateOutlet]="comment_fields_template"
+                      [ngTemplateOutletContext]="{ comment: comment }">
+        </ng-container>
+      </mat-card-content>
     </mat-card>
   </mat-expansion-panel>
 
@@ -66,9 +70,11 @@
                   matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
       </mat-expansion-panel-header>
       <mat-card appearance="outlined" *ngFor="let comment of irrelevantPcs">
-        <ng-container [ngTemplateOutlet]="comment_fields_template"
-                      [ngTemplateOutletContext]="{ comment: comment }">
-        </ng-container>
+        <mat-card-content>
+          <ng-container [ngTemplateOutlet]="comment_fields_template"
+                        [ngTemplateOutletContext]="{ comment: comment }">
+          </ng-container>
+        </mat-card-content>
       </mat-card>
     </mat-expansion-panel>
 
@@ -87,9 +93,11 @@
                   matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
       </mat-expansion-panel-header>
       <mat-card appearance="outlined" *ngFor="let comment of noResponsePcs">
-        <ng-container [ngTemplateOutlet]="comment_fields_template"
-                      [ngTemplateOutletContext]="{ comment: comment }">
-        </ng-container>
+        <mat-card-content>
+          <ng-container [ngTemplateOutlet]="comment_fields_template"
+                        [ngTemplateOutletContext]="{ comment: comment }">
+          </ng-container>
+        </mat-card-content>
       </mat-card>
     </mat-expansion-panel>                                              
 </mat-accordion>
