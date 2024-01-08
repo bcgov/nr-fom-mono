@@ -27,5 +27,11 @@ module.exports = {
     "cobertura"
   ],
   testResultsProcessor: "jest-sonar-reporter",
-  testEnvironment: "node"
+  testEnvironment: "node",
+
+  // configure `resetMocks` and `restoreMocks` to automatically reset/restor mock state before every test.
+  // Jest doc isn't quite clear about the difference. But, with 'Spy's, `restoreMocks` will 
+  // restores their initial implementation.
+  resetMocks: true,
+  restoreMocks: true
 };
