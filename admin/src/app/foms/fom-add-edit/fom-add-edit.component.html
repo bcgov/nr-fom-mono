@@ -241,7 +241,7 @@
             </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row" *ngIf="isHolderBctsManger()">
           <div class="form-group col">
             <label [ngClass]="{'required': isHolderBctsManger()}">
                 Timber Sales Manager Name
@@ -271,9 +271,6 @@
                 {{getErrorMessage('bctsMgrName', 'maxLength')}}
             </div>
           </div>
-
-
-
         </div>
         <div class="row">
           <div class="form-group col-md">
