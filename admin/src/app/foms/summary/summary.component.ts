@@ -77,11 +77,11 @@ export class SummaryComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     this.projectId = this.route.snapshot.params.appId;
-    await this.getProject(this.projectId); 
-    await this.getpublicComments(this.projectId);
-    await this.getSpatialDetails(this.projectId);
-    await this.getProjectInteractions(this.projectId);
-    await this.getProjectAttachments(this.projectId);
+    this.getProject(this.projectId); 
+    this.getpublicComments(this.projectId);
+    this.getSpatialDetails(this.projectId);
+    this.getProjectInteractions(this.projectId);
+    this.getProjectAttachments(this.projectId);
 
     this.scopeOptionChange$.pipe(takeUntil(this.ngUnsubscribe$)).subscribe((nextScope) => {
       this.doFiltering(nextScope);
