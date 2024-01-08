@@ -1,8 +1,8 @@
 import { AbstractControl } from '@angular/forms';
 import { DistrictResponse, ForestClientResponse, ProjectResponse, WorkflowStateCode } from '@api-client';
-import { minLength, prop, required, minDate, maxLength, not } from '@rxweb/reactive-form-validators';
-import moment = require("moment");
+import { maxLength, minDate, minLength, prop, required } from '@rxweb/reactive-form-validators';
 import * as R from 'remeda';
+import moment = require("moment");
 
 const updateFields = [
   'name',
