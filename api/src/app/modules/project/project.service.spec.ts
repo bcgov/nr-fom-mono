@@ -190,12 +190,6 @@ describe('ProjectService', () => {
             const publicNoticeWithNoPostDate = new PublicNotice()
             entity.publicNotices = [publicNoticeWithNoPostDate];
         });
-      
-        afterEach(() => {
-            // restoreAllmocks() will reset mocks and restore to original implementataion
-            // and in beforeEach, we set the spy again
-            jest.restoreAllMocks();
-        });
 
         it('with no public-notice pass', async () => {
             entity.commentingOpenDate = dayjs().add(1, 'day').format(DateTimeUtil.DATE_FORMAT);
