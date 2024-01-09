@@ -1,7 +1,8 @@
+import { AbstractControl } from '@angular/forms';
 import { DistrictResponse, ForestClientResponse, ProjectResponse, WorkflowStateCode } from '@api-client';
-import { minLength, prop, required, minDate, maxLength } from '@rxweb/reactive-form-validators';
-import moment = require("moment");
+import { maxLength, minDate, minLength, prop, required } from '@rxweb/reactive-form-validators';
 import * as R from 'remeda';
+import moment = require("moment");
 
 const updateFields = [
   'name',
@@ -57,7 +58,17 @@ export class FomAddEditForm implements Pick<ProjectResponse,
 
   // Special case. It is at form control, but will be convert into request body for 'operationEndYear' (number).
   @required({message: 'Operation End Year is required.'})
-  @minDate({fieldName:'opStartDate', message: 'Must be equal to or later than the Start of Operations'})
+  @minDate({
+    // In this case, do not use (x,y) arrow expression for validator. 
+    // Use 'function(control)' expression, so it can get current field value through "this.".
+    conditionalExpression: function(control: AbstractControl) {
+      // For 'opStartDate' and 'opEndDate', only need "year" from the date; but still use "Date" type for datePicker.
+      // (This is a tricky case to set up "conditionalExpression" validator for @minDate, as date is passed from datePicker)
+      // So, conditionally, if years are the same, no need to validate on @minDate().
+      const sameYear = moment(this.opStartDate).year() == moment(this.opEndDate).year();
+      return !sameYear;
+    },
+    fieldName:'opStartDate', message: 'Must be equal to or later than the Start of Operations'})
   @prop()
   opEndDate: Date;
 
