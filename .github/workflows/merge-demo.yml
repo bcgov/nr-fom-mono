@@ -69,6 +69,7 @@ jobs:
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="k3b9ip1vf85o4tkqvu5g4adgj"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+              -p BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME="fom-demo-client-app-api"
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true

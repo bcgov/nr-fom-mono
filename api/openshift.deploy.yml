@@ -76,6 +76,9 @@ parameters:
     description: FAM Authentication Cognito logout chain url for Siteminder and Keycloak
     value: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
     required: true
+  - name: BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME
+    description: OP secrete name for CLIENT API Token.
+    value: "fom-client-app-api"
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -214,12 +217,12 @@ objects:
                   valueFrom:
                     secretKeyRef:
                       key: api_base_url
-                      name: fom-client-app-api
+                      name: ${BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME}
                 - name: CLIENT_API_TOKEN
                   valueFrom:
                     secretKeyRef:
                       key: api_token
-                      name: fom-client-app-api
+                      name: ${BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME}
               ports:
                 - containerPort: ${{PORT}}
                   protocol: TCP
@@ -422,12 +425,12 @@ objects:
                       valueFrom:
                         secretKeyRef:
                           key: api_base_url
-                          name: fom-client-app-api
+                          name: ${BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME}
                     - name: CLIENT_API_TOKEN
                       valueFrom:
                         secretKeyRef:
                           key: api_token
-                          name: fom-client-app-api
+                          name: ${BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME}
                   resources:
                     requests:
                       cpu: ${CPU_REQUEST}
