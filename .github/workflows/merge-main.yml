@@ -91,7 +91,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
 
   certbot-test:
-    name: Certbot
+    name: TEST Certbot
     needs: [deploy-test]
     environment: test
     runs-on: ubuntu-22.04
@@ -154,7 +154,7 @@ jobs:
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
 
   certbot-prod:
-    name: Certbot
+    name: PROD Certbot
     needs: [deploy-prod]
     environment: prod
     runs-on: ubuntu-22.04
