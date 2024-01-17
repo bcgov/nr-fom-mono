@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
   NAME: fom
 
 concurrency:
@@ -87,7 +86,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
 
   certbot-test:
