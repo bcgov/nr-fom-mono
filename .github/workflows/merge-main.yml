@@ -44,7 +44,6 @@ jobs:
 
   deploy-test:
     name: TEST Deploys
-    needs: [codeql]
     environment: test
     env:
       ZONE: test
