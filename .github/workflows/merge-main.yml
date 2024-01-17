@@ -149,7 +149,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:test
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
 
   certbot-prod:
