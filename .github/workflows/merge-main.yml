@@ -19,7 +19,7 @@ concurrency:
 
 jobs:
   codeql:
-    name: Semantic Code Analysis
+    name: CodeQL Analysis
     runs-on: ubuntu-22.04
     permissions:
       actions: read
@@ -106,9 +106,24 @@ jobs:
           # Run certbot with one-off job
           oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
 
+  image-promotions:
+    name: PROD Promotions
+    needs: [codeql, deploy-test]
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        component: [api, admin, db, public]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v3
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: test
+          tags: prod
+
   deploy-prod:
     name: PROD Deploys
-    needs: [codeql, deploy-test]
+    needs: [image-promotions]
     environment: prod
     env:
       ZONE: prod
@@ -168,18 +183,3 @@ jobs:
 
           # Run certbot with one-off job
           oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
-
-  image-promotions:
-    name: Promote images to PROD
-    needs: [deploy-prod]
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        component: [api, admin, db, public]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v3
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
-          tags: prod
