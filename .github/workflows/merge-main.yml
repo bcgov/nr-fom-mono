@@ -108,7 +108,7 @@ jobs:
 
   image-promotions:
     name: PROD Promotions
-    needs: [codeql, deploy-test]
+    needs: [deploy-test]
     runs-on: ubuntu-22.04
     strategy:
       matrix:
