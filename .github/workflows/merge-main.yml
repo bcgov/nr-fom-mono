@@ -123,7 +123,7 @@ jobs:
 
   deploy-prod:
     name: PROD Deploys
-    needs: [image-promotions, certbot-test]
+    needs: [image-promotions]
     environment: prod
     env:
       ZONE: prod
