@@ -28,7 +28,7 @@ parameters:
   - name: CPU_REQUEST
     value: 20m
   - name: MEMORY_REQUEST
-    value: 0.05Gi
+    value: 50Mi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
