@@ -79,6 +79,9 @@ parameters:
   - name: BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME
     description: OP secrete name for CLIENT API Token.
     value: "fom-client-app-api"
+  - name: OC_NAMESPACE
+    description: OpenShift namespace containing imported images
+    required: true
 objects:
   - apiVersion: v1
     kind: ImageStream
@@ -320,7 +323,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: ${REGISTRY}/${PROMOTE}
+                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
                   imagePullPolicy: Always
                   args: ["-batchWorkflowStateChange"]
                   env:
