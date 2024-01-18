@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   codeql:
-    name: Semantic Code Analysis
+    name: CodeQL Analysis
     runs-on: ubuntu-22.04
     permissions:
       actions: read
@@ -43,7 +43,6 @@ jobs:
 
   deploy-test:
     name: TEST Deploys
-    needs: [codeql]
     environment: test
     env:
       ZONE: test
@@ -108,7 +107,7 @@ jobs:
 
   deploy-prod:
     name: PROD Deploys
-    needs: [codeql, deploy-test]
+    needs: [deploy-test]
     environment: prod
     env:
       ZONE: prod
