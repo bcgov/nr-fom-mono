@@ -10,7 +10,6 @@ on:
   workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
   NAME: fom
 
 concurrency:
@@ -19,7 +18,7 @@ concurrency:
 
 jobs:
   codeql:
-    name: Semantic Code Analysis
+    name: CodeQL Analysis
     runs-on: ubuntu-22.04
     permissions:
       actions: read
@@ -44,7 +43,6 @@ jobs:
 
   deploy-test:
     name: TEST Deploys
-    needs: [codeql]
     environment: test
     env:
       ZONE: test
@@ -58,6 +56,7 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
+              -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
               -p URL=fom-test.nrs.gov.bc.ca
               -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
               -p DB_TESTDATA=true
@@ -87,7 +86,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
 
   certbot-test:
@@ -109,7 +108,7 @@ jobs:
 
   deploy-prod:
     name: PROD Deploys
-    needs: [codeql, deploy-test]
+    needs: [deploy-test]
     environment: prod
     env:
       ZONE: prod
@@ -122,7 +121,8 @@ jobs:
           - name: api
             file: api/openshift.deploy.yml
             overwrite: true
-            parameters: 
+            parameters:
+              -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
               -p URL=fom.nrs.gov.bc.ca
               -p AWS_USER_POOLS_WEB_CLIENT_ID="4bu2n8at3m32a2fqnvd4t06la1"
               -p LOGOUT_CHAIN_URL="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
@@ -150,7 +150,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p PROMOTE=ghcr.io/${{ github.repository }}/${{ matrix.name }}:test
+            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
 
   certbot-prod:
