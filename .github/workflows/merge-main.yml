@@ -2,12 +2,12 @@ name: Merge to Main
 
 on:
   push:
-    branches:
-      - main
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
-  workflow_dispatch:
+  #   branches:
+  #     - main
+  #   paths-ignore:
+  #     - ".github/ISSUE_TEMPLATE/*"
+  #     - "**.md"
+  # workflow_dispatch:
 
 env:
   NAME: fom
