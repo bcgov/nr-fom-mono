@@ -2,7 +2,7 @@ name: Merge to Demo
 
 on:
   push:
-    # branches: [demo]
+    branches: [demo]
 
 env:
   ZONE: demo
@@ -24,17 +24,13 @@ jobs:
           - package: admin
             build_context: ./
             build_file: admin/Dockerfile
-            triggers: ('admin/' 'libs/')
           - package: api
             build_context: ./
             build_file: api/Dockerfile
-            triggers: ('api/' 'libs/')
           - package: db
-            triggers: ('db')
           - package: public
             build_context: ./
             build_file: public/Dockerfile
-            triggers: ('public/' 'libs/')
     steps:
       - uses: actions/checkout@v4
       - uses: bcgov-nr/action-builder-ghcr@v2.0.1
@@ -42,11 +38,8 @@ jobs:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
           build_file: ${{ matrix.build_file }}
-          keep_versions: 100
           tag: ${{ env.ZONE }}
-          tag_fallback: test
           token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
 
   deploy:
     name: DEMO Deploys
