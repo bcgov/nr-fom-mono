@@ -55,7 +55,7 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+              -p OC_NAMESPACE=a4b31c-test
               -p URL=fom-demo.apps.silver.devops.gov.bc.ca
               -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
               -p DB_TESTDATA=true
