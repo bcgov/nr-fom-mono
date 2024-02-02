@@ -4,5 +4,6 @@
   "extends": [
     "github>bcgov/renovate-config"
   ],
+  "automerge": false,
   "prConcurrentLimit": 3
 }
