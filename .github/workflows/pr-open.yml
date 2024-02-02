@@ -94,5 +94,5 @@ jobs:
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
-      target: ${{ needs.setup.outputs.zone }}
+      target: ${{ github.event.number }}
       triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
