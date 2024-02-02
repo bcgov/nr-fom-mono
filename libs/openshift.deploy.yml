@@ -38,6 +38,8 @@ parameters:
     generate: expression
   - name: PROMOTE
     description: Dummy parameter to make workflows easier
+  - name: URL
+    description: Dummy parameter to make workflows easier
 objects:
   - apiVersion: v1
     kind: Secret
