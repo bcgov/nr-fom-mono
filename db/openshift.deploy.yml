@@ -1,11 +1,5 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-metadata:
-  name: ${NAME}
-  annotations:
-    description: "Forest Operations Map"
-    tags: "fom"
-    iconClass: icon-js
 labels:
   app: ${NAME}-${ZONE}
   app.kubernetes.io/part-of: ${NAME}-${ZONE}
@@ -31,8 +25,14 @@ parameters:
     value: 1000m
   - name: MEMORY_LIMIT
     value: 1Gi
-  - name: URL
-    description: Dummy parameter to make workflows easier
+  - name: POSTGRES_PASSWORD
+    description: Password for the PostgreSQL connection user.
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
+  - name: DATA_ENCRYPTION_KEY
+    description: Secret key for data encryption within database
+    from: "[a-zA-Z0-9]{16}"
+    generate: expression
   ### Backup-Container starts here ###
   - name: BACKUP_COMPONENT
     description: BACKUP_COMPONENT name
@@ -87,7 +87,24 @@ parameters:
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
     generate: expression
-objects:
+objects:  - apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ${NAME}-${ZONE}-db
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:
+      database-db: fom
+      database-password: ${POSTGRES_PASSWORD}
+      database-user: postgres
+  - kind: Secret
+    apiVersion: v1
+    metadata:
+      name: ${NAME}-${ZONE}-api
+      labels:
+        app: ${NAME}-${ZONE}
+    stringData:
+      data-encryption-key: ${DATA_ENCRYPTION_KEY}
   - kind: PersistentVolumeClaim
     apiVersion: v1
     metadata:
