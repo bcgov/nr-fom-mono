@@ -86,7 +86,7 @@ objects:
               - ${NAME}
             from:
               kind: ImageStreamTag
-              name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-${COMPONENT}
+              name: ${NAME}-${ZONE}-${COMPONENT}:latest
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
       template:
