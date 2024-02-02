@@ -1,11 +1,5 @@
 apiVersion: template.openshift.io/v1
 kind: Template
-metadata:
-  name: ${NAME}
-  annotations:
-    description: "Forest Operations Map"
-    tags: "fom"
-    iconClass: icon-js
 labels:
   app: ${NAME}-${ZONE}
   app.kubernetes.io/part-of: ${NAME}-${ZONE}
@@ -93,7 +87,7 @@ objects:
       lookupPolicy:
         local: false
       tags:
-        - name: ${ZONE}-api
+        - name: latest
           from:
             kind: DockerImage
             name: ${REGISTRY}/${PROMOTE}
@@ -159,7 +153,7 @@ objects:
             deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
-            - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+            - image: ${NAME}-${ZONE}-${COMPONENT}:latest
               imagePullPolicy: Always
               name: ${NAME}
               env:
