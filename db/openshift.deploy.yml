@@ -129,7 +129,7 @@ objects:
       lookupPolicy:
         local: false
       tags:
-        - name: ${ZONE}-db
+        - name: latest
           from:
             kind: DockerImage
             name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${ZONE}
@@ -173,7 +173,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-              image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
+              image: ${NAME}-${ZONE}-${COMPONENT}:latest
               ports:
                 - containerPort: 5432
                   protocol: TCP
