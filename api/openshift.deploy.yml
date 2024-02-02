@@ -311,7 +311,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:latest
                   imagePullPolicy: Always
                   args: ["-batchWorkflowStateChange"]
                   env:
@@ -374,7 +374,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:latest
                   imagePullPolicy: Always
                   args: ["-batchForestClientDataRefresh"]
                   env:
