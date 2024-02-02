@@ -64,7 +64,7 @@ jobs:
       matrix:
         dir: [api, admin, db, libs, public]
         include:
-          - name: api
+          - dir: api
             parameters:
               -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
               -p CERTBOT=false -p REPLICA_COUNT=1
@@ -88,9 +88,8 @@ jobs:
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          parameters:
-            -p PROMOTE=${{ github.repository }}/${{ matrix.dir }}:${{ inputs.target }}
+          parameters: |
             -p URL=fom-${{ inputs.target }}.apps.silver.devops.gov.bc.ca
-            -p ZONE=${{ inputs.target }} ${{ matrix.parameters }}
+            -p ZONE=${{ inputs.target }}
+            ${{ matrix.parameters }}
           triggers: ${{ inputs.triggers }}
