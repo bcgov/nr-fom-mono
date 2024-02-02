@@ -4,6 +4,13 @@
   "extends": [
     "github>bcgov/renovate-config"
   ],
-  "automerge": false,
-  "prConcurrentLimit": 3
+  "prConcurrentLimit": 3,
+  "packageRules": [
+    {
+      "packagePatterns": [
+        "*"
+      ],
+      "automerge": false
+    }
+  ]
 }
