@@ -48,34 +48,34 @@ jobs:
   #           Once merged, code will be promoted and handed off to following workflow run.
   #            - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    # needs: [setup]
-    strategy:
-      matrix:
-        package: [admin, api, db, public]
-        include:
-          - package: admin
-            triggers: ('admin/' 'libs/')
-          - package: api
-            triggers: ('api/' 'libs/')
-          - package: db
-            triggers: ('db')
-          - package: public
-            triggers: ('public/' 'libs/')
-    steps:
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.1
-        with:
-          package: ${{ matrix.package }}
-          build_context: ./
-          build_file: ${{ matrix.package }}/Dockerfile
-          keep_versions: 100
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          triggers: ${{ matrix.triggers }}
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   permissions:
+  #     packages: write
+  #   # needs: [setup]
+  #   strategy:
+  #     matrix:
+  #       package: [admin, api, db, public]
+  #       include:
+  #         - package: admin
+  #           triggers: ('admin/' 'libs/')
+  #         - package: api
+  #           triggers: ('api/' 'libs/')
+  #         - package: db
+  #           triggers: ('db')
+  #         - package: public
+  #           triggers: ('public/' 'libs/')
+  #   steps:
+  #     - uses: bcgov-nr/action-builder-ghcr@v2.0.1
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         build_context: ./
+  #         build_file: ${{ matrix.package }}/Dockerfile
+  #         keep_versions: 100
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: test
+  #         triggers: ${{ matrix.triggers }}
 
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
