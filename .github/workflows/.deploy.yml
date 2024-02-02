@@ -84,7 +84,7 @@ jobs:
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
-          file: ${{ matrix.file }}/openshift.deploy.yml
+          file: ${{ matrix.name }}/openshift.deploy.yml
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
