@@ -17,7 +17,7 @@ on:
 
 jobs:
   base:
-    name: Database and Secrets
+    name: Database
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     steps:

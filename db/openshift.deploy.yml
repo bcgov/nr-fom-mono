@@ -87,7 +87,8 @@ parameters:
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
     generate: expression
-objects:  - apiVersion: v1
+objects:
+  - apiVersion: v1
     kind: Secret
     metadata:
       name: ${NAME}-${ZONE}-db
