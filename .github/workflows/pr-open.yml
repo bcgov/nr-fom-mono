@@ -9,88 +9,88 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    name: Reset the deployment number
-    runs-on: ubuntu-22.04
-    outputs:
-      zone: ${{ steps.calculate.outputs.zone }}
-    steps:
-      - name: Calculate the deployment number
-        id: calculate
-        run: |
-          echo "zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+  # setup:
+  #   name: Reset the deployment number
+  #   runs-on: ubuntu-22.04
+  #   outputs:
+  #     zone: ${{ steps.calculate.outputs.zone }}
+  #   steps:
+  #     - name: Calculate the deployment number
+  #       id: calculate
+  #       run: |
+  #         echo "zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
 
-  prep:
-    name: Prep
-    permissions:
-      pull-requests: write
-    runs-on: ubuntu-22.04
-    needs: setup
-    env:
-      ZONE: ${{ needs.setup.outputs.zone }}
-    steps:
-      - name: PR Greeting
-        if: github.event.action == 'opened' || github.event.action == 'reopened'
-        env:
-          DOMAIN: apps.silver.devops.gov.bc.ca
-        uses: bcgov-nr/action-pr-description-add@v1.1.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          add_markdown: |
-            ---
-            Thanks for the PR!
+  # prep:
+  #   name: Prep
+  #   permissions:
+  #     pull-requests: write
+  #   runs-on: ubuntu-22.04
+  #   needs: setup
+  #   env:
+  #     ZONE: ${{ needs.setup.outputs.zone }}
+  #   steps:
+  #     - name: PR Greeting
+  #       if: github.event.action == 'opened' || github.event.action == 'reopened'
+  #       env:
+  #         DOMAIN: apps.silver.devops.gov.bc.ca
+  #       uses: bcgov-nr/action-pr-description-add@v1.1.0
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #         add_markdown: |
+  #           ---
+  #           Thanks for the PR!
 
-            Any successful deployments (not always required) will be available below.
-             - [api](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/api)
-             - [admin](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/admin)
-             - [public](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/public)
+  #           Any successful deployments (not always required) will be available below.
+  #            - [api](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/api)
+  #            - [admin](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/admin)
+  #            - [public](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/public)
 
-            Once merged, code will be promoted and handed off to following workflow run.
-             - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+  #           Once merged, code will be promoted and handed off to following workflow run.
+  #            - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
 
-  builds:
-    name: Builds
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    needs: [setup]
-    env:
-      ZONE: ${{ needs.setup.outputs.zone }}
-    strategy:
-      matrix:
-        package: [admin, api, db, public]
-        include:
-          - package: admin
-            build_context: ./
-            build_file: admin/Dockerfile
-            triggers: ('admin/' 'libs/')
-          - package: api
-            build_context: ./
-            build_file: api/Dockerfile
-            triggers: ('api/' 'libs/')
-          - package: db
-            triggers: ('db')
-          - package: public
-            build_context: ./
-            build_file: public/Dockerfile
-            triggers: ('public/' 'libs/')
-    steps:
-      - uses: actions/checkout@v4
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.1
-        with:
-          package: ${{ matrix.package }}
-          build_context: ${{ matrix.build_context }}
-          build_file: ${{ matrix.build_file }}
-          keep_versions: 100
-          tag: ${{ env.ZONE }}
-          tag_fallback: test
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+  # builds:
+  #   name: Builds
+  #   runs-on: ubuntu-22.04
+  #   permissions:
+  #     packages: write
+  #   needs: [setup]
+  #   env:
+  #     ZONE: ${{ needs.setup.outputs.zone }}
+  #   strategy:
+  #     matrix:
+  #       package: [admin, api, db, public]
+  #       include:
+  #         - package: admin
+  #           build_context: ./
+  #           build_file: admin/Dockerfile
+  #           triggers: ('admin/' 'libs/')
+  #         - package: api
+  #           build_context: ./
+  #           build_file: api/Dockerfile
+  #           triggers: ('api/' 'libs/')
+  #         - package: db
+  #           triggers: ('db')
+  #         - package: public
+  #           build_context: ./
+  #           build_file: public/Dockerfile
+  #           triggers: ('public/' 'libs/')
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: bcgov-nr/action-builder-ghcr@v2.0.1
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         build_context: ${{ matrix.build_context }}
+  #         build_file: ${{ matrix.build_file }}
+  #         keep_versions: 100
+  #         tag: ${{ env.ZONE }}
+  #         tag_fallback: test
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         triggers: ${{ matrix.triggers }}
 
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Deploys
-    needs: [setup, builds]
+    # needs: [setup, builds]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
