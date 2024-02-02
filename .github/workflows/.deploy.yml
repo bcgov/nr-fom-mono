@@ -78,7 +78,6 @@ jobs:
             overwrite: false
           - name: init
             overwrite: false
-            parameters: -p ZONE=${{ inputs.target }}
           - name: public
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
     steps:
