@@ -62,7 +62,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        name: [api, admin, db, init, public]
+        name: [api, admin, db, libs, public]
         include:
           - name: api
             parameters:
@@ -76,7 +76,7 @@ jobs:
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
           - name: db
             overwrite: false
-          - name: init
+          - name: libs
             overwrite: false
           - name: public
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
