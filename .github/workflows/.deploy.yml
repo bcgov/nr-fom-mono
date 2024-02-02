@@ -9,7 +9,7 @@ on:
         required: true
         type: string
 
-      # ### Typical / recommended
+      ### Typical / recommended
       # autoscaling:
       #   description: Autoscaling enabled or not for the deployments
       #   required: false
@@ -24,10 +24,10 @@ on:
       #   required: false
       #   type: string
       #   default: ${{ github.event.number }}
-      # triggers:
-      #   description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
-      #   required: false
-      #   type: string
+      triggers:
+        description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
+        required: false
+        type: string
 
       # ### Usually a bad idea / not recommended
       # directory:
@@ -56,34 +56,15 @@ on:
 #   package_tag: ${{ inputs.tag }}
 
 jobs:
-  init:
-    name: OpenShift Init
-    runs-on: ubuntu-22.04
-    timeout-minutes: 1
-    steps:
-      - name: OpenShift Init
-        uses: bcgov-nr/action-deployer-openshift@v2.0.0
-        with:
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          file: libs/openshift.init.yml
-          overwrite: false
-          parameters: -p ZONE=${{ inputs.target }}
-          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
-
   deploys:
     name: Deploys
-    needs: [init]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
       matrix:
-        name: [api, admin, db, public]
+        name: [api, admin, db, init, public]
         include:
           - name: api
-            file: api/openshift.deploy.yml
-            overwrite: true
             parameters:
               -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
               -p CERTBOT=false -p REPLICA_COUNT=1
@@ -91,25 +72,19 @@ jobs:
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-            triggers: ('db/' 'libs/' 'api/')
           - name: admin
-            file: admin/openshift.deploy.yml
-            overwrite: true
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
-            triggers: ('db/' 'libs/' 'api/' 'admin/')
           - name: db
-            file: db/openshift.deploy.yml
             overwrite: false
-            triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
+          - name: init
+            overwrite: false
+            parameters: -p ZONE=${{ inputs.target }}
           - name: public
-            file: public/openshift.deploy.yml
-            overwrite: true
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
-            triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
-          file: ${{ matrix.file }}
+          file: ${{ matrix.file }}/openshift.deploy.yml
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
@@ -119,4 +94,4 @@ jobs:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ inputs.target }}
             -p URL=fom-${{ inputs.target }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ inputs.target }} ${{ matrix.parameters }}
-          triggers: ${{ matrix.triggers }}
+          triggers: ${{ inputs.triggers }}

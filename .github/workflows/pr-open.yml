@@ -95,3 +95,4 @@ jobs:
     secrets: inherit
     with:
       target: ${{ needs.setup.outputs.zone }}
+      triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
