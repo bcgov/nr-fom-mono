@@ -36,12 +36,6 @@ parameters:
     value: 30m
   - name: MEMORY_REQUEST
     value: 150Mi
-  - name: REGISTRY
-    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
-    value: ghcr.io
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
   - name: CRON_MINUTES
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
@@ -90,7 +84,7 @@ objects:
         - name: latest
           from:
             kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
+            name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${ZONE}
           referencePolicy:
             type: Local
   - apiVersion: v1

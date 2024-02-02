@@ -23,12 +23,6 @@ parameters:
     value: 20m
   - name: MEMORY_REQUEST
     value: 50Mi
-  - name: REGISTRY
-    description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
-    value: ghcr.io
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
   - description: Number of replicas
     displayName: Replica Count
     name: REPLICA_COUNT
@@ -53,7 +47,7 @@ objects:
         - name: latest
           from:
             kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
+            name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${ZONE}
           referencePolicy:
             type: Local
   - kind: ConfigMap

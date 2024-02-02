@@ -20,12 +20,9 @@ parameters:
     description: Deployment zone, e.g. pr-### or prod
     required: true
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Database Volume Capacity
     name: DB_PVC_SIZE
     required: true
     value: 1Gi
-  - name: REGISTRY
-    value: ghcr.io
   - name: CPU_REQUEST
     value: 30m
   - name: MEMORY_REQUEST
@@ -34,9 +31,6 @@ parameters:
     value: 1000m
   - name: MEMORY_LIMIT
     value: 1Gi
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
   - name: URL
     description: Dummy parameter to make workflows easier
   ### Backup-Container starts here ###
@@ -120,7 +114,7 @@ objects:
         - name: ${ZONE}-db
           from:
             kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
+            name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${ZONE}
           referencePolicy:
             type: Local
   - kind: DeploymentConfig
