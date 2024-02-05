@@ -40,7 +40,7 @@ jobs:
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Deploys
-    needs: [setup, builds]
+    # needs: [builds]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
