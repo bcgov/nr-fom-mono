@@ -63,5 +63,5 @@ jobs:
     with:
       target: ${{ github.event.number }}
       triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
-      url: fom-${{ needs.init.outputs.route }}.apps.silver.devops.gov.bc.ca
-      test: "$(( ${{ github.event.number }} % 50 ))"
+      # url: fom-${{ needs.init.outputs.route }}.apps.silver.devops.gov.bc.ca
+      url: "$(( ${{ github.event.number }} % 50 ))"
