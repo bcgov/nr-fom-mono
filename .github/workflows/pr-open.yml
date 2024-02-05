@@ -12,6 +12,19 @@ env:
   FOM_ROUTE: $(( ${{ github.event.number }} % 50 ))
 
 jobs:
+  init:
+    name: Initialize
+    outputs:
+      route: ${{ github.event.number }}
+    runs-on: ubuntu-22.04
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Get FAM Route
+        id: route
+        run: |
+          echo "route=$(( ${{ github.event.number }} % 50 ))" >> $GITHUB_OUTPUT
+
   # builds:
   #   name: Builds
   #   runs-on: ubuntu-22.04
@@ -44,9 +57,11 @@ jobs:
   deploys:
     name: Deploys
     # needs: [builds]
+    needs: [init]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
       target: ${{ github.event.number }}
       triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
-      url: fom-${{ env.FOM_ROUTE }}.apps.silver.devops.gov.bc.ca
+      url: fom-${{ needs.init.outputs.route }}.apps.silver.devops.gov.bc.ca
+      test: "$(( ${{ github.event.number }} % 50 ))"
