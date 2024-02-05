@@ -16,10 +16,9 @@ on:
         type: string
 
       url:
-        description: URL for the deployment set; omit=target-based; e.g. fom-test.nrs.gov.bc.ca
+        description: URL for the deployment set; omit=fom-${{ inputs.target }}.apps.silver.devops.gov.bc.ca
         required: false
         type: string
-        default: fom-${{ inputs.target }}.apps.silver.devops.gov.bc.ca
 
 jobs:
   base:
@@ -62,7 +61,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           parameters:
             -p CERTBOT=false -p REPLICA_COUNT=1
-            -p URL=fom-${{ inputs.url }}
+            -p URL=${{ inputs.url }}|| "fom-${{ inputs.target }}.apps.silver.devops.gov.bc.ca"
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
           triggers: ${{ inputs.triggers }}
