@@ -61,7 +61,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           parameters:
             -p CERTBOT=false -p REPLICA_COUNT=1
-            -p URL=${{ inputs.url }}|| "fom-${{ inputs.target }}.apps.silver.devops.gov.bc.ca"
+            -p URL=${{ inputs.url }}
             -p ZONE=${{ inputs.target }}
             ${{ matrix.parameters }}
           triggers: ${{ inputs.triggers }}
