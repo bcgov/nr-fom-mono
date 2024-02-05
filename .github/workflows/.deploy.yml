@@ -16,7 +16,7 @@ on:
         type: string
 
       url:
-        description: URL for the deployment set; omit=fom-${{ inputs.target }}.apps.silver.devops.gov.bc.ca
+        description: URL for the deployment set; omit=fom-(target).apps.silver.devops.gov.bc.ca
         required: false
         type: string
 
