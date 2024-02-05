@@ -49,4 +49,4 @@ jobs:
     with:
       target: ${{ github.event.number }}
       triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
-      url: fom-${{ FOM_ROUTE }}.apps.silver.devops.gov.bc.ca
+      url: fom-${{ env.FOM_ROUTE }}.apps.silver.devops.gov.bc.ca
