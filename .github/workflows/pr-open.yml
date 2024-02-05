@@ -8,6 +8,9 @@ concurrency:
   group: pr-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FOM_ROUTE: $(( ${{ github.event.number }} % 50 ))
+
 jobs:
   # builds:
   #   name: Builds
@@ -46,4 +49,4 @@ jobs:
     with:
       target: ${{ github.event.number }}
       triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
-      url: fom-$(( ${{ github.event.number }} % 50 )).apps.silver.devops.gov.bc.ca
+      url: fom-${{ FOM_ROUTE }}.apps.silver.devops.gov.bc.ca
