@@ -39,7 +39,7 @@ on:
         required: false
         type: string
         default: SIBIFSAF@victoria1.gov.bc.ca
-      logout_chain_url:
+      logout_url:
         description: Logout chain URL
         required: false
         type: string
@@ -75,7 +75,7 @@ jobs:
               -p CERTBOT=${{ inputs.certbot }}
               -p DB_TESTDATA=${{ inputs.db_testdata }}
               -p FOM_EMAIL_NOTIFY=${{ inputs.fom_email }}
-              -p LOGOUT_CHAIN_URL="${{ inputs.logout_chain_url }}"
+              -p LOGOUT_CHAIN_URL="${{ inputs.logout_url }}"
               -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
               -p REPLICA_COUNT=${{ inputs.replicas }}
               -p URL=${{ inputs.url }}
