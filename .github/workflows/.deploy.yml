@@ -98,5 +98,5 @@ jobs:
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters: -p ZONE=${{ inputs.target }} ${{ matrix.parameters }}
+          parameters: -p TAG=${{ inputs.tag }} -p ZONE=${{ inputs.target }} ${{ matrix.parameters }}
           triggers: ${{ inputs.triggers }}
