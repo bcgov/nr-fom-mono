@@ -32,10 +32,10 @@ jobs:
     needs: [builds]
     environment: test
     uses: ./.github/workflows/.deploy.yml
-    secrets: inherit
     with:
       aws_id: "k3b9ip1vf85o4tkqvu5g4adgj"
       batch_secret: "fom-demo-client-app-api"
+      environment: test
       fom_email: "FLNR.AdminServicesCariboo@gov.bc.ca"
       logout_url: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
       replicas: 3

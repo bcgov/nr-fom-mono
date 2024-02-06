@@ -33,6 +33,10 @@ on:
         required: false
         type: boolean
         default: false
+      environment:
+        description: GitHub environment; e.g. test, prod
+        required: false
+        type: string
       fom_email:
         description: Email for FOM
         required: false
@@ -61,6 +65,7 @@ on:
 jobs:
   deploys:
     name: Deploys
+    environment: ${{ inputs.environment }}
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
