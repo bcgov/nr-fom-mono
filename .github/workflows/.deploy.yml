@@ -14,36 +14,22 @@ on:
         description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
         required: false
         type: string
-
       url:
-        description: URL for the deployment set; omit=fom-(target).apps.silver.devops.gov.bc.ca
-        required: false
+        description: URL for the deployment set; e.g. fom-123.apps.silver.devops.gov.bc.ca
+        required: true
         type: string
 
 jobs:
-  # base:
-  #   name: Database
-  #   runs-on: ubuntu-22.04
-  #   timeout-minutes: 5
-  #   steps:
-  #     - uses: bcgov-nr/action-deployer-openshift@v2.0.0
-  #       with:
-  #         file: db/openshift.deploy.yml
-  #         oc_namespace: ${{ vars.OC_NAMESPACE }}
-  #         oc_server: ${{ vars.OC_SERVER }}
-  #         oc_token: ${{ secrets.OC_TOKEN }}
-  #         overwrite: false
-  #         parameters: -p ZONE=${{ inputs.target }}
-  #         triggers: ${{ inputs.triggers }}
-
   deploys:
     name: Deploys
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
       matrix:
-        # dir: [api, admin, public]
+        dir: [api, admin, database, public]
         include:
+          - dir: admin
+            parameters: -p CERTBOT=false -p REPLICA_COUNT=1 -p URL=${{ inputs.url }}
           - dir: api
             parameters:
               -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
@@ -51,6 +37,10 @@ jobs:
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
               -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+          - dir: db
+            overwrite: false
+          - dir: public
+            parameters: -p CERTBOT=false -p REPLICA_COUNT=1 -p URL=${{ inputs.url }}
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
