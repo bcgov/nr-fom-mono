@@ -56,7 +56,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        dir: [api, admin, database, public]
+        dir: [api, admin, db, public]
         include:
           - dir: admin
             parameters:
