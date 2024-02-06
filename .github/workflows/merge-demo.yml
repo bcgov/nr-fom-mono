@@ -30,6 +30,7 @@ jobs:
   deploys:
     name: DEMO Deploys
     needs: [builds]
+    environment: test
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
@@ -37,6 +38,7 @@ jobs:
       batch_secret: "fom-demo-client-app-api"
       fom_email: "FLNR.AdminServicesCariboo@gov.bc.ca"
       logout_url: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+      replicas: 3
       tag: demo
       target: demo
       testdata: true

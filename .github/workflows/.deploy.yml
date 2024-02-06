@@ -61,7 +61,6 @@ on:
 jobs:
   deploys:
     name: Deploys
-    needs: [builds]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
