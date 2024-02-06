@@ -10,6 +10,36 @@ on:
         type: string
 
       ### Typical / recommended
+      aws_user_pools_web_client_id:
+        description: AWS User Pools Web Client ID
+        required: false
+        type: string
+        default: 7hpo4qa7j0hs0rkfl2pm0sto5k
+      certbot:
+        description: Use certbot?
+        required: false
+        type: boolean
+        default: false
+      db_testdata:
+        description: Use test data for database?
+        required: false
+        type: boolean
+        default: false
+      fom_email:
+        description: Email for FOM
+        required: false
+        type: string
+        default: SIBIFSAF@victoria1.gov.bc.ca
+      logout_chain_url:
+        description: Logout chain URL
+        required: false
+        type: string
+        default: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=
+      replicas:
+        description: Number of replicas to deploy
+        required: false
+        type: string
+        default: 1
       triggers:
         description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
         required: false
@@ -29,18 +59,27 @@ jobs:
         dir: [api, admin, database, public]
         include:
           - dir: admin
-            parameters: -p CERTBOT=false -p REPLICA_COUNT=1 -p URL=${{ inputs.url }}
+            parameters:
+              -p CERTBOT=${{ inputs.certbot }}
+              -p REPLICA_COUNT=${{ inputs.replicas }}
+              -p URL=${{ inputs.url }}
           - dir: api
             parameters:
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
-              -p DB_TESTDATA=true
-              -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
-              -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+              -p AWS_USER_POOLS_WEB_CLIENT_ID="${{ inputs.aws_user_pools_web_client_id }}"
+              -p CERTBOT=${{ inputs.certbot }}
+              -p DB_TESTDATA=${{ inputs.db_testdata }}
+              -p FOM_EMAIL_NOTIFY=${{ inputs.fom_email }}
+              -p LOGOUT_CHAIN_URL="${{ inputs.logout_chain_url }}"
               -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+              -p REPLICA_COUNT=${{ inputs.replicas }}
+              -p URL=${{ inputs.url }}
           - dir: db
             overwrite: false
           - dir: public
-            parameters: -p CERTBOT=false -p REPLICA_COUNT=1 -p URL=${{ inputs.url }}
+            parameters:
+              -p CERTBOT=${{ inputs.certbot }}
+              -p REPLICA_COUNT=${{ inputs.replicas }}
+              -p URL=${{ inputs.url }}
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v2.0.0
         with:
@@ -49,9 +88,5 @@ jobs:
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p CERTBOT=false -p REPLICA_COUNT=1
-            -p URL=${{ inputs.url }}
-            -p ZONE=${{ inputs.target }}
-            ${{ matrix.parameters }}
+          parameters: -p ZONE=${{ inputs.target }} ${{ matrix.parameters }}
           triggers: ${{ inputs.triggers }}
