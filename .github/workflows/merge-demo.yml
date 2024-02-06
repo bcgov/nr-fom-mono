@@ -1,9 +1,8 @@
 name: Merge to Demo
 
 on:
-  pull_request:
-  # push:
-  #   branches: [demo]
+  push:
+    branches: [demo]
 
 env:
   ZONE: demo
