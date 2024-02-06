@@ -19,7 +19,7 @@ jobs:
       matrix:
         package: [admin, api, db, public]
     steps:
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.1
+      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
         with:
           package: ${{ matrix.package }}
           build_context: ./
