@@ -14,7 +14,7 @@ on:
         type: string
 
       ### Typical / recommended
-      aws_user_pools_web_client_id:
+      aws_id:
         description: AWS User Pools Web Client ID
         required: false
         type: string
@@ -26,11 +26,6 @@ on:
         default: fom-client-app-api
       certbot:
         description: Use certbot?
-        required: false
-        type: boolean
-        default: false
-      db_testdata:
-        description: Use test data for database?
         required: false
         type: boolean
         default: false
@@ -49,6 +44,11 @@ on:
         required: false
         type: string
         default: 1
+      testdata:
+        description: Use test data for database?
+        required: false
+        type: boolean
+        default: false
       triggers:
         description: Paths to trigger a deploy; omit=always; e.g. ('backend/' 'frontend/')
         required: false
@@ -70,10 +70,10 @@ jobs:
               -p URL=${{ inputs.url }}
           - dir: api
             parameters:
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="${{ inputs.aws_user_pools_web_client_id }}"
+              -p AWS_USER_POOLS_WEB_CLIENT_ID="${{ inputs.aws_id }}"
               -p BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME="${{ inputs.batch_secret }}"
               -p CERTBOT=${{ inputs.certbot }}
-              -p DB_TESTDATA=${{ inputs.db_testdata }}
+              -p DB_TESTDATA=${{ inputs.testdata }}
               -p FOM_EMAIL_NOTIFY=${{ inputs.fom_email }}
               -p LOGOUT_CHAIN_URL="${{ inputs.logout_url }}"
               -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
