@@ -30,7 +30,7 @@ jobs:
   deploys:
     name: DEMO Deploys
     needs: [builds]
-    environment: test
+    secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
       aws_id: "k3b9ip1vf85o4tkqvu5g4adgj"
