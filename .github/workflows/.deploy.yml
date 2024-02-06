@@ -19,6 +19,11 @@ on:
         required: false
         type: string
         default: 7hpo4qa7j0hs0rkfl2pm0sto5k
+      batch_secret:
+        description: Batch secret
+        required: false
+        type: string
+        default: fom-client-app-api
       certbot:
         description: Use certbot?
         required: false
@@ -66,6 +71,7 @@ jobs:
           - dir: api
             parameters:
               -p AWS_USER_POOLS_WEB_CLIENT_ID="${{ inputs.aws_user_pools_web_client_id }}"
+              -p BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME="${{ inputs.batch_secret }}"
               -p CERTBOT=${{ inputs.certbot }}
               -p DB_TESTDATA=${{ inputs.db_testdata }}
               -p FOM_EMAIL_NOTIFY=${{ inputs.fom_email }}
