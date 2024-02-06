@@ -3,9 +3,7 @@ name: Merge to Main
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - ".github/ISSUE_TEMPLATE/*"
-      - "**.md"
+    paths-ignore: [".github/ISSUE_TEMPLATE/*", "**.md"]
   workflow_dispatch:
 
 env:

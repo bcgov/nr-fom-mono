@@ -9,38 +9,39 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # builds:
-  #   name: Builds
-  #   runs-on: ubuntu-22.04
-  #   permissions:
-  #     packages: write
-  #   strategy:
-  #     matrix:
-  #       package: [admin, api, db, public]
-  #       include:
-  #         - package: admin
-  #           triggers: ('admin/' 'libs/')
-  #         - package: api
-  #           triggers: ('api/' 'libs/')
-  #         - package: db
-  #           triggers: ('db')
-  #         - package: public
-  #           triggers: ('public/' 'libs/')
-  #   steps:
-  #     - uses: bcgov-nr/action-builder-ghcr@v2.0.1
-  #       with:
-  #         package: ${{ matrix.package }}
-  #         build_context: ./
-  #         build_file: ${{ matrix.package }}/Dockerfile
-  #         keep_versions: 100
-  #         tag: ${{ github.event.number }}
-  #         tag_fallback: test
-  #         triggers: ${{ matrix.triggers }}
+  # https://github.com/bcgov-nr/action-builder-ghcr
+  builds:
+    name: Builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [admin, api, db, public]
+        include:
+          - package: admin
+            triggers: ('admin/' 'libs/')
+          - package: api
+            triggers: ('api/' 'libs/')
+          - package: db
+            triggers: ('db')
+          - package: public
+            triggers: ('public/' 'libs/')
+    steps:
+      - uses: bcgov-nr/action-builder-ghcr@v2.0.1
+        with:
+          package: ${{ matrix.package }}
+          build_context: ./
+          build_file: ${{ matrix.package }}/Dockerfile
+          keep_versions: 100
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          triggers: ${{ matrix.triggers }}
 
   # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Deploys
-    # needs: [builds]
+    needs: [builds]
     uses: ./.github/workflows/.deploy.yml
     secrets: inherit
     with:
