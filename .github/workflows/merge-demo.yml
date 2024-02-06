@@ -1,8 +1,9 @@
 name: Demo
 
 on:
-  push:
-    branches: [demo]
+  pull_request:
+  # push:
+  #   branches: [demo]
 
 concurrency:
   group: ${{ github.workflow }}
@@ -36,6 +37,7 @@ jobs:
       batch_secret: "fom-demo-client-app-api"
       fom_email: "FLNR.AdminServicesCariboo@gov.bc.ca"
       logout_url: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+      tag: demo
       target: demo
       testdata: true
       url: fom-demo.apps.silver.devops.gov.bc.ca

@@ -4,8 +4,12 @@ on:
   workflow_call:
     inputs:
       ### Required
+      tag:
+        description: Build tag for the deployment; usually PR number or demo
+        required: true
+        type: string
       target:
-        description: Target for deploy; usually PR number, test or prod
+        description: Target zone for deploy; usually PR number, test or prod
         required: true
         type: string
       url:

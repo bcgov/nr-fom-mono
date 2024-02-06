@@ -10,6 +10,9 @@ parameters:
   - name: COMPONENT
     description: Component name
     value: db
+  - name: TAG
+    description: Image build tag to import and deploy
+    required: true
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
@@ -132,7 +135,7 @@ objects:
         - name: latest
           from:
             kind: DockerImage
-            name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${ZONE}
+            name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${TAG}
           referencePolicy:
             type: Local
   - kind: DeploymentConfig

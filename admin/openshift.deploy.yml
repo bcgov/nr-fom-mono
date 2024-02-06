@@ -10,8 +10,11 @@ parameters:
   - name: COMPONENT
     description: Component name
     value: admin
+  - name: TAG
+    description: Image build tag to import and deploy
+    required: true
   - name: ZONE
-    description: Deployment zone, e.g. pr-### or prod
+    description: Deployment target zone, e.g. pr-### or prod
     required: true
   - name: URL
     description: Deployment URL, e.g. fom-123.apps.silver.devops.gov.bc.ca or fom.nrs.gov.bc.ca
@@ -47,7 +50,7 @@ objects:
         - name: latest
           from:
             kind: DockerImage
-            name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${ZONE}
+            name: ghcr.io/bcgov/nr-fom/${COMPONENT}:${TAG}
           referencePolicy:
             type: Local
   - kind: ConfigMap
