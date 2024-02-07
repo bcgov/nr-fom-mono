@@ -1,7 +1,7 @@
 name: PR
 
 on:
-  # pull_request:
+  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -12,24 +12,11 @@ jobs:
   # https://github.com/bcgov-nr/action-builder-ghcr
   builds:
     name: Builds
-    runs-on: ubuntu-22.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [admin, api, db, public]
-    steps:
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
-        with:
-          package: ${{ matrix.package }}
-          build_context: ./
-          build_file: ${{ matrix.package }}/Dockerfile
-          keep_versions: 100
-          tag: ${{ github.event.number }}
-          tag_fallback: test
-          triggers: ('${{ matrix.package }}/' 'libs/')
+    uses: ./.github/workflows/.build.yml
+    with:
+      tag: ${{ github.event.number }}
+      tag_fallback: test
 
-  # https://github.com/bcgov-nr/action-deployer-openshift
   deploys:
     name: Deploys
     needs: [builds]
