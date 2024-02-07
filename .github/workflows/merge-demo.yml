@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   builds:
-    name: Builds
+    name: DEMO Builds
     runs-on: ubuntu-22.04
     permissions:
       packages: write
