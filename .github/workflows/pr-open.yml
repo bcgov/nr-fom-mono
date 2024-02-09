@@ -26,28 +26,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-22.04
     needs: setup
-    env:
-      ZONE: ${{ needs.setup.outputs.zone }}
     steps:
-      - name: PR Greeting
-        if: github.event.action == 'opened' || github.event.action == 'reopened'
-        env:
-          DOMAIN: apps.silver.devops.gov.bc.ca
-        uses: bcgov-nr/action-pr-description-add@v1.1.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          add_markdown: |
-            ---
-            Thanks for the PR!
-
-            Any successful deployments (not always required) will be available below.
-             - [api](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/api)
-             - [admin](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/admin)
-             - [public](https://fom-${{ env.ZONE }}.${{ env.DOMAIN }}/public)
-
-            Once merged, code will be promoted and handed off to following workflow run.
-             - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
-
       - name: OpenShift Init
         uses: bcgov-nr/action-deployer-openshift@v2.1.0
         with:
@@ -56,7 +35,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           file: libs/openshift.init.yml
           overwrite: false
-          parameters: -p ZONE=${{ env.ZONE }}
+          parameters: -p ZONE=${{ needs.setup.outputs.zone }}
           triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
 
   builds:
