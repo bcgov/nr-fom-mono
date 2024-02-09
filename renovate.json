@@ -11,6 +11,12 @@
         "*"
       ],
       "automerge": false
+    },
+    {
+      "excludeDepNames": [
+        "minio"
+      ],
+      "automerge": true
     }
   ]
 }
