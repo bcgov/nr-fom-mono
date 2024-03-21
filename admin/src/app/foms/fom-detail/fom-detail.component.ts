@@ -198,8 +198,8 @@ export class FomDetailComponent implements OnInit, OnDestroy {
           }
           this.onSuccess()
         }
-          }
-        })
+      }
+    })
   }
 
   public goToPublicNotice() {
