@@ -182,19 +182,24 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   public async publishFOM(){
-    const ready = this.validatePublishReady();
-    if (ready) {
-      this.workflowStateChangeRequest.workflowStateCode = WorkflowStateEnum.Published;
-      this.workflowStateChangeRequest.revisionCount = this.project.revisionCount;
+    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to publish FOM ${this.project.id} - ${this.project.name}. Do you want to proceed?`, 'Publish FOM');
+    dialogRef.afterClosed().subscribe(async (confirm) => {
+      if (confirm) {
+        const ready = this.validatePublishReady();
+        if (ready) {
+          this.workflowStateChangeRequest.workflowStateCode = WorkflowStateEnum.Published;
+          this.workflowStateChangeRequest.revisionCount = this.project.revisionCount;
 
-      this.isPublishing = true;
-      try {
-        await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).toPromise();
-      } finally {
-        this.isPublishing = false;
-      }
-      this.onSuccess()
-    }
+          this.isPublishing = true;
+          try {
+            await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).toPromise();
+          } finally {
+            this.isPublishing = false;
+          }
+          this.onSuccess()
+        }
+          }
+        })
   }
 
   public goToPublicNotice() {

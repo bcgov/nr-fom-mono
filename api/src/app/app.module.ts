@@ -71,5 +71,3 @@ function getLogLevel():string {
 export class AppModule {
   constructor(private appConfigService: AppConfigService) {}
 }
-
-// add a comment to trigger api deployment
