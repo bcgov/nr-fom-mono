@@ -182,7 +182,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   public async publishFOM(){
-    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to publish FOM ${this.project.id} - ${this.project.name}. Do you want to proceed?`, 'Publish FOM');
+    const dialogRef = this.modalSvc.openConfirmationDialog(`Publishing your FOM will make it viewable to the public once commenting opens, and you will not be able to make any edits. Do you want to proceed?`, 'Publish FOM');
     dialogRef.afterClosed().subscribe(async (confirm) => {
       if (confirm) {
         const ready = this.validatePublishReady();
