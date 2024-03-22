@@ -156,7 +156,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   finalizeFOM() {
-    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to finalize FOM ${this.project.id} - ${this.project.name}. Are you sure?`, 'Finalize FOM');
+    const dialogRef = this.modalSvc.openConfirmationDialog(`Finalizing your FOM will send a notification to district staff, and lock the FOM, so you will not be able to make any changes. Do you want to proceed?`, 'Finalize FOM');
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         this.isFinalizing = true;
