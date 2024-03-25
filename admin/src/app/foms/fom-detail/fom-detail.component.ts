@@ -156,7 +156,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   finalizeFOM() {
-    const dialogRef = this.modalSvc.openConfirmationDialog(`You are about to finalize FOM ${this.project.id} - ${this.project.name}. Are you sure?`, 'Finalize FOM');
+    const dialogRef = this.modalSvc.openConfirmationDialog(`Finalizing your FOM will send a notification to district staff, and lock the FOM, so you will not be able to make any changes. Do you want to proceed?`, 'Finalize FOM');
     dialogRef.afterClosed().subscribe((confirm) => {
       if (confirm) {
         this.isFinalizing = true;
@@ -182,19 +182,24 @@ export class FomDetailComponent implements OnInit, OnDestroy {
   }
 
   public async publishFOM(){
-    const ready = this.validatePublishReady();
-    if (ready) {
-      this.workflowStateChangeRequest.workflowStateCode = WorkflowStateEnum.Published;
-      this.workflowStateChangeRequest.revisionCount = this.project.revisionCount;
+    const dialogRef = this.modalSvc.openConfirmationDialog(`Publishing your FOM will make it viewable to the public once commenting opens, and you will not be able to make any edits. Do you want to proceed?`, 'Publish FOM');
+    dialogRef.afterClosed().subscribe(async (confirm) => {
+      if (confirm) {
+        const ready = this.validatePublishReady();
+        if (ready) {
+          this.workflowStateChangeRequest.workflowStateCode = WorkflowStateEnum.Published;
+          this.workflowStateChangeRequest.revisionCount = this.project.revisionCount;
 
-      this.isPublishing = true;
-      try {
-        await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).toPromise();
-      } finally {
-        this.isPublishing = false;
+          this.isPublishing = true;
+          try {
+            await this.projectService.projectControllerStateChange(this.project.id, this.workflowStateChangeRequest).toPromise();
+          } finally {
+            this.isPublishing = false;
+          }
+          this.onSuccess()
+        }
       }
-      this.onSuccess()
-    }
+    })
   }
 
   public goToPublicNotice() {
