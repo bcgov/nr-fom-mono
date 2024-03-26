@@ -29,6 +29,7 @@ jobs:
         include:
           - name: api
             file: api/openshift.deploy.yml
+            oc_version: "4.13"
             overwrite: true
             parameters:
               -p OC_NAMESPACE=a4b31c-test
@@ -37,6 +38,7 @@ jobs:
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="k3b9ip1vf85o4tkqvu5g4adgj"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+            post_rollout: oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
@@ -52,34 +54,19 @@ jobs:
             overwrite: true
             parameters: -p URL=fom-test.nrs.gov.bc.ca
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.1.0
+      - uses: bcgov-nr/action-deployer-openshift@v2.2.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: ${{ matrix.oc_version }}
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
-
-  certbot-test:
-    name: Certbot
-    needs: [deploy-test]
-    environment: test
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Run Certbot
-        run: |
-          set -eux
-
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
-          oc project ${{ vars.OC_NAMESPACE }}
-
-          # Run certbot with one-off job
-          oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
+          post_rollout: ${{ matrix.post_rollout }}
 
   deploy-prod:
     name: PROD Deploys
@@ -95,12 +82,14 @@ jobs:
         include:
           - name: api
             file: api/openshift.deploy.yml
+            oc_version: "4.13"
             overwrite: true
             parameters:
               -p OC_NAMESPACE=a4b31c-prod
               -p URL=fom.nrs.gov.bc.ca
               -p AWS_USER_POOLS_WEB_CLIENT_ID="4bu2n8at3m32a2fqnvd4t06la1"
               -p LOGOUT_CHAIN_URL="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+            post_rollout: oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
@@ -116,34 +105,19 @@ jobs:
             overwrite: true
             parameters: -p URL=fom.nrs.gov.bc.ca
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.1.0
+      - uses: bcgov-nr/action-deployer-openshift@v2.2.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
+          oc_version: ${{ matrix.oc_version }}
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
-
-  certbot-prod:
-    name: Certbot
-    needs: [deploy-prod]
-    environment: prod
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Run Certbot
-        run: |
-          set -eux
-
-          # Login to OpenShift and select project
-          oc login --token=${{ secrets.OC_TOKEN }} --server=${{ vars.OC_SERVER }}
-          oc project ${{ vars.OC_NAMESPACE }}
-
-          # Run certbot with one-off job
-          oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
+          post_rollout: ${{ matrix.post_rollout }}
 
   image-promotions:
     name: Promote images to PROD

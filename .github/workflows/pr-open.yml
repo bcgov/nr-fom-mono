@@ -28,7 +28,7 @@ jobs:
     needs: setup
     steps:
       - name: OpenShift Init
-        uses: bcgov-nr/action-deployer-openshift@v2.1.0
+        uses: bcgov-nr/action-deployer-openshift@v2.2.0
         with:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
@@ -114,7 +114,7 @@ jobs:
             parameters: -p CERTBOT=false -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.1.0
+      - uses: bcgov-nr/action-deployer-openshift@v2.2.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
