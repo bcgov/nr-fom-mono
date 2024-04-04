@@ -4,6 +4,7 @@ import { PinoLogger } from 'nestjs-pino';
 
 import { SpatialFeatureBcgwResponse, SpatialFeaturePublicResponse } from './spatial-feature.dto';
 import { SpatialFeatureService } from './spatial-feature.service';
+import { performance } from 'perf_hooks';
 
 @ApiTags('spatial-feature')
 @Controller('spatial-feature')
@@ -31,9 +32,15 @@ export class SpatialFeatureController {
       throw new BadRequestException('Invalid version');
     }
 
-    this.logger.debug('Start get /spatial-feature/bcgw-extract'); // For measuring performance.
-  
-    return this.spatialFeatureService.getBcgwExtract();
+    this.logger.info('Start get /spatial-feature/bcgw-extract'); // For measuring performance.
+
+    const start = performance.now();
+    const result = this.spatialFeatureService.getBcgwExtract();
+    const end = performance.now();
+
+    this.logger.info(`End get /spatial-feature/bcgw-extract for ${end - start}ms.`);
+
+    return result;
   }
 
 }
