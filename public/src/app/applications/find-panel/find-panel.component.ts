@@ -39,6 +39,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   private ngUnsubscribe: Subject<void> = new Subject<void>();
   public workflowState: _.Dictionary<WorkflowStateCode>;
   private fomFilters: Map<string, IFilter | IMultiFilter>;
+  public fomNumberFilter = new Filter<number>({ filter: { queryParam: 'fomNumber', value: null }});
   public forestClientNameFilter = new Filter<string>({ filter: { queryParam: 'fcName', value: null }});
   public commentStatusFilters: MultiFilter<boolean>; // For 'Commenting Open' or 'Commenting Closed'.
   public postedOnAfterFilter = new Filter<Date>({ filter: { queryParam: 'pdOnAfter', value: null } });
@@ -52,6 +53,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
     this.fomFiltersSvc.filters$.pipe(takeUntil(this.ngUnsubscribe)).subscribe((filters) => {
       this.fomFilters = filters;
+      this.fomNumberFilter = this.fomFilters.get(FOM_FILTER_NAME.FOM_NUMBER) as Filter<number>;
       this.forestClientNameFilter = this.fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>;
       this.commentStatusFilters = this.fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS) as MultiFilter<boolean>;
       this.postedOnAfterFilter = this.fomFilters.get(FOM_FILTER_NAME.POSTED_ON_AFTER) as Filter<Date>;
@@ -67,6 +69,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
    */
   public checkAndSetFiltersHash(): boolean {
     const newFilterHash = FilterUtils.hashFilters(
+      this.fomNumberFilter,
       this.forestClientNameFilter,
       this.commentStatusFilters,
       this.postedOnAfterFilter);
