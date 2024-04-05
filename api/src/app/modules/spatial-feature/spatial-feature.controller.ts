@@ -35,7 +35,7 @@ export class SpatialFeatureController {
     this.logger.info('Start get /spatial-feature/bcgw-extract'); // For measuring performance.
 
     const start = performance.now();
-    const result = this.spatialFeatureService.getBcgwExtract();
+    const result = await this.spatialFeatureService.getBcgwExtract();
     const end = performance.now();
 
     this.logger.info(`End get /spatial-feature/bcgw-extract for ${end - start}ms.`);
