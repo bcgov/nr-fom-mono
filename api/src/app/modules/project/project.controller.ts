@@ -38,6 +38,10 @@ export class ProjectController {
 
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
+      if (projectId) {
+        findCriteria.projectId = await new ParseIntPipe().transform(projectId, null);
+      }
+
       if (forestClientName) {
         findCriteria.likeForestClientName = forestClientName;
       }
