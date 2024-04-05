@@ -290,6 +290,8 @@ objects:
         app: ${NAME}-${ZONE}
         certbot-managed: ${CERTBOT}
       name: ${NAME}-${ZONE}-${COMPONENT}
+      annotations:
+        haproxy.router.openshift.io/timeout: 120s # (Fix 611 - /bcgw-extract long time response in prod)
     spec:
       host: ${URL}
       path: /${COMPONENT}
