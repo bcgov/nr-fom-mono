@@ -104,7 +104,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
 
   public verifyFomNumberInput(event) {
     let parsed = parseInt(event.target.value.toString().replace(/^0+(?=\d)/, ''), 10);
-    // fomNumber search field is a positive integer exclude 0;
+    // fomNumber search field is a positive integer excluding 0;
     if (isNaN(parsed) || parsed == 0) {
         parsed = null;
     }
