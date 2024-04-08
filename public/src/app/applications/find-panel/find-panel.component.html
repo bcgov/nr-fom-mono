@@ -7,14 +7,13 @@
     <div class="find-form">
       <div class="form-group">
           <label class="control-label">FOM #</label>
-          <input id="fomNumberInput" type="text"
-                  class="form-control limit-width-1"
-                  maxlength="40"
-          (keydown.arrowup)="$event.preventDefault()"
-          (keydown.arrowdown)="$event.preventDefault()"
-          (keyup.enter)="applyAllFilters()"
-          (mousewheel)="$event.preventDefault()"
-          [(ngModel)]="fomNumberFilter.filter.value" />
+          <input id="fomNumberInput" type="number"
+            class="form-control limit-width-1"
+            min="1" step="1"
+            oninput="javascript: this.value = this.value.slice(0, 9);"
+            (keyup.enter)="applyAllFilters()"
+            (mousewheel)="$event.preventDefault()"
+            [(ngModel)]="fomNumberFilter.filter.value" />
       </div>
 
       <div class="form-group">
