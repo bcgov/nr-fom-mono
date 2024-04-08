@@ -10,7 +10,7 @@
           <input id="fomNumberInput" type="number"
             class="form-control limit-width-1"
             min="1" step="1"
-            oninput="javascript: this.value = this.value.slice(0, 9);"
+            oninput="this.value = this.value.slice(0, 9);"
             (keyup.enter)="applyAllFilters()"
             (mousewheel)="$event.preventDefault()"
             [(ngModel)]="fomNumberFilter.filter.value" />
