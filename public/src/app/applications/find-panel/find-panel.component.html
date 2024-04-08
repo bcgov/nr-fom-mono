@@ -7,10 +7,10 @@
     <div class="find-form">
       <div class="form-group">
           <label class="control-label">FOM #</label>
-          <input id="fomNumberInput" type="number"
+          <input id="fomNumberInput" type="text"
             class="form-control limit-width-1"
-            min="1" step="1"
-            oninput="this.value = this.value.slice(0, 9);"
+            [maxlength]="maxInputLength"
+            (keyup)="verifyFomNumberInput($event)"
             (keyup.enter)="applyAllFilters()"
             (mousewheel)="$event.preventDefault()"
             [(ngModel)]="fomNumberFilter.filter.value" />

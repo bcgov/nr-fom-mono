@@ -45,6 +45,7 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   public postedOnAfterFilter = new Filter<Date>({ filter: { queryParam: 'pdOnAfter', value: null } });
   readonly minDate = moment('2018-03-23').toDate(); // first app created
   readonly maxDate = moment().toDate(); // today
+  readonly maxInputLength = 9;
 
   constructor(public urlSvc: UrlService,
               private fomFiltersSvc: FOMFiltersService) {
@@ -99,6 +100,15 @@ export class FindPanelComponent implements OnDestroy, OnInit {
     if (!commentOpen.value && !commentClosed.value) {
       commentOpen.value = true;
     }
+  }
+
+  public verifyFomNumberInput(event) {
+    let parsed = parseInt(event.target.value.toString().replace(/^0+(?=\d)/, ''), 10);
+    // fomNumber search field is a positive integer exclude 0;
+    if (isNaN(parsed) || parsed == 0) {
+        parsed = null;
+    }
+    this.fomNumberFilter.filter.value = parsed;
   }
 
   /**
