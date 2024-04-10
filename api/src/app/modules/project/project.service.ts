@@ -238,10 +238,15 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     const response = new ProjectResponse();
     if (entity.commentingClosedDate) {
       response.commentingClosedDate = dayjs(entity.commentingClosedDate).format(this.DATE_FORMAT);
+      if (entity.bctsMgrName) {
+        response.validityEndDate = dayjs(entity.commentingClosedDate).add(3, 'year').format(this.DATE_FORMAT);
+      }
     }
     if (entity.commentingOpenDate) {
       response.commentingOpenDate = dayjs(entity.commentingOpenDate).format(this.DATE_FORMAT);
-      response.validityEndDate = dayjs(entity.commentingOpenDate).add(3, 'year').format(this.DATE_FORMAT);
+      if (!entity.bctsMgrName) {
+        response.validityEndDate = dayjs(entity.commentingOpenDate).add(3, 'year').format(this.DATE_FORMAT);
+      }
     }
     response.createTimestamp = entity.createTimestamp.toISOString();
     response.description = entity.description;
