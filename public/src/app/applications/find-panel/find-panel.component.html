@@ -6,6 +6,17 @@
   <div class="flex-panel__scroll">
     <div class="find-form">
       <div class="form-group">
+          <label class="control-label">FOM #</label>
+          <input id="fomNumberInput" type="text"
+            class="form-control limit-width-1"
+            [maxlength]="maxInputLength"
+            (keyup)="verifyFomNumberInput($event)"
+            (keyup.enter)="applyAllFilters()"
+            (mousewheel)="$event.preventDefault()"
+            [(ngModel)]="fomNumberFilter.filter.value" />
+      </div>
+
+      <div class="form-group">
         <label class="control-label">FOM Holder Name (or portion)</label>
         <input id="forestClientNameInput" type="text"
                class="form-control limit-width-1"

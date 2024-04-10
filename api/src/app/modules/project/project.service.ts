@@ -34,8 +34,12 @@ export class ProjectFindCriteria {
   fspId?: number;
   districtId?: number;
   includeForestClientNumbers: string[] = [];
+  projectId?: number;
 
   applyFindCriteria(query: SelectQueryBuilder<Project>) {
+    if (this.projectId) {
+      query.andWhere("p.id = :projectId", {projectId: this.projectId})
+    }
     if (this.fspId) {
       query.andWhere("p.fsp_id = :fspId", {fspId: `${this.fspId}`});
     }

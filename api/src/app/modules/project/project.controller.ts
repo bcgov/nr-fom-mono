@@ -22,12 +22,14 @@ export class ProjectController {
   // Anonymous access allowed
   @Get('/publicSummary')
   @AuthGuardMeta(GUARD_OPTIONS.PUBLIC)
+  @ApiQuery({ name: 'projectId', required: false})
   @ApiQuery({ name: 'includeCommentOpen', required: false})
   @ApiQuery({ name: 'includePostCommentOpen', required: false})
   @ApiQuery({ name: 'forestClientName', required: false})
   @ApiQuery({ name: 'openedOnOrAfter', required: false})
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectPublicSummaryResponse] })
   async findPublicSummary(
+    @Query('projectId') projectId?: string,
     @Query('includeCommentOpen') includeCommentOpen: string = 'true',
     @Query('includePostCommentOpen') includePostCommentOpen: string = 'true',
     @Query('forestClientName') forestClientName?: string,
@@ -35,6 +37,10 @@ export class ProjectController {
     ): Promise<ProjectPublicSummaryResponse[]> {
 
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
+
+      if (projectId) {
+        findCriteria.projectId = await new ParseIntPipe().transform(projectId, null);
+      }
 
       if (forestClientName) {
         findCriteria.likeForestClientName = forestClientName;

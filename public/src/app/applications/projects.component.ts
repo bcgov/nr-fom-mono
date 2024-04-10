@@ -164,6 +164,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
   }
 
   fetchFOMs(fomFilters: Map<string, IFilter | IMultiFilter>) {
+    const fomNumberParam = (fomFilters.get(FOM_FILTER_NAME.FOM_NUMBER) as Filter<number>).filter.value;
     const forestClientNameParam = (fomFilters.get(FOM_FILTER_NAME.FOREST_CLIENT_NAME) as Filter<string>).filter.value;
     const commentStatusFilters = fomFilters.get(FOM_FILTER_NAME.COMMENT_STATUS)['filters'] as Array<IMultiFilterFields<boolean>>;
     const commentOpenParam = commentStatusFilters.filter(filter => filter.queryParam == COMMENT_STATUS_FILTER_PARAMS.COMMENT_OPEN)[0].value;
@@ -173,6 +174,7 @@ export class ProjectsComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.projectService
         .projectControllerFindPublicSummary(
+          fomNumberParam?.toString(),
           commentOpenParam.toString(), 
           commentClosedParam.toString(), 
           forestClientNameParam, 

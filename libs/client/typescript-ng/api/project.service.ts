@@ -455,6 +455,7 @@ export class ProjectService {
     }
 
     /**
+     * @param projectId 
      * @param includeCommentOpen 
      * @param includePostCommentOpen 
      * @param forestClientName 
@@ -462,12 +463,16 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectPublicSummaryResponse>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectPublicSummaryResponse>>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectPublicSummaryResponse>>>;
-    public projectControllerFindPublicSummary(includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public projectControllerFindPublicSummary(projectId?: string, includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectPublicSummaryResponse>>;
+    public projectControllerFindPublicSummary(projectId?: string, includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectPublicSummaryResponse>>>;
+    public projectControllerFindPublicSummary(projectId?: string, includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectPublicSummaryResponse>>>;
+    public projectControllerFindPublicSummary(projectId?: string, includeCommentOpen?: string, includePostCommentOpen?: string, forestClientName?: string, openedOnOrAfter?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
+        if (projectId !== undefined && projectId !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>projectId, 'projectId');
+        }
         if (includeCommentOpen !== undefined && includeCommentOpen !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
             <any>includeCommentOpen, 'includeCommentOpen');

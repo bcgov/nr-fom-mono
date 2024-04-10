@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { Filter, IFilter, IMultiFilter, IMultiFilterFields, MultiFilter } from '../../app/applications/utils/filter';
 
 export enum FOM_FILTER_NAME {
+  FOM_NUMBER = 'fomNumber',
   FOREST_CLIENT_NAME = 'fcName',
   POSTED_ON_AFTER = 'pdOnAfter',
   COMMENT_STATUS = 'cmtStatus'
@@ -22,6 +23,7 @@ export const COMMENT_STATUS_FILTER_PARAMS = {
   (However, that inteface definition is kind of strange, may need to review/refactor later.)
 */
 export const DEFAULT_FOM_FILTERS = {
+  fomNumberFilter: { filter: {queryParam: FOM_FILTER_NAME.FOM_NUMBER, value: null }},
   fcNameFilter: { filter: {queryParam: FOM_FILTER_NAME.FOREST_CLIENT_NAME, value: null }},
   postedOnAfterFilter: { filter: {queryParam: FOM_FILTER_NAME.POSTED_ON_AFTER, value: null }},
   commentStatusFilters: {
@@ -89,9 +91,11 @@ export class FOMFiltersService {
 
   _getDefaultFilters(): Map<string, IFilter|IMultiFilter> {
     let defaultFilters = new Map();
+    const fomNumberFilter = new Filter<string>(AppUtils.copy(DEFAULT_FOM_FILTERS.fomNumberFilter));
     const forestClientNameFilter = new Filter<string>(AppUtils.copy(DEFAULT_FOM_FILTERS.fcNameFilter));
     const postedOnAfterFilter = new Filter<Date>(AppUtils.copy(DEFAULT_FOM_FILTERS.postedOnAfterFilter));
     const commentStatusFilters = new MultiFilter<boolean>(AppUtils.copy(DEFAULT_FOM_FILTERS.commentStatusFilters));
+    defaultFilters.set(FOM_FILTER_NAME.FOM_NUMBER, fomNumberFilter);
     defaultFilters.set(FOM_FILTER_NAME.FOREST_CLIENT_NAME, forestClientNameFilter);
     defaultFilters.set(FOM_FILTER_NAME.POSTED_ON_AFTER, postedOnAfterFilter);
     defaultFilters.set(FOM_FILTER_NAME.COMMENT_STATUS, commentStatusFilters);
