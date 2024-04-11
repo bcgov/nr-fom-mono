@@ -239,12 +239,14 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     if (entity.commentingClosedDate) {
       response.commentingClosedDate = dayjs(entity.commentingClosedDate).format(this.DATE_FORMAT);
       if (entity.bctsMgrName) {
+        // Note: special rule for BCTS FOMs: validity period is 3 years from commenting close date. 
         response.validityEndDate = dayjs(entity.commentingClosedDate).add(3, 'year').format(this.DATE_FORMAT);
       }
     }
     if (entity.commentingOpenDate) {
       response.commentingOpenDate = dayjs(entity.commentingOpenDate).format(this.DATE_FORMAT);
       if (!entity.bctsMgrName) {
+        // For Non-BCTS FOMs: validity period is 3 years from commenting open date. 
         response.validityEndDate = dayjs(entity.commentingOpenDate).add(3, 'year').format(this.DATE_FORMAT);
       }
     }
