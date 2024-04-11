@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
+import { ProjectResponse, PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
@@ -87,6 +87,16 @@ export class PublicNoticesPanelComponent implements OnInit {
 
   isFomAvailable(commentingOpenDate) {
     return moment(commentingOpenDate).startOf('day') <= moment().startOf('day');
+  }
+
+  getValidityStartDate(project: ProjectResponse) {
+    // Note: special rule for BCTS FOMs: validity period is 3 years from commenting close date. 
+    if (project.bctsMgrName)
+      return project.commentingClosedDate;
+    
+    // For Non-BCTS FOMs: validity period is 3 years from commenting open date. 
+    else 
+      return project.commentingOpenDate;
   }
 
   private compareFn() {
