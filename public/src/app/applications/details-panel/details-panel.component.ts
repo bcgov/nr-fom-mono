@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {
-  AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
-  SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
+    AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
+    SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
 } from '@api-client';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UrlService } from '@public-core/services/url.service';
 import { ConfigService } from '@utility/services/config.service';
@@ -28,7 +30,10 @@ import moment = require('moment');
  */
 @Component({
   standalone: true,
-  imports: [CommonModule, ShapeInfoComponent, CommentModalComponent, DetailsMapComponent],
+  imports: [
+    FontAwesomeModule, CommonModule, ShapeInfoComponent, 
+    CommentModalComponent, DetailsMapComponent
+  ],
   selector: 'app-details-panel',
   templateUrl: './details-panel.component.html',
   styleUrls: ['./details-panel.component.scss']
@@ -47,6 +52,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
   public workflowStatus: _.Dictionary<WorkflowStateCode>;
   public projectIdFilter = new Filter<string>({ filter: { queryParam: 'id', value: null } });
   public attachments: AttachmentResponse[];
+  public faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 
   constructor(
     public modalService: NgbModal,
