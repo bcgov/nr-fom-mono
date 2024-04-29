@@ -138,3 +138,20 @@ hr {
 .word-wrap {
   word-wrap: break-word;
 }
+
+.ghost-button { 
+  display: inline-block; 
+  width: 215px; 
+  padding: 2px; 
+  border: 2px solid rgb(13 110 253); 
+  text-align: center; 
+  outline: none; 
+  text-decoration: none; 
+  transition: background-color 0.3s ease-out, color 0.3s ease-out;
+  border-radius: 0.375rem;
+}
+  
+.ghost-button:hover, .ghost-button:active { 
+  background-color: $gray4; 
+  transition: background-color 0.3s ease-in, color 0.3s ease-in; 
+}

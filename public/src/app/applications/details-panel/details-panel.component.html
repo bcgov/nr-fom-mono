@@ -36,14 +36,26 @@
         </ul>
         <br/>
 
-        <h3>Geographic Shape Information 
-          <span>({{projectSpatialDetail.length > 1 ? projectSpatialDetail.length + " Shapes": projectSpatialDetail.length + " Shape"}})</span>
-        </h3>
+        <div class="details-map-container">
+          <div class="banner-top">
+            <h3>Geographic Shape Information 
+              <span>({{projectSpatialDetail.length > 1 ? projectSpatialDetail.length + " Shapes": projectSpatialDetail.length + " Shape"}})</span>
+            </h3>
+            <div>
+              <a href="https://maps.gov.bc.ca/ess/hm/imap4m/" 
+                target="_blank" 
+                rel="noopener"
+                class="ghost-button"
+                style="text-transform: none">
+                <fa-icon [icon]="faArrowUpRightFromSquare"></fa-icon> View spatial layers in iMapBC
+              </a>
+            </div>
+          </div>
 
-        <app-details-map
-          [projectSpatialDetail]="projectSpatialDetail">
-        </app-details-map>
-
+          <app-details-map
+            [projectSpatialDetail]="projectSpatialDetail">
+          </app-details-map>
+        </div>
         <app-shape-info
           [spatialDetail]="projectSpatialDetail">
         </app-shape-info>

@@ -211,3 +211,18 @@ table {
     margin: 10px;
   }
 }
+
+// details-map
+.details-map-container {
+  h3 {
+    margin-bottom: 0;
+    padding: 5px 0
+  }
+  .banner-top {
+    margin-bottom: 5px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+  }
+}
