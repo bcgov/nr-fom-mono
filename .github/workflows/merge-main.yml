@@ -89,6 +89,8 @@ jobs:
               -p URL=fom.nrs.gov.bc.ca
               -p AWS_USER_POOLS_WEB_CLIENT_ID="4bu2n8at3m32a2fqnvd4t06la1"
               -p LOGOUT_CHAIN_URL="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+              -p MEMORY_REQUEST=650Mi
+              -p MEMORY_LIMIT=2Gi
             post_rollout: oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
           - name: admin
             file: admin/openshift.deploy.yml

@@ -42,6 +42,8 @@ parameters:
     value: 30m
   - name: MEMORY_REQUEST
     value: 150Mi
+  - name: MEMORY_LIMIT
+    value: 1Gi
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
@@ -230,6 +232,8 @@ objects:
                 - containerPort: ${{PORT}}
                   protocol: TCP
               resources:
+                limits:
+                  memory: ${MEMORY_LIMIT}
                 requests:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
@@ -312,7 +316,7 @@ objects:
       name: ${NAME}-${ZONE}-work-flow-state-change-batch
     spec:
       concurrencyPolicy: Replace
-      schedule: "${CRON_MINUTES} 9 * * * " # Run daily at 9:xx AM UTC
+      schedule: "${CRON_MINUTES} 8 * * * " # Run daily at 8:xx AM UTC
       jobTemplate:
         spec:
           template:
