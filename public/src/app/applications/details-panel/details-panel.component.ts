@@ -1,19 +1,21 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {
-    AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
-    SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
+  AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
+  SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
 } from '@api-client';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { UrlService } from '@public-core/services/url.service';
+import { getCommentingClosingDate } from '@public-core/utils/constants/appUtils';
 import { ConfigService } from '@utility/services/config.service';
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { DetailsMapComponent } from 'app/applications/details-panel/details-map/details-map.component';
 import { ShapeInfoComponent } from 'app/applications/details-panel/shape-info/shape-info.component';
 import { saveAs } from "file-saver";
 import * as _ from 'lodash';
+import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { Subject, forkJoin } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { CommentModalComponent } from '../../comment-modal/comment-modal.component';
@@ -32,7 +34,7 @@ import moment = require('moment');
   standalone: true,
   imports: [
     FontAwesomeModule, CommonModule, ShapeInfoComponent, 
-    CommentModalComponent, DetailsMapComponent
+    CommentModalComponent, DetailsMapComponent, TooltipModule
   ],
   selector: 'app-details-panel',
   templateUrl: './details-panel.component.html',
@@ -53,6 +55,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
   public projectIdFilter = new Filter<string>({ filter: { queryParam: 'id', value: null } });
   public attachments: AttachmentResponse[];
   public faArrowUpRightFromSquare = faArrowUpRightFromSquare;
+  public getCommentingClosingDate = getCommentingClosingDate;
 
   constructor(
     public modalService: NgbModal,

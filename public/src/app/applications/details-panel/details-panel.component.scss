@@ -4,6 +4,14 @@
   padding: 0;
 }
 
+.text-muted {
+    color: $color-muted  !important;
+    &--italic {
+        @extend .text-muted;
+        margin-top: 0.5rem;font-style: italic;
+    }
+}
+
 section {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid $gray2;
@@ -92,6 +100,16 @@ section {
   }
 }
 
+.info-validityEndDate {
+    padding-top: 3px;
+    padding-left: 1.25rem;
+    margin-left: 3px;
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-image: url("../../../assets/images/outline-info-24px.svg");
+}
+
 .commenting-open {
   background-image: url("../../../assets/images/baseline-insert_comment-24px.svg");
 }
@@ -119,6 +137,19 @@ section {
 .abandoned,
 .not-approved {
   background-image: url("../../../assets/images/baseline-cancel-24px.svg");
+}
+
+.badge.commenting-open {
+    padding-top: 0.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 2rem;
+    background-color: rgba(104, 247, 74, 0.5) !important;
+    background-image: url("../../../assets/images/baseline-check-24px.svg");
+    background-repeat: no-repeat;
+    background-position: 5% 20%;
+    font-size: 75%;
+    color: $gray7 !important;
 }
 
 // Meta
