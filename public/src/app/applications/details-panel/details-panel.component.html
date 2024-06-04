@@ -117,7 +117,7 @@
           <div class="text-muted" *ngIf="project.workflowState.code !== workflowStatus['COMMENT_OPEN'].code">
             Commenting closed on {{project.commentingClosedDate | date:'longDate'}}.
           </div>
-          <div class="text-muted">
+          <div class="text-muted" *ngIf="project.workflowState.code == workflowStatus['COMMENT_OPEN'].code">
             Commenting opened on {{project.commentingOpenDate | date:'longDate'}}
           </div>
 
