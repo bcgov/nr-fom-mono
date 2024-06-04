@@ -35,6 +35,20 @@ section {
   }
 }
 
+// This is ngx-bootstrap tooltip custom style.
+// Ngx-bootstrap seems have issue for tooltip custom styling,
+// This is probably the best solution. If there is more complex
+// style, consider using other tooltip, such as matTooltip.
+::ng-deep {
+  .tooltip-inner {
+    background-color: $gray8 !important;
+    color: white !important;
+  }
+  .tooltip.top, .tooltip-arrow:before, tooltip.top, .tooltip-arrow {
+    border-bottom-color: $gray8 !important;
+  }
+}
+
 .app-detail {
   line-height: normal;
 }

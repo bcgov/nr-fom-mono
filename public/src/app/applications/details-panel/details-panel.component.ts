@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import {
-  AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
-  SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
+    AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
+    SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
 } from '@api-client';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
@@ -20,6 +20,7 @@ import { Subject, forkJoin } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { CommentModalComponent } from '../../comment-modal/comment-modal.component';
 import { Filter } from '../utils/filter';
+
 
 import moment = require('moment');
 
