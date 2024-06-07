@@ -74,19 +74,20 @@
             FSP ID: <span class="bold">{{project.fspId}}</span>
           </li>
           <li>
-            Periods of operations: 
+            Period of operations: 
                 <span class="bold" *ngIf="project.operationStartYear">{{project.operationStartYear}} to {{project.operationEndYear}}</span>
                 <span class="bold" *ngIf="!project.operationStartYear">N/A</span>
           </li>
           <li>
-            This FOM is valid until: <span class="bold">{{project.validityEndDate | date: 'longDate'}}</span>
-            <span class="info-validityEndDate"
-                tooltip="[TODO] Waiting for provided FOM validity description."
-                placement="bottom"
-                [delay]="300">
-            </span>
-            <div class="text-muted--italic">
-                This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road permit application, until the date three years after commencement of the public review and commenting period. FOMs published by BC Timber Sales can be relied upon for the purpose of a cutting permit or road permit application, or the issuance of a Timber Sales License until the date three years after conclusion of the public review and commenting period.
+              This FOM is valid until: <span class="bold">{{project.validityEndDate | date: 'longDate'}}</span>
+              <span class="info-validityEndDate"
+                matTooltip="{{periodOperationsTooltipTxt}}"
+                matTooltipPosition="below"
+                matTooltipClass="tooltip-info"
+                matTooltipShowDelay="300"
+              ></span>             
+            <div class="text-muted--margin-top">
+                {{periodOperationsTxt}}
             </div>
           </li>
         </ul>

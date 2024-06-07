@@ -6,9 +6,9 @@
 
 .text-muted {
     color: $color-muted  !important;
-    &--italic {
+    &--margin-top {
         @extend .text-muted;
-        margin-top: 0.5rem;font-style: italic;
+        margin-top: 0.5rem;
     }
 }
 
@@ -35,17 +35,23 @@ section {
   }
 }
 
-// This is ngx-bootstrap tooltip custom style.
-// Ngx-bootstrap seems have issue for tooltip custom styling,
-// This is probably the best solution. If there is more complex
-// style, consider using other tooltip, such as matTooltip.
-::ng-deep {
-  .tooltip-inner {
-    background-color: $gray8 !important;
-    color: white !important;
+// It isn't easy to custimize tooltip.
+// Currently use this css selector solution found for Angular 15
+// : https://stackoverflow.com/questions/55973433/mattooltip-how-can-i-make-the-box-fit-the-text
+@media (min-width:480px) {
+  ::ng-deep {
+    .tooltip-info .mdc-tooltip__surface {
+      min-width: 350px !important;
+      text-align: left !important;
+    }
   }
-  .tooltip.top, .tooltip-arrow:before, tooltip.top, .tooltip-arrow {
-    border-bottom-color: $gray8 !important;
+}
+@media (max-width:480px) {
+  ::ng-deep {
+    .tooltip-info .mdc-tooltip__surface {
+      max-width: 150px !important;
+      text-align: left !important;
+    }
   }
 }
 
