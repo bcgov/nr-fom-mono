@@ -24,6 +24,10 @@ parameters:
     name: DB_PVC_SIZE
     required: true
     value: 1Gi
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Database Backup Volume Capacity
+    name: DB_BACKUP_PVC_SIZE
+    value: 1Gi
   - name: REGISTRY
     value: ghcr.io
   - name: CPU_REQUEST
@@ -241,7 +245,7 @@ objects:
         - ReadWriteOnce
       resources:
         requests:
-          storage: "${PVC_SIZE}"
+          storage: "${DB_BACKUP_PVC_SIZE}"
       storageClassName: netapp-file-standard
   - kind: CronJob
     apiVersion: "batch/v1"
@@ -303,18 +307,18 @@ objects:
                     - name: POSTGRESQL_DATABASE
                       valueFrom:
                         secretKeyRef:
-                          name: "${NAME}-${ZONE}-database"
-                          key: "database-name"
+                          name: ${NAME}-${ZONE}-${COMPONENT}
+                          key: database-db
                     - name: DATABASE_USER
                       valueFrom:
                         secretKeyRef:
-                          name: ${NAME}-${ZONE}-database
-                          key: "database-user"
+                          name: ${NAME}-${ZONE}-${COMPONENT}
+                          key: database-user
                     - name: DATABASE_PASSWORD
                       valueFrom:
                         secretKeyRef:
-                          name: ${NAME}-${ZONE}-database
-                          key: "database-password"
+                          name: ${NAME}-${ZONE}-${COMPONENT}
+                          key: database-password
               volumes:
                 - name: backup
                   persistentVolumeClaim:
