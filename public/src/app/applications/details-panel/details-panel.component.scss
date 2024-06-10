@@ -4,6 +4,14 @@
   padding: 0;
 }
 
+.text-muted {
+    color: $color-muted  !important;
+    &--margin-top {
+        @extend .text-muted;
+        margin-top: 0.5rem;
+    }
+}
+
 section {
   padding: 1.25rem 1.5rem;
   border-bottom: 1px solid $gray2;
@@ -24,6 +32,26 @@ section {
     letter-spacing: 0;
     font-size: 0.875rem;
     font-weight: 600;
+  }
+}
+
+// It isn't easy to custimize tooltip.
+// Currently use this css selector solution found for Angular 15
+// : https://stackoverflow.com/questions/55973433/mattooltip-how-can-i-make-the-box-fit-the-text
+@media (min-width:480px) {
+  ::ng-deep {
+    .tooltip-info .mdc-tooltip__surface {
+      min-width: 350px !important;
+      text-align: left !important;
+    }
+  }
+}
+@media (max-width:480px) {
+  ::ng-deep {
+    .tooltip-info .mdc-tooltip__surface {
+      max-width: 150px !important;
+      text-align: left !important;
+    }
   }
 }
 
@@ -92,6 +120,16 @@ section {
   }
 }
 
+.info-validityEndDate {
+    padding-top: 3px;
+    padding-left: 1.01rem;
+    margin-left: 3px;
+    background-position: left center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    background-image: url("../../../assets/images/outline-info-24px.svg");
+}
+
 .commenting-open {
   background-image: url("../../../assets/images/baseline-insert_comment-24px.svg");
 }
@@ -119,6 +157,19 @@ section {
 .abandoned,
 .not-approved {
   background-image: url("../../../assets/images/baseline-cancel-24px.svg");
+}
+
+.badge.commenting-open {
+    padding-top: 0.5rem;
+    padding-right: 1.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 2rem;
+    background-color: rgba(104, 247, 74, 0.5) !important;
+    background-image: url("../../../assets/images/baseline-check-24px.svg");
+    background-repeat: no-repeat;
+    background-position: 5% 20%;
+    font-size: 75%;
+    color: $gray7 !important;
 }
 
 // Meta
