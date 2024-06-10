@@ -24,10 +24,6 @@ parameters:
     name: DB_PVC_SIZE
     required: true
     value: 1Gi
-  - description: Volume space available for data, e.g. 512Mi, 2Gi.
-    displayName: Database Backup Volume Capacity
-    name: DB_BACKUP_PVC_SIZE
-    value: 1Gi
   - name: REGISTRY
     value: ghcr.io
   - name: CPU_REQUEST
@@ -91,8 +87,9 @@ parameters:
     description: "The number of attempts to try for a successful job outcome"
     value: "0"
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
-    name: PVC_SIZE
-    value: 256Mi
+    displayName: Database Backup Volume Capacity
+    name: DB_BACKUP_PVC_SIZE
+    value: 1Gi
   - name: CRON_MINUTES
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
