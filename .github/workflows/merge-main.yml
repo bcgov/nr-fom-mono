@@ -38,7 +38,6 @@ jobs:
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="k3b9ip1vf85o4tkqvu5g4adgj"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-            post_rollout: oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
