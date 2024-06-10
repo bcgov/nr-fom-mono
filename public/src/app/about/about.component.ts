@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   standalone: true,
@@ -7,6 +8,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./about.component.scss']
 })
 export class AboutComponent {
+  public faArrowUpRightFromSquare = faArrowUpRightFromSquare;
   constructor() {
     // Deliberately empty
   }
