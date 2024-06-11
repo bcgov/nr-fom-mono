@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
 import { UrlService } from '@public-core/services/url.service';
+
 
 export enum SplashModalResult {
   Dismissed,
@@ -11,10 +14,12 @@ export enum SplashModalResult {
 
 @Component({
   standalone: true,
+  imports: [FontAwesomeModule],
   templateUrl: './splash-modal.component.html',
   styleUrls: ['./splash-modal.component.scss']
 })
 export class SplashModalComponent {
+  public faArrowUpRightFromSquare = faArrowUpRightFromSquare;
 
   constructor(
     private activatedRoute: ActivatedRoute,
