@@ -11,4 +11,3 @@ On execution, the migration config (in ormconfig-migration-{main|test}.ts loads 
 ### To create a new migration empty template
 - npm run typeorm migration:create -- -o ./src/migrations/{main|test}/{name-of-new-migration-file}
   ( -o option: Need to ensure a .js javascript migration is created, not a .ts typescript, to run migrations at startup).
-
