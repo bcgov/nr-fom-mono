@@ -298,7 +298,7 @@ objects:
                       value: "${MONTHLY_BACKUPS}"
                       optional: true
                     - name: DATABASE_SERVICE_NAME
-                      value: "${NAME}-${ZONE}-database"
+                      value: "${NAME}-${ZONE}-${COMPONENT}"
                     - name: DEFAULT_PORT
                       value: ${DATABASE_DEFAULT_PORT}
                     - name: POSTGRESQL_DATABASE
