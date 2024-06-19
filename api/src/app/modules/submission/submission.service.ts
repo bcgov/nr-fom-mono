@@ -17,7 +17,7 @@ import { CutBlock } from './cut-block.entity';
 import { RetentionArea } from './retention-area.entity';
 import { RoadSection } from './road-section.entity';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
-import { FomSpatialJson, SpatialCoordSystemEnum, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest } from './submission.dto';
+import { FomSpatialJson, SpatialCoordSystemEnum, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest, SpatialObjectTableEnum } from './submission.dto';
 import { Submission } from './submission.entity';
 
 import _ = require('lodash');
@@ -78,7 +78,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       submission.retentionAreas = <RetentionArea[]>spatialObjects;
     }
 
-    await this.saveAndUpdateSpatialSubmission(submission, dto.spatialObjectCode, user);
+    await this.saveAndSimplifySpatialSubmission(submission, dto.spatialObjectCode, user);
   }
 
   /**
@@ -668,13 +668,39 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     }
   }
 
+  private async simplifyGeometry(submissionID: number, spatialObjectCode: SpatialObjectCodeEnum) {
+    this.logger.debug(`Simplify geometry for submittion: ${submissionID}, spatial object type: ${spatialObjectCode}`);
+    try {
+      await this.getDataSource()
+        .query(
+          `
+            UPDATE app_fom.${SpatialObjectTableEnum[spatialObjectCode]} SET geometry=ST_SimplifyPreserveTopology(geometry, 2.5) where submission_id = ${submissionID};
+          `,
+        );
+      this.logger.debug(`Simplify geometry successfully`);
+    }
+    catch (error) {
+      throw new BadRequestException(`Failed on simplifying geometry for submittion: ${submissionID}, spatial object type: ${spatialObjectCode}: ${error}`);
+    }
+  }
+
   private async saveAndUpdateSpatialSubmission(
     updatedSubmission: Submission, 
     spatialObjectCode: SpatialObjectCodeEnum, 
-    user: User) {
+    user: User
+  ) {
     await this.repository.save(updatedSubmission);
     await this.updateProjectLocation(updatedSubmission.projectId, user);
     await this.updateGeospatialAreaOrLength(spatialObjectCode, updatedSubmission.id);
+  }
+
+  private async saveAndSimplifySpatialSubmission (
+    submission: Submission, 
+    spatialObjectCode: SpatialObjectCodeEnum, 
+    user: User
+  ) {
+    await this.saveAndUpdateSpatialSubmission(submission, spatialObjectCode, user);
+    await this.simplifyGeometry(submission.id, spatialObjectCode);
   }
 
 }
