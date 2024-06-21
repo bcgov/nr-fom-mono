@@ -17,7 +17,7 @@ import { CutBlock } from './cut-block.entity';
 import { RetentionArea } from './retention-area.entity';
 import { RoadSection } from './road-section.entity';
 import { SubmissionTypeCodeEnum } from './submission-type-code.entity';
-import { FomSpatialJson, SpatialCoordSystemEnum, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest, SpatialObjectTableEnum } from './submission.dto';
+import { FomSpatialJson, SpatialCoordSystemEnum, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest } from './submission.dto';
 import { Submission } from './submission.entity';
 
 import _ = require('lodash');
@@ -67,6 +67,12 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
 
     const spatialObjects: SpatialObject[] = await this.prepareFomSpatialObjects(submission.id, dto.spatialObjectCode, dto.jsonSpatialSubmission, user);
 
+    // apply simplification algorithm for spatial geometry
+    for (const spatialObject of spatialObjects) {
+      const simplifiedGeometryJson = await this.simplifyGeometry(JSON.stringify(spatialObject.geometry), SpatialCoordSystemEnum.WGS84);
+      spatialObject.geometry = JSON.parse(simplifiedGeometryJson)
+    }
+
     // And save the geospatial objects (will update/replace previous ones)
     if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
       submission.cutBlocks = <CutBlock[]>spatialObjects;
@@ -78,7 +84,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       submission.retentionAreas = <RetentionArea[]>spatialObjects;
     }
 
-    await this.saveAndSimplifySpatialSubmission(submission, dto.spatialObjectCode, user);
+    await this.saveAndUpdateSpatialSubmission(submission, dto.spatialObjectCode, user);
   }
 
   /**
@@ -493,7 +499,7 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   * @param srid The EPSG code used as spatial reference identifier (SRID) with a specific coordinate system
   */
   async convertGeometry(geometry: string, srid: number): Promise<string> {
-    this.logger.debug(`Coverting geometry to EPSG${srid} with geometry: ${geometry}`)
+    this.logger.debug(`Converting geometry to EPSG${srid} with geometry: ${geometry}`)
     try {
       const convertedGeometryResult = await this.getDataSource()
       .query(
@@ -668,19 +674,21 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     }
   }
 
-  private async simplifyGeometry(submissionID: number, spatialObjectCode: SpatialObjectCodeEnum) {
-    this.logger.debug(`Simplify geometry for submittion: ${submissionID}, spatial object type: ${spatialObjectCode}`);
+  private async simplifyGeometry(geometry: string, srid: number): Promise<string> {
+    this.logger.debug(`Simplify geometry with 2.5 tolerance`);
     try {
-      await this.getDataSource()
+      const simplifiedGeometryResult = await this.getDataSource()
         .query(
           `
-            UPDATE app_fom.${SpatialObjectTableEnum[spatialObjectCode]} SET geometry=ST_SimplifyPreserveTopology(geometry, 2.5) where submission_id = ${submissionID};
+           SELECT ST_AsGeoJson(ST_Transform(ST_SimplifyPreserveTopology(ST_GeomFromGeoJSON($1), 2.5), CAST($2 AS INTEGER))) AS transform
           `,
+          [geometry, srid]
         );
-      this.logger.debug(`Simplify geometry successfully`);
+        this.logger.debug(`Simplify geometry successfully: `, simplifiedGeometryResult[0].transform);
+      return simplifiedGeometryResult[0].transform;
     }
     catch (error) {
-      throw new BadRequestException(`Failed on simplifying geometry for submittion: ${submissionID}, spatial object type: ${spatialObjectCode}: ${error}`);
+      throw new BadRequestException(`Failed on simplifying geometry: ${geometry}: ${error}`);
     }
   }
 
@@ -692,15 +700,6 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
     await this.repository.save(updatedSubmission);
     await this.updateProjectLocation(updatedSubmission.projectId, user);
     await this.updateGeospatialAreaOrLength(spatialObjectCode, updatedSubmission.id);
-  }
-
-  private async saveAndSimplifySpatialSubmission (
-    submission: Submission, 
-    spatialObjectCode: SpatialObjectCodeEnum, 
-    user: User
-  ) {
-    await this.saveAndUpdateSpatialSubmission(submission, spatialObjectCode, user);
-    await this.simplifyGeometry(submission.id, spatialObjectCode);
   }
 
 }

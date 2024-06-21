@@ -19,12 +19,6 @@ export enum SpatialObjectCodeEnum {
   WTRA = 'WTRA'
 }
 
-export enum SpatialObjectTableEnum {
-  CUT_BLOCK = 'cut_block',
-  ROAD_SECTION = 'road_section',
-  WTRA = 'retention_area'
-}
-
 export enum SpatialCoordSystemEnum {
   BC_ALBERS = 3005, //EPSG:3005
   WGS84 = 4326 // EPSG:4326

@@ -20,7 +20,7 @@ module.exports = class SimplifySpatialGeometry1718643595423 {
 
     async down(queryRunner) {
         console.log(
-            'ERROR: Apply simplification algorithem on geometry failed.'
+            'ERROR: Apply simplification algorithm on geometry cannot be reversed.'
         );
     }
 };
