@@ -67,12 +67,6 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
 
     const spatialObjects: SpatialObject[] = await this.prepareFomSpatialObjects(submission.id, dto.spatialObjectCode, dto.jsonSpatialSubmission, user);
 
-    // apply simplification algorithm for spatial geometry
-    for (const spatialObject of spatialObjects) {
-      const simplifiedGeometryJson = await this.simplifyGeometry(JSON.stringify(spatialObject.geometry), SpatialCoordSystemEnum.WGS84);
-      spatialObject.geometry = JSON.parse(simplifiedGeometryJson)
-    }
-
     // And save the geospatial objects (will update/replace previous ones)
     if (SpatialObjectCodeEnum.CUT_BLOCK === dto.spatialObjectCode) {
       submission.cutBlocks = <CutBlock[]>spatialObjects;
@@ -84,7 +78,10 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       submission.retentionAreas = <RetentionArea[]>spatialObjects;
     }
 
-    await this.saveAndUpdateSpatialSubmission(submission, dto.spatialObjectCode, user);
+    await this.repository.save(submission);
+    // Apply Douglas-Peucker algorithm to simplify geometry.
+    await this.simplifyGeometry(submission.id, dto.spatialObjectCode);
+    await this.updateProjectLocationAndSpatialAreaOrLength(submission, dto.spatialObjectCode, user);
   }
 
   /**
@@ -670,37 +667,66 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
       await this.updateProjectLocation(submission.projectId, user); // This will set geometry_latlong to null.
     }
     else {
-      await this.saveAndUpdateSpatialSubmission(submission, spatialObjectCode, user);
+      await this.repository.save(submission);
+      await this.updateProjectLocationAndSpatialAreaOrLength(submission, spatialObjectCode, user)
     }
   }
 
-  private async simplifyGeometry(geometry: string, srid: number): Promise<string> {
-    // Simplify the geometry using Douglas-Peucker algorithm with a tolerance of 2.5m,
-    // which is established by Forestry Geospatial experts as the standard accuracy level for forestry applications.
+  private getSpatialTableNameBySpatialObjectCode(spatialObjectCode: SpatialObjectCodeEnum) {
+    let spatialTableName: string; 
+    switch (spatialObjectCode) {
+      case SpatialObjectCodeEnum.CUT_BLOCK:
+        spatialTableName = CutBlock.tableName
+        break;
+      case SpatialObjectCodeEnum.ROAD_SECTION:
+        spatialTableName = RoadSection.tableName;
+        break;
+      case SpatialObjectCodeEnum.WTRA:
+        spatialTableName = RetentionArea.tableName;
+        break;
+      default:
+        throw new BadRequestException("Unrecognized spatial object code.");
+    }
+    return spatialTableName;
+  }
 
-    this.logger.debug(`Simplify geometry with 2.5 tolerance`);
+  /**
+   * Simplify the geometry using Douglas-Peucker algorithm with a tolerance of 2.5m,
+   * which is established by Forestry Geospatial experts as the standard accuracy level for forestry applications.
+   * @param submissionID the id for the FOM spatial submission.
+   * @param spatialObjectCode the GeoSpatial Object Type for this spatial submission.
+   * @returns no return. Update and simplify the 'geometry' on particular spatial object type table.
+   */
+  private async simplifyGeometry(submissionID: number, spatialObjectCode: SpatialObjectCodeEnum) {
+    this.logger.debug(`Simplify geometry for submittion: ${submissionID}, spatial object type: ${spatialObjectCode}`);
+
+    const buildUpdateQuery = (submissionID: number, spatialObjectCode: SpatialObjectCodeEnum) => {
+      let targetSpatialTable = this.getSpatialTableNameBySpatialObjectCode(spatialObjectCode);
+      return `
+        UPDATE app_fom.${targetSpatialTable} SET geometry=ST_SimplifyPreserveTopology(geometry, 2.5) where submission_id = ${submissionID};
+      ` 
+    }
+
     try {
-      const simplifiedGeometryResult = await this.getDataSource()
+      await this.getDataSource()
         .query(
-          `
-           SELECT ST_AsGeoJson(ST_Transform(ST_SimplifyPreserveTopology(ST_GeomFromGeoJSON($1), 2.5), CAST($2 AS INTEGER))) AS transform
-          `,
-          [geometry, srid]
+          buildUpdateQuery(submissionID, spatialObjectCode)
         );
-        this.logger.debug(`Simplify geometry successfully: `, simplifiedGeometryResult[0].transform);
-      return simplifiedGeometryResult[0].transform;
+      this.logger.debug(`Simplify geometry successfully`);
     }
     catch (error) {
-      throw new BadRequestException(`Failed on simplifying geometry: ${geometry}: ${error}`);
-    }
+      throw new BadRequestException(`Failed on simplifying geometry for submittion: ${submissionID}, spatial object type: ${spatialObjectCode}: ${error}`);
+    }     
   }
 
-  private async saveAndUpdateSpatialSubmission(
+  // Whenever user updates FOM submission again on particular spatial type,
+  // the project location needs to be recalculated 
+  // and that spatial area/length needs to be updated.
+  private async updateProjectLocationAndSpatialAreaOrLength(
     updatedSubmission: Submission, 
     spatialObjectCode: SpatialObjectCodeEnum, 
     user: User
   ) {
-    await this.repository.save(updatedSubmission);
     await this.updateProjectLocation(updatedSubmission.projectId, user);
     await this.updateGeospatialAreaOrLength(spatialObjectCode, updatedSubmission.id);
   }
