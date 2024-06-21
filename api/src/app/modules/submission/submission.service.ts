@@ -675,6 +675,9 @@ export class SubmissionService extends DataService<Submission, Repository<Submis
   }
 
   private async simplifyGeometry(geometry: string, srid: number): Promise<string> {
+    // Simplify the geometry using Douglas-Peucker algorithm with a tolerance of 2.5m,
+    // which is established by Forestry Geospatial experts as the standard accuracy level for forestry applications.
+
     this.logger.debug(`Simplify geometry with 2.5 tolerance`);
     try {
       const simplifiedGeometryResult = await this.getDataSource()
