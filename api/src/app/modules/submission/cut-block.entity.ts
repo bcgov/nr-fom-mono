@@ -1,16 +1,19 @@
 import { ApiBaseEntity } from '@entities';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  JoinColumn,
   Column,
+  Entity,
+  JoinColumn,
   ManyToOne,
+  PrimaryGeneratedColumn,
   RelationId
 } from 'typeorm';
 import { Submission } from './submission.entity';
 
-@Entity('cut_block', { schema: 'app_fom' })
+@Entity(CutBlock.tableName, { schema: 'app_fom' })
 export class CutBlock extends ApiBaseEntity<CutBlock> {
+
+  static readonly tableName = 'cut_block';
+
   constructor(cutBlock?: Partial<CutBlock>) {
     super(cutBlock);
   }

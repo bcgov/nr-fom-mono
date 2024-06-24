@@ -1,16 +1,19 @@
 import { ApiBaseEntity } from '@entities';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  JoinColumn,
   Column,
+  Entity,
+  JoinColumn,
   ManyToOne,
+  PrimaryGeneratedColumn,
   RelationId
 } from 'typeorm';
 import { Submission } from './submission.entity';
 
-@Entity('road_section', { schema: 'app_fom' })
+@Entity(RoadSection.tableName, { schema: 'app_fom' })
 export class RoadSection extends ApiBaseEntity<RoadSection> {
+
+  static readonly tableName = 'road_section';
+
   constructor(roadSection?: Partial<RoadSection>) {
     super(roadSection);
   }

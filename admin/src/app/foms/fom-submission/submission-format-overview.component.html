@@ -1,12 +1,9 @@
 
-<mat-expansion-panel hideToggle>
+<mat-expansion-panel class="expand-section">
   <mat-expansion-panel-header>
     <mat-panel-title>
       <strong>FOM Geospatial Submission Format Overview</strong>
     </mat-panel-title>
-    <mat-panel-description>
-      Click to expand/collapse
-    </mat-panel-description>
   </mat-expansion-panel-header>
 
   <p>
@@ -261,3 +258,19 @@
   </section>
 </mat-expansion-panel>
 
+
+
+<mat-expansion-panel class="expand-section">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      <strong>How Your Data Is Handled</strong>
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <p>
+    The Forest Operations Map application simplifies detailed maps that users submit. 
+    To save space and speed up processing, the application reduces the number of points in these maps. 
+    It keeps the map's original shape accurate within about 2.5 meters. 
+    This process uses the Douglas-Peucker algorithm.
+  </p>
+</mat-expansion-panel>

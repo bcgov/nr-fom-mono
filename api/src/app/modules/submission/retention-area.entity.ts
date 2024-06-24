@@ -1,9 +1,12 @@
 import { ApiBaseEntity } from '@entities';
-import { Entity, PrimaryGeneratedColumn, JoinColumn, Column, ManyToOne, RelationId } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId } from 'typeorm';
 import { Submission } from './submission.entity';
 
-@Entity('retention_area', {schema: 'app_fom'})
+@Entity(RetentionArea.tableName, {schema: 'app_fom'})
 export class RetentionArea extends ApiBaseEntity<RetentionArea> {
+
+  static readonly tableName = 'retention_area';
+
   constructor(retentionArea?: Partial<RetentionArea>) {
     super(retentionArea);
   }
