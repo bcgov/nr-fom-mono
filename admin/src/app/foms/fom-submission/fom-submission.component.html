@@ -76,6 +76,18 @@
           </div>
 
         </div>
+
+        <div class="sample-spatial-download" ngbDropdown>
+          <button ngbDropdownToggle class="btn btn-sm btn-outline-primary" type="button">
+            Download Spatial Templates
+          </button>
+          <div ngbDropdownMenu>
+            <a class="dropdown-item" href="assets/sample-spatial-files/sample_cut_block_file.json" download>Cut block</a>
+            <a class="dropdown-item" href="assets/sample-spatial-files/sample_road_section_file.json" download>Road section</a>
+            <a class="dropdown-item" href="assets/sample-spatial-files/sample_wtra_file.json" download>Wildlife/tree retention area</a>
+          </div>
+        </div>
+
         <div class="form-group mb-0">
 
           <app-upload-box [multipleFiles]="false" 

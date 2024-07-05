@@ -3,6 +3,7 @@ import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectResponse, ProjectService, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest, SubmissionService, SubmissionTypeCodeEnum, WorkflowStateEnum } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from '@utility/security/user';
@@ -27,7 +28,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
         NgFor, 
         SubmissionFormatOverviewComponent, 
         DatePipe, 
-        UploadBoxComponent
+        UploadBoxComponent,
+        NgbDropdown, 
+        NgbDropdownToggle, 
+        NgbDropdownMenu, 
     ],
     selector: 'app-fom-submission',
     templateUrl: './fom-submission.component.html',

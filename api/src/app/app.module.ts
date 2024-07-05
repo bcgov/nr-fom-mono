@@ -68,6 +68,7 @@ function getLogLevel():string {
     SpatialFeatureModule,
   ],
 })
+
 export class AppModule {
   constructor(private appConfigService: AppConfigService) {}
 }
