@@ -1,19 +1,19 @@
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { ProjectResponse, ProjectService, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest, SubmissionService, SubmissionTypeCodeEnum, WorkflowStateEnum } from '@api-client';
+import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from '@utility/security/user';
 import { Observable, Subject } from 'rxjs';
 import { map, switchMap, takeUntil } from 'rxjs/operators';
-import { CognitoService } from "@admin-core/services/cognito.service";
-import { ModalService } from '@admin-core/services/modal.service';
-import { StateService } from '@admin-core/services/state.service';
 import { FomSubmissionForm } from './fom-submission.form';
-import { SubmissionFormatOverviewComponent } from './submission-format-overview.component';
+import { SubmissionOverviewFaqComponent } from './submission-overview-faq.component';
 
 import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -26,7 +26,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
         FormsModule, 
         ReactiveFormsModule, 
         NgFor, 
-        SubmissionFormatOverviewComponent, 
+        SubmissionOverviewFaqComponent, 
         DatePipe, 
         UploadBoxComponent,
         NgbDropdown, 

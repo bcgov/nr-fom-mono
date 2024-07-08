@@ -1,0 +1,60 @@
+<section>
+    <legend>Frequently Asked Questions for submitting geospatial</legend>
+    <section class="faq-section">
+        <div class="faq-title">Data Handling</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: How does the Forest Operations Map application handle your data?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> The Forest Operations Map application simplifies detailed maps that users submit. To save space and speed up processing, the application reduces the number of points in these maps while keeping the map's original shape accurate within about 2.5 meters. This process uses the Douglas-Peucker algorithm.
+            </p>
+        </mat-expansion-panel>
+    </section>
+
+    <section class="faq-section">
+        <div class="faq-title">File Requirements</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What are the requirements for submitting geospatial files?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> Each file must be in GeoJSON or, depending on the GIS software, in some cases in JSON format. Shapes must be either polygons for cutblocks and wildlife tree retention areas (WTRA) or line features for road sections.
+            </p>
+            <p>
+                <strong>Ensure your shapes do not contain curves or multipart features.</strong> A spatial submission must include at least one cutblock file or one road section file.
+            </p>
+            <ol>
+                <li><strong>File Format:</strong> GeoJSON or JSON</li>
+                <li><strong>File Encoding:</strong> UTF-8</li>
+                <li>
+                    <strong>Coordinate Systems:</strong>
+                    <ul>
+                        <li>BC Albers (EPSG:3005), or</li>
+                        <li>WGS 84 (EPSG:4326).</li>
+                    </ul>
+                </li>
+                <li><strong>File Size: </strong>Maximum 30MB</li>
+                <li><strong>Submission:</strong>Each spatial file submission must include at least one cutblock or road section feature</li>
+            </ol>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What is the structure for GeoJSON/JSON files?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong>Each JSON file should consist of a single FeatureCollection object. The geometries must be polygons or linestrings depending on the feature type, and coordinates must be ordered as XY.
+            </p>
+            <p>
+                <strong>Latitude and longitude are not accepted.</strong>
+            </p>
+        </mat-expansion-panel>
+    </section>
+</section>
