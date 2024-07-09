@@ -128,6 +128,7 @@
 
             <div class="panel-content-group">
                 <div class="faq-sub-title">Detailed Attribute Requirements</div>
+                <!-- Road Section -->
                 <b>Road Section</b>
                 <div>The attribute table in the shapefile must look as follows (all fields formatted as plain text):</div>
                 <table aria-label="Table:Properties of Road Section geometry type">
@@ -182,14 +183,265 @@
                         </tr>
                         <tr>
                             <td>NAME</td>
-                            <td>NAME	Road Section Name. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
+                            <td>Road Section Name. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
                             <td>text</td>
                             <td>N</td>
                         </tr>
                     </tbody>
                 </table>
+                
+                <div class="spacer-height-1"></div>
+
+                <!-- Cut Block -->
+                <b>Cut Block</b>
+                <div>The attribute table in the shapefile must look as follows (all fields formatted as plain text):</div>
+                <table aria-label="Table:Properties of Cut Blocks Section geometry type">
+                    <thead>
+                        <tr>
+                            <th scope="col">FOM_OBJECT</th>
+                            <th scope="col">GEOMETRY</th>
+                            <th scope="col">DEV_DATE</th>
+                            <th scope="col">NAME</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cut Block</td>
+                            <td>Polygon</td>
+                            <td>YYYY-MM-DD</td>
+                            <td>NAME</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="spacer-height-1"></div>
+
+                <div>The following table outlines the attribute fields in detail:</div>
+                <table aria-label="Table:Detail attribute fields of Cut Block geometry type">
+                    <thead>
+                        <tr>
+                            <th scope="col">Field</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Optional</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>FOM_OBJECT</td>
+                            <td>Cut Block</td>
+                            <td>text</td>
+                            <td>N</td>
+                        </tr>
+                        <tr>
+                            <td>GEOMETRY</td>
+                            <td>BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
+                            <td>Polygon</td>
+                            <td>N</td>
+                        </tr>
+                        <tr>
+                            <td>DEV_DATE</td>
+                            <td>Development date. Format: YYYY-MM-DD</td>
+                            <td>text</td>
+                            <td>N</td>
+                        </tr>
+                        <tr>
+                            <td>NAME</td>
+                            <td>Cut Block Name. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
+                            <td>text</td>
+                            <td>N</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- WTRA -->
+                <b>WTRA</b>
+                <div>The attribute table in the shapefile must look as follows (all fields formatted as plain text):</div>
+                <table aria-label="Table:Properties of WTRA geometry type">
+                    <thead>
+                        <tr>
+                            <th scope="col">FOM_OBJECT</th>
+                            <th scope="col">GEOMETRY</th>
+                            <th scope="col">DEV_DATE</th>
+                            <th scope="col">NAME</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>WTRA</td>
+                            <td>Polygon</td>
+                            <td>Enter YYYY-MM-DD or leave blank</td>
+                            <td>NAME</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="spacer-height-1"></div>
+
+                <div>The following table outlines the attribute fields in detail:</div>
+                <table aria-label="Table:Detail attribute fields of WTRA geometry type">
+                    <thead>
+                        <tr>
+                            <th scope="col">Field</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Optional</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>FOM_OBJECT</td>
+                            <td>WTRA</td>
+                            <td>text</td>
+                            <td>N</td>
+                        </tr>
+                        <tr>
+                            <td>GEOMETRY</td>
+                            <td>BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
+                            <td>Polygon</td>
+                            <td>N</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="spacer-height-1"></div>
+
+            <div class="panel-content-group">
+                <div class="faq-sub-title">Property Format</div>
+                <div>This table specifies the description and format of required properties. All attribute table fields <strong>must</strong> be formatted as text, including the date field.</div>
+                <table aria-label="Table: Description and format of required properties">
+                    <thead>
+                      <tr>
+                        <th scope="col">Property</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Value Format</th>
+                      </tr>
+                    </thead>
+                    <tr>
+                      <td>FOM_OBJECT</td>
+                      <td>Describes the feature (Cutblock, Road, WTRA)</td>
+                      <td>text</td>
+                    </tr>
+                    <tr>
+                      <td>GEOMETRY</td>
+                      <td>Indicates if feature is a polygon or linestring</td>
+                      <td>text</td>
+                    </tr>
+                    <tr>
+                      <td>DEV_DATE</td>
+                      <td>Planned date to start development</td>
+                      <td>Date string in the format "YYYY-MM-DD"</td>
+                    </tr>
+                    <tr>
+                      <td>NAME</td>
+                      <td>Description/identifier for the spatial object.</td>
+                      <td>Text, maximum length 50 characters.</td>
+                    </tr>
+                  </table>
             </div>
         </mat-expansion-panel>
     </section>
     
+    <!-- Replacing Spatial Data section -->
+    <section class="faq-section">
+        <div class="faq-title">Replacing Spatial Data</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: How do I replace old spatial data with a new GeoJSON/JSON file?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong>
+            <ol>
+                <li>
+                    <strong>Upload new GeoJSON/JSON file:</strong>
+                    <ul>
+                        <li>Follow the regular upload process to replace old data with a new GeoJSON/JSON file.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Confirm upload:</strong>
+                    <ul>
+                        <li>Check the “Location” button on the “Summary Screen” to confirm successful upload or replacement.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Publication:</strong>
+                    <ul>
+                        <li>Submitted data will be published overnight and will be visible in the public interface the next day.</li>
+                    </ul>
+                </li>
+            </ol>
+        </mat-expansion-panel>
+    </section>
+
+    <!-- Using ArcGIS section -->
+    <section class="faq-section">
+        <div class="faq-title">Using ArcGIS</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: How should I use the "Features To JSON" tool in ArcGIS for geospatial submissions?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong>Depending on the version of ArcGIS you are using, ensure the "GeoJSON" box is checked prior to running the tool. Note that in some versions, this box may need to be left unchecked. Refer to the specific documentation for your version to confirm the correct settings.
+            <br/><br/>
+            <p>
+                <img src="assets/images/arcgis-featuresToJson.png" alt="ArcGIS Conversion Tool 'Features To JSON' Example PNG" width="800" height="494">
+            </p>
+        </mat-expansion-panel>
+    </section>
+
+    <!-- Handling curves section -->
+    <section class="faq-section">
+        <div class="faq-title">Handling curves</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What should I do with curves in my dataset?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong><span class="text-red"><u>Important:</u> </span>The "Features To JSON" tool <strong>does not accept curves</strong> and <strong>does not automatically convert them to lines</strong>. Follow these steps to prepare your data:
+
+            <div class="spacer-height-1"></div>
+
+            <ol>
+                <li>
+                    <strong>Convert curves to lines:</strong>
+                    <ul>
+                        <li>Option 1: Convert `.gdb` feature classes to ESRI Shapefiles `.shp`</li>
+                        <li>Option 2: Use the "densify" tool in ArcMap to replace curves with lines</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Run the Features To JSON tool:</strong>
+                    <ul>
+                        <li>Ensure shapes contain no curves before using the tool.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Alternative tools:</strong>
+                    <ul>
+                        <li>Use the Feature Manipulation Engine (link to <a href="https://www.safe.com/support/downloads/" target="_blank" rel="noopener">FME</a>).</li>
+                        <li>Use the `gdal` tool (link to <a href="https://gdal.org/" target="_blank" rel="noopener">gdal</a> tool).</li>
+                    </ul>
+                </li>
+            </ol>
+        </mat-expansion-panel>
+    </section>
+
+    <!-- Contact Information section -->
+    <section class="faq-section">
+        <div class="faq-title">Contact Information</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: Who can I contact for more information if I still encounter issues?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> Contact the team at <a href="nrsenquiries@gov.bc.ca" target="_blank" rel="noopener">nrsenquiries@gov.bc.ca</a>
+            </p>
+        </mat-expansion-panel>
+    </section>
 </section>
