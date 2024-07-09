@@ -129,3 +129,12 @@ table tr:nth-child(even) {
     @include flex(1 1 auto);
   }
 }
+
+.dropdown-menu {
+    .dropdown-item {
+        &:hover {
+            color: #fff;
+            background: #007bff;
+        }
+    }
+}
