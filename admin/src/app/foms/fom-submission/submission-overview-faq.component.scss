@@ -2,11 +2,20 @@
 @import "../../../assets/styles/base/helpers.scss";
 @import "../../../assets/styles/components/expend-panel.scss";
 
+$section-margin-bottom: 30px;
+
 .faq-section {
     .faq-title {
         font-size: 0.9375rem;
         font-weight: 700;
         margin-bottom: 10px;
     }
-    margin-bottom: 30px;
+    margin-bottom: $section-margin-bottom;
+}
+
+.faq-pdf {
+    margin-bottom: $section-margin-bottom;
+    a {
+        text-decoration:none;
+    }
 }
