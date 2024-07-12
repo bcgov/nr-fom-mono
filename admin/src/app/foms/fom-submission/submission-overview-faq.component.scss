@@ -1,6 +1,6 @@
 @import "../../../assets/styles/base/base.scss";
 @import "../../../assets/styles/base/helpers.scss";
-@import "../../../assets/styles/components/expend-panel.scss";
+@import "../../../assets/styles/components/expand-panel.scss";
 
 $section-margin-bottom: 30px;
 
@@ -17,5 +17,8 @@ $section-margin-bottom: 30px;
     margin-bottom: $section-margin-bottom;
     a {
         text-decoration:none;
+    }
+    a:hover {
+        color: $white;
     }
 }
