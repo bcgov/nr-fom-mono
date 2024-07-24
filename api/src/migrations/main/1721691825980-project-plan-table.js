@@ -30,12 +30,12 @@ module.exports = class ProjectPlanTable1721691825980 {
 
         -- add code values.
             INSERT INTO app_fom.project_plan_code(code, description, create_user) VALUES
-            ('FSP', 'FOM project under FSP plan', CURRENT_USER), 
-            ('WOODLOT', 'FOM project under Woodlot plan', CURRENT_USER); 
+            ('FSP', 'Forest Stewardship Plan', CURRENT_USER), 
+            ('WOODLOT', 'Woodlot License Plan', CURRENT_USER); 
 
         `);
 
-        console.log('Starting new columns project.project_plan_code, project.woodlot_plan_number migration.');
+        console.log('Starting new columns project.project_plan_code, project.woodlot_license_number migration.');
         await queryRunner.query(`
         -- add new column: app_fom.project.project_plan_code column
             ALTER TABLE app_fom.project ADD COLUMN project_plan_code varchar NOT NULL DEFAULT 'FSP' references app_fom.project_plan_code(code);
@@ -44,9 +44,9 @@ module.exports = class ProjectPlanTable1721691825980 {
         -- add new index: app_fom.project (project_plan_code)
             create index IF NOT EXISTS project_project_plan_code_idx on app_fom.project (project_plan_code);
 
-        -- add new column: app_fom.project.woodlot_plan_number column
-            ALTER TABLE app_fom.project ADD COLUMN woodlot_plan_number varchar(5) NULL;
-            comment on column app_fom.project.woodlot_plan_number is 'Woodlot plan number applies to FOM under WOODLOT plan type';
+        -- add new column: app_fom.project.woodlot_license_number column
+            ALTER TABLE app_fom.project ADD COLUMN woodlot_license_number varchar(5) NULL;
+            comment on column app_fom.project.woodlot_license_number is 'Woodlot license plan number applies to FOM under WOODLOT plan type';
         `)
 
         console.log('Starting fsp_id column drop NOT NULL migration');
@@ -57,14 +57,14 @@ module.exports = class ProjectPlanTable1721691825980 {
     }
 
     async down(queryRunner) {
-        console.log('Starting project (drop columns: project_plan_code, woodlot_plan_number, drop table: project_plan_code) migration');
+        console.log('Starting project (drop columns: project_plan_code, woodlot_license_number, drop table: project_plan_code) migration');
         await queryRunner.query(`
         -- drop index
             drop index IF EXISTS project_project_plan_code_idx;
 
-        -- drop columns - project_plan_code, woodlot_plan_number
+        -- drop columns - project_plan_code, woodlot_license_number
             ALTER TABLE app_fom.project DROP COLUMN project_plan_code;
-            ALTER TABLE app_fom.project DROP COLUMN woodlot_plan_number;
+            ALTER TABLE app_fom.project DROP COLUMN woodlot_license_number;
     
         -- add constraint
             ALTER TABLE app_fom.project ALTER COLUMN fsp_id SET typeorm migration:revert -- -d path-to-datasource-configNOT NULL;

@@ -35,8 +35,8 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'fsp_id'})
   fspId: number;
 
-  @Column({ name: 'woodlot_plan_number'})
-  woodlotPlanNumber: string;
+  @Column({ name: 'woodlot_license_number'})
+  woodlotLicenseNumber: string;
 
   @ManyToOne(() => District)
   @JoinColumn({ name: 'district_id', referencedColumnName: 'id' })
