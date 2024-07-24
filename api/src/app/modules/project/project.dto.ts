@@ -1,14 +1,14 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
 import { ProjectPlanCodeEnum } from '@src/app/modules/project/project-plan-code.entity';
 import {
-  IsAlphanumeric,
-  IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, Matches, MaxLength,
-  Min,
-  MinLength,
-  registerDecorator,
-  ValidateIf,
-  ValidationArguments, ValidationOptions
+    IsAlphanumeric,
+    IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, Matches, MaxLength,
+    Min,
+    MinLength,
+    registerDecorator,
+    ValidateIf,
+    ValidationArguments, ValidationOptions
 } from 'class-validator';
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
@@ -60,7 +60,7 @@ export class ProjectCreateRequest {
   @MaxLength(5)
   @IsAlphanumeric()
   @Matches(/^W\d{4}/) // woodlot number regular expression. (W followed by 4 numbers).
-  woodlotPlanNumber?: string;
+  woodlotLicenseNumber?: string;
 
   @ApiProperty()
   @IsNumber()
@@ -115,7 +115,7 @@ export class ProjectPublicSummaryResponse {
   @ApiProperty({example: ` { "type": "Point", "coordinates": [-119.396071939, 49.813816629]}`})
   geojson: FomPoint;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
   fspId: number;
 
   @ApiProperty()
@@ -147,10 +147,16 @@ export class ProjectResponse {
   validityEndDate: string
 
   @ApiProperty()
-  fspId?: number;
+  projectPlan: string
 
   @ApiProperty()
-  woodlotPlanNumber?: string;
+  projectPlanDescription: string
+
+  @ApiPropertyOptional()
+  fspId?: number;
+
+  @ApiPropertyOptional()
+  woodlotLicenseNumber?: string;
 
   @ApiProperty()
   district: DistrictResponse;

@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ProjectPlanCodeEnum } from './projectPlanCodeEnum';
 
 
 export interface ProjectCreateRequest { 
@@ -23,7 +24,9 @@ export interface ProjectCreateRequest {
      */
     commentingClosedDate: string;
     forestClientNumber: string;
+    projectPlan: ProjectPlanCodeEnum;
     fspId: number;
+    woodlotLicenseNumber: string;
     districtId: number;
     operationStartYear: number;
     operationEndYear: number;
