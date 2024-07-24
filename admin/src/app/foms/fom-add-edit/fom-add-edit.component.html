@@ -162,13 +162,13 @@
             <label [ngClass]="{'required': true}">Type of Plan Holder</label>
             <select *ngIf="this.isCreate" 
                 class="form-control"
-                formControlName="projectPlan"
+                formControlName="projectPlanCode"
                 (change)="onProjectPlanChange($event)"
-                [ngClass]="{'is-invalid': !fg.get('projectPlan').value && isSubmitSaveClicked}" 
+                [ngClass]="{'is-invalid': !fg.get('projectPlanCode').value && isSubmitSaveClicked}" 
                 id="projectPlanSelectId">
               <option *ngFor="let option of projectPlanOptions" 
                 [value]="option.code"
-                [selected]="option.code === fg.get('projectPlan').value" 
+                [selected]="option.code === fg.get('projectPlanCode').value" 
                 [innerHTML]="option.description"> </option>
             </select>
             <input *ngIf="!this.isCreate" type="text"
@@ -179,14 +179,14 @@
               [value]="originalProjectResponse.projectPlanDescription"
             />
             <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('projectPlan')) 
-              && getErrorMessage('projectPlan', 'required')">
-              {{getErrorMessage('projectPlan', 'required')}}
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('projectPlanCode')) 
+              && getErrorMessage('projectPlanCode', 'required')">
+              {{getErrorMessage('projectPlanCode', 'required')}}
             </div>
           </div>
           <!-- FSP ID Input -->
           <div class="form-group col"
-            *ngIf="fg.get('projectPlan').value == 'FSP'">
+            *ngIf="fg.get('projectPlanCode').value == 'FSP'">
             <label for="fsp-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
             >FSP ID</label>
             <input
@@ -206,7 +206,7 @@
 
           <!-- Woodlot License Number Input -->
           <div class="form-group col"
-            *ngIf="fg.get('projectPlan').value == 'WOODLOT'">
+            *ngIf="fg.get('projectPlanCode').value == 'WOODLOT'">
             <label for="woodlot-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
             >Woodlot License Number</label>
             <input

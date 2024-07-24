@@ -47,7 +47,7 @@ export class ProjectCreateRequest {
     enumName: 'ProjectPlanCodeEnum'
   })
   @IsEnum(ProjectPlanCodeEnum)
-  projectPlan: ProjectPlanCodeEnum
+  projectPlanCode: ProjectPlanCodeEnum
 
   @ApiProperty()
   @ValidateIf(o => o.projectPlan as ProjectPlanCodeEnum === ProjectPlanCodeEnum.FSP) // validate when projectPlan is FSP
@@ -147,7 +147,7 @@ export class ProjectResponse {
   validityEndDate: string
 
   @ApiProperty()
-  projectPlan: string
+  projectPlanCode: string
 
   @ApiProperty()
   projectPlanDescription: string

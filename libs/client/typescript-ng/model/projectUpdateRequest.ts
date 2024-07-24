@@ -23,7 +23,7 @@ export interface ProjectUpdateRequest {
      * ISO-formatted date
      */
     commentingClosedDate?: string;
-    projectPlan?: ProjectPlanCodeEnum;
+    projectPlanCode?: ProjectPlanCodeEnum;
     fspId?: number;
     woodlotLicenseNumber?: string;
     districtId?: number;

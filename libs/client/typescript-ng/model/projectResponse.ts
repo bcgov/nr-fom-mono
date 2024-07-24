@@ -30,7 +30,7 @@ export interface ProjectResponse {
      * ISO-formatted date
      */
     validityEndDate: string;
-    projectPlan: string;
+    projectPlanCode: string;
     projectPlanDescription: string;
     fspId?: number;
     woodlotLicenseNumber?: string;

@@ -24,7 +24,7 @@ export interface ProjectCreateRequest {
      */
     commentingClosedDate: string;
     forestClientNumber: string;
-    projectPlan: ProjectPlanCodeEnum;
+    projectPlanCode: ProjectPlanCodeEnum;
     fspId: number;
     woodlotLicenseNumber: string;
     districtId: number;

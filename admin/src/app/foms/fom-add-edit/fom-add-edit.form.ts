@@ -36,13 +36,13 @@ export class FomAddEditForm implements Pick<ProjectResponse,
 
   @prop()
   @required({message: 'Type of Plan Holder is required.'})
-  projectPlan: string = ProjectPlanCodeEnum.Fsp
+  projectPlanCode: string = ProjectPlanCodeEnum.Fsp
 
   @prop()
   @required({
     message: 'FSP ID is required.',
 		conditionalExpression: (x) => {
-			return x.projectPlan == ProjectPlanCodeEnum.Fsp
+			return x.projectPlanCode == ProjectPlanCodeEnum.Fsp
 		}
 	})
   @minLength({value: 1})
@@ -53,7 +53,7 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   @required({
     message: 'Woodlot License Plan Number is required.',
 		conditionalExpression: (x) => {
-			return x.projectPlan == ProjectPlanCodeEnum.Woodlot
+			return x.projectPlanCode == ProjectPlanCodeEnum.Woodlot
 		}
 	})
   @alphaNumeric({message: 'Only alpha-numberic characters are allowed.'})

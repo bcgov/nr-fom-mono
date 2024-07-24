@@ -1814,7 +1814,7 @@
               "type": "string",
               "description": "ISO-formatted date"
             },
-            "projectPlan": {
+            "projectPlanCode": {
               "type": "string"
             },
             "projectPlanDescription": {
@@ -1869,7 +1869,7 @@
             "commentingOpenDate",
             "commentingClosedDate",
             "validityEndDate",
-            "projectPlan",
+            "projectPlanCode",
             "projectPlanDescription",
             "district",
             "forestClient",
@@ -1934,7 +1934,7 @@
             "forestClientNumber": {
               "type": "string"
             },
-            "projectPlan": {
+            "projectPlanCode": {
               "$ref": "#/components/schemas/ProjectPlanCodeEnum"
             },
             "fspId": {
@@ -1962,7 +1962,7 @@
             "commentingOpenDate",
             "commentingClosedDate",
             "forestClientNumber",
-            "projectPlan",
+            "projectPlanCode",
             "fspId",
             "woodlotLicenseNumber",
             "districtId",
@@ -1988,7 +1988,7 @@
               "type": "string",
               "description": "ISO-formatted date"
             },
-            "projectPlan": {
+            "projectPlanCode": {
               "$ref": "#/components/schemas/ProjectPlanCodeEnum"
             },
             "fspId": {
