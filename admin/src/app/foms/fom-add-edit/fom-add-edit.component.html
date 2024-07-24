@@ -135,7 +135,6 @@
               readonly
               id="op-end-year"
               name="op-end-year"
-
               class="form-control readonly-normal"
               type="text"
               placeholder="YYYY"
@@ -159,9 +158,35 @@
         </div>
 
         <div class="row">
-
-          <div class="form-group col-md-2">
-            <label for="fsp-id" style="white-space: nowrap;"
+          <div class="form-group col">
+            <label [ngClass]="{'required': true}">Type of Plan Holder</label>
+            <select *ngIf="this.isCreate" 
+                class="form-control"
+                formControlName="projectPlan"
+                [ngClass]="{'is-invalid': !fg.get('projectPlan').value && isSubmitSaveClicked}" 
+                id="projectPlanSelectId">
+              <option *ngFor="let option of projectPlanOptions" 
+                [value]="option.code"
+                [selected]="option.code === fg.get('projectPlan').value" 
+                [innerHTML]="option.description"> </option>
+            </select>
+            <input *ngIf="!this.isCreate" type="text"
+              class="form-control"
+              id="projectPlanDescId"
+              name="projectPlanDescription"
+              disabled
+              [value]="originalProjectResponse.projectPlanDescription"
+            />
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('projectPlan')) 
+              && getErrorMessage('projectPlan', 'required')">
+              {{getErrorMessage('projectPlan', 'required')}}
+            </div>
+          </div>
+          <!-- FSP ID Input -->
+          <div class="form-group col"
+            *ngIf="fg.get('projectPlan').value == 'FSP'">
+            <label for="fsp-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
             >FSP ID</label>
             <input
               type="number"
@@ -172,13 +197,40 @@
               [appFormControl]="fg.get('fspId')"
             />
             <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('fspId')) 
-              && getErrorMessage('fspId', 'required')">
-              {{getErrorMessage('fspId', 'required')}}
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('fspId'))">
+              <div>{{getErrorMessage('fspId', 'required')}}</div>
+              <div>{{getErrorMessage('fspId', 'numeric')}}</div>
             </div>
           </div>
+
+          <!-- Woodlot License Number Input -->
+          <div class="form-group col"
+            *ngIf="fg.get('projectPlan').value == 'WOODLOT'">
+            <label for="woodlot-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
+            >Woodlot License Number</label>
+            <input
+              type="text"
+              class="form-control"
+              id="woodlot-id"
+              name="woodlot-id"
+              formControlName="woodlotLicenseNumber"
+              [appFormControl]="fg.get('woodlotLicenseNumber')"
+            />
+            <div class="invalid-feedback" 
+              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('woodlotLicenseNumber'))">
+              <div>
+                {{getErrorMessage('woodlotLicenseNumber', 'required')}}
+              </div>
+              <div>
+                {{getErrorMessage('woodlotLicenseNumber', 'woodlotFormat')}}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
           <div class="form-group col">
-            <label for="fsp-id" style="white-space: nowrap;">District</label>
+            <label for="district-list" style="white-space: nowrap;">District</label>
             <select class="sort-comments form-control" [ngClass]="{'is-invalid': !districtIdSelect && isSubmitSaveClicked}" (change)="changeDistrictId($event)" id="district-list">
               <option *ngIf="this.isCreate || !districtIdSelect">  </option>
               <option  [value]="district.id" *ngFor="let district of districts" [selected]="district.id === districtIdSelect" [innerHTML]=" district.name "> </option>

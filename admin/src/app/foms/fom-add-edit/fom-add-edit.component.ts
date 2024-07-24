@@ -6,6 +6,12 @@ import * as moment from 'moment';
 import { Observable, Subject, of } from 'rxjs';
 import { switchMap, takeUntil, tap } from 'rxjs/operators';
 
+import { AttachmentTypeEnum } from "@admin-core/models/attachmentTypeEnum";
+import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
+import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadService";
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import {
@@ -16,16 +22,11 @@ import {
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { AttachmentTypeEnum } from "@admin-core/models/attachmentTypeEnum";
-import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
-import { CognitoService } from "@admin-core/services/cognito.service";
-import { ModalService } from '@admin-core/services/modal.service';
-import { StateService } from '@admin-core/services/state.service';
-import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadService";
 import { FomAddEditForm } from './fom-add-edit.form';
 
 import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
 import { AppFormControlDirective } from '@admin-core/directives/form-control.directive';
+import { ICodeTable } from '@admin-core/models/code-tables';
 import { NewlinesPipe } from '@admin-core/pipes/newlines.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
@@ -55,6 +56,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   state: ApplicationPageType;
   originalProjectResponse: ProjectResponse;
   districts: DistrictResponse[] = this.stateSvc.getCodeTable('district');
+  projectPlanOptions: ICodeTable[] = [
+    {"code": "FSP", "description": "Forest Stewardship Plan"},
+    {"code": "WOODLOT", "description": "Woodlot License Plan"}
+  ];
   forestClients: ForestClientResponse[] = [];
   public supportingDocuments: any[] = [];
   public initialPublicDocument: any[] = [];

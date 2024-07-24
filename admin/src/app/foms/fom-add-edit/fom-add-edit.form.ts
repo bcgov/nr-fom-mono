@@ -1,6 +1,6 @@
 import { AbstractControl } from '@angular/forms';
-import { DistrictResponse, ForestClientResponse, ProjectResponse, WorkflowStateCode } from '@api-client';
-import { maxLength, minDate, minLength, prop, required } from '@rxweb/reactive-form-validators';
+import { DistrictResponse, ForestClientResponse, ProjectPlanCodeEnum, ProjectResponse, WorkflowStateCode } from '@api-client';
+import { alphaNumeric, maxLength, minDate, minLength, numeric, pattern, prop, required } from '@rxweb/reactive-form-validators';
 import * as R from 'remeda';
 import moment = require("moment");
 
@@ -35,9 +35,33 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   commentingClosedDate: string = null; 
 
   @prop()
-  @required({message: 'FSP ID is required.'})
+  @required({message: 'Type of Plan Holder is required.'})
+  projectPlan: string = ProjectPlanCodeEnum.Fsp
+
+  @prop()
+  @required({
+    message: 'FSP ID is required.',
+		conditionalExpression: (x) => {
+			return x.projectPlan == ProjectPlanCodeEnum.Fsp
+		}
+	})
   @minLength({value: 1})
-  fspId: number;
+  @numeric({message: 'Must be a number.'})
+  fspId?: number = null;
+
+  @prop()
+  @required({
+    message: 'Woodlot License Plan Number is required.',
+		conditionalExpression: (x) => {
+			return x.projectPlan == ProjectPlanCodeEnum.Woodlot
+		}
+	})
+  @alphaNumeric({message: 'Only alpha-numberic characters are allowed.'})
+  @pattern({
+    expression:{'woodlotFormat': /^W\d{4}$/},
+    message: 'Must starts with "W" followed by 4 digits.'
+  })
+  woodlotLicenseNumber?: string = null;
 
   @prop()
   @required({message: 'District is required.'})
