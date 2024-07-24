@@ -67,7 +67,7 @@ export class Project extends ApiBaseEntity<Project> {
   projectPlan: ProjectPlanCode;
 
   @Column({ name: 'project_plan_code'})
-  @RelationId((project: Project) => project.workflowState)
+  @RelationId((project: Project) => project.projectPlan)
   projectPlanCode: string;
 
   @OneToMany(type => Submission, (submission) => submission.project) 
