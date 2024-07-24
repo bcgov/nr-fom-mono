@@ -262,8 +262,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     projectCreate.operationStartYear = parseInt(moment(this.fg.get('opStartDate').value).format('YYYY'));
     projectCreate.operationEndYear = parseInt(moment(this.fg.get('opEndDate').value).format('YYYY'));
 
-    console.log("projectCreate: ", projectCreate)
-    return;
     this.projectSvc.projectControllerCreate(projectCreate)
         .toPromise()
         .then(result => this.onSuccess(result.id))
