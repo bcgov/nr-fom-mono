@@ -163,6 +163,7 @@
             <select *ngIf="this.isCreate" 
                 class="form-control"
                 formControlName="projectPlan"
+                (change)="onProjectPlanChange($event)"
                 [ngClass]="{'is-invalid': !fg.get('projectPlan').value && isSubmitSaveClicked}" 
                 id="projectPlanSelectId">
               <option *ngFor="let option of projectPlanOptions" 

@@ -262,6 +262,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     projectCreate.operationStartYear = parseInt(moment(this.fg.get('opStartDate').value).format('YYYY'));
     projectCreate.operationEndYear = parseInt(moment(this.fg.get('opEndDate').value).format('YYYY'));
 
+    console.log("projectCreate: ", projectCreate)
+    return;
     this.projectSvc.projectControllerCreate(projectCreate)
         .toPromise()
         .then(result => this.onSuccess(result.id))
@@ -323,6 +325,11 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.districtIdSelect = parseInt(e.target.value);
   }
 
+  onProjectPlanChange(e) {
+    // reset fspId and woodlotLicenseNumber fields when plan selection changed.
+    this.fg.get('fspId').setValue(null)
+    this.fg.get('woodlotLicenseNumber').setValue(null)
+  }
   onForestClientChange(e) {
     const forestClientField = this.fg.get('forestClient');
     this.fg.get('forestClient').setValue(forestClientField.value);
