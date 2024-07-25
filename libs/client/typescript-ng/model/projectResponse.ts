@@ -31,7 +31,6 @@ export interface ProjectResponse {
      */
     validityEndDate: string;
     projectPlanCode: string;
-    projectPlanDescription: string;
     fspId?: number;
     woodlotLicenseNumber?: string;
     district: DistrictResponse;

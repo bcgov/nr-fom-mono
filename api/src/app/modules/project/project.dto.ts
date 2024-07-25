@@ -155,9 +155,6 @@ export class ProjectResponse {
   @ApiProperty()
   projectPlanCode: string
 
-  @ApiProperty()
-  projectPlanDescription: string
-
   @ApiPropertyOptional()
   fspId?: number;
 

@@ -1824,9 +1824,6 @@
             "projectPlanCode": {
               "type": "string"
             },
-            "projectPlanDescription": {
-              "type": "string"
-            },
             "fspId": {
               "type": "number"
             },
@@ -1877,7 +1874,6 @@
             "commentingClosedDate",
             "validityEndDate",
             "projectPlanCode",
-            "projectPlanDescription",
             "district",
             "forestClient",
             "workflowState",
