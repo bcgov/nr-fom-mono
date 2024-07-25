@@ -271,7 +271,7 @@ function getSimplePublicNoticeCreateRequestData() {
   return data;
 }
 
-function getSimpleProjectResponseData() {
+function getSimpleProjectResponseData(): ProjectResponse {
   const data =  
   {
     "id": 1,
@@ -280,6 +280,7 @@ function getSimpleProjectResponseData() {
     "commentingOpenDate": "2022-08-01",
     "commentingClosedDate": "2027-07-29",
     "validityEndDate": "2052-12-31",
+    "projectPlanCode": "FSP",
     "fspId": 10,
     "district": {
       "id": 21,
