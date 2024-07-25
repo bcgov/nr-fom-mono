@@ -160,7 +160,7 @@
         <div class="row">
           <div class="form-group col">
             <label [ngClass]="{'required': true}">Type of Plan Holder</label>
-            <select *ngIf="this.isCreate" 
+            <select *ngIf="this.isCreate"
                 class="form-control"
                 formControlName="projectPlanCode"
                 (change)="onProjectPlanChange($event)"
@@ -176,7 +176,7 @@
               id="projectPlanDescId"
               name="projectPlanDescription"
               disabled
-              [value]="originalProjectResponse.projectPlanDescription"
+              [value]="getProjectPlanDesc()"
             />
             <div class="invalid-feedback" 
               *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('projectPlanCode')) 
@@ -190,12 +190,21 @@
             <label for="fsp-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
             >FSP ID</label>
             <input
+              *ngIf="this.isCreate"
               type="number"
               class="form-control"
               id="fsp-id"
               name="fsp-id"
               formControlName="fspId"
               [appFormControl]="fg.get('fspId')"
+              [readonly]="!this.isCreate"
+            />
+            <input *ngIf="!this.isCreate" 
+              type="text"
+              class="form-control"
+              id="fsp-readonly-id"
+              disabled
+              [value]="fg.get('fspId').value"
             />
             <div class="invalid-feedback" 
               *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('fspId'))">
@@ -210,12 +219,20 @@
             <label for="woodlot-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
             >Woodlot License Number</label>
             <input
+              *ngIf="this.isCreate" 
               type="text"
               class="form-control"
               id="woodlot-id"
               name="woodlot-id"
               formControlName="woodlotLicenseNumber"
               [appFormControl]="fg.get('woodlotLicenseNumber')"
+            />
+            <input *ngIf="!this.isCreate" 
+              type="text"
+              class="form-control"
+              id="woodlot-readonly-id"
+              disabled
+              [value]="fg.get('woodlotLicenseNumber').value"
             />
             <div class="invalid-feedback" 
               *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('woodlotLicenseNumber'))">

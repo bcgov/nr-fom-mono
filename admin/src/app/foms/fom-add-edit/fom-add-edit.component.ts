@@ -17,7 +17,8 @@ import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import {
     AttachmentResponse, DistrictResponse, ForestClientResponse,
     ForestClientService,
-    ProjectCreateRequest, ProjectResponse,
+    ProjectCreateRequest,
+    ProjectResponse,
     ProjectService, WorkflowStateEnum
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
@@ -184,7 +185,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       const form = new FomAddEditForm(data);
       this.fg = <RxFormGroup>this.formBuilder.formGroup(form);
       this.initializeFormFields(this.fg, this.user, this.originalProjectResponse);
-
       if(data.description) {
         this.descriptionValue = data.description;
       }
@@ -426,6 +426,13 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public isDeleteAttachmentAllowed(attachment: AttachmentResponse) {
     return this.attachmentResolverSvc.isDeleteAttachmentAllowed(attachment.attachmentType.code, this.originalProjectResponse.workflowState.code);
+  }
+
+  getProjectPlanDesc() {
+    const item = this.projectPlanOptions.filter((item) => {
+        return item.code == this.originalProjectResponse.projectPlanCode
+    })[0]["description"];
+    return item;
   }
 
   /**
