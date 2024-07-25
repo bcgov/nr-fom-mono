@@ -1727,8 +1727,14 @@
               "type": "object",
               "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
             },
+            "projectPlanCode": {
+              "type": "string"
+            },
             "fspId": {
               "type": "number"
+            },
+            "woodlotLicenseNumber": {
+              "type": "string"
             },
             "forestClientName": {
               "type": "string"
@@ -1741,6 +1747,7 @@
             "id",
             "name",
             "geojson",
+            "projectPlanCode",
             "forestClientName",
             "workflowStateName"
           ]

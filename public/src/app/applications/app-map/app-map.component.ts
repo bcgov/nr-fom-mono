@@ -325,10 +325,14 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
       const commentingTxt = (projectSummary.workflowStateName === 'Finalized' || 
                            projectSummary.workflowStateName === 'Expired') ?
                           ', Commenting Closed': 
-                          ''
+                          '';
+      const fomProjectPlanTxt = (projectSummary.projectPlanCode == 'FSP')? 
+                                `FSP ID: ${projectSummary.fspId}`:
+                                `Woodlot #: ${projectSummary.woodlotLicenseNumber}`
+
       const title = `${projectSummary.name}\n` + 
         `${projectSummary.forestClientName}\n` + 
-        `FSP ID: ${projectSummary.fspId}\n` +
+        `${fomProjectPlanTxt}\n` +
         `${projectSummary.workflowStateName}${commentingTxt}`; // This will be Leaflet hover
       const marker = L.marker(L.latLng(projectSummary.geojson['coordinates'][1], projectSummary.geojson['coordinates'][0]), {title: title})
         .setIcon(markerIcon)

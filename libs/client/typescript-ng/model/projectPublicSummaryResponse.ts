@@ -15,7 +15,9 @@ export interface ProjectPublicSummaryResponse {
     id: number;
     name: string;
     geojson: object;
+    projectPlanCode: string;
     fspId?: number;
+    woodlotLicenseNumber?: string;
     forestClientName: string;
     workflowStateName: string;
 }

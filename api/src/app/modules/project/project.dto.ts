@@ -115,8 +115,14 @@ export class ProjectPublicSummaryResponse {
   @ApiProperty({example: ` { "type": "Point", "coordinates": [-119.396071939, 49.813816629]}`})
   geojson: FomPoint;
 
+  @ApiProperty()
+  projectPlanCode: string
+  
   @ApiPropertyOptional()
   fspId: number;
+
+  @ApiPropertyOptional()
+  woodlotLicenseNumber?: string;
 
   @ApiProperty()
   forestClientName: string;
