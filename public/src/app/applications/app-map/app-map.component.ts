@@ -2,7 +2,7 @@ import {
     AfterViewInit, ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EventEmitter, Injector, Input, OnChanges,
     OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
-import { ProjectPublicSummaryResponse } from '@api-client';
+import { ProjectPlanCodeEnum, ProjectPublicSummaryResponse } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 import { UrlService } from '@public-core/services/url.service';
 import { MapLayers } from '@utility/models/map-layers';
@@ -55,7 +55,8 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   private mapLayers = new MapLayers();
 
   readonly defaultBounds = L.latLngBounds([48, -139], [60, -114]); // all of BC
-
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
+  
   constructor(
     private appRef: ApplicationRef,
     private elementRef: ElementRef,
@@ -326,7 +327,7 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
                            projectSummary.workflowStateName === 'Expired') ?
                           ', Commenting Closed': 
                           '';
-      const fomProjectPlanTxt = (projectSummary.projectPlanCode == 'FSP')? 
+      const fomProjectPlanTxt = (projectSummary.projectPlanCode == this.projectPlanCodeEnum.Fsp)? 
                                 `FSP ID: ${projectSummary.fspId}`:
                                 `Woodlot #: ${projectSummary.woodlotLicenseNumber}`
 

@@ -1,15 +1,15 @@
 import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
+import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AttachmentResponse, ProjectMetricsResponse, ProjectResponse, ProjectService, ProjectWorkflowStateChangeRequest, SpatialFeaturePublicResponse, WorkflowStateEnum } from "@api-client";
+import { AttachmentResponse, ProjectMetricsResponse, ProjectPlanCodeEnum, ProjectResponse, ProjectService, ProjectWorkflowStateChangeRequest, SpatialFeaturePublicResponse, WorkflowStateEnum } from "@api-client";
 import { NgbModal, NgbModalRef, NgbModule, NgbNav } from '@ng-bootstrap/ng-bootstrap';
 import { User } from "@utility/security/user";
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import * as moment from 'moment';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "@admin-core/services/cognito.service";
 import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
 
 import { NewlinesPipe } from "@admin-core/pipes/newlines.pipe";
@@ -37,7 +37,7 @@ import { ShapeInfoComponent } from "../shape-info/shape-info.component";
     styleUrls: ['./fom-detail.component.scss']
 })
 export class FomDetailComponent implements OnInit, OnDestroy {
-
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   @ViewChild('scrollContainer')
   public scrollContainer: ElementRef;
   

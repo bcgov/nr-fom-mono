@@ -159,7 +159,7 @@
 
         <div class="row">
           <div class="form-group col">
-            <label [ngClass]="{'required': true}">Type of Plan Holder</label>
+            <label [ngClass]="{'required': this.isCreate}">Type of Plan Holder</label>
             <select *ngIf="this.isCreate"
                 class="form-control"
                 formControlName="projectPlanCode"
@@ -186,8 +186,8 @@
           </div>
           <!-- FSP ID Input -->
           <div class="form-group col"
-            *ngIf="fg.get('projectPlanCode').value == 'FSP'">
-            <label for="fsp-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
+            *ngIf="fg.get('projectPlanCode').value == projectPlanCodeEnum.Fsp">
+            <label for="fsp-id" [ngClass]="{'required': this.isCreate}" style="white-space: nowrap;"
             >FSP ID</label>
             <input
               *ngIf="this.isCreate"
@@ -215,8 +215,8 @@
 
           <!-- Woodlot License Number Input -->
           <div class="form-group col"
-            *ngIf="fg.get('projectPlanCode').value == 'WOODLOT'">
-            <label for="woodlot-id" [ngClass]="{'required': true}" style="white-space: nowrap;"
+            *ngIf="fg.get('projectPlanCode').value == projectPlanCodeEnum.Woodlot">
+            <label for="woodlot-id" [ngClass]="{'required': this.isCreate}" style="white-space: nowrap;"
             >Woodlot License Number</label>
             <input
               *ngIf="this.isCreate" 

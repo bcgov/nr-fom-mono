@@ -15,11 +15,12 @@ import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadServi
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import {
-    AttachmentResponse, DistrictResponse, ForestClientResponse,
-    ForestClientService,
-    ProjectCreateRequest,
-    ProjectResponse,
-    ProjectService, WorkflowStateEnum
+  AttachmentResponse, DistrictResponse, ForestClientResponse,
+  ForestClientService,
+  ProjectCreateRequest,
+  ProjectPlanCodeEnum,
+  ProjectResponse,
+  ProjectService, WorkflowStateEnum
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
@@ -53,13 +54,14 @@ type ApplicationPageType = 'create' | 'edit';
     providers: [DatePipe]
 })
 export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   fg: RxFormGroup;
   state: ApplicationPageType;
   originalProjectResponse: ProjectResponse;
   districts: DistrictResponse[] = this.stateSvc.getCodeTable('district');
   projectPlanOptions: ICodeTable[] = [
-    {"code": "FSP", "description": "Forest Stewardship Plan"},
-    {"code": "WOODLOT", "description": "Woodlot License Plan"}
+    {"code": this.projectPlanCodeEnum.Fsp, "description": "Forest Stewardship Plan"},
+    {"code": this.projectPlanCodeEnum.Woodlot, "description": "Woodlot License Plan"}
   ];
   forestClients: ForestClientResponse[] = [];
   public supportingDocuments: any[] = [];
@@ -95,7 +97,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-
+  
   // bsDatepicker config object
   readonly bsConfig = {
     dateInputFormat: 'YYYY', 

@@ -70,10 +70,10 @@
           <li *ngIf="project.bctsMgrName && project.bctsMgrName.length > 0">
             Timber Sales Manager Name: <span class="bold">{{project.bctsMgrName | titlecase}}</span>
           </li>
-          <li *ngIf="project.projectPlanCode == 'FSP'">
+          <li *ngIf="project.projectPlanCode == projectPlanCodeEnum.Fsp">
             FSP ID: <span class="bold">{{project.fspId}}</span>
           </li>
-          <li *ngIf="project.projectPlanCode == 'WOODLOT'">
+          <li *ngIf="project.projectPlanCode == projectPlanCodeEnum.Woodlot">
             Woodlot License Number: <span class="bold">{{project.woodlotLicenseNumber}}</span>
           </li>
           <li>

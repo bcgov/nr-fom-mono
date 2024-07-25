@@ -7,8 +7,8 @@
 
   <div class="applicant-name">{{projectSummary.forestClientName | titlecase}}</div>
   <div class="purpose">{{projectSummary.name}}</div>
-  <div *ngIf="projectSummary.projectPlanCode == 'FSP'"><strong>FSP ID: {{projectSummary.fspId}}</strong></div>
-  <div *ngIf="projectSummary.projectPlanCode == 'WOODLOT'"><strong>Woodlot License: {{projectSummary.woodlotLicenseNumber}}</strong></div>
+  <div *ngIf="projectSummary.projectPlanCode == projectPlanCodeEnum.Fsp"><strong>FSP ID: {{projectSummary.fspId}}</strong></div>
+  <div *ngIf="projectSummary.projectPlanCode == projectPlanCodeEnum.Woodlot"><strong>Woodlot License: {{projectSummary.woodlotLicenseNumber}}</strong></div>
 
   <ul class="status-container">
     <li class="workflow-status"
