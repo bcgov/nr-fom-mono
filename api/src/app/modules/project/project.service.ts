@@ -356,8 +356,6 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       const response = project as (ProjectPublicSummaryResponse & Project);
       response.forestClientName = project.forestClient.name;
       response.workflowStateName = project.workflowState.description;
-    //   response.projectPlanCode = project.projectPlanCode;
-    //   response.woodlotLicenseNumber = project.woodlotLicenseNumber
       delete response.forestClient;
       delete response.workflowState;
       return response;
