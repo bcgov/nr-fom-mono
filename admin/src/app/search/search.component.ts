@@ -1,3 +1,6 @@
+import { CognitoService } from "@admin-core/services/cognito.service";
+import { ModalService } from '@admin-core/services/modal.service';
+import { StateService } from '@admin-core/services/state.service';
 import { DatePipe, Location, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,9 +13,6 @@ import { User } from "@utility/security/user";
 import { isNil } from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { CognitoService } from "@admin-core/services/cognito.service";
-import { ModalService } from '@admin-core/services/modal.service';
-import { StateService } from '@admin-core/services/state.service';
 
 @Component({
     standalone: true,
@@ -37,6 +37,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private paramMap: ParamMap = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   public user: User;
+  public fNumber: number; // filter: FOM Number
   public fFspId: number; // filter: FSP ID
   public fStatus: string; // filter: workflowStateCode
   public fDistrict: number; // filter: district id
@@ -126,6 +127,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (this.fHolder != null) {
       params['fHolder'] = this.fHolder;
     }
+    if (this.fNumber != null) {
+        params['fNumber'] = this.fNumber;
+    }
 
     // change browser URL without reloading page (so any query params are saved in history)
     this.location.go(this.router.createUrlTree([], {relativeTo: this.route, queryParams: params}).toString());
@@ -144,6 +148,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.fDistrict = null;
     this.fStatus = undefined;
     this.fHolder = null;
+    this.fNumber = null;
     this.saveQueryParameters();
     this.projects = [];
     this.count = 0;
