@@ -82,7 +82,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     const workFlowStateCodeArg = this.fStatus === 'undefined'? null: this.fStatus;
     const districtArg = (isNaN(this.fDistrict) || isNil(this.fDistrict))? null : this.fDistrict.toString();
     const fspIdArg = (isNaN(this.fFspId) || isNil(this.fFspId))? null : this.fFspId.toString();
-    this.searchProjectService.projectControllerFind(fspIdArg , districtArg, workFlowStateCodeArg, this.fHolder)
+    const projectIdArg = (isNaN(this.fNumber) || isNil(this.fNumber))? null : this.fNumber.toString();
+    this.searchProjectService.projectControllerFind(projectIdArg, fspIdArg , districtArg, workFlowStateCodeArg, this.fHolder)
       .subscribe(
         projects => {
           this.projects = projects;

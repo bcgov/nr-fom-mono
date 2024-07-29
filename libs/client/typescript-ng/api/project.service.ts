@@ -283,6 +283,7 @@ export class ProjectService {
     }
 
     /**
+     * @param projectId 
      * @param fspId 
      * @param districtId 
      * @param workflowStateCode 
@@ -290,12 +291,16 @@ export class ProjectService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectResponse>>;
-    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectResponse>>>;
-    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectResponse>>>;
-    public projectControllerFind(fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public projectControllerFind(projectId?: string, fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<Array<ProjectResponse>>;
+    public projectControllerFind(projectId?: string, fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<Array<ProjectResponse>>>;
+    public projectControllerFind(projectId?: string, fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<Array<ProjectResponse>>>;
+    public projectControllerFind(projectId?: string, fspId?: string, districtId?: string, workflowStateCode?: string, forestClientName?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
 
         let queryParameters = new HttpParams({encoder: this.encoder});
+        if (projectId !== undefined && projectId !== null) {
+          queryParameters = this.addToHttpParams(queryParameters,
+            <any>projectId, 'projectId');
+        }
         if (fspId !== undefined && fspId !== null) {
           queryParameters = this.addToHttpParams(queryParameters,
             <any>fspId, 'fspId');
