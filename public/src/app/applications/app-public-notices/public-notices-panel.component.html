@@ -102,8 +102,16 @@
       </div>
 
       <div class="row">
-        <div class="col-5 col-sm-2 bold">FSP ID: </div>
-        <div class="col-7 col-sm-4 no-padding">{{pn.project.fspId}}</div>
+        <div class="col-5 col-sm-2 bold" 
+          *ngIf="pn.project.projectPlanCode == projectPlanCodeEnum.Fsp">FSP ID: </div>
+        <div class="col-7 col-sm-4 no-padding" 
+          *ngIf="pn.project.projectPlanCode == projectPlanCodeEnum.Fsp">{{pn.project.fspId}}</div>
+
+        <div class="col-5 col-sm-2 bold" 
+          *ngIf="pn.project.projectPlanCode == projectPlanCodeEnum.Woodlot">Woodlot License: </div>
+        <div class="col-7 col-sm-4 no-padding" 
+          *ngIf="pn.project.projectPlanCode == projectPlanCodeEnum.Woodlot">{{pn.project.woodlotLicenseNumber}}</div>
+
         <div class="col-5 col-sm-2 bold">District: </div>
         <div class="col-7 col-sm-4 no-padding">{{pn.project.district?.name}}</div>
       </div>
