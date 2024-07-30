@@ -38,10 +38,10 @@ export class ProjectFindCriteria {
   projectId?: number;
 
   applyFindCriteria(query: SelectQueryBuilder<Project>) {
-    if (this.projectId) {
+    if (this.projectId >= 0) {
       query.andWhere("p.id = :projectId", {projectId: this.projectId})
     }
-    if (this.fspId) {
+    if (this.fspId >= 0) {
       query.andWhere("p.fsp_id = :fspId", {fspId: `${this.fspId}`});
     }
     if (this.districtId) {

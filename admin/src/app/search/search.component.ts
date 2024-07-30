@@ -38,6 +38,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   private paramMap: ParamMap = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   public user: User;
+  public fNumber: number; // filter: FOM Number
   public fFspId: number; // filter: FSP ID
   public fStatus: string; // filter: workflowStateCode
   public fDistrict: number; // filter: district id
@@ -82,7 +83,8 @@ export class SearchComponent implements OnInit, OnDestroy {
     const workFlowStateCodeArg = this.fStatus === 'undefined'? null: this.fStatus;
     const districtArg = (isNaN(this.fDistrict) || isNil(this.fDistrict))? null : this.fDistrict.toString();
     const fspIdArg = (isNaN(this.fFspId) || isNil(this.fFspId))? null : this.fFspId.toString();
-    this.searchProjectService.projectControllerFind(fspIdArg , districtArg, workFlowStateCodeArg, this.fHolder)
+    const projectIdArg = (isNaN(this.fNumber) || isNil(this.fNumber))? null : this.fNumber.toString();
+    this.searchProjectService.projectControllerFind(projectIdArg, fspIdArg , districtArg, workFlowStateCodeArg, this.fHolder)
       .subscribe(
         projects => {
           this.projects = projects;
@@ -127,6 +129,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (this.fHolder != null) {
       params['fHolder'] = this.fHolder;
     }
+    if (this.fNumber != null) {
+        params['fNumber'] = this.fNumber;
+    }
 
     // change browser URL without reloading page (so any query params are saved in history)
     this.location.go(this.router.createUrlTree([], {relativeTo: this.route, queryParams: params}).toString());
@@ -145,6 +150,7 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.fDistrict = null;
     this.fStatus = undefined;
     this.fHolder = null;
+    this.fNumber = null;
     this.saveQueryParameters();
     this.projects = [];
     this.count = 0;

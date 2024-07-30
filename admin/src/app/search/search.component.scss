@@ -169,7 +169,7 @@ $sr-table-row-bg: #f7f8fa;
 }
 
 .disp {
-  width: 5.0rem;
+  min-width: 5rem;
 }
 
 .status, .plan {
@@ -182,7 +182,6 @@ $sr-table-row-bg: #f7f8fa;
   padding-top: 0;
   padding-bottom: 0;
   .btn {
-    margin-top: 1rem;
     width: 6rem;
     border-width: 2px;
     font-weight: 700;

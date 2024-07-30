@@ -610,6 +610,14 @@
           "operationId": "ProjectController_find",
           "parameters": [
             {
+              "name": "projectId",
+              "required": false,
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
               "name": "fspId",
               "required": false,
               "in": "query",
@@ -1748,6 +1756,7 @@
             "name",
             "geojson",
             "projectPlanCode",
+            "fspId",
             "forestClientName",
             "workflowStateName"
           ]
@@ -1874,6 +1883,7 @@
             "commentingClosedDate",
             "validityEndDate",
             "projectPlanCode",
+            "fspId",
             "district",
             "forestClient",
             "workflowState",

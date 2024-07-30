@@ -90,6 +90,7 @@ export class ProjectController {
 
   @Get()
   @ApiBearerAuth()
+  @ApiQuery({ name: 'projectId', required: false})
   @ApiQuery({ name: 'fspId', required: false})
   @ApiQuery({ name: 'districtId', required: false})
   @ApiQuery({ name: 'workflowStateCode', required: false})
@@ -97,6 +98,7 @@ export class ProjectController {
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectResponse] })
   async find(
     @UserHeader() user: User,
+    @Query('projectId') projectId?: string,
     @Query('fspId') fspId?: string,
     @Query('districtId') districtId?: string,
     @Query('workflowStateCode') workflowStateCode?: string,
@@ -104,6 +106,9 @@ export class ProjectController {
     ): Promise<ProjectResponse[]> {
       const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
 
+      if (projectId) {
+        findCriteria.projectId = await new ParseIntPipe().transform(projectId, null);
+      }
       if (fspId) {
         findCriteria.fspId = await new ParseIntPipe().transform(fspId, null);
       }
