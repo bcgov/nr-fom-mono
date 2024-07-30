@@ -1756,7 +1756,6 @@
             "name",
             "geojson",
             "projectPlanCode",
-            "fspId",
             "forestClientName",
             "workflowStateName"
           ]
@@ -1883,7 +1882,6 @@
             "commentingClosedDate",
             "validityEndDate",
             "projectPlanCode",
-            "fspId",
             "district",
             "forestClient",
             "workflowState",
