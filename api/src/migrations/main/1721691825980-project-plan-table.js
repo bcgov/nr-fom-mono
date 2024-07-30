@@ -67,7 +67,7 @@ module.exports = class ProjectPlanTable1721691825980 {
             ALTER TABLE app_fom.project DROP COLUMN woodlot_license_number;
     
         -- add constraint
-            ALTER TABLE app_fom.project ALTER COLUMN fsp_id SET typeorm migration:revert -- -d path-to-datasource-configNOT NULL;
+            ALTER TABLE app_fom.project ALTER COLUMN fsp_id SET NOT NULL;
         
         -- drop table - project_plan_code
             drop table if exists app_fom.project_plan_code; 
