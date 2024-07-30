@@ -33,7 +33,7 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
-    readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   private ngUnsubscribe = new Subject<void>();
   private paramMap: ParamMap = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;

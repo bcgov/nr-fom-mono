@@ -9,10 +9,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
-    AttachmentResponse, AttachmentService, InteractionResponse, InteractionService,
-    ProjectPlanCodeEnum,
-    ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService,
-    SpatialFeaturePublicResponse, SpatialFeatureService
+  AttachmentResponse, AttachmentService, InteractionResponse, InteractionService,
+  ProjectPlanCodeEnum,
+  ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService,
+  SpatialFeaturePublicResponse, SpatialFeatureService
 } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
 import * as _ from 'lodash';
@@ -45,7 +45,7 @@ import { InteractionsSummaryComponent } from './interactions-summary/interaction
     styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit, OnDestroy {
-readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   projectId: number;
   project: ProjectResponse;
   projectReqError: boolean;
