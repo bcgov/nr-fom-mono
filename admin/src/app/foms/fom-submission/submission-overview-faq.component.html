@@ -34,11 +34,9 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <p>
-                <strong>A:</strong> Each file must be in GeoJSON or, depending on the GIS software, in some cases in JSON format. Shapes must be either polygons for cutblocks and wildlife tree retention areas (WTRA) or line features for road sections.
+                <strong>A:</strong> Each file must be in GeoJSON or, depending on the GIS software, in some cases in JSON format (sometimes the case with older versions). Shapes must be either polygons for cutblocks and wildlife tree retention areas (WTRA) or line features for road sections. A spatial submission must include at least one cutblock file or one road section file.
             </p>
-            <p>
-                <strong>Ensure your shapes do not contain curves or multipart features.</strong> A spatial submission must include at least one cutblock file or one road section file.
-            </p>
+
             <ol>
                 <li><strong>File Format: </strong>GeoJSON or JSON</li>
                 <li><strong>File Encoding: </strong>UTF-8</li>
@@ -50,7 +48,6 @@
                     </ul>
                 </li>
                 <li><strong>File Size:</strong> Maximum 30MB</li>
-                <li><strong>Submission:</strong> Each spatial file submission must include at least one cutblock or road section feature</li>
             </ol>
         </mat-expansion-panel>
 
@@ -61,10 +58,7 @@
               </mat-panel-title>
             </mat-expansion-panel-header>
             <p>
-                <strong>A:</strong> Each JSON file should consist of a single FeatureCollection object. The geometries must be polygons or linestrings depending on the feature type, and coordinates must be ordered as XY.
-            </p>
-            <p>
-                <strong>Latitude and longitude are not accepted.</strong>
+                <strong>A:</strong> Each JSON file should consist of a single GeoJSON FeatureCollection object. The geometry provided for each feature must be of type polygon or linestring depending on the feature type. <strong>Ensure your shapes do not contain curves or multipart features, and are in one of the two accepted projections (BC Albers, WGS 84).</strong>
             </p>
         </mat-expansion-panel>
     </section>
@@ -75,31 +69,61 @@
         <mat-expansion-panel class="expand-panel">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <strong>Q: What attributes must be included in the GeoJSON/JSON files?</strong>
+                <strong>Q: What information must be included for each shape?</strong>
               </mat-panel-title>
             </mat-expansion-panel-header>
             <p>
-                <strong>A:</strong> Every file must include the following attributes:
+                <strong>A:</strong> Each shape (GeoJSON feature) must include the following:
             </p>
-            <ul>
-                <li><strong>DEV_DATE:</strong> Development date in the format YYYY-MM-DD</li>
-                <li><strong>FOM_OBJECT:</strong> UTF-8</li>
-                <li><strong>GEOMETRY:</strong> Type of geometry (polygon or LineString)</li>
-                <li><strong>NAME:</strong> Feature name (optional but recommended for public feedback)</li>
-            </ul>
+            <table aria-label="Table:Properties of each Geometry Type">
+                <thead>
+                    <tr>
+                        <th scope="col">Field</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Required?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GEOMETRY</td>
+                        <td>
+                            BC Albers (EPSG:3005) or WGS 84 (EPSG:4326) coordinate reference system. Coordinates must be ordered as X, Y.
+                            <br/>
+                            <strong>Latitude and longitude are not accepted</strong>
+                        </td>
+                        <td>Polygon for Cut Blocks and WTRAs, LineString for Road Sections</td>
+                        <td>Required</td>
+                    </tr>
+                    <tr>
+                        <td>DEV_DATE</td>
+                        <td>
+                            Development date. Format: YYYY-MM-DD
+                        </td>
+                        <td>text</td>
+                        <td>Required for Cut Block and Road Section, optional for WTRA</td>
+                    </tr>
+                    <tr>
+                        <td>NAME</td>
+                        <td>Name of the feature. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
+                        <td>text</td>
+                        <td>Optional</td>
+                    </tr>
+                </tbody>
+            </table>
         </mat-expansion-panel>
 
         <mat-expansion-panel class="expand-panel">
             <mat-expansion-panel-header>
               <mat-panel-title>
-                <strong>Q: What are the requirements for the attribute table?</strong>
+                <strong>Q: How must the attribute table in the shape file be structured?</strong>
               </mat-panel-title>
             </mat-expansion-panel-header>
             <p>
-                <strong>A:</strong>Ensure attribute tables use the exact titles and formats specified to avoid issues during file conversion. All attribute fields must be formatted as plain text.
+                <strong>A:</strong>When using GIS software that provides an attribute table, ensure all attributes provided use the exact titles and formats specified to avoid issues during file submission.
             </p>
             <div class="panel-content-group">
-                <div class="faq-sub-title">General Format for Attribute Table</div>
+                <div>The attribute table in the shapefile must look as follows, with all fields formatted as plain text.</div>
                 <table aria-label="Table:Properties of each Geometry Type">
                     <thead>
                         <tr>
@@ -132,220 +156,40 @@
                 </table>
             </div>
             
-            <div class="spacer-height-1"></div>
-
-            <div class="panel-content-group">
-                <div class="faq-sub-title">Detailed Attribute Requirements</div>
-                <!-- Road Section -->
-                <b>Road Section</b>
-                <div>The attribute table in the shapefile must look as follows (all fields formatted as plain text):</div>
-                <table aria-label="Table:Properties of Road Section geometry type">
-                    <thead>
-                        <tr>
-                            <th scope="col">FOM_OBJECT</th>
-                            <th scope="col">GEOMETRY</th>
-                            <th scope="col">DEV_DATE</th>
-                            <th scope="col">NAME</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Road Section</td>
-                            <td>LineString</td>
-                            <td>YYYY-MM-DD</td>
-                            <td>NAME</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="spacer-height-1"></div>
-
-                <div>The following table outlines the attribute fields in detail:</div>
-                <table aria-label="Table:Detail attribute fields of Road Section geometry type">
-                    <thead>
-                        <tr>
-                            <th scope="col">Field</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Optional</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>FOM_OBJECT</td>
-                            <td>Road Section</td>
-                            <td>text</td>
-                            <td>N</td>
-                        </tr>
-                        <tr>
-                            <td>GEOMETRY</td>
-                            <td>BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
-                            <td>LineString</td>
-                            <td>N</td>
-                        </tr>
-                        <tr>
-                            <td>DEV_DATE</td>
-                            <td>Development date. Format: YYYY-MM-DD</td>
-                            <td>text</td>
-                            <td>N</td>
-                        </tr>
-                        <tr>
-                            <td>NAME</td>
-                            <td>Road Section Name. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
-                            <td>text</td>
-                            <td>N</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
-                <div class="spacer-height-1"></div>
-
-                <!-- Cut Block -->
-                <b>Cut Block</b>
-                <div>The attribute table in the shapefile must look as follows (all fields formatted as plain text):</div>
-                <table aria-label="Table:Properties of Cut Blocks Section geometry type">
-                    <thead>
-                        <tr>
-                            <th scope="col">FOM_OBJECT</th>
-                            <th scope="col">GEOMETRY</th>
-                            <th scope="col">DEV_DATE</th>
-                            <th scope="col">NAME</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Cut Block</td>
-                            <td>Polygon</td>
-                            <td>YYYY-MM-DD</td>
-                            <td>NAME</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="spacer-height-1"></div>
-
-                <div>The following table outlines the attribute fields in detail:</div>
-                <table aria-label="Table:Detail attribute fields of Cut Block geometry type">
-                    <thead>
-                        <tr>
-                            <th scope="col">Field</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Optional</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>FOM_OBJECT</td>
-                            <td>Cut Block</td>
-                            <td>text</td>
-                            <td>N</td>
-                        </tr>
-                        <tr>
-                            <td>GEOMETRY</td>
-                            <td>BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
-                            <td>Polygon</td>
-                            <td>N</td>
-                        </tr>
-                        <tr>
-                            <td>DEV_DATE</td>
-                            <td>Development date. Format: YYYY-MM-DD</td>
-                            <td>text</td>
-                            <td>N</td>
-                        </tr>
-                        <tr>
-                            <td>NAME</td>
-                            <td>Cut Block Name. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
-                            <td>text</td>
-                            <td>N</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <!-- WTRA -->
-                <b>WTRA</b>
-                <div>The attribute table in the shapefile must look as follows (all fields formatted as plain text):</div>
-                <table aria-label="Table:Properties of WTRA geometry type">
-                    <thead>
-                        <tr>
-                            <th scope="col">FOM_OBJECT</th>
-                            <th scope="col">GEOMETRY</th>
-                            <th scope="col">DEV_DATE</th>
-                            <th scope="col">NAME</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>WTRA</td>
-                            <td>Polygon</td>
-                            <td>Enter YYYY-MM-DD or leave blank</td>
-                            <td>NAME</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div class="spacer-height-1"></div>
-
-                <div>The following table outlines the attribute fields in detail:</div>
-                <table aria-label="Table:Detail attribute fields of WTRA geometry type">
-                    <thead>
-                        <tr>
-                            <th scope="col">Field</th>
-                            <th scope="col">Description</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Optional</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>FOM_OBJECT</td>
-                            <td>WTRA</td>
-                            <td>text</td>
-                            <td>N</td>
-                        </tr>
-                        <tr>
-                            <td>GEOMETRY</td>
-                            <td>BC Albers (EPSG:3005) or WGS 84 (EPSG:4326 and EPSG:3005) coordinate reference system</td>
-                            <td>Polygon</td>
-                            <td>N</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="spacer-height-1"></div>
-
             <div class="panel-content-group">
                 <div class="faq-sub-title">Property Format</div>
                 <div>This table specifies the description and format of required properties. All attribute table fields <strong>must</strong> be formatted as text, including the date field.</div>
-                <table aria-label="Table: Description and format of required properties">
+                <table aria-label="Table:Detail attribute fields">
                     <thead>
-                      <tr>
-                        <th scope="col">Property</th>
-                        <th scope="col">Description</th>
-                        <th scope="col">Value Format</th>
-                      </tr>
+                        <tr>
+                            <th scope="col">Property</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Value Format</th>
+                        </tr>
                     </thead>
-                    <tr>
-                      <td>FOM_OBJECT</td>
-                      <td>Describes the feature (Cutblock, Road, WTRA)</td>
-                      <td>text</td>
-                    </tr>
-                    <tr>
-                      <td>GEOMETRY</td>
-                      <td>Indicates if feature is a polygon or linestring</td>
-                      <td>text</td>
-                    </tr>
-                    <tr>
-                      <td>DEV_DATE</td>
-                      <td>Planned date to start development</td>
-                      <td>Date string in the format "YYYY-MM-DD"</td>
-                    </tr>
-                    <tr>
-                      <td>NAME</td>
-                      <td>Description/identifier for the spatial object.</td>
-                      <td>Text, maximum length 50 characters.</td>
-                    </tr>
-                  </table>
+                    <tbody>
+                        <tr>
+                            <td>FOM_OBJECT</td>
+                            <td>Describes the feature (Cutblock, Road, WTRA)</td>
+                            <td>text</td>
+                        </tr>
+                        <tr>
+                            <td>GEOMETRY</td>
+                            <td>Indicates if feature is a polygon or linestring</td>
+                            <td>text</td>
+                        </tr>
+                        <tr>
+                            <td>DEV_DATE</td>
+                            <td>Planned date to start development</td>
+                            <td>Date string in the format "YYYY-MM-DD" (formatted as text)</td>
+                        </tr>
+                        <tr>
+                            <td>NAME</td>
+                            <td>Description/identifier for the spatial object.</td>
+                            <td>Text, maximum length 50 characters.</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </mat-expansion-panel>
     </section>
@@ -402,7 +246,7 @@
 
     <!-- Handling curves section -->
     <section class="faq-section">
-        <div class="faq-title">Handling curves</div>
+        <div class="faq-title">Handling curves and multipart features</div>
         <mat-expansion-panel class="expand-panel">
             <mat-expansion-panel-header>
               <mat-panel-title>
@@ -417,8 +261,8 @@
                 <li>
                     <strong>Convert curves to lines:</strong>
                     <ul>
-                        <li>Option 1: Convert `.gdb` feature classes to ESRI Shapefiles `.shp`</li>
-                        <li>Option 2: Use the "densify" tool in ArcMap to replace curves with lines</li>
+                        <li><strong>Option 1:</strong> Convert `.gdb` feature classes to ESRI Shapefiles `.shp`</li>
+                        <li><strong>Option 2:</strong> Use the "densify" tool in ArcMap to replace curves with lines</li>
                     </ul>
                 </li>
                 <li>
@@ -435,6 +279,15 @@
                     </ul>
                 </li>
             </ol>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What should I do with multipart features in my dataset?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong> To eliminate multipart features in ArcGIS use the “Explode” tool.
         </mat-expansion-panel>
     </section>
 
