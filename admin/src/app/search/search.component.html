@@ -25,13 +25,27 @@
   <div class="bottom-container scroll">
     <div class="container" style="background: #f7f8fa; padding-bottom: 0;">
       <div class="row">
-        <div class="form-group col-md-1">
+        <div class="form-group col-md-2">
+          <label for="fomNumberInput" style="white-space: nowrap;">
+                FOM Number
+          </label>
+
+          <input id="fNumberInput" name="fNumber" type="number"
+                min="0" step="1"
+                oninput="this.value = this.value.slice(0, 9)"
+                class="form-control"
+                style="font-size: 14px;"
+                [(ngModel)]="fNumber"
+                [disabled]="searching" autofocus/>
+        </div>
+
+        <div class="form-group col-md-2">
           <label for="fspIdInput" style="white-space: nowrap;">
                 FSP ID
           </label>
           <input id="fspIdInput" name="fFspId" type="number"
                 min="0" step="1"
-                oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, 9);"
+                oninput="this.value = this.value.slice(0, 9)"
                 class="form-control"
                 style="font-size: 14px;"
                 [(ngModel)]="fFspId"
@@ -96,7 +110,7 @@
         <table class="table" *ngIf="count > 0" aria-label="Search Results">
           <thead>
           <tr>
-            <th id="fomId" class="disp">FOM ID</th>
+            <th id="fomId" class="disp">FOM Number</th>
             <th id="fomName" class="client">FOM Name</th>
             <th id="fspId" class="disp">FSP ID</th>
             <th id="fomHolder" class="client">FOM Holder Name</th>

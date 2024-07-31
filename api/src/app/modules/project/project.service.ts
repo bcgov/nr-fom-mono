@@ -1,22 +1,24 @@
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
 import { MailService } from '@api-core/mail/mail.service';
+import { AttachmentTypeEnum } from '@api-modules/attachment/attachment-type-code.entity';
 import { AttachmentService } from '@api-modules/attachment/attachment.service';
+import { DistrictService } from '@api-modules/district/district.service';
+import { ForestClientService } from '@api-modules/forest-client/forest-client.service';
 import { Interaction } from '@api-modules/interaction/interaction.entity';
+import { PublicNotice } from '@api-modules/project/public-notice.entity';
 import { PublicComment } from '@api-modules/public-comment/public-comment.entity';
+import { PublicCommentService } from '@api-modules/public-comment/public-comment.service';
+import { SubmissionTypeCodeEnum } from '@api-modules/submission/submission-type-code.entity';
 import { DataService } from '@core';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import { USER_SYSTEM } from '@src/app-constants';
 import { User } from "@utility/security/user";
 import * as dayjs from 'dayjs';
 import { isNil } from 'lodash';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository, SelectQueryBuilder } from 'typeorm';
-import { AttachmentTypeEnum } from '@api-modules/attachment/attachment-type-code.entity';
-import { DistrictService } from '@api-modules/district/district.service';
-import { ForestClientService } from '@api-modules/forest-client/forest-client.service';
-import { PublicCommentService } from '@api-modules/public-comment/public-comment.service';
-import { SubmissionTypeCodeEnum } from '@api-modules/submission/submission-type-code.entity';
 import {
     ProjectCommentClassificationMandatoryChangeRequest, ProjectCommentingClosedDateChangeRequest, ProjectCreateRequest, ProjectMetricsResponse, ProjectPublicSummaryResponse, ProjectResponse, ProjectUpdateRequest,
     ProjectWorkflowStateChangeRequest
@@ -25,8 +27,6 @@ import { Project } from './project.entity';
 import { WorkflowStateEnum } from './workflow-state-code.entity';
 import NodeCache = require('node-cache');
 import _ = require('lodash');
-import { PublicNotice } from '@api-modules/project/public-notice.entity';
-import { USER_SYSTEM } from '@src/app-constants';
 export class ProjectFindCriteria {
   includeWorkflowStateCodes: string[] = [];
   likeForestClientName?: string;
@@ -37,10 +37,10 @@ export class ProjectFindCriteria {
   projectId?: number;
 
   applyFindCriteria(query: SelectQueryBuilder<Project>) {
-    if (this.projectId) {
+    if (this.projectId >= 0) {
       query.andWhere("p.id = :projectId", {projectId: this.projectId})
     }
-    if (this.fspId) {
+    if (this.fspId >= 0) {
       query.andWhere("p.fsp_id = :fspId", {fspId: `${this.fspId}`});
     }
     if (this.districtId) {
