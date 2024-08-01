@@ -1735,8 +1735,14 @@
               "type": "object",
               "example": " { \"type\": \"Point\", \"coordinates\": [-119.396071939, 49.813816629]}"
             },
+            "projectPlanCode": {
+              "type": "string"
+            },
             "fspId": {
               "type": "number"
+            },
+            "woodlotLicenseNumber": {
+              "type": "string"
             },
             "forestClientName": {
               "type": "string"
@@ -1749,7 +1755,7 @@
             "id",
             "name",
             "geojson",
-            "fspId",
+            "projectPlanCode",
             "forestClientName",
             "workflowStateName"
           ]
@@ -1823,8 +1829,14 @@
               "type": "string",
               "description": "ISO-formatted date"
             },
+            "projectPlanCode": {
+              "type": "string"
+            },
             "fspId": {
               "type": "number"
+            },
+            "woodlotLicenseNumber": {
+              "type": "string"
             },
             "district": {
               "$ref": "#/components/schemas/DistrictResponse"
@@ -1869,7 +1881,7 @@
             "commentingOpenDate",
             "commentingClosedDate",
             "validityEndDate",
-            "fspId",
+            "projectPlanCode",
             "district",
             "forestClient",
             "workflowState",
@@ -1906,6 +1918,13 @@
             "respondedToCommentsCount"
           ]
         },
+        "ProjectPlanCodeEnum": {
+          "type": "string",
+          "enum": [
+            "FSP",
+            "WOODLOT"
+          ]
+        },
         "ProjectCreateRequest": {
           "type": "object",
           "properties": {
@@ -1926,8 +1945,14 @@
             "forestClientNumber": {
               "type": "string"
             },
+            "projectPlanCode": {
+              "$ref": "#/components/schemas/ProjectPlanCodeEnum"
+            },
             "fspId": {
               "type": "number"
+            },
+            "woodlotLicenseNumber": {
+              "type": "string"
             },
             "districtId": {
               "type": "number"
@@ -1948,7 +1973,9 @@
             "commentingOpenDate",
             "commentingClosedDate",
             "forestClientNumber",
+            "projectPlanCode",
             "fspId",
+            "woodlotLicenseNumber",
             "districtId",
             "operationStartYear",
             "operationEndYear",
@@ -1972,8 +1999,14 @@
               "type": "string",
               "description": "ISO-formatted date"
             },
+            "projectPlanCode": {
+              "$ref": "#/components/schemas/ProjectPlanCodeEnum"
+            },
             "fspId": {
               "type": "number"
+            },
+            "woodlotLicenseNumber": {
+              "type": "string"
             },
             "districtId": {
               "type": "number"

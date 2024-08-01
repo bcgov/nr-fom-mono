@@ -14,9 +14,10 @@ import { BadRequestException, ForbiddenException, Injectable, InternalServerErro
 import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { USER_SYSTEM } from '@src/app-constants';
+import { ProjectPlanCodeEnum } from '@src/app/modules/project/project-plan-code.entity';
 import { User } from "@utility/security/user";
 import * as dayjs from 'dayjs';
-import { isNil } from 'lodash';
+import { isEmpty, isNil } from 'lodash';
 import { PinoLogger } from 'nestjs-pino';
 import { Repository, SelectQueryBuilder } from 'typeorm';
 import {
@@ -174,6 +175,7 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
   async create(request: any, user: User): Promise<ProjectResponse> {
     request.workflowStateCode = WorkflowStateEnum.INITIAL;
     request.forestClientId = request.forestClientNumber;
+    this.validateProjectPlan(request.projectPlanCode, request.fspId, request.woodlotLicenseNumber);
     await this.validateTimberSalesManager(request.bctsMgrName, request.forestClientNumber, null);
     return super.create(request, user);
   }
@@ -201,6 +203,22 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       if (!bctsMgrName || bctsMgrName.length == 0) {
           throw new BadRequestException("Timber Sales Manager name is required for Timber Sales FOM.");
       }
+    }
+  }
+
+  validateProjectPlan(projectPlanCode: ProjectPlanCodeEnum, fspId: number, woodlotLicenseNumber: string) {
+    if (isNil(projectPlanCode)) {
+        throw new BadRequestException("FOM type of plan holder is required.");
+    }
+    if (projectPlanCode == ProjectPlanCodeEnum.FSP) {
+        if (!isNil(woodlotLicenseNumber) || !isEmpty(woodlotLicenseNumber)) {
+            throw new BadRequestException("Contains invalid input for Forest Stewardship Plan FOM. Woodlot license number should be empty.");
+        }
+    }
+    else if (projectPlanCode == ProjectPlanCodeEnum.WOODLOT) {
+        if (!isNil(fspId)) {
+            throw new BadRequestException("Contains invalid input for Woodlot License Plan FOM. FSP ID should be empty.");
+        }
     }
   }
 
@@ -271,6 +289,9 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     response.operationStartYear = entity.operationStartYear;
     response.operationEndYear = entity.operationEndYear;
     response.bctsMgrName = entity.bctsMgrName;
+    response.projectPlanCode = entity.projectPlanCode
+    response.woodlotLicenseNumber = entity.woodlotLicenseNumber
+
     return response;
   }
 
@@ -319,7 +340,10 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     // Use reduced select to optimize performance. 
     this.logger.info('findPublicSummaries - Querying database with criteria %o', findCriteria.getCacheKey());
     const query = this.repository.createQueryBuilder("p")
-      .select(['p.id', 'p.geojson', 'p.fspId', 'p.name', 'forestClient.name', 'workflowState.description']) 
+      .select([
+        'p.id', 'p.geojson', 'p.fspId', 'p.name', 'forestClient.name', 'workflowState.description',
+        'p.projectPlanCode', 'p.woodlotLicenseNumber'
+      ]) 
       .leftJoin('p.forestClient', 'forestClient')
       .leftJoin("p.workflowState", "workflowState")
       ;
@@ -496,13 +520,20 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
    * @param stateTransition WorkflowStateEnum transition to
    */
   async validateWorkflowTransitionRules(entity: Project, stateTransition: WorkflowStateEnum, user: User) {
+    const projectPlanCode = entity.projectPlanCode;
     const fspId = entity.fspId;
+    const woodlotLicenseNumber = entity.woodlotLicenseNumber;
     const districtId = entity.districtId;
 
-    if (isNil(fspId) || isNaN(fspId)) {
+    if (projectPlanCode == ProjectPlanCodeEnum.FSP && (isNil(fspId) || isNaN(fspId))) {
       throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}. 
             Missing FSP ID.`);
     }
+
+    if (projectPlanCode == ProjectPlanCodeEnum.WOODLOT && (isNil(woodlotLicenseNumber) || isEmpty(woodlotLicenseNumber))) {
+        throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}. 
+              Missing Woodlot License Number.`);
+      }
 
     if (!await this.isDistrictExist(districtId)) {
       throw new BadRequestException(`Unable to transition FOM ${entity.id} to ${stateTransition}.  

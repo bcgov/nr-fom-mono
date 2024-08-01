@@ -30,6 +30,7 @@ model/projectCommentClassificationMandatoryChangeRequest.ts
 model/projectCommentingClosedDateChangeRequest.ts
 model/projectCreateRequest.ts
 model/projectMetricsResponse.ts
+model/projectPlanCodeEnum.ts
 model/projectPublicSummaryResponse.ts
 model/projectResponse.ts
 model/projectUpdateRequest.ts

@@ -1,3 +1,4 @@
+import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSvc';
 import { CommonUtil } from '@admin-core/utils/commonUtil';
 import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe, NgFor, NgIf, TitleCasePipe } from '@angular/common';
@@ -8,9 +9,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
-    AttachmentResponse, AttachmentService, InteractionResponse, InteractionService,
-    ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService,
-    SpatialFeaturePublicResponse, SpatialFeatureService
+  AttachmentResponse, AttachmentService, InteractionResponse, InteractionService,
+  ProjectPlanCodeEnum,
+  ProjectResponse, ProjectService, PublicCommentAdminResponse, PublicCommentService,
+  SpatialFeaturePublicResponse, SpatialFeatureService
 } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
 import * as _ from 'lodash';
@@ -20,7 +22,6 @@ import { DetailsMapComponent } from '../details-map/details-map.component';
 import { ShapeInfoComponent } from '../shape-info/shape-info.component';
 import { CommentsSummaryComponent } from './comments-summary/comments-summary.component';
 import { InteractionsSummaryComponent } from './interactions-summary/interactions-summary.component';
-import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSvc';
 
 @Component({
     standalone: true,
@@ -44,7 +45,7 @@ import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSv
     styleUrls: ['./summary.component.scss']
 })
 export class SummaryComponent implements OnInit, OnDestroy {
-
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   projectId: number;
   project: ProjectResponse;
   projectReqError: boolean;

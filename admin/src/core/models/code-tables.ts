@@ -6,3 +6,8 @@ export interface CodeTables {
   workflowResponseCode: WorkflowStateCode[],
   commentScopeCode: CommentScopeCode[]
 }
+
+export interface ICodeTable { 
+    code: string;
+    description: string;
+}

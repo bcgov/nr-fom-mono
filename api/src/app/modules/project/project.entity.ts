@@ -1,4 +1,5 @@
 import { ApiBaseEntity } from '@entities';
+import { ProjectPlanCode } from '@src/app/modules/project/project-plan-code.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, RelationId } from 'typeorm';
 import { District } from '../district/district.entity';
 import { ForestClient } from '../forest-client/forest-client.entity';
@@ -34,6 +35,9 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'fsp_id'})
   fspId: number;
 
+  @Column({ name: 'woodlot_license_number'})
+  woodlotLicenseNumber: string;
+
   @ManyToOne(() => District)
   @JoinColumn({ name: 'district_id', referencedColumnName: 'id' })
   district: District;
@@ -57,6 +61,14 @@ export class Project extends ApiBaseEntity<Project> {
   @Column({ name: 'workflow_state_code'})
   @RelationId((project: Project) => project.workflowState)
   workflowStateCode: string;
+
+  @ManyToOne(() => ProjectPlanCode)
+  @JoinColumn({ name: 'project_plan_code', referencedColumnName: 'code' })
+  projectPlan: ProjectPlanCode;
+
+  @Column({ name: 'project_plan_code'})
+  @RelationId((project: Project) => project.projectPlan)
+  projectPlanCode: string;
 
   @OneToMany(type => Submission, (submission) => submission.project) 
   submissions: Submission[];

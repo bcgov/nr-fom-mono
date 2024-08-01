@@ -11,14 +11,10 @@
  */
 
 
-export interface ProjectPublicSummaryResponse { 
-    id: number;
-    name: string;
-    geojson: object;
-    projectPlanCode: string;
-    fspId?: number;
-    woodlotLicenseNumber?: string;
-    forestClientName: string;
-    workflowStateName: string;
-}
+export type ProjectPlanCodeEnum = 'FSP' | 'WOODLOT';
+
+export const ProjectPlanCodeEnum = {
+    Fsp: 'FSP' as ProjectPlanCodeEnum,
+    Woodlot: 'WOODLOT' as ProjectPlanCodeEnum
+};
 

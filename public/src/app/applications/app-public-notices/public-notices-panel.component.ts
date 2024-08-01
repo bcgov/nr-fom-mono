@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ProjectResponse, PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
+import { ProjectPlanCodeEnum, ProjectResponse, PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
@@ -30,7 +30,7 @@ import moment = require('moment');
 export class PublicNoticesPanelComponent implements OnInit {
   @Output() update = new EventEmitter<IUpdateEvent>();
   @ViewChild(MatAccordion) accordion: MatAccordion;
-  
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   isLoading = false;
   pNotices: Array<PublicNoticePublicFrontEndResponse>;
   initialPNotices: Array<PublicNoticePublicFrontEndResponse>;
