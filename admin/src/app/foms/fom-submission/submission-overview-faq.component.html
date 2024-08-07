@@ -1,0 +1,308 @@
+<section>
+    <legend>Frequently Asked Questions for submitting geospatial</legend>
+
+    <div class="faq-pdf">
+      <button class="btn btn-sm btn-outline-primary" type="button">
+        <a href="assets/sample-spatial-files/faqs-submit-geospatial-files.pdf" download>
+          Download PDF
+        </a>
+      </button>
+    </div>
+
+    <!-- Data Handling section -->
+    <section class="faq-section">
+        <div class="faq-title">Data Handling</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: How does the Forest Operations Map application handle your data?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> The Forest Operations Map application simplifies detailed maps that users submit. To save space and speed up processing, the application reduces the number of points in these maps while keeping the map's original shape accurate within about 2.5 meters. This process uses the Douglas-Peucker algorithm.
+            </p>
+        </mat-expansion-panel>
+    </section>
+
+    <!-- File Requirements section -->
+    <section class="faq-section">
+        <div class="faq-title">File Requirements</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What are the requirements for submitting geospatial files?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> Each file must be in GeoJSON or, depending on the GIS software, in some cases in JSON format (sometimes the case with older versions). Shapes must be either polygons for cutblocks and wildlife tree retention areas (WTRA) or line features for road sections. A spatial submission must include at least a cutblock file or a road section file.
+            </p>
+
+            <ol>
+                <li><strong>File Format: </strong>GeoJSON or JSON</li>
+                <li><strong>File Encoding: </strong>UTF-8</li>
+                <li>
+                    <strong>Coordinate Systems:</strong>
+                    <ul>
+                        <li>BC Albers (EPSG:3005), or</li>
+                        <li>WGS 84 (EPSG:4326).</li>
+                    </ul>
+                </li>
+                <li><strong>File Size:</strong> Maximum 30MB</li>
+            </ol>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What is the structure for GeoJSON/JSON files?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> Each JSON file should consist of a single GeoJSON FeatureCollection object. The geometry provided for each feature must be of type polygon or linestring depending on the feature type. <strong>Ensure your shapes do not contain curves or multipart features, and are in one of the two accepted projections (BC Albers, WGS 84).</strong>
+            </p>
+        </mat-expansion-panel>
+    </section>
+
+    <!-- Attribute Requirements section -->
+    <section class="faq-section">
+        <div class="faq-title">Attribute Requirements</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What information must be included for each shape?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> Each shape (GeoJSON feature) must include the following:
+            </p>
+            <table aria-label="Table:Properties of each Geometry Type">
+                <thead>
+                    <tr>
+                        <th scope="col">Field</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Required?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GEOMETRY</td>
+                        <td>
+                            BC Albers (EPSG:3005) or WGS 84 (EPSG:4326) coordinate reference system. Coordinates must be ordered as X, Y.
+                            <br/>
+                            <strong>Latitude and longitude are not accepted</strong>
+                        </td>
+                        <td>Polygon for Cut Blocks and WTRAs, LineString for Road Sections</td>
+                        <td>Required</td>
+                    </tr>
+                    <tr>
+                        <td>DEV_DATE</td>
+                        <td>
+                            Development date. Format: YYYY-MM-DD
+                        </td>
+                        <td>text</td>
+                        <td>Required for Cut Block and Road Section, optional for WTRA</td>
+                    </tr>
+                    <tr>
+                        <td>NAME</td>
+                        <td>Name of the feature. Not required but is recommended in order to make it easier for the public to comment on specific features.</td>
+                        <td>text</td>
+                        <td>Optional</td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: How must the attribute table in the shape file be structured?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong>When using GIS software that provides an attribute table, ensure all attributes provided use the exact titles and formats specified to avoid issues during file submission.
+            </p>
+            <div class="panel-content-group">
+                <div>The attribute table in the shapefile must look as follows, with all fields formatted as plain text.</div>
+                <table aria-label="Table:Properties of each Geometry Type">
+                    <thead>
+                        <tr>
+                            <th scope="col">FOM_OBJECT</th>
+                            <th scope="col">GEOMETRY</th>
+                            <th scope="col">DEV_DATE</th>
+                            <th scope="col">NAME</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Road Section</td>
+                            <td>LineString</td>
+                            <td>YYYY-MM-DD</td>
+                            <td>NAME</td>
+                        </tr>
+                        <tr>
+                            <td>Cut Block</td>
+                            <td>Polygon</td>
+                            <td>YYYY-MM-DD</td>
+                            <td>NAME</td>
+                        </tr>
+                        <tr>
+                            <td>WTRA</td>
+                            <td >Polygon</td>
+                            <td>Enter YYYY-MM-DD or leave blank</td>
+                            <td>NAME</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="panel-content-group">
+                <div class="faq-sub-title">Property Format</div>
+                <div>This table specifies the description and format of required properties. All attribute table fields <strong>must</strong> be formatted as text, including the date field.</div>
+                <table aria-label="Table:Detail attribute fields">
+                    <thead>
+                        <tr>
+                            <th scope="col">Property</th>
+                            <th scope="col">Description</th>
+                            <th scope="col">Value Format</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>FOM_OBJECT</td>
+                            <td>Describes the feature (Cutblock, Road, WTRA)</td>
+                            <td>text</td>
+                        </tr>
+                        <tr>
+                            <td>GEOMETRY</td>
+                            <td>Indicates if feature is a polygon or linestring</td>
+                            <td>text</td>
+                        </tr>
+                        <tr>
+                            <td>DEV_DATE</td>
+                            <td>Planned date to start development</td>
+                            <td>Date string in the format "YYYY-MM-DD" (formatted as text)</td>
+                        </tr>
+                        <tr>
+                            <td>NAME</td>
+                            <td>Description/identifier for the spatial object.</td>
+                            <td>Text, maximum length 50 characters.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </mat-expansion-panel>
+    </section>
+    
+    <!-- Replacing Spatial Data section -->
+    <section class="faq-section">
+        <div class="faq-title">Replacing Spatial Data</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: How do I replace old spatial data with a new GeoJSON/JSON file?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong>
+            <ol>
+                <li>
+                    <strong>Upload new GeoJSON/JSON file:</strong>
+                    <ul>
+                        <li>Follow the regular upload process to replace old data with a new GeoJSON/JSON file.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Confirm upload:</strong>
+                    <ul>
+                        <li>Check the “Location” button on the “Summary Screen” to confirm successful upload or replacement.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Publication:</strong>
+                    <ul>
+                        <li>Submitted data will be published overnight and will be visible in the public interface the next day.</li>
+                    </ul>
+                </li>
+            </ol>
+        </mat-expansion-panel>
+    </section>
+
+    <!-- Using ArcGIS section -->
+    <section class="faq-section">
+        <div class="faq-title">Using ArcGIS</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: How should I use the "Features To JSON" tool in ArcGIS for geospatial submissions?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong>Depending on the version of ArcGIS you are using, ensure the "GeoJSON" box is checked prior to running the tool. Note that in some versions, this box may need to be left unchecked. Refer to the specific documentation for your version to confirm the correct settings.
+            <br/><br/>
+            <p>
+                <img src="assets/images/arcgis-featuresToJson.png" alt="ArcGIS Conversion Tool 'Features To JSON' Example PNG" width="800" height="494">
+            </p>
+        </mat-expansion-panel>
+    </section>
+
+    <!-- Handling curves section -->
+    <section class="faq-section">
+        <div class="faq-title">Handling curves and multipart features</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What should I do with curves in my dataset?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong><span class="text-red"><u>Important:</u> </span>The "Features To JSON" tool <strong>does not accept curves</strong> and <strong>does not automatically convert them to lines</strong>. Follow these steps to prepare your data:
+
+            <div class="spacer-height-1"></div>
+
+            <ol>
+                <li>
+                    <strong>Convert curves to lines:</strong>
+                    <ul>
+                        <li><strong>Option 1:</strong> Convert `.gdb` feature classes to ESRI Shapefiles `.shp`</li>
+                        <li><strong>Option 2:</strong> Use the "densify" tool in ArcMap to replace curves with lines</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Run the Features To JSON tool:</strong>
+                    <ul>
+                        <li>Ensure shapes contain no curves before using the tool.</li>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Alternative tools:</strong>
+                    <ul>
+                        <li>Use the Feature Manipulation Engine (link to <a href="https://www.safe.com/support/downloads/" target="_blank" rel="noopener">FME</a>).</li>
+                        <li>Use the `gdal` tool (link to <a href="https://gdal.org/" target="_blank" rel="noopener">gdal</a> tool).</li>
+                    </ul>
+                </li>
+            </ol>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: What should I do with multipart features in my dataset?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <strong>A:</strong> To eliminate multipart features in ArcGIS use the “Explode” tool.
+        </mat-expansion-panel>
+    </section>
+
+    <!-- Contact Information section -->
+    <section class="faq-section">
+        <div class="faq-title">Contact Information</div>
+        <mat-expansion-panel class="expand-panel">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                <strong>Q: Who can I contact for more information if I still encounter issues?</strong>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>
+                <strong>A:</strong> Contact the team at <a href="nrsenquiries@gov.bc.ca" target="_blank" rel="noopener">nrsenquiries@gov.bc.ca</a>
+            </p>
+        </mat-expansion-panel>
+    </section>
+</section>

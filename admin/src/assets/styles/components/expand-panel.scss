@@ -1,0 +1,35 @@
+.expand-panel {
+    margin-bottom: 16px;
+    padding: 2px;
+
+    .faq-sub-title {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        font-weight: 540;
+    }
+
+    ul {
+        list-style-type: disc;
+    }
+    li {
+        margin-bottom: 5px;
+    }
+
+    .panel-content-group {
+        margin-top: 1.35rem;
+    }
+
+    table {
+        margin-bottom: 1em;
+        width: 100%;
+        th {
+            background-color: #f1f1f1;
+        }
+        
+        th, td {
+            border: 1px solid #d4d4d4;
+            padding: 0.35em;
+        }
+    }
+}
