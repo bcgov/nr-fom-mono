@@ -212,12 +212,12 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
     }
     if (projectPlanCode == ProjectPlanCodeEnum.FSP) {
         if (!isNil(woodlotLicenseNumber) || !isEmpty(woodlotLicenseNumber)) {
-            throw new BadRequestException("Contains invalid input for Forest Stewardship Plan FOM. Woodlot license number should be empty.");
+            throw new BadRequestException("Contains invalid input for Forest Stewardship Plan FOM. Woodlot licence number should be empty.");
         }
     }
     else if (projectPlanCode == ProjectPlanCodeEnum.WOODLOT) {
         if (!isNil(fspId)) {
-            throw new BadRequestException("Contains invalid input for Woodlot License Plan FOM. FSP ID should be empty.");
+            throw new BadRequestException("Contains invalid input for Woodlot Licence Plan FOM. FSP ID should be empty.");
         }
     }
   }

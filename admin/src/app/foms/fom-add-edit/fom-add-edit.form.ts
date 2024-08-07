@@ -53,7 +53,7 @@ export class FomAddEditForm implements Pick<ProjectResponse,
 
   @prop()
   @required({
-    message: 'Woodlot License Plan Number is required.',
+    message: 'Woodlot Licence Plan Number is required.',
 		conditionalExpression: (x) => {
 			return x.projectPlanCode == ProjectPlanCodeEnum.Woodlot
 		}
