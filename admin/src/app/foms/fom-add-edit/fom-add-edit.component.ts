@@ -15,12 +15,12 @@ import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadServi
 import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import {
-  AttachmentResponse, DistrictResponse, ForestClientResponse,
-  ForestClientService,
-  ProjectCreateRequest,
-  ProjectPlanCodeEnum,
-  ProjectResponse,
-  ProjectService, WorkflowStateEnum
+    AttachmentResponse, DistrictResponse, ForestClientResponse,
+    ForestClientService,
+    ProjectCreateRequest,
+    ProjectPlanCodeEnum,
+    ProjectResponse,
+    ProjectService, WorkflowStateEnum
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
@@ -61,7 +61,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   districts: DistrictResponse[] = this.stateSvc.getCodeTable('district');
   projectPlanOptions: ICodeTable[] = [
     {"code": this.projectPlanCodeEnum.Fsp, "description": "Forest Stewardship Plan"},
-    {"code": this.projectPlanCodeEnum.Woodlot, "description": "Woodlot License Plan"}
+    {"code": this.projectPlanCodeEnum.Woodlot, "description": "Woodlot Licence Plan"}
   ];
   forestClients: ForestClientResponse[] = [];
   public supportingDocuments: any[] = [];
