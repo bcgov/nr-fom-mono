@@ -6,7 +6,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, ParamMap, Params, Router, RouterLink } from '@angular/router';
-import { ProjectResponse, ProjectService, WorkflowStateEnum } from "@api-client";
+import { ProjectPlanCodeEnum, ProjectResponse, ProjectService, WorkflowStateEnum } from "@api-client";
 import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
@@ -33,6 +33,7 @@ import { takeUntil } from 'rxjs/operators';
     styleUrls: ['./search.component.scss']
 })
 export class SearchComponent implements OnInit, OnDestroy {
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   private ngUnsubscribe = new Subject<void>();
   private paramMap: ParamMap = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
@@ -173,6 +174,13 @@ export class SearchComponent implements OnInit, OnDestroy {
     const userCanView = this.user.isAuthorizedForClientId(project.forestClient.id);
     return userCanView && (project.workflowState.code === WorkflowStateEnum.Initial
       || project.workflowState.code === WorkflowStateEnum.CommentClosed);
+  }
+
+  public getProjectPlanNumber(project) {
+    // There are only two projectPlanCode for now.
+    return project.projectPlanCode == this.projectPlanCodeEnum.Fsp? 
+      "FSP #" + project.fspId : 
+      "WL #" + project.woodlotLicenseNumber
   }
 
   ngOnDestroy() {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { ProjectPublicSummaryResponse } from '@api-client';
+import { ProjectPlanCodeEnum, ProjectPublicSummaryResponse } from '@api-client';
 import { StateService } from '@public-core/services/state.service';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
@@ -15,7 +15,8 @@ import { Panel } from '../../../applications/utils/panel.enum';
 export class MarkerPopupComponent {
   public projectSummary: ProjectPublicSummaryResponse;
   public workflowStatus = _.keyBy(this.stateSvc.getCodeTable('workflowStateCode'), 'code');
-
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
+  
   constructor(
     private stateSvc: StateService,
     public urlService: UrlService

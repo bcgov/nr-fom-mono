@@ -9,6 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { ProjectPlanCodeEnum } from './projectPlanCodeEnum';
 
 
 export interface ProjectUpdateRequest { 
@@ -22,7 +23,9 @@ export interface ProjectUpdateRequest {
      * ISO-formatted date
      */
     commentingClosedDate?: string;
+    projectPlanCode?: ProjectPlanCodeEnum;
     fspId?: number;
+    woodlotLicenseNumber?: string;
     districtId?: number;
     operationStartYear?: number;
     operationEndYear?: number;

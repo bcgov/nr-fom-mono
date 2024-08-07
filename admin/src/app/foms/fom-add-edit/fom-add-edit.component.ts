@@ -6,26 +6,29 @@ import * as moment from 'moment';
 import { Observable, Subject, of } from 'rxjs';
 import { switchMap, takeUntil, tap } from 'rxjs/operators';
 
-import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
-import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
-import {
-    AttachmentResponse, DistrictResponse, ForestClientResponse,
-    ForestClientService,
-    ProjectCreateRequest, ProjectResponse,
-    ProjectService, WorkflowStateEnum
-} from '@api-client';
-import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
-import { User } from "@utility/security/user";
 import { AttachmentTypeEnum } from "@admin-core/models/attachmentTypeEnum";
 import { AttachmentResolverSvc } from "@admin-core/services/AttachmentResolverSvc";
 import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
 import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadService";
+import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
+import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
+import {
+  AttachmentResponse, DistrictResponse, ForestClientResponse,
+  ForestClientService,
+  ProjectCreateRequest,
+  ProjectPlanCodeEnum,
+  ProjectResponse,
+  ProjectService, WorkflowStateEnum
+} from '@api-client';
+import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
+import { User } from "@utility/security/user";
 import { FomAddEditForm } from './fom-add-edit.form';
 
 import { UploadBoxComponent } from '@admin-core/components/file-upload-box/file-upload-box.component';
 import { AppFormControlDirective } from '@admin-core/directives/form-control.directive';
+import { ICodeTable } from '@admin-core/models/code-tables';
 import { NewlinesPipe } from '@admin-core/pipes/newlines.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BsDatepickerConfig, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
@@ -51,10 +54,15 @@ type ApplicationPageType = 'create' | 'edit';
     providers: [DatePipe]
 })
 export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   fg: RxFormGroup;
   state: ApplicationPageType;
   originalProjectResponse: ProjectResponse;
   districts: DistrictResponse[] = this.stateSvc.getCodeTable('district');
+  projectPlanOptions: ICodeTable[] = [
+    {"code": this.projectPlanCodeEnum.Fsp, "description": "Forest Stewardship Plan"},
+    {"code": this.projectPlanCodeEnum.Woodlot, "description": "Woodlot License Plan"}
+  ];
   forestClients: ForestClientResponse[] = [];
   public supportingDocuments: any[] = [];
   public initialPublicDocument: any[] = [];
@@ -89,7 +97,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-
+  
   // bsDatepicker config object
   readonly bsConfig = {
     dateInputFormat: 'YYYY', 
@@ -179,7 +187,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
       const form = new FomAddEditForm(data);
       this.fg = <RxFormGroup>this.formBuilder.formGroup(form);
       this.initializeFormFields(this.fg, this.user, this.originalProjectResponse);
-
       if(data.description) {
         this.descriptionValue = data.description;
       }
@@ -318,6 +325,11 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.districtIdSelect = parseInt(e.target.value);
   }
 
+  onProjectPlanChange(e) {
+    // reset fspId and woodlotLicenseNumber fields when plan selection changed.
+    this.fg.get('fspId').setValue(null)
+    this.fg.get('woodlotLicenseNumber').setValue(null)
+  }
   onForestClientChange(e) {
     const forestClientField = this.fg.get('forestClient');
     this.fg.get('forestClient').setValue(forestClientField.value);
@@ -416,6 +428,13 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public isDeleteAttachmentAllowed(attachment: AttachmentResponse) {
     return this.attachmentResolverSvc.isDeleteAttachmentAllowed(attachment.attachmentType.code, this.originalProjectResponse.workflowState.code);
+  }
+
+  getProjectPlanDesc() {
+    const item = this.projectPlanOptions.filter((item) => {
+        return item.code == this.originalProjectResponse.projectPlanCode
+    })[0]["description"];
+    return item;
   }
 
   /**

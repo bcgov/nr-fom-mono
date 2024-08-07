@@ -170,10 +170,11 @@ $sr-table-row-bg: #f7f8fa;
 
 .disp {
   min-width: 5rem;
+  text-align: center;
 }
 
-.status {
-  width: 11rem;
+.status, .plan {
+  width: 7rem;
 }
 
 .actions {
@@ -181,7 +182,6 @@ $sr-table-row-bg: #f7f8fa;
   text-align: right;
   padding-top: 0;
   padding-bottom: 0;
-
   .btn {
     width: 6rem;
     border-width: 2px;
@@ -189,8 +189,20 @@ $sr-table-row-bg: #f7f8fa;
   }
 }
 
-.app-details {
-  border-top: 4px solid #fff;
+table {
+  th,td,strong {
+    padding-left: 0;
+  }
+
+  .app-details {
+    border-top: 4px solid #fff;
+  }
+}
+
+// A very light background-color seems to be coming from <table> on some of the columns. 
+// Remove the background-color.
+.table>:not(caption)>*>* {
+    background-color: transparent;
 }
 
 .app-comment-details {

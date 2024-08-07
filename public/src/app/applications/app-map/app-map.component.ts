@@ -2,7 +2,7 @@ import {
     AfterViewInit, ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EventEmitter, Injector, Input, OnChanges,
     OnDestroy, OnInit, Output, SimpleChanges
 } from '@angular/core';
-import { ProjectPublicSummaryResponse } from '@api-client';
+import { ProjectPlanCodeEnum, ProjectPublicSummaryResponse } from '@api-client';
 import { MapLayersService, OverlayAction } from '@public-core/services/mapLayers.service';
 import { UrlService } from '@public-core/services/url.service';
 import { MapLayers } from '@utility/models/map-layers';
@@ -55,7 +55,8 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   private mapLayers = new MapLayers();
 
   readonly defaultBounds = L.latLngBounds([48, -139], [60, -114]); // all of BC
-
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
+  
   constructor(
     private appRef: ApplicationRef,
     private elementRef: ElementRef,
@@ -325,10 +326,14 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
       const commentingTxt = (projectSummary.workflowStateName === 'Finalized' || 
                            projectSummary.workflowStateName === 'Expired') ?
                           ', Commenting Closed': 
-                          ''
+                          '';
+      const fomProjectPlanTxt = (projectSummary.projectPlanCode == this.projectPlanCodeEnum.Fsp)? 
+                                `FSP ID: ${projectSummary.fspId}`:
+                                `Woodlot #: ${projectSummary.woodlotLicenseNumber}`
+
       const title = `${projectSummary.name}\n` + 
         `${projectSummary.forestClientName}\n` + 
-        `FSP ID: ${projectSummary.fspId}\n` +
+        `${fomProjectPlanTxt}\n` +
         `${projectSummary.workflowStateName}${commentingTxt}`; // This will be Leaflet hover
       const marker = L.marker(L.latLng(projectSummary.geojson['coordinates'][1], projectSummary.geojson['coordinates'][0]), {title: title})
         .setIcon(markerIcon)

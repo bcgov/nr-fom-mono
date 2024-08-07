@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {
-    AttachmentResponse, AttachmentService, ProjectResponse, ProjectService,
-    SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
+  AttachmentResponse, AttachmentService, ProjectPlanCodeEnum, ProjectResponse, ProjectService,
+  SpatialFeaturePublicResponse, SpatialFeatureService, WorkflowStateCode
 } from '@api-client';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons';
@@ -62,6 +62,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
   
   public periodOperationsTxt = "This FOM can be relied upon by the FOM holder for the purpose of a cutting permit or road permit application, until the date three years after commencement of the public review and commenting period. FOMs published by BC Timber Sales can be relied upon for the purpose of a cutting permit or road permit application, or the issuance of a Timber Sales License until the date three years after conclusion of the public review and commenting period."
   public periodOperationsTooltipTxt = "An FSP holder has three years to apply for a cutting permit or road permit for cutblocks and roads displayed on a FOM. This is called the validity period, it starts on the day commenting opens on a FOM. For BC Timber Sales the validity period starts on the day commenting closes."
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
 
   constructor(
     public modalService: NgbModal,

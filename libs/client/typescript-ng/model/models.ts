@@ -11,6 +11,7 @@ export * from './projectCommentClassificationMandatoryChangeRequest';
 export * from './projectCommentingClosedDateChangeRequest';
 export * from './projectCreateRequest';
 export * from './projectMetricsResponse';
+export * from './projectPlanCodeEnum';
 export * from './projectPublicSummaryResponse';
 export * from './projectResponse';
 export * from './projectUpdateRequest';

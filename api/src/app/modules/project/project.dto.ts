@@ -1,13 +1,22 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { DateTimeUtil } from '@api-core/dateTimeUtil';
-import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
+import { ApiProperty, ApiPropertyOptional, OmitType, PartialType } from '@nestjs/swagger';
+import { ProjectPlanCodeEnum } from '@src/app/modules/project/project-plan-code.entity';
+import {
+    IsAlphanumeric,
+    IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, Matches, MaxLength,
+    Min,
+    MinLength,
+    registerDecorator,
+    ValidateIf,
+    ValidationArguments, ValidationOptions
+} from 'class-validator';
 import { Point } from 'geojson';
 import { DistrictResponse } from '../district/district.dto';
 import { ForestClientResponse } from '../forest-client/forest-client.dto';
-import { IsBoolean, IsDateString, IsEnum, IsNumber, IsNumberString, IsOptional, MaxLength, 
-  MinLength, Min, registerDecorator, ValidationArguments, ValidationOptions, IsNotEmpty, ValidateIf } from 'class-validator';
+import { WorkflowStateCode, WorkflowStateEnum } from './workflow-state-code.entity';
 
 export class ProjectCreateRequest {
+
   @ApiProperty()
   @MaxLength(50) 
   @MinLength(5) 
@@ -32,9 +41,26 @@ export class ProjectCreateRequest {
   @IsNumberString()
   forestClientNumber: string;
 
+  @ApiProperty({ 
+    required: true, 
+    enum: ProjectPlanCodeEnum, 
+    enumName: 'ProjectPlanCodeEnum'
+  })
+  @IsEnum(ProjectPlanCodeEnum)
+  projectPlanCode: ProjectPlanCodeEnum
+
   @ApiProperty()
+  @ValidateIf(o => o.projectPlan as ProjectPlanCodeEnum === ProjectPlanCodeEnum.FSP) // validate when projectPlan is FSP
   @IsNumber()
-  fspId: number;
+  fspId?: number;
+
+  @ApiProperty()
+  @ValidateIf(o => o.projectPlan as ProjectPlanCodeEnum === ProjectPlanCodeEnum.WOODLOT) // validate when projectPlan is WOODLOT
+  @MinLength(5)
+  @MaxLength(5)
+  @IsAlphanumeric()
+  @Matches(/^W\d{4}/) // woodlot number regular expression. (W followed by 4 numbers).
+  woodlotLicenseNumber?: string;
 
   @ApiProperty()
   @IsNumber()
@@ -90,7 +116,13 @@ export class ProjectPublicSummaryResponse {
   geojson: FomPoint;
 
   @ApiProperty()
+  projectPlanCode: string
+  
+  @ApiPropertyOptional()
   fspId: number;
+
+  @ApiPropertyOptional()
+  woodlotLicenseNumber?: string;
 
   @ApiProperty()
   forestClientName: string;
@@ -121,7 +153,13 @@ export class ProjectResponse {
   validityEndDate: string
 
   @ApiProperty()
-  fspId: number;
+  projectPlanCode: string
+
+  @ApiPropertyOptional()
+  fspId?: number;
+
+  @ApiPropertyOptional()
+  woodlotLicenseNumber?: string;
 
   @ApiProperty()
   district: DistrictResponse;

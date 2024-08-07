@@ -112,11 +112,11 @@
           <tr>
             <th id="fomId" class="disp">FOM Number</th>
             <th id="fomName" class="client">FOM Name</th>
-            <th id="fspId" class="disp">FSP ID</th>
+            <th id="projectPlanNumber" class="plan">Plan Number</th>
             <th id="fomHolder" class="client">FOM Holder Name</th>
-            <th id="district" class="client">District</th>
+            <th id="district">District</th>
             <th id="fomStatus" class="status">FOM Status</th>
-            <th id="commentClosed" class="client">Commenting Closed Date</th>
+            <th id="commentClosed">Commenting Closed Date</th>
             <th id="actions" class="actions"></th>
           </tr>
           </thead>
@@ -129,7 +129,7 @@
                 [innerHTML]="project.name ? project.name : '<em>No FOM name on this File</em>'">
               </td>
               <td>
-                {{project.fspId}}
+                {{getProjectPlanNumber(project)}}
               </td>
               <td
                 [innerHTML]="project.forestClient ? (project.forestClient.name | titlecase) : ''">
