@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProjectPlanCodeEnum, ProjectResponse, PublicNoticePublicFrontEndResponse, PublicNoticeService } from '@api-client';
+import { periodOperationsTxt, woodlotOperationsTxt } from '@public-core/constants/appConstants';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
@@ -31,6 +32,8 @@ export class PublicNoticesPanelComponent implements OnInit {
   @Output() update = new EventEmitter<IUpdateEvent>();
   @ViewChild(MatAccordion) accordion: MatAccordion;
   readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
+  readonly periodOperationsTxt = periodOperationsTxt;
+  readonly woodlotOperationsTxt = woodlotOperationsTxt;
   isLoading = false;
   pNotices: Array<PublicNoticePublicFrontEndResponse>;
   initialPNotices: Array<PublicNoticePublicFrontEndResponse>;

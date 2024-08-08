@@ -5,7 +5,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { PublicCommentCreateRequest, PublicCommentService, SpatialFeaturePublicResponse, SpatialObjectCodeEnum } from '@api-client';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { SpatialTypeMap } from '@public-core/utils/constants/appUtils';
+import { SpatialTypeMap } from '@public-core/constants/appConstants';
 
 enum COMMENT_SCOPE_CODE {
   OVERALL = 'OVERALL',
