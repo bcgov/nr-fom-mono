@@ -17,7 +17,7 @@ import { SpatialFeatureModule } from './modules/spatial-feature/spatial-feature.
 import { LoggerModule } from 'nestjs-pino';
 import { AppConfigModule } from './modules/app-config/app-config.module';
 import { AppConfigService } from './modules/app-config/app-config.provider';
-import { SecurityModule } from '../core/security/security.module'
+import { SecurityModule } from '../core/security/security.module';
 
 function getLogLevel():string {
   return process.env.LOG_LEVEL || 'info';
