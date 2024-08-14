@@ -252,7 +252,7 @@ objects:
         app: ${NAME}-${ZONE}
         cronjob: ${NAME}-${ZONE}
     spec:
-      schedule: "${CRON_MINUTES} 8 * * *" # Run daily at 8:xx AM UTC
+      schedule: "0 18 * * *" # Run daily at 6:xx PM UTC, which is 11 AM PST
       concurrencyPolicy: "Replace"
       successfulJobsHistoryLimit: "${{SUCCESS_JOBS_HISTORY_LIMIT}}"
       failedJobsHistoryLimit: "${{FAILED_JOBS_HISTORY_LIMIT}}"
@@ -320,7 +320,7 @@ objects:
                 - name: backup
                   persistentVolumeClaim:
                     claimName: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
-              restartPolicy: "Never"
+              restartPolicy: "Always"
               terminationGracePeriodSeconds: 30
               activeDeadlineSeconds: 1600
               dnsPolicy: "ClusterFirst"
