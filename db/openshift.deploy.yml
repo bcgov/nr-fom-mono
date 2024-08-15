@@ -369,7 +369,7 @@ objects:
                     - name: BACKUP_DIR
                       value: "${BACKUP_DIR}"
                     - name: POSTGRESQL_DATABASE
-                      valueFrom:≤
+                      valueFrom:
                         secretKeyRef:
                           name: "${NAME}-${ZONE}"
                           key: "database-name"
