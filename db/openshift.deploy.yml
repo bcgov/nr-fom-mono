@@ -353,7 +353,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}-restore
-                  image: ${REGISTRY}/${PROMOTE}
+                  image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -406,16 +406,6 @@ objects:
         app: ${NAME}-${ZONE}
     spec:
       replicas: 1
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}
-            from:
-              kind: ImageStreamTag
-              name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
       selector:
         deploymentconfig: ${NAME}-${ZONE}-${BACKUP_COMPONENT}-restore
       strategy:
