@@ -383,6 +383,10 @@ objects:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}
                           key: "database-password"
+                    - name: RESTORE_DIR
+                      value: ""
+                    - name: TARGET_HOST
+                      value: ""
               volumes:
                 - name: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
                   persistentVolumeClaim:
