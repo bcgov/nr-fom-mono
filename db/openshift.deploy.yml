@@ -94,6 +94,9 @@ parameters:
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
     generate: expression
+  - name: OC_NAMESPACE
+    description: OpenShift namespace containing imported images
+    required: true
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -329,7 +332,7 @@ objects:
   - kind: CronJob
     apiVersion: "batch/v1"
     metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}-restore-cron
+      name: ${NAME}-${ZONE}-${COMPONENT}-restore
       labels:
         app: ${NAME}-${ZONE}
         cronjob: ${NAME}-${ZONE}
@@ -352,19 +355,22 @@ objects:
                 cronjob: ${NAME}-${ZONE}
             spec:
               containers:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-restore-cron
-                  image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
+                - name: ${NAME}-${ZONE}-${COMPONENT}-restore
+                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
-                    find ${BACKUP_DIR}/${RESTORE_DIR} -type f -name "*.sql.gz" -print0 | read -r -d '' sql_zip_file
+                    sql_zip_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql.gz" -print0)
                     gzip -d $sql_zip_file
-                    find ${BACKUP_DIR}/${RESTORE_DIR} -type f -name "*.sql" -print0 | read -r -d '' sql_file
+                    sql_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql" -print0)
                     echo "Running SQL file: $sql_file"
-                    psql -h ${TARGET_HOST} -U ${POSTGRESQL_USER} -d ${POSTGRESQL_DATABASE} -f $sql_file
+                    psql -h ${TARGET_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f $sql_file
+                    gzip $sql_file
                   volumeMounts:
-                    - mountPath: "${BACKUP_DIR}"
-                      name: ${NAME}-${ZONE}-${COMPONENT}-restore-cron
+                    - name: ${NAME}-${ZONE}-${COMPONENT}-restore
+                      mountPath: "${BACKUP_DIR}"
+                    - name: ${NAME}-${ZONE}-${COMPONENT}-restore
+                      mountPath: /var/lib/postgresql
                   env:
                     - name: BACKUP_DIR
                       value: "${BACKUP_DIR}"
@@ -373,7 +379,7 @@ objects:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}-${COMPONENT}
                           key: database-db
-                    - name: POSTGRES_PASSWORD
+                    - name: PGPASSWORD
                       valueFrom:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}-${COMPONENT}
@@ -388,108 +394,12 @@ objects:
                     - name: TARGET_HOST
                       value: ""
               volumes:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-restore-cron
+                - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                   persistentVolumeClaim:
                     claimName: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
-              restartPolicy: "OnFailure"
+              restartPolicy: "Never"
               terminationGracePeriodSeconds: 30
               activeDeadlineSeconds: 1600
               dnsPolicy: "ClusterFirst"
               serviceAccountName: "${JOB_SERVICE_ACCOUNT}"
               serviceAccount: "${JOB_SERVICE_ACCOUNT}"
-  - apiVersion: v1
-    kind: Service
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}-restore
-    spec:
-      ports:
-        - name: postgresql
-          nodePort: 0
-          port: 8001
-          protocol: TCP
-          targetPort: 8001
-      selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}-restore
-      sessionAffinity: None
-      type: ClusterIP
-  - kind: DeploymentConfig
-    apiVersion: v1
-    metadata:
-      name: ${NAME}-${ZONE}-${COMPONENT}-restore
-      labels:
-        app: ${NAME}-${ZONE}
-    spec:
-      replicas: 1
-      selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}-restore
-      strategy:
-        type: Recreate
-        recreateParams:
-          timeoutSeconds: 600
-        activeDeadlineSeconds: 21600
-      template:
-        metadata:
-          name: ${NAME}-${ZONE}-${COMPONENT}-restore
-          labels:
-            app: ${NAME}-${ZONE}
-            deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}-restore
-        spec:
-          volumes:
-            - name: ${NAME}-${ZONE}-${COMPONENT}-restore
-              persistentVolumeClaim:
-                claimName: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
-          containers:
-            - name: ${NAME}-${ZONE}-${COMPONENT}-restore
-              image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
-              ports:
-                - containerPort: 8001
-                  protocol: TCP
-              livenessProbe:
-                failureThreshold: 5
-                initialDelaySeconds: 30
-                periodSeconds: 15
-                tcpSocket:
-                  port: 8001
-                timeoutSeconds: 1
-              readinessProbe:
-                failureThreshold: 5
-                initialDelaySeconds: 20
-                periodSeconds: 15
-                tcpSocket:
-                  port: 8001
-                timeoutSeconds: 1
-              env:
-                - name: POSTGRES_DB
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-db
-                - name: POSTGRES_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-password
-                - name: POSTGRES_USER
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${NAME}-${ZONE}-${COMPONENT}
-                      key: database-user
-              resources:
-                requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
-                limits:
-                  cpu: ${CPU_LIMIT}
-                  memory: ${MEMORY_LIMIT}
-              volumeMounts:
-                - name: ${NAME}-${ZONE}-${COMPONENT}-restore
-                  mountPath: /var/lib/postgresql
-              terminationMessagePath: "/dev/termination-log"
-              terminationMessagePolicy: File
-              imagePullPolicy: Always
-          restartPolicy: Always
-          terminationGracePeriodSeconds: 30
-          dnsPolicy: ClusterFirst
-          schedulerName: default-scheduler
