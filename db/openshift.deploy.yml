@@ -356,6 +356,7 @@ objects:
             spec:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
+                  # use the same image as our database, so we can run the psql command
                   image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
                   command: ["/bin/sh", "-c"]
                   args:
@@ -397,12 +398,13 @@ objects:
                     - name: RESTORE_DIR
                       value: ""
                     # we don't need to declare the target_host variable if we set it manually, just put here so we won't forget
-                    # target_host is the pod ip of the database
+                    # target_host is the ip address of the new database pod
                     - name: TARGET_HOST
                       value: ""
               volumes:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                   persistentVolumeClaim:
+                    # use the same volume as database backup, so we can get the backup files
                     claimName: ${NAME}-${ZONE}-${BACKUP_COMPONENT}
               restartPolicy: "Never"
               terminationGracePeriodSeconds: 30
