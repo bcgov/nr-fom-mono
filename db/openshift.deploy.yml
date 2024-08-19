@@ -361,11 +361,13 @@ objects:
                   args:
                   - |
                     sql_zip_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql.gz" -print0)
+                    echo "Found zipped backup file: $sql_zip_file"
                     gzip -d $sql_zip_file
                     sql_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql" -print0)
                     echo "Running SQL file: $sql_file"
                     psql -h ${TARGET_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f $sql_file
                     gzip $sql_file
+                    echo "Finish database restore"
                   volumeMounts:
                     - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                       mountPath: "${BACKUP_DIR}"
@@ -379,6 +381,7 @@ objects:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}-${COMPONENT}
                           key: database-db
+                    # this enviornment variable mmust be named PGPASSWORD, so postgres knows this is the password, and will not ask us to enter manually
                     - name: PGPASSWORD
                       valueFrom:
                         secretKeyRef:
@@ -389,8 +392,12 @@ objects:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}-${COMPONENT}
                           key: database-user
+                    # we don't need to declare the restore_dir variable if we set it manually, just put here so we won't forget
+                    # restore_dir need to be manually set, in the format for example, daily/2024-08-16, where backup container puts the backup files
                     - name: RESTORE_DIR
                       value: ""
+                    # we don't need to declare the target_host variable if we set it manually, just put here so we won't forget
+                    # target_host is the pod ip of the database
                     - name: TARGET_HOST
                       value: ""
               volumes:
