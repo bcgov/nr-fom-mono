@@ -90,7 +90,10 @@
                 matTooltipShowDelay="300"
               ></span>             
             <div class="text-muted--margin-top">
-                {{periodOperationsTxt}}
+                {{project.projectPlanCode == projectPlanCodeEnum.Fsp
+                    ? periodOperationsTxt
+                    : woodlotOperationsTxt
+                }}
             </div>
           </li>
         </ul>

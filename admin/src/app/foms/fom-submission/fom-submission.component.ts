@@ -6,7 +6,7 @@ import { DatePipe, NgFor, NgIf } from '@angular/common';
 import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ProjectResponse, ProjectService, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest, SubmissionService, SubmissionTypeCodeEnum, WorkflowStateEnum } from '@api-client';
+import { ProjectPlanCodeEnum, ProjectResponse, ProjectService, SpatialObjectCodeEnum, SubmissionDetailResponse, SubmissionRequest, SubmissionService, SubmissionTypeCodeEnum, WorkflowStateEnum } from '@api-client';
 import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from '@utility/security/user';
@@ -51,6 +51,7 @@ export class FomSubmissionComponent implements OnInit, AfterViewInit, OnDestroy 
   public maxSpatialFileSize: number = MAX_FILEUPLOAD_SIZE.SPATIAL;
   public isSubmitting = false;
   readonly SpatialObjectCodeEnum = SpatialObjectCodeEnum;
+  readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   private ngUnsubscribe: Subject<boolean> = new Subject<boolean>();
