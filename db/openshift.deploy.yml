@@ -362,15 +362,21 @@ objects:
                   args:
                   - |
                     sql_zip_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql.gz" -print0)
-                    echo "Found zipped backup file: $sql_zip_file"
-                    gzip -d $sql_zip_file
-                    sql_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql" -print0)
-                    echo "Renaming existing database, and create a new empty database"
-                    psql -h ${TARGET_HOST} -U ${POSTGRES_USER} -c "ALTER DATABASE fom RENAME TO old_fom;" -c "CREATE DATABASE fom;"
-                    echo "Running SQL file: $sql_file"
-                    psql -h ${TARGET_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f $sql_file
-                    gzip $sql_file
-                    echo "Finish database restore"
+                    if [ -z $sql_zip_file ]; then
+                      echo "Found zipped backup file: $sql_zip_file"
+                      gzip -d $sql_zip_file
+                      sql_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql" -print0)
+                      if [  -z $sql_file ]; then
+                        echo "Found SQL file, Renaming existing database, and create a new empty database"
+                        psql -h ${TARGET_HOST} -U ${POSTGRES_USER} -c "ALTER DATABASE fom RENAME TO old_fom;" -c "CREATE DATABASE fom;"
+                        echo "Running SQL file: $sql_file"
+                        psql -h ${TARGET_HOST} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f $sql_file
+                        gzip $sql_file
+                      fi
+                      echo "Finish database restore"
+                    else
+                      echo "No zipped backup file found"
+                    fi
                   volumeMounts:
                     - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                       mountPath: "${BACKUP_DIR}"
