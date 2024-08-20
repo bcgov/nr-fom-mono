@@ -364,22 +364,22 @@ objects:
                     sql_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql" -print0)
                     if [  -z $sql_file ]; then
                       sql_zip_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql.gz" -print0)
-                      if [ -n $sql_zip_file ]; then
+                      if [ -z $sql_zip_file ]; then
+                        echo "No zipped backup file found"
+                      else
                         echo "Found zipped backup file: $sql_zip_file"
                         gzip -dk $sql_zip_file
-                      else
-                        echo "No zipped backup file found"
                       fi
                     fi
-                    sql_file=$(find backups/${RESTORE_DIR} -type f -name "*.sql" -print0)
-                    if [  -n $sql_file ]; then
+                    sql_file=$(find backups/${BACKUP_FILE_DIR} -type f -name "*.sql" -print0)
+                    if [  -z $sql_file ]; then
+                      echo "No backup SQL file is found"
+                    else
                       echo "Found SQL file, rename existing database, and create a new empty database"
                       psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -c "ALTER DATABASE fom RENAME TO old_fom;" -c "CREATE DATABASE fom;"
                       echo "Running SQL file: $sql_file"
                       psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f $sql_file
                       echo "Finish database restore"
-                    else
-                      echo "No backup SQL file is found"
                     fi
                   volumeMounts:
                     - name: ${NAME}-${ZONE}-${COMPONENT}-restore
@@ -403,13 +403,9 @@ objects:
                         secretKeyRef:
                           name: ${NAME}-${ZONE}-${COMPONENT}
                           key: database-user
-                    # we don't need to declare the restore_dir variable if we set it manually, just put here so we won't forget
-                    # restore_dir need to be manually set, in the format for example, daily/2024-08-16, where backup container puts the backup files
-                    - name: RESTORE_DIR
-                      value: ""
-                    # we don't need to declare the target_host variable if we set it manually, just put here so we won't forget
-                    # target_host is the ip address of the new database pod
-                    - name: TARGET_HOST
+                    # we don't need to declare the BACKUP_FILE_DIR variable if we set it manually, just put here so we won't forget
+                    # BACKUP_FILE_DIR need to be manually set, in the format for example, daily/2024-08-16, where backup container puts the backup files
+                    - name: BACKUP_FILE_DIR
                       value: ""
               volumes:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
