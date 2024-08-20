@@ -42,13 +42,13 @@
           <div>
             <h4>Details</h4>
             <ul class="nv-list">
-              <li *ngIf="project.projectPlanCode == projectPlanCodeEnum.Fsp">
+              <li *ngIf="project?.projectPlanCode == projectPlanCodeEnum.Fsp">
                 <span class="name">FSP ID:</span>
                 <span class="value">
                   {{project?.fspId}}
                 </span>
               </li>
-              <li *ngIf="project.projectPlanCode == projectPlanCodeEnum.Woodlot">
+              <li *ngIf="project?.projectPlanCode == projectPlanCodeEnum.Woodlot">
                 <span class="name">Woodlot Licence Number:</span>
                 <span class="value">
                   {{project?.woodlotLicenseNumber}}
@@ -169,7 +169,7 @@
 
         <section *ngIf="!selectedScope?.commentScopeCode">
           <small>
-            {{project.projectPlanCode == projectPlanCodeEnum.Fsp
+            {{project?.projectPlanCode == projectPlanCodeEnum.Fsp
                 ? periodOperationsTxt
                 : woodlotOperationsTxt
             }}
