@@ -65,7 +65,7 @@ jobs:
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca -p CERTBOT=false
+            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
@@ -76,7 +76,7 @@ jobs:
           - name: public
             file: public/openshift.deploy.yml
             overwrite: true
-            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca -p CERTBOT=false
+            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v2.2.0
         with:
