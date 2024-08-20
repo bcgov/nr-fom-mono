@@ -11,7 +11,7 @@ RUN dnf install -y ca-certificates && \
 
 
 # Deployment container
-FROM registry.access.redhat.com/ubi9/ubi-micro:9.4-13
+FROM registry.access.redhat.com/ubi8/ubi:8.10-1054
 
 # Node packages and dependencies
 COPY --from=builder /usr/bin/node /usr/bin/
