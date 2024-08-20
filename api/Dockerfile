@@ -11,7 +11,7 @@ RUN dnf install -y ca-certificates && \
 
 
 # Deployment container
-FROM registry.access.redhat.com/ubi9/ubi-micro
+FROM registry.access.redhat.com/ubi9/ubi-micro:9.4-13
 
 # Node packages and dependencies
 COPY --from=builder /usr/bin/node /usr/bin/
@@ -19,11 +19,11 @@ COPY --from=builder /usr/lib64/libz.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlidec.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlienc.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libcrypto.so.1.1 /usr/lib64/
-COPY --from=builder /usr/lib64/libssl.so.1.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libstdc++.so.6 /usr/lib64/
 COPY --from=builder /usr/lib64/libgcc_s.so.1 /usr/lib64/
 COPY --from=builder /usr/lib64/libbrotlicommon.so.1 /usr/lib64/
 COPY --from=builder /etc/pki /etc/pki
+COPY --from=builder /usr/lib64/libssl.so* /usr/lib64/
 
 # Copy over app
 WORKDIR /app
