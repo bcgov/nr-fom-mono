@@ -33,7 +33,10 @@ COPY --from=builder /app/api/src/migrations/main ./dist/api/src/migrations/main
 COPY --from=builder /app/api/src/migrations/test ./dist/api/src/migrations/test
 
 # Expose port - mostly a convention, for readability
-EXPOSE 3333
+ARG port=3333
+EXPOSE ${port}
+
+HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:${port} || exit 1  
 
 # Start up command
 USER 1001
