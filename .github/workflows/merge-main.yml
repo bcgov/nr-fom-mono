@@ -44,7 +44,7 @@ jobs:
             parameters: -p URL=fom-test.nrs.gov.bc.ca
           - name: db
             file: db/openshift.deploy.yml
-            overwrite: true
+            overwrite: false
             parameters: -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
           - name: init
             file: libs/openshift.init.yml
