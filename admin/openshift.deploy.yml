@@ -22,9 +22,6 @@ parameters:
   - name: URL
     description: Deployment URL, e.g. fom-123.apps.silver.devops.gov.bc.ca or fom.nrs.gov.bc.ca
     required: true
-  - name: CERTBOT
-    description: Is certbot handling these certs [true/false]?
-    value: "true"
   - name: CPU_REQUEST
     value: 20m
   - name: MEMORY_REQUEST
@@ -179,7 +176,6 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-        certbot-managed: ${CERTBOT}
       name: ${NAME}-${ZONE}-${COMPONENT}
     spec:
       host: ${URL}
