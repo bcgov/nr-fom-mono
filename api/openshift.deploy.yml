@@ -35,9 +35,6 @@ parameters:
   - name: URL
     description: Deployment URL, e.g. fom-123.apps.silver.devops.gov.bc.ca or fom.nrs.gov.bc.ca
     required: true
-  - name: CERTBOT
-    description: Is certbot handling these certs [true/false]?
-    value: "true"
   - name: CPU_REQUEST
     value: 30m
   - name: MEMORY_REQUEST
@@ -292,7 +289,6 @@ objects:
     metadata:
       labels:
         app: ${NAME}-${ZONE}
-        certbot-managed: ${CERTBOT}
       name: ${NAME}-${ZONE}-${COMPONENT}
       annotations:
         haproxy.router.openshift.io/timeout: 120s # (Fix 611 - /bcgw-extract long time response in prod)

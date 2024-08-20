@@ -90,7 +90,6 @@ jobs:
               -p LOGOUT_CHAIN_URL="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
               -p MEMORY_REQUEST=650Mi
               -p MEMORY_LIMIT=4Gi
-            post_rollout: oc create job "certbot-manual-$(date +%s)" --from=cronjob/certbot
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
