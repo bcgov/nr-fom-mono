@@ -373,13 +373,17 @@ objects:
                     fi
                     sql_file=$(find backups/${BACKUP_FILE_DIR} -type f -name "*.sql" -print0)
                     if [  -z $sql_file ]; then
-                      echo "No backup SQL file is found" >&2
+                      echo "Error: No backup SQL file is found"
                       exit 1
                     else
                       echo "Found SQL file, rename existing database, and create a new empty database"
                       psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -c "DROP DATABASE IF EXISTS ${OLD_FOM_DATABASE_NAME};" -c "ALTER DATABASE fom RENAME TO ${OLD_FOM_DATABASE_NAME};" -c "CREATE DATABASE fom;"
                       echo "Running SQL file: $sql_file"
                       psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f $sql_file
+                      if [ $? -ne 0 ]; then
+                        echo "Error: psql command failed"
+                        exit 1
+                      fi
                       echo "Finish database restore"
                     fi
                   volumeMounts:
