@@ -3,7 +3,7 @@ ARG build_dir=public
 ARG port=4300
 
 # Build container
-FROM node:18.19.0-alpine3.17 AS build
+FROM node:20.16.0-alpine3.19 AS build
 
 # Install dependencies and build static content
 ARG build_dir
@@ -16,7 +16,7 @@ RUN cd libs && npm ci && cd .. && \
 
 
 # Deploy container
-FROM caddy:2.7.6-alpine
+FROM caddy:2.8.4-alpine
 
 # Copy over Caddyfile and static content
 ARG build_dir
