@@ -347,7 +347,7 @@ objects:
             app: ${NAME}-${ZONE}
             cronjob: ${NAME}-${ZONE}
         spec:
-          backoffLimit: ${{JOB_BACKOFF_LIMIT}}
+          backoffLimit: 0
           template:
             metadata:
               labels:
