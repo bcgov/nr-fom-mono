@@ -1,4 +1,3 @@
-import { ProjectFindCriteria } from '@api-modules/project/project.service';
 import { ArgumentMetadata, BadRequestException, Controller, Get, HttpStatus, Injectable, PipeTransform, Query } from '@nestjs/common';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FrojectByFspResponse as ProjectsByFspResponse } from '@src/app/modules/external/projects-by-fsp/projects-by-fsp.dto';
@@ -32,11 +31,9 @@ export class ProjectsByFspController {
   @Get("fom-by-fsp")
   @ApiQuery({ name: 'fspId', required: true})
   @ApiResponse({ status: HttpStatus.OK, type: [ProjectsByFspResponse] })
-  async find(
+  async findByFsp(
     @Query('fspId', PositiveIntPipe) fspId: number
   ): Promise<ProjectsByFspResponse[]> {
-    const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
-    findCriteria.fspId = fspId
-    return this.service.find(findCriteria);
+    return this.service.findByFspId(fspId);
   }
 }

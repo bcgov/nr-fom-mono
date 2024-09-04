@@ -7,6 +7,7 @@ import { ForestClientService } from "@src/app/modules/forest-client/forest-clien
 import { ProjectFindCriteria } from "@src/app/modules/project/project.service";
 import { PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
+import _ = require('lodash');
 
 @Injectable()
 export class ProjectsByFspService extends DataService<Project, Repository<Project>, FrojectByFspResponse> {
@@ -20,7 +21,12 @@ export class ProjectsByFspService extends DataService<Project, Repository<Projec
     super(repository, new Project(), logger);
   }
 
-  async find(findCriteria: ProjectFindCriteria):Promise<FrojectByFspResponse[]> {
+  async findByFspId(fspId: number):Promise<FrojectByFspResponse[]> {
+    if (_.isNil(fspId)) {
+        return []
+    }
+    const findCriteria: ProjectFindCriteria = new ProjectFindCriteria();
+    findCriteria.fspId = fspId;
     this.logger.debug('Find criteria: %o', findCriteria);
 
     const query = this.repository.createQueryBuilder("p")
