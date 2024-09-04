@@ -5,7 +5,6 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ForestClientService } from "@src/app/modules/forest-client/forest-client.service";
 import { ProjectFindCriteria } from "@src/app/modules/project/project.service";
-import { User } from "@utility/security/user";
 import { PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
@@ -19,10 +18,6 @@ export class FspTrackerService extends DataService<Project, Repository<Project>,
     logger: PinoLogger
   ) {
     super(repository, new Project(), logger);
-  }
-
-  async isViewAuthorized(_entity: Project, _user?: User): Promise<boolean> {
-    return true;
   }
 
   async find(findCriteria: ProjectFindCriteria):Promise<FomFspTrackerResponse[]> {
