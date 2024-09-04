@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { ForestClientResponse } from "@src/app/modules/forest-client/forest-client.dto";
 
-export class FomFspTrackerResponse {
+export class FrojectByFspResponse {
 
     @ApiProperty()
     fomId: number;

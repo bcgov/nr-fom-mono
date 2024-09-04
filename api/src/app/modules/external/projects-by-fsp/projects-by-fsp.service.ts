@@ -1,4 +1,4 @@
-import { FomFspTrackerResponse } from "@api-modules/external/fsp-tracker/fsp-tracker.dto";
+import { FrojectByFspResponse } from "@api-modules/external/projects-by-fsp/projects-by-fsp.dto";
 import { Project } from "@api-modules/project/project.entity";
 import { DataService } from "@core";
 import { Injectable } from "@nestjs/common";
@@ -9,7 +9,7 @@ import { PinoLogger } from "nestjs-pino";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class FspTrackerService extends DataService<Project, Repository<Project>, FomFspTrackerResponse> {
+export class ProjectsByFspService extends DataService<Project, Repository<Project>, FrojectByFspResponse> {
 
   constructor(
     @InjectRepository(Project)
@@ -20,7 +20,7 @@ export class FspTrackerService extends DataService<Project, Repository<Project>,
     super(repository, new Project(), logger);
   }
 
-  async find(findCriteria: ProjectFindCriteria):Promise<FomFspTrackerResponse[]> {
+  async find(findCriteria: ProjectFindCriteria):Promise<FrojectByFspResponse[]> {
     this.logger.debug('Find criteria: %o', findCriteria);
 
     const query = this.repository.createQueryBuilder("p")
@@ -38,8 +38,8 @@ export class FspTrackerService extends DataService<Project, Repository<Project>,
     return [];
   }
 
-  convertEntity(entity: Project): FomFspTrackerResponse {
-    const response = new FomFspTrackerResponse();
+  convertEntity(entity: Project): FrojectByFspResponse {
+    const response = new FrojectByFspResponse();
     response.fomId = entity.id
     response.name = entity.name
     response.fspId = entity.fspId;

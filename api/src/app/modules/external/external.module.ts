@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { FspTrackerExternalModule } from '@src/app/modules/external/fsp-tracker/fsp-tracker.module';
+import { ProjectsByFspExternalModule } from '@src/app/modules/external/projects-by-fsp/projects-by-fsp.module';
 
 /**
  * "External" module provides external facing APIs for other system to 
@@ -7,7 +7,7 @@ import { FspTrackerExternalModule } from '@src/app/modules/external/fsp-tracker/
  */
 @Module({
   imports: [
-    FspTrackerExternalModule
+    ProjectsByFspExternalModule
   ]
 })
 export class ExternalModule {}

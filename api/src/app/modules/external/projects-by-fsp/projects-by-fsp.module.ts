@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { FspTrackerController } from '@src/app/modules/external/fsp-tracker/fsp-tracker.controller';
-import { FspTrackerService } from '@src/app/modules/external/fsp-tracker/fsp-tracker.service';
+import { ProjectsByFspController } from '@src/app/modules/external/projects-by-fsp/projects-by-fsp.controller';
+import { ProjectsByFspService } from '@src/app/modules/external/projects-by-fsp/projects-by-fsp.service';
 import { ForestClientModule } from '@src/app/modules/forest-client/forest-client.module';
 import { Project } from '@src/app/modules/project/project.entity';
 import { ProjectModule } from '@src/app/modules/project/project.module';
@@ -12,7 +12,7 @@ import { ProjectModule } from '@src/app/modules/project/project.module';
     ProjectModule,
     ForestClientModule
   ],
-  controllers: [FspTrackerController],
-  providers: [FspTrackerService]
+  controllers: [ProjectsByFspController],
+  providers: [ProjectsByFspService]
 })
-export class FspTrackerExternalModule {}
+export class ProjectsByFspExternalModule {}
