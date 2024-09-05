@@ -1,6 +1,6 @@
 import { ArgumentMetadata, BadRequestException, Controller, Get, HttpStatus, Injectable, PipeTransform, Query } from '@nestjs/common';
 import { ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { FrojectByFspResponse as ProjectsByFspResponse } from '@src/app/modules/external/projects-by-fsp/projects-by-fsp.dto';
+import { ProjectByFspResponse as ProjectsByFspResponse } from '@src/app/modules/external/projects-by-fsp/projects-by-fsp.dto';
 import { ProjectsByFspService } from '@src/app/modules/external/projects-by-fsp/projects-by-fsp.service';
 import { PinoLogger } from 'nestjs-pino';
 

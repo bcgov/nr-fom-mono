@@ -1,4 +1,4 @@
-import { FrojectByFspResponse } from "@api-modules/external/projects-by-fsp/projects-by-fsp.dto";
+import { ProjectByFspResponse } from "@api-modules/external/projects-by-fsp/projects-by-fsp.dto";
 import { Project } from "@api-modules/project/project.entity";
 import { DataService } from "@core";
 import { Injectable } from "@nestjs/common";
@@ -10,7 +10,7 @@ import { Repository } from "typeorm";
 import _ = require('lodash');
 
 @Injectable()
-export class ProjectsByFspService extends DataService<Project, Repository<Project>, FrojectByFspResponse> {
+export class ProjectsByFspService extends DataService<Project, Repository<Project>, ProjectByFspResponse> {
 
   constructor(
     @InjectRepository(Project)
@@ -21,7 +21,7 @@ export class ProjectsByFspService extends DataService<Project, Repository<Projec
     super(repository, new Project(), logger);
   }
 
-  async findByFspId(fspId: number):Promise<FrojectByFspResponse[]> {
+  async findByFspId(fspId: number):Promise<ProjectByFspResponse[]> {
     if (_.isNil(fspId)) {
         return []
     }
@@ -44,8 +44,8 @@ export class ProjectsByFspService extends DataService<Project, Repository<Projec
     return [];
   }
 
-  convertEntity(entity: Project): FrojectByFspResponse {
-    const response = new FrojectByFspResponse();
+  convertEntity(entity: Project): ProjectByFspResponse {
+    const response = new ProjectByFspResponse();
     response.fomId = entity.id
     response.name = entity.name
     response.fspId = entity.fspId;
