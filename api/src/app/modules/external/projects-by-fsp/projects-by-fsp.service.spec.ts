@@ -3,8 +3,8 @@ import { getRepositoryToken } from "@nestjs/typeorm";
 import { ProjectByFspResponse } from "@src/app/modules/external/projects-by-fsp/projects-by-fsp.dto";
 import { ProjectsByFspService } from "@src/app/modules/external/projects-by-fsp/projects-by-fsp.service";
 import { ForestClientService } from "@src/app/modules/forest-client/forest-client.service";
-import { ProjectResponse } from "@src/app/modules/project/project.dto";
 import { Project } from "@src/app/modules/project/project.entity";
+import { RecursivePartial } from "@src/core/utils";
 import { PinoLogger } from "nestjs-pino";
 import { DataSource, Repository } from "typeorm";
 
@@ -61,8 +61,8 @@ describe('ProjectsByFspService', () => {
       createQueryBuilderMock.getMany = jest.fn().mockReturnValue(foundProjects);
       const createQueryBuilderSpy = jest.spyOn(repository, 'createQueryBuilder').mockImplementation(() => createQueryBuilderMock);
       const forestClientServiceConvertEntitySpy = jest.spyOn(forestClientService, 'convertEntity');
-      const fspIdWithNoFom = 11;
-      const result = await service.findByFspId(fspIdWithNoFom);
+      const fspIdWithFom = 11;
+      const result = await service.findByFspId(fspIdWithFom);
       expect(result.length).toEqual(getSimpleProjectResponseData().length);
       expect(result[0]).toBeInstanceOf(ProjectByFspResponse)
       expect(createQueryBuilderSpy).toHaveBeenCalled();
@@ -110,7 +110,7 @@ function provideDependencyMock(): Array<any> {
   return dependencyMock;
 }
 
-function getSimpleProjectResponseData(): Partial<ProjectResponse>[] {
+function getSimpleProjectResponseData(): RecursivePartial<Project>[] {
   const data = [
     {
       "id": 1,
