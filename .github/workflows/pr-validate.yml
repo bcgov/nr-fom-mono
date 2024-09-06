@@ -23,7 +23,7 @@ jobs:
         id: fam
         run: echo "route=$(( ${{ github.event.number }} % 50 ))" >> $GITHUB_OUTPUT
 
-      - uses: bcgov-nr/action-pr-description-add@v1.1.0
+      - uses: bcgov-nr/action-pr-description-add@v1.1.2
         env:
           DOMAIN: apps.silver.devops.gov.bc.ca
         with:
