@@ -390,7 +390,7 @@ objects:
                       if [ $db_restore_cmd_status -eq 0 ]; then
                         echo "Running database restore with backup SQL file: $sql_file"
                         psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -d ${POSTGRES_DB} --set ON_ERROR_STOP=on -f $sql_file
-                        db_restore_cmd_status = $?
+                        db_restore_cmd_status=$?
                       fi
 
                       if [ $db_restore_cmd_status -ne 0 ]; then
