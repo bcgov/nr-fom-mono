@@ -375,17 +375,42 @@ objects:
                     if [  -z $sql_file ]; then
                       echo "Error: No backup SQL file is found"
                       exit 1
+
                     else
-                      echo "Found SQL file, rename existing database, and create a new empty database"
-                      psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -c "DROP DATABASE IF EXISTS ${OLD_FOM_DATABASE_NAME};" -c "ALTER DATABASE fom RENAME TO ${OLD_FOM_DATABASE_NAME};" -c "CREATE DATABASE fom;"
-                      echo "Running SQL file: $sql_file"
-                      psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f $sql_file
+                      echo "Found SQL file, rename existing database."
+                      psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} --set ON_ERROR_STOP=on -c "DROP DATABASE IF EXISTS ${OLD_FOM_DATABASE_NAME};" -c "ALTER DATABASE fom RENAME TO ${OLD_FOM_DATABASE_NAME};"
                       if [ $? -ne 0 ]; then
-                        echo "Error: psql command failed"
+                        echo "Error: psql failed while trying to rename existing database."
                         exit 1
                       fi
-                      echo "Finish database restore"
+
+                      echo "Create a new empty database"
+                      psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} --set ON_ERROR_STOP=on -c "CREATE DATABASE fom;"
+                      db_restore_cmd_status = $?
+                      if [ $db_restore_cmd_status -eq 0 ]; then
+                        echo "Running database restore with backup SQL file: $sql_file"
+                        psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} -d ${POSTGRES_DB} --set ON_ERROR_STOP=on -f $sql_file
+                        db_restore_cmd_status = $?
+                      fi
+
+                      if [ $db_restore_cmd_status -ne 0 ]; then
+                        echo "DB restore failed, droping newly crated empty db fom (if exists), rename old(original) db back to fom."
+                        psql -h ${NAME}-${ZONE}-${COMPONENT} -U ${POSTGRES_USER} --set ON_ERROR_STOP=on -c "DROP DATABASE IF EXISTS fom;" -c "ALTER DATABASE ${OLD_FOM_DATABASE_NAME} RENAME TO fom;"
+                        db_revert_restore_cmd_status = $?
+                        if [ $db_revert_restore_cmd_status -eq 0 ]; then
+                          # Successfully revert previous db restore procedure's failure; exit with failed status code from previous failure.
+                          echo "psql successfully reverted current failed db restore procedure. DB fom is back to original state. However, the restore procedure failed."
+                          exit $db_restore_cmd_status
+                        else
+                          echo "Error: psql failed to attmpt reverting failed db restore procedure. Please manually rename ${OLD_FOM_DATABASE_NAME} back to fom."
+                          exit $db_revert_restore_cmd_status
+
+                      else
+                        echo "Database restore successfully."
+                        exit 0
+                      fi
                     fi
+
                   volumeMounts:
                     - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                       mountPath: "${BACKUP_DIR}"
