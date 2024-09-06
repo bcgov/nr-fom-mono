@@ -28,7 +28,7 @@ jobs:
     needs: setup
     steps:
       - name: OpenShift Init
-        uses: bcgov-nr/action-deployer-openshift@v2.2.0
+        uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
@@ -66,7 +66,7 @@ jobs:
             triggers: ('public/' 'libs/')
     steps:
       - uses: actions/checkout@v4
-      - uses: bcgov-nr/action-builder-ghcr@v2.0.2
+      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
@@ -115,7 +115,7 @@ jobs:
             parameters: -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.2.0
+      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
