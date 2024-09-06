@@ -30,7 +30,6 @@ jobs:
             -Dsonar.exclusions=**/*.spec.ts
             -Dsonar.javascript.lcov.reportPaths=coverage/api/lcov.info   
             -Dsonar.organization=bcgov-sonarcloud
-            -Dsonar.project.monorepo.enabled=false
             -Dsonar.projectKey=nr-fom
           sonar_token: ${{ secrets.SONAR_TOKEN }}
 
