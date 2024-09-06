@@ -404,7 +404,7 @@ objects:
                         else
                           echo "Error: psql failed to attmpt reverting failed db restore procedure. Please manually rename ${OLD_FOM_DATABASE_NAME} back to fom."
                           exit $db_revert_restore_cmd_status
-
+                        fi
                       else
                         echo "Database restore successfully."
                         exit 0
