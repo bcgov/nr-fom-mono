@@ -107,6 +107,7 @@ jobs:
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
+            parameters: -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
             triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
