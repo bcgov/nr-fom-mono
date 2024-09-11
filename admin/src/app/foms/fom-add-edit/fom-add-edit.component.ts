@@ -38,11 +38,11 @@ type ApplicationPageType = 'create' | 'edit';
 @Component({
     standalone: true,
     imports: [
-        NgIf, 
-        FormsModule, 
-        ReactiveFormsModule, 
-        BsDatepickerModule, 
-        NgClass, 
+        NgIf,
+        FormsModule,
+        ReactiveFormsModule,
+        BsDatepickerModule,
+        NgClass,
         NgFor,
         AppFormControlDirective,
         NewlinesPipe,
@@ -69,6 +69,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public districtIdSelect: any = null;
   public forestClientSelect: any = null;
   public isPublishState: boolean = false;
+  public isCommentingOpen: boolean = false;
   files: any[] = [];
   maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
   publicNoticeContent: any;
@@ -97,12 +98,12 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   private scrollToFragment: string = null;
   private snackBarRef: MatSnackBarRef<SimpleSnackBar> = null;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  
+
   // bsDatepicker config object
   readonly bsConfig = {
-    dateInputFormat: 'YYYY', 
-    minMode: 'year', 
-    minDate: moment().toDate(), 
+    dateInputFormat: 'YYYY',
+    minMode: 'year',
+    minDate: moment().toDate(),
     maxDate: moment().add(7, 'years').toDate(), // current + 7 years
     containerClass: 'theme-dark-blue'
   } as Partial<BsDatepickerConfig>
@@ -127,7 +128,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   get isCreate() {
     return this.state === 'create';
   }
-  
+
   get isLoading() {
     return this.stateSvc.loading;
   }
@@ -171,6 +172,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.forestClientSelect = this.originalProjectResponse.forestClient.id;
 
         this.isPublishState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Published;
+
+        this.isCommentingOpen = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen;
 
         this.attachmentResolverSvc.getAttachments(this.originalProjectResponse.id)
           .then( (result) => {
@@ -335,11 +338,11 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     this.fg.get('forestClient').setValue(forestClientField.value);
     this.forestClientSelect = parseInt(forestClientField.value.id);
 
-    // 'TIMBER SALES MANAGER' name field is required (to be validated) based on forestClient name 
-    // conditionally. Due to it's validation is annotation-based in fom-add-edit.form.ts 
+    // 'TIMBER SALES MANAGER' name field is required (to be validated) based on forestClient name
+    // conditionally. Due to it's validation is annotation-based in fom-add-edit.form.ts
     // (using @rxweb/reactive-form-validators), when forestClient is changed, bctsMgrName does not get
     // rerenderred (no ngIf, ngFor etc on this field).
-    // Just trigger the dynamic form field (with enable()) is probably easier than using 'ChangeDetectorRef'. 
+    // Just trigger the dynamic form field (with enable()) is probably easier than using 'ChangeDetectorRef'.
     this.fg.get('bctsMgrName').enable();
   }
 
@@ -356,7 +359,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
  /*
-  * Closed Date cannot be before (30 days after Comment Opening Date) 
+  * Closed Date cannot be before (30 days after Comment Opening Date)
   * if FOM status is in 'Commenting Open".
   */
   validateClosedDate(closedDate: Date): void {
@@ -457,7 +460,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     const commentingClosedDateField = fg.get('commentingClosedDate');
     const closeDatePipe = this.datePipe.transform(fg.value.commentingClosedDate,'yyyy-MM-dd');
     commentingClosedDateField.setValue(closeDatePipe);
-    if ((user.isMinistry && !user.isForestClient) || 
+    if ((user.isMinistry && !user.isForestClient) ||
         commentingOpenDateField.value == null) {
       commentingClosedDateField.disable();
     }
