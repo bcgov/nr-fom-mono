@@ -445,8 +445,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     return desc;
   }
 
-  getformatedDate(yearField, format = 'YYYY') {
-    return moment(this.fg.get(yearField).value).format(format);
+  getformatedDate(field, format = 'YYYY') {
+    return moment(this.fg.get(field).value).format(format);
   }
 
   /**
