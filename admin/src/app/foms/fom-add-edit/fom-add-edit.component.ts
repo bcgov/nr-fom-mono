@@ -68,8 +68,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public initialPublicDocument: any[] = [];
   public districtIdSelect: any = null;
   public forestClientSelect: any = null;
+  public isInitialState: boolean = true;
   public isPublishState: boolean = false;
-  public isCommentingOpen: boolean = false;
   files: any[] = [];
   maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
   publicNoticeContent: any;
@@ -170,10 +170,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.forestClientSelect = this.originalProjectResponse.forestClient.id;
-
+        this.isInitialState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Initial;
         this.isPublishState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Published;
-
-        this.isCommentingOpen = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen;
 
         this.attachmentResolverSvc.getAttachments(this.originalProjectResponse.id)
           .then( (result) => {
@@ -438,6 +436,17 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         return item.code == this.originalProjectResponse.projectPlanCode
     })[0]["description"];
     return item;
+  }
+
+  getDistrictDesc(districtId) {
+    const desc = this.districts.filter((item) => {
+        return item.id == districtId
+    })[0]["name"];
+    return desc;
+  }
+
+  getformatedDate(yearField, format = 'YYYY') {
+    return moment(this.fg.get(yearField).value).format(format);
   }
 
   /**
