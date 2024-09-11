@@ -53,5 +53,6 @@ export function getFakeAllAccessUser(): User {
   user.isForestClient = true;
   user.clientIds.push('00001011')
   user.clientIds.push('00001012');
+  user.clientIds.push('00132188');
   return user;
 }
