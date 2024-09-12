@@ -131,9 +131,29 @@ export class ProjectService extends DataService<Project, Repository<Project>, Pr
       }
     }
 
-    // Cannot change commenting closed date when state is COMMENT_CLOSED.
+    // When COMMENT_CLOSED, cannot change: "Start of Operation", "End of Operation", "FSP ID", "District",
+    // "FOM Name", "Timber Sales Manager Name", "Description"
+    if (WorkflowStateEnum.COMMENT_OPEN == entity.workflowStateCode) {
+        if (entity.operationStartYear !== dto.operationStartYear ||
+            entity.operationEndYear !== dto.operationEndYear ||
+            entity.fspId !== dto.fspId ||
+            entity.districtId !== dto.districtId ||
+            entity.name !== dto.name ||
+            entity.bctsMgrName !== dto.bctsMgrName ||
+            entity.description !== dto.description
+        ) {
+          this.logger.debug(`Cannot change "Start of Operation", "End of Operation", "FSP ID", "District",
+                            "FOM Name", "Timber Sales Manager Name", "Description" for state ${entity.workflowStateCode}.`);
+          return false;
+        }
+      }
+      
+    // When COMMENT_CLOSED, cannot change "commenting open date" "commenting closed date", "district".
     if (WorkflowStateEnum.COMMENT_CLOSED == entity.workflowStateCode) {
-      if (entity.commentingClosedDate !== dto.commentingClosedDate) {
+      if (entity.commentingOpenDate !== dto.commentingOpenDate ||
+          entity.commentingClosedDate !== dto.commentingClosedDate ||
+          entity.districtId !== dto.districtId
+      ) {
         this.logger.debug(`Cannot change commenting closed date for state ${entity.workflowStateCode}.`);
         return false;
       }
