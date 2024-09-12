@@ -69,6 +69,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public districtIdSelect: any = null;
   public forestClientSelect: any = null;
   public isInitialState: boolean = true;
+  public isCommentingOpenState: boolean = false;
+  public isCommentingClosedState: boolean = false;
   public isPublishState: boolean = false;
   files: any[] = [];
   maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
@@ -171,6 +173,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
         this.forestClientSelect = this.originalProjectResponse.forestClient.id;
         this.isInitialState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Initial;
+        this.isCommentingOpenState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen;
+        this.isCommentingClosedState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentClosed;
         this.isPublishState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Published;
 
         this.attachmentResolverSvc.getAttachments(this.originalProjectResponse.id)

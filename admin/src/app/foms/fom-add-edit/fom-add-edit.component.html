@@ -38,6 +38,7 @@
 
       <div class="row" >
           <div class="form-group col-md-2" *ngIf="!isCreate">
+            <!-- FOM ID: disabled after fom is created -->
             <label>ID</label>
             <input
               type="text"
@@ -49,10 +50,10 @@
             />
           </div>
 
+          <!-- Commenting Open Date: disabled when COMMENT_CLOSED -->
           <div class="form-group col-md">
             <label>Commenting Open Date</label>
-            <div>
-              <div class="input-group" *ngIf="isInitialState">
+              <div class="input-group" *ngIf="!isCommentingClosedState">
                 <input
                   readonly
                   type="text"
@@ -79,7 +80,7 @@
                 </div>
               </div>
               <input
-                *ngIf="!isInitialState"
+                *ngIf="isCommentingClosedState"
                 disabled
                 id="commentingOpenDate"
                 name="commentingOpenDate"
@@ -88,71 +89,76 @@
                 placeholder="YYYY"
                 [value]="getformatedDate('commentingOpenDate', 'YYYY-MM-DD')"
               />
-            </div>
           </div>
 
+          <!-- Commenting Closed Date: disabled when COMMENT_CLOSED -->
           <div class="form-group col-md">
             <label>Commenting Closed Date</label>
-            <div>
-              <div class="input-group" *ngIf="isInitialState">
-                <input
-                  readonly
-                  type="text"
-                  class="form-control readonly-normal"
-                  placeholder="YYYY-MM-DD"
-                  bsDatepicker
-                  [minDate]="minClosedDate"
-                  (keydown)="$event.preventDefault()"
-                  #closedDate="bsDatepicker"
-                  id="commentingClosedDate"
-                  name="commentingClosedDate"
-                  formControlName="commentingClosedDate"
-                  (bsValueChange)="validateClosedDate($event)"
-                  [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
-                  containerClass: 'theme-dark-blue', showWeekNumbers: false  }"
-                  [appFormControl]="fg.get('commentingClosedDate')"
-                />
-                <div class="input-group-append">
-                  <button class="btn btn-icon"  type="button" tabindex="-1" (click)="closedDate.show()"
-                      [attr.aria-expanded]="closedDate.isOpen">
-                    <em class="material-icons">date_range</em>
-                  </button>
-                </div>
-              </div>
+            <div class="input-group" *ngIf="!isCommentingClosedState">
               <input
-                *ngIf="!isInitialState"
-                disabled
+                readonly
+                type="text"
+                class="form-control readonly-normal"
+                placeholder="YYYY-MM-DD"
+                bsDatepicker
+                [minDate]="minClosedDate"
+                (keydown)="$event.preventDefault()"
+                #closedDate="bsDatepicker"
                 id="commentingClosedDate"
                 name="commentingClosedDate"
-                class="form-control"
-                type="text"
-                placeholder="YYYY"
-                [value]="getformatedDate('commentingClosedDate', 'YYYY-MM-DD')"
+                formControlName="commentingClosedDate"
+                (bsValueChange)="validateClosedDate($event)"
+                [bsConfig]="{ dateInputFormat: 'YYYY-MM-DD', adaptivePosition: true,
+                containerClass: 'theme-dark-blue', showWeekNumbers: false  }"
+                [appFormControl]="fg.get('commentingClosedDate')"
               />
+              <div class="input-group-append">
+                <button class="btn btn-icon"  type="button" tabindex="-1" (click)="closedDate.show()"
+                    [attr.aria-expanded]="closedDate.isOpen">
+                  <em class="material-icons">date_range</em>
+                </button>
+              </div>
             </div>
+            <input
+              *ngIf="isCommentingClosedState"
+              disabled
+              id="commentingClosedDate"
+              name="commentingClosedDate"
+              class="form-control"
+              type="text"
+              placeholder="YYYY"
+              [value]="getformatedDate('commentingClosedDate', 'YYYY-MM-DD')"
+            />
           </div>
         </div>
 
         <div class="row">
-
+          <!-- Start of Operations: disabled when COMMENT_OPEN -->
           <div class="form-group col">
-            <label for="op-start-year" [ngClass]="{'required': isInitialState}">Start of Operations</label>
+            <label for="op-start-year" [ngClass]="{'required': !isCommentingOpenState}">Start of Operations</label>
+            <div *ngIf="!isCommentingOpenState">
+              <input
+                readonly
+                id="op-start-year"
+                name="op-start-year"
+                class="form-control readonly-normal"
+                type="text"
+                placeholder="YYYY"
+                formControlName="opStartDate"
+                bsDatepicker
+                (keydown)="$event.preventDefault()"
+                [bsConfig]="bsConfig"
+                [appFormControl]="fg.get('opStartDate')"
+              />
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('opStartDate')) 
+                  && getErrorMessage('opStartDate', 'required')">
+                  {{getErrorMessage('opStartDate', 'required')}}
+              </div>
+            </div>
+
             <input
-              *ngIf="isInitialState"
-              readonly
-              id="op-start-year"
-              name="op-start-year"
-              class="form-control readonly-normal"
-              type="text"
-              placeholder="YYYY"
-              formControlName="opStartDate"
-              bsDatepicker
-              (keydown)="$event.preventDefault()"
-              [bsConfig]="bsConfig"
-              [appFormControl]="fg.get('opStartDate')"
-            />
-            <input
-              *ngIf="!isInitialState"
+              *ngIf="isCommentingOpenState"
               disabled
               id="op-start-year"
               name="op-start-year"
@@ -161,30 +167,38 @@
               placeholder="YYYY"
               [value]="getformatedDate('opStartDate')"
             />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('opStartDate')) 
-                && getErrorMessage('opStartDate', 'required')">
-                {{getErrorMessage('opStartDate', 'required')}}
-            </div>
           </div>
+
+          <!-- End of Operations: disabled when COMMENT_OPEN -->
           <div class="form-group col">
-            <label for="op-end-year" [ngClass]="{'required': isInitialState}">End of Operations</label>
+            <label for="op-end-year" [ngClass]="{'required': !isCommentingOpenState}">End of Operations</label>
+            <div *ngIf="!isCommentingOpenState">
+              <input
+                readonly
+                id="op-end-year"
+                name="op-end-year"
+                class="form-control readonly-normal"
+                type="text"
+                placeholder="YYYY"
+                formControlName="opEndDate"
+                bsDatepicker
+                (keydown)="$event.preventDefault()"
+                [bsConfig]="bsConfig"
+                [appFormControl]="fg.get('opEndDate')"
+              />
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('opEndDate')) 
+                  && getErrorMessage('opEndDate', 'required')">
+                  {{getErrorMessage('opEndDate', 'required')}}
+              </div>
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('opEndDate')) 
+                  && getErrorMessage('opEndDate', 'minDate')">
+                  {{getErrorMessage('opEndDate', 'minDate')}}
+              </div>
+            </div>
             <input
-              *ngIf="isInitialState"
-              readonly
-              id="op-end-year"
-              name="op-end-year"
-              class="form-control readonly-normal"
-              type="text"
-              placeholder="YYYY"
-              formControlName="opEndDate"
-              bsDatepicker
-              (keydown)="$event.preventDefault()"
-              [bsConfig]="bsConfig"
-              [appFormControl]="fg.get('opEndDate')"
-            />
-            <input
-              *ngIf="!isInitialState"
+              *ngIf="isCommentingOpenState"
               disabled
               id="op-end-year"
               name="op-end-year"
@@ -193,33 +207,31 @@
               placeholder="YYYY"
               [value]="getformatedDate('opEndDate')"
             />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('opEndDate')) 
-                && getErrorMessage('opEndDate', 'required')">
-                {{getErrorMessage('opEndDate', 'required')}}
-            </div>
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('opEndDate')) 
-                && getErrorMessage('opEndDate', 'minDate')">
-                {{getErrorMessage('opEndDate', 'minDate')}}
-            </div>
           </div>
         </div>
 
         <div class="row">
           <div class="form-group col">
+            <!-- Type of Plan Holder: disabled after fom is created -->
             <label [ngClass]="{'required': isCreate}">Type of Plan Holder</label>
-            <select *ngIf="isCreate"
-                class="form-control"
-                formControlName="projectPlanCode"
-                (change)="onProjectPlanChange($event)"
-                [ngClass]="{'is-invalid': !fg.get('projectPlanCode').value && isSubmitSaveClicked}" 
-                id="projectPlanSelectId">
-              <option *ngFor="let option of projectPlanOptions" 
-                [value]="option.code"
-                [selected]="option.code === fg.get('projectPlanCode').value" 
-                [innerHTML]="option.description"> </option>
-            </select>
+            <div *ngIf="isCreate">
+              <select
+                  class="form-control"
+                  formControlName="projectPlanCode"
+                  (change)="onProjectPlanChange($event)"
+                  [ngClass]="{'is-invalid': !fg.get('projectPlanCode').value && isSubmitSaveClicked}" 
+                  id="projectPlanSelectId">
+                <option *ngFor="let option of projectPlanOptions" 
+                  [value]="option.code"
+                  [selected]="option.code === fg.get('projectPlanCode').value" 
+                  [innerHTML]="option.description"> </option>
+              </select>
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('projectPlanCode')) 
+                && getErrorMessage('projectPlanCode', 'required')">
+                {{getErrorMessage('projectPlanCode', 'required')}}
+              </div>
+            </div>
             <input *ngIf="!isCreate" type="text"
               class="form-control"
               id="projectPlanDescId"
@@ -227,82 +239,87 @@
               disabled
               [value]="getProjectPlanDesc()"
             />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('projectPlanCode')) 
-              && getErrorMessage('projectPlanCode', 'required')">
-              {{getErrorMessage('projectPlanCode', 'required')}}
-            </div>
           </div>
-          <!-- FSP ID Input -->
+
+          <!-- FSP ID: disabled when COMMENT_OPEN -->
           <div class="form-group col"
             *ngIf="fg.get('projectPlanCode').value == projectPlanCodeEnum.Fsp">
-            <label for="fsp-id" [ngClass]="{'required': isInitialState}" style="white-space: nowrap;"
+            <label for="fsp-id" [ngClass]="{'required': !isCommentingOpenState}" style="white-space: nowrap;"
             >FSP ID</label>
-            <input
-              *ngIf="isInitialState"
-              type="number"
-              class="form-control"
-              id="fsp-id"
-              name="fsp-id"
-              formControlName="fspId"
-              [appFormControl]="fg.get('fspId')"
-            />
-            <input *ngIf="!isInitialState" type="text"
+            <div *ngIf="!isCommentingOpenState">
+              <input
+                type="number"
                 class="form-control"
                 id="fsp-id"
                 name="fsp-id"
-                disabled
-                [value]="fg.get('fspId').value"
-            />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('fspId'))">
-              <div>{{getErrorMessage('fspId', 'required')}}</div>
-              <div>{{getErrorMessage('fspId', 'numeric')}}</div>
+                formControlName="fspId"
+                [appFormControl]="fg.get('fspId')"
+              />
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('fspId'))">
+                <div>{{getErrorMessage('fspId', 'required')}}</div>
+                <div>{{getErrorMessage('fspId', 'numeric')}}</div>
+              </div>
             </div>
+            <input *ngIf="isCommentingOpenState" type="text"
+              class="form-control"
+              id="fsp-id"
+              name="fsp-id"
+              disabled
+              [value]="fg.get('fspId').value"
+            />
           </div>
 
-          <!-- Woodlot Licence Number Input -->
+          <!-- Woodlot Licence Number: disabled when COMMENT_OPEN -->
           <div class="form-group col"
             *ngIf="fg.get('projectPlanCode').value == projectPlanCodeEnum.Woodlot">
-            <label for="woodlot-id" [ngClass]="{'required': isInitialState}" style="white-space: nowrap;"
+            <label for="woodlot-id" [ngClass]="{'required': !isCommentingOpenState}" style="white-space: nowrap;"
             >Woodlot Licence Number</label>
-            <input
-            *ngIf="isInitialState"
-              type="text"
-              class="form-control"
-              id="woodlot-id"
-              name="woodlot-id"
-              formControlName="woodlotLicenseNumber"
-              [appFormControl]="fg.get('woodlotLicenseNumber')"
-            />
-
-            <input *ngIf="!isInitialState" type="text"
+            <div *ngIf="!isCommentingOpenState">
+              <input
+                type="text"
                 class="form-control"
                 id="woodlot-id"
                 name="woodlot-id"
-                disabled
-                [value]="fg.get('woodlotLicenseNumber').value"
-            />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('woodlotLicenseNumber'))">
-              <div>
-                {{getErrorMessage('woodlotLicenseNumber', 'required')}}
-              </div>
-              <div>
-                {{getErrorMessage('woodlotLicenseNumber', 'woodlotFormat')}}
+                formControlName="woodlotLicenseNumber"
+                [appFormControl]="fg.get('woodlotLicenseNumber')"
+              />
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('woodlotLicenseNumber'))">
+                <div>
+                  {{getErrorMessage('woodlotLicenseNumber', 'required')}}
+                </div>
+                <div>
+                  {{getErrorMessage('woodlotLicenseNumber', 'woodlotFormat')}}
+                </div>
               </div>
             </div>
+            <input *ngIf="isCommentingOpenState" type="text"
+              class="form-control"
+              id="woodlot-id"
+              name="woodlot-id"
+              disabled
+              [value]="fg.get('woodlotLicenseNumber').value"
+            />
           </div>
         </div>
 
+        <!-- District: disabled after INITIAL -->
         <div class="row">
           <div class="form-group col">
             <label for="district-list" style="white-space: nowrap;">District</label>
-            <select *ngIf="isInitialState"
-              class="sort-comments form-control" [ngClass]="{'is-invalid': !districtIdSelect && isSubmitSaveClicked}" (change)="changeDistrictId($event)" id="district-list">
-              <option *ngIf="isCreate || !districtIdSelect">  </option>
-              <option  [value]="district.id" *ngFor="let district of districts" [selected]="district.id === districtIdSelect" [innerHTML]=" district.name "> </option>
-            </select>
+            <div *ngIf="isInitialState">
+              <select
+                class="sort-comments form-control" [ngClass]="{'is-invalid': !districtIdSelect && isSubmitSaveClicked}" (change)="changeDistrictId($event)" id="district-list">
+                <option *ngIf="isCreate || !districtIdSelect">  </option>
+                <option  [value]="district.id" *ngFor="let district of districts" [selected]="district.id === districtIdSelect" [innerHTML]=" district.name "> </option>
+              </select>
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('district')) 
+                && getErrorMessage('district', 'required')">
+                {{getErrorMessage('district', 'required')}}
+              </div>
+            </div>
             <input *ngIf="!isInitialState" type="text"
               class="form-control"
               id="district"
@@ -310,27 +327,35 @@
               disabled
               [value]="getDistrictDesc(fg.get('district').value)"
             />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('district')) 
-              && getErrorMessage('district', 'required')">
-              {{getErrorMessage('district', 'required')}}
-            </div>
           </div>
         </div>
+
+        <!-- FOM Name disabled when COMMENT_OPEN -->
         <div class="row">
           <div class="form-group col">
             <label>FOM Name</label>
+            <div *ngIf="!isCommentingOpenState">
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                formControlName="name"
+                [appFormControl]="fg.get('name')"
+              />
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('name')) 
+                && getErrorMessage('name', 'required')">
+                {{getErrorMessage('name', 'required')}}
+              </div>
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('name')) 
+                  && getErrorMessage('name', 'minLength')">
+                  {{getErrorMessage('name', 'minLength')}}
+              </div>
+            </div>
             <input
-              *ngIf="isInitialState"
-              type="text"
-              class="form-control"
-              id="name"
-              name="name"
-              formControlName="name"
-              [appFormControl]="fg.get('name')"
-            />
-            <input
-              *ngIf="!isInitialState"
+              *ngIf="isCommentingOpenState"
               type="text"
               class="form-control"
               id="name"
@@ -338,18 +363,9 @@
               disabled
               [value]="fg.get('name').value"
             />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('name')) 
-              && getErrorMessage('name', 'required')">
-              {{getErrorMessage('name', 'required')}}
-            </div>
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('name')) 
-                && getErrorMessage('name', 'minLength')">
-                {{getErrorMessage('name', 'minLength')}}
-            </div>
           </div>
 
+          <!-- FOM Holder: disabled after fom is created -->
           <div class="form-group col">
             <label>FOM Holder</label>
             <select *ngIf="isCreate" 
@@ -380,23 +396,40 @@
           </div>
         </div>
 
+        <!-- Timber Sales Manager Name: disabled when COMMENT_OPEN -->
         <div class="row" *ngIf="isHolderBctsManger()">
           <div class="form-group col">
-            <label [ngClass]="{'required': isInitialState}">
+            <label [ngClass]="{'required': !isCommentingOpenState}">
                 Timber Sales Manager Name
             </label>
+            <div *ngIf="!isCommentingOpenState">
+              <input
+                type="text"
+                class="form-control"
+                id="mgr-name-id"
+                name="bctsMgrName"
+                maxlength="50"
+                formControlName="bctsMgrName"
+                [appFormControl]="fg.get('bctsMgrName')"
+              />
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
+                && getErrorMessage('bctsMgrName', 'required')">
+                {{getErrorMessage('bctsMgrName', 'required')}}
+              </div>
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
+                  && getErrorMessage('bctsMgrName', 'minLength')">
+                  {{getErrorMessage('bctsMgrName', 'minLength')}}
+              </div>
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
+                  && getErrorMessage('bctsMgrName', 'maxLength')">
+                  {{getErrorMessage('bctsMgrName', 'maxLength')}}
+              </div>
+            </div>
             <input
-              *ngIf="isInitialState"
-              type="text"
-              class="form-control"
-              id="mgr-name-id"
-              name="bctsMgrName"
-              maxlength="50"
-              formControlName="bctsMgrName"
-              [appFormControl]="fg.get('bctsMgrName')"
-            />
-            <input
-              *ngIf="!isInitialState"
+              *ngIf="isCommentingOpenState"
               type="text"
               disabled
               class="form-control"
@@ -404,53 +437,39 @@
               name="bctsMgrName"
               [value]="fg.get('bctsMgrName').value"
             />
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
-              && getErrorMessage('bctsMgrName', 'required')">
-              {{getErrorMessage('bctsMgrName', 'required')}}
-            </div>
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
-                && getErrorMessage('bctsMgrName', 'minLength')">
-                {{getErrorMessage('bctsMgrName', 'minLength')}}
-            </div>
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('bctsMgrName')) 
-                && getErrorMessage('bctsMgrName', 'maxLength')">
-                {{getErrorMessage('bctsMgrName', 'maxLength')}}
-            </div>
           </div>
         </div>
 
+        <!-- Description: disabled when COMMENT_OPEN -->
         <div class="row">
           <div class="form-group col-md">
             <label>Description</label>
-            <textarea 
-              *ngIf="isInitialState"
-              (keyup)="changeDescription($event)"
-              class="form-control" [ngClass]="{'is-invalid': !descriptionValue && isSubmitSaveClicked && !isCreate}"
-              rows="3"
-              id="description"
-              name="description"
-              formControlName="description"
-              [appFormControl]="fg.get('description')"
-              maxlength="{{descriptionLimit}}"
-            >
-            </textarea>
+            <div *ngIf="!isCommentingOpenState">
+              <textarea
+                (keyup)="changeDescription($event)"
+                class="form-control" [ngClass]="{'is-invalid': !descriptionValue && isSubmitSaveClicked && !isCreate}"
+                rows="3"
+                id="description"
+                name="description"
+                formControlName="description"
+                [appFormControl]="fg.get('description')"
+                maxlength="{{descriptionLimit}}"
+              ></textarea>
+              <small>{{descriptionLimit-fg.get('description').value?.length}} characters remaining.</small>
+              <div class="invalid-feedback" 
+                *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('description')) 
+                && getErrorMessage('description', 'required')">
+                {{getErrorMessage('description', 'required')}}
+              </div>
+            </div>
             <textarea
-              *ngIf="!isInitialState"
+              *ngIf="isCommentingOpenState"
               class="form-control"
               id="description"
               name="description"
               disabled
               [value]="fg.get('description').value"
             ></textarea>
-            <small>{{descriptionLimit-fg.get('description').value?.length}} characters remaining.</small>
-            <div class="invalid-feedback" 
-              *ngIf="(isSubmitSaveClicked || fieldTouchedOrDirty('description')) 
-              && getErrorMessage('description', 'required')">
-              {{getErrorMessage('description', 'required')}}
-            </div>
           </div>
         </div>
 
