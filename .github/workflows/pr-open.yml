@@ -85,7 +85,6 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       ZONE: ${{ needs.setup.outputs.zone }}
-      OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
     timeout-minutes: 10
     strategy:
       matrix:
@@ -95,7 +94,6 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p OC_NAMESPACE=${{ env.OC_NAMESPACE }}
               -p REPLICA_COUNT=1
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
               -p DB_TESTDATA=true
@@ -110,7 +108,6 @@ jobs:
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
-            parameters: -p OC_NAMESPACE=${{ env.OC_NAMESPACE }}
             triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
@@ -118,6 +115,9 @@ jobs:
             parameters: -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
+      - name: Set OC_NAMESPACE environment variable
+        run: echo "OC_NAMESPACE=${{ vars.OC_NAMESPACE }}" >> $GITHUB_ENV
+
       - uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           file: ${{ matrix.file }}
