@@ -36,7 +36,7 @@ jobs:
           file: libs/openshift.init.yml
           overwrite: false
           parameters: -p ZONE=${{ needs.setup.outputs.zone }}
-          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
+          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
 
   builds:
     name: Builds
@@ -79,6 +79,7 @@ jobs:
 
   deploys:
     name: Deploys
+    environment: dev
     needs: [prep, builds, setup]
     runs-on: ubuntu-22.04
     env:
