@@ -72,7 +72,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public isCommentingOpenState: boolean = false;
   public isCommentingClosedState: boolean = false;
   public isPublishState: boolean = false;
-  public isCommentingOpen: boolean = false;
   files: any[] = [];
   maxFileSize: number = MAX_FILEUPLOAD_SIZE.DOCUMENT;
   publicNoticeContent: any;
@@ -177,8 +176,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         this.isCommentingOpenState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen;
         this.isCommentingClosedState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentClosed;
         this.isPublishState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Published;
-
-        this.isCommentingOpen = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen;
 
         this.attachmentResolverSvc.getAttachments(this.originalProjectResponse.id)
           .then( (result) => {
