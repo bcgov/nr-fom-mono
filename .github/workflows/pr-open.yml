@@ -130,6 +130,7 @@ jobs:
             -p URL=fom-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ env.ZONE }}
             -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+          triggers: ${{ matrix.triggers }}
 
       - name: Deploy Admin and Public (without OC_NAMESPACE)
         if: matrix.name == 'admin' || matrix.name == 'public'
@@ -144,3 +145,4 @@ jobs:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p URL=fom-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+          triggers: ${{ matrix.triggers }}
