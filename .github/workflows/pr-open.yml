@@ -125,7 +125,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
-          parameters: |
+          parameters:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p URL=fom-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ env.ZONE }}
@@ -140,7 +140,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
-          parameters: |
+          parameters:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p URL=fom-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
