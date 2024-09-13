@@ -93,8 +93,10 @@ jobs:
           - name: api
             file: api/openshift.deploy.yml
             overwrite: true
+            env:
+              OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
             parameters:
-              -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+              -p OC_NAMESPACE=${{ env.OC_NAMESPACE }}
               -p REPLICA_COUNT=1
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
               -p DB_TESTDATA=true
