@@ -26,6 +26,7 @@ jobs:
       pull-requests: write
     runs-on: ubuntu-22.04
     needs: setup
+    environment: dev
     steps:
       - name: OpenShift Init
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
