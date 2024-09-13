@@ -94,7 +94,7 @@ jobs:
             file: api/openshift.deploy.yml
             overwrite: true
             parameters:
-              -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+              # -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
               -p REPLICA_COUNT=1
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
               -p DB_TESTDATA=true
@@ -109,7 +109,7 @@ jobs:
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
-            parameters: -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+            # parameters: -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
             triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
@@ -129,4 +129,5 @@ jobs:
             -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p URL=fom-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+            -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
           triggers: ${{ matrix.triggers }}
