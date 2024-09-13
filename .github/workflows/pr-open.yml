@@ -27,9 +27,11 @@ jobs:
     runs-on: ubuntu-22.04
     needs: setup
     environment: dev
-    env:
-      OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
     steps:
+      - name: Set OC_NAMESPACE
+        run: echo "OC_NAMESPACE=${{ vars.OC_NAMESPACE }}" >> $GITHUB_ENV
+      - name: Debug OC_NAMESPACE
+        run: echo "OC_NAMESPACE=${{ env.OC_NAMESPACE }}"
       - name: OpenShift Init
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
