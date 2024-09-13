@@ -36,7 +36,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           file: libs/openshift.init.yml
           overwrite: false
-          parameters: |
+          parameters:
             -p ZONE=${{ needs.setup.outputs.zone }}
             -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
           triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
