@@ -85,6 +85,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       ZONE: ${{ needs.setup.outputs.zone }}
+      OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
     timeout-minutes: 10
     strategy:
       matrix:
@@ -93,8 +94,6 @@ jobs:
           - name: api
             file: api/openshift.deploy.yml
             overwrite: true
-            env:
-              OC_NAMESPACE: ${{ vars.OC_NAMESPACE }}
             parameters:
               -p OC_NAMESPACE=${{ env.OC_NAMESPACE }}
               -p REPLICA_COUNT=1
@@ -111,7 +110,7 @@ jobs:
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
-            parameters: -p OC_NAMESPACE=${{ vars.OC_NAMESPACE }}
+            parameters: -p OC_NAMESPACE=${{ env.OC_NAMESPACE }}
             triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
@@ -119,13 +118,10 @@ jobs:
             parameters: -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
-      - name: Debug OC_NAMESPACE for API OMG
-        if: matrix.name == 'api'
-        run: echo "OC_NAMESPACE=${{ vars.OC_NAMESPACE }}"
       - uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
           file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_namespace: ${{ env.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
