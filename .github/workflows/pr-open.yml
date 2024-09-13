@@ -119,7 +119,7 @@ jobs:
             parameters: -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
-      - name: Debug OC_NAMESPACE for API
+      - name: Debug OC_NAMESPACE for API OMG
         if: matrix.name == 'api'
         run: echo "OC_NAMESPACE=${{ vars.OC_NAMESPACE }}"
       - uses: bcgov-nr/action-deployer-openshift@v2.3.0
