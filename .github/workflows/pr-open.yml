@@ -108,7 +108,6 @@ jobs:
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
-            parameters: -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
