@@ -68,6 +68,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public initialPublicDocument: any[] = [];
   public districtIdSelect: any = null;
   public forestClientSelect: any = null;
+  public isInitialState: boolean = true;
+  public isCommentingOpenState: boolean = false;
+  public isCommentingClosedState: boolean = false;
   public isPublishState: boolean = false;
   public isCommentingOpen: boolean = false;
   files: any[] = [];
@@ -170,7 +173,9 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         this.forestClientSelect = this.originalProjectResponse.forestClient.id;
-
+        this.isInitialState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Initial;
+        this.isCommentingOpenState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen;
+        this.isCommentingClosedState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentClosed;
         this.isPublishState = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.Published;
 
         this.isCommentingOpen = this.originalProjectResponse.workflowState.code === WorkflowStateEnum.CommentOpen;
@@ -438,6 +443,17 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         return item.code == this.originalProjectResponse.projectPlanCode
     })[0]["description"];
     return item;
+  }
+
+  getDistrictDesc(districtId) {
+    const desc = this.districts.filter((item) => {
+        return item.id == districtId
+    })[0]["name"];
+    return desc;
+  }
+
+  getformatedDate(field, format = 'YYYY') {
+    return moment(this.fg.get(field).value).format(format);
   }
 
   /**

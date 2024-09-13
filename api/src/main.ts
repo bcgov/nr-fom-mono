@@ -189,4 +189,4 @@ if (process.argv.length > 2 &&
   standaloneRunTestDataMigrations();
 } else {
   startApi();
-} 
+}
