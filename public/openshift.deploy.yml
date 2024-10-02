@@ -42,6 +42,11 @@ parameters:
     name: CADDY_DATA_PVC_SIZE
     required: true
     value: 22Mi
+  - description: Unused OC namespce, put here so we can pass the same param in the pr-open workflow
+    displayName: OC namespace
+    name: OC_NAMESPACE
+    required: false
+    value: dev
 objects:
   - apiVersion: v1
     kind: ImageStream
