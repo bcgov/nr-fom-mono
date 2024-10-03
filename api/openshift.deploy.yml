@@ -120,8 +120,8 @@ objects:
         }
     metadata:
       name: ${NAME}-${ZONE}-${COMPONENT}
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - apiVersion: apps/v1
+    kind: Deployment
     metadata:
       labels:
         app: ${NAME}-${ZONE}
@@ -131,7 +131,7 @@ objects:
       revisionHistoryLimit: 10
       test: false
       strategy:
-        type: Rolling
+        type: RollingUpdate
         rollingParams:
           # Delay pod updates to account for time to run migrations
           updatePeriodSeconds: 30
@@ -139,23 +139,14 @@ objects:
           timeoutSeconds: 600
           maxUnavailable: 25%
           maxSurge: 25%
-      triggers:
-        - type: ConfigChange
-        - type: ImageChange
-          imageChangeParams:
-            automatic: true
-            containerNames:
-              - ${NAME}
-            from:
-              kind: ImageStreamTag
-              name: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
       selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        matchLabels:
+          deployment: ${NAME}-${ZONE}-${COMPONENT}
       template:
         metadata:
           labels:
             app: ${NAME}-${ZONE}
-            deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+            deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
             - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
@@ -283,7 +274,7 @@ objects:
           port: 80
           targetPort: ${{PORT}}
       selector:
-        deploymentconfig: ${NAME}-${ZONE}-${COMPONENT}
+        deployment: ${NAME}-${ZONE}-${COMPONENT}
   - apiVersion: route.openshift.io/v1
     kind: Route
     metadata:
