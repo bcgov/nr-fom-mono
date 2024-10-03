@@ -33,45 +33,45 @@ jobs:
           parameters: -p ZONE=${{ github.event.number }}
           triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
 
-  # builds:
-  #   name: Builds
-  #   runs-on: ubuntu-22.04
-  #   permissions:
-  #     packages: write
-  #   strategy:
-  #     matrix:
-  #       package: [admin, api, db, public]
-  #       include:
-  #         - package: admin
-  #           build_context: ./
-  #           build_file: admin/Dockerfile
-  #           triggers: ('admin/' 'libs/')
-  #         - package: api
-  #           build_context: ./
-  #           build_file: api/Dockerfile
-  #           triggers: ('api/' 'libs/')
-  #         - package: db
-  #           triggers: ('db')
-  #         - package: public
-  #           build_context: ./
-  #           build_file: public/Dockerfile
-  #           triggers: ('public/' 'libs/')
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: bcgov-nr/action-builder-ghcr@v2.2.0
-  #       with:
-  #         package: ${{ matrix.package }}
-  #         build_context: ${{ matrix.build_context }}
-  #         build_file: ${{ matrix.build_file }}
-  #         keep_versions: 100
-  #         tag: ${{ github.event.number }}
-  #         tag_fallback: test
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         triggers: ${{ matrix.triggers }}
+  builds:
+    name: Builds
+    runs-on: ubuntu-22.04
+    permissions:
+      packages: write
+    strategy:
+      matrix:
+        package: [admin, api, db, public]
+        include:
+          - package: admin
+            build_context: ./
+            build_file: admin/Dockerfile
+            triggers: ('admin/' 'libs/')
+          - package: api
+            build_context: ./
+            build_file: api/Dockerfile
+            triggers: ('api/' 'libs/')
+          - package: db
+            triggers: ('db')
+          - package: public
+            build_context: ./
+            build_file: public/Dockerfile
+            triggers: ('public/' 'libs/')
+    steps:
+      - uses: actions/checkout@v4
+      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
+        with:
+          package: ${{ matrix.package }}
+          build_context: ${{ matrix.build_context }}
+          build_file: ${{ matrix.build_file }}
+          keep_versions: 100
+          tag: ${{ github.event.number }}
+          tag_fallback: test
+          token: ${{ secrets.GITHUB_TOKEN }}
+          triggers: ${{ matrix.triggers }}
 
   deploys:
     name: Deploys
-    # needs: [builds, init]
+    needs: [builds, init]
     needs: [init]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
