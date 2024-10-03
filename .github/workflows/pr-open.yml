@@ -13,19 +13,18 @@ jobs:
     name: Reset the deployment number
     runs-on: ubuntu-22.04
     outputs:
-      zone: ${{ steps.calculate.outputs.zone }}
+      route_number: ${{ steps.calculate.outputs.route_number }}
     steps:
       - name: Calculate the deployment number
         id: calculate
         run: |
-          echo "zone=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+          echo "route_number=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
 
   prep:
     name: Prep
     permissions:
       pull-requests: write
     runs-on: ubuntu-22.04
-    needs: setup
     steps:
       - name: OpenShift Init
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
@@ -35,7 +34,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           file: libs/openshift.init.yml
           overwrite: false
-          parameters: -p ZONE=${{ needs.setup.outputs.zone }}
+          parameters: -p ZONE=${{ github.event.number }}
           triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
 
   # builds:
@@ -44,8 +43,6 @@ jobs:
   #   permissions:
   #     packages: write
   #   needs: setup
-  #   env:
-  #     ZONE: ${{ needs.setup.outputs.zone }}
   #   strategy:
   #     matrix:
   #       package: [admin, api, db, public]
@@ -72,7 +69,7 @@ jobs:
   #         build_context: ${{ matrix.build_context }}
   #         build_file: ${{ matrix.build_file }}
   #         keep_versions: 100
-  #         tag: ${{ env.ZONE }}
+  #         tag: ${{ github.event.number }}
   #         tag_fallback: test
   #         token: ${{ secrets.GITHUB_TOKEN }}
   #         triggers: ${{ matrix.triggers }}
@@ -82,8 +79,6 @@ jobs:
     # needs: [prep, builds, setup]
     needs: [prep, setup]
     runs-on: ubuntu-22.04
-    env:
-      ZONE: ${{ needs.setup.outputs.zone }}
     timeout-minutes: 10
     strategy:
       matrix:
@@ -123,6 +118,6 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p URL=fom-${{ env.ZONE }}.apps.silver.devops.gov.bc.ca
-            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+            -p URL=fom-${{ needs.setup.outputs.route_number }}.apps.silver.devops.gov.bc.ca
+            -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
           triggers: ${{ matrix.triggers }}
