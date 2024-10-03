@@ -98,6 +98,8 @@ objects:
                   value: fom-${ZONE}-api
                 - name: fom_api_base_url
                   value: fom-${ZONE}-api
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               ports:
                 - containerPort: 4200
                   protocol: TCP

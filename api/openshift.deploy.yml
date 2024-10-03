@@ -204,6 +204,8 @@ objects:
                     secretKeyRef:
                       key: api_token
                       name: ${BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME}
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               ports:
                 - containerPort: ${{PORT}}
                   protocol: TCP

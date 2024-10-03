@@ -42,6 +42,10 @@ parameters:
     name: CADDY_DATA_PVC_SIZE
     required: true
     value: 22Mi
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
   - kind: ConfigMap
     apiVersion: v1
@@ -91,6 +95,8 @@ objects:
                   value: fom-${ZONE}-api
                 - name: fom_api_base_url
                   value: fom-${ZONE}-api
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               ports:
                 - containerPort: 4300
                   protocol: TCP

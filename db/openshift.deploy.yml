@@ -98,6 +98,10 @@ parameters:
   - name: OC_NAMESPACE
     description: OpenShift namespace containing imported images
     required: true
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
   - kind: PersistentVolumeClaim
     apiVersion: v1
@@ -175,6 +179,8 @@ objects:
                     secretKeyRef:
                       name: ${NAME}-${ZONE}-${COMPONENT}
                       key: database-user
+                - name: RANDOM_EXPRESSION
+                  value: ${RANDOM_EXPRESSION}
               resources:
                 requests:
                   cpu: ${CPU_REQUEST}
@@ -333,7 +339,7 @@ objects:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                   # use the same image as our database, so we can run the psql command
-                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-db
+                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
