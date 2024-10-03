@@ -78,9 +78,6 @@ parameters:
   - name: BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME
     description: OP secrete name for CLIENT API Token.
     value: "fom-client-app-api"
-  - name: OC_NAMESPACE
-    description: OpenShift namespace containing imported images
-    required: true
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
@@ -369,7 +366,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
                   imagePullPolicy: Always
                   args: ["-batchForestClientDataRefresh"]
                   env:
