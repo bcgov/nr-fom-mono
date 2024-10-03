@@ -66,7 +66,7 @@ objects:
       revisionHistoryLimit: 10
       test: false
       strategy:
-        type: Rolling
+        type: RollingUpdate
         rollingParams:
           updatePeriodSeconds: 1
           intervalSeconds: 1
