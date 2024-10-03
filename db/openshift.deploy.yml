@@ -142,7 +142,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-              image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
+              image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
               ports:
                 - containerPort: 5432
                   protocol: TCP
@@ -336,7 +336,7 @@ objects:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                   # use the same image as our database, so we can run the psql command
-                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
+                  image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
                   command: ["/bin/sh", "-c"]
                   args:
                   - |

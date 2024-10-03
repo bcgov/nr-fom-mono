@@ -84,7 +84,7 @@ objects:
             deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
-            - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
+            - image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
               securityContext:
                 capabilities:
                   add: ["NET_BIND_SERVICE"]
