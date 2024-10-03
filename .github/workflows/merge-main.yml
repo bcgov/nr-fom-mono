@@ -64,7 +64,6 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:${{ env.ZONE }}
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
           post_rollout: ${{ matrix.post_rollout }}
 
@@ -117,7 +116,6 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p PROMOTE=${{ github.repository }}/${{ matrix.name }}:test
             -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
           post_rollout: ${{ matrix.post_rollout }}
 
