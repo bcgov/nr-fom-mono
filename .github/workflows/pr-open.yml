@@ -9,8 +9,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    name: Reset the deployment number
+  init:
+    name: Init
+    permissions:
+      pull-requests: write
     runs-on: ubuntu-22.04
     outputs:
       route_number: ${{ steps.calculate.outputs.route_number }}
@@ -20,12 +22,6 @@ jobs:
         run: |
           echo "route_number=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
 
-  prep:
-    name: Prep
-    permissions:
-      pull-requests: write
-    runs-on: ubuntu-22.04
-    steps:
       - name: OpenShift Init
         uses: bcgov-nr/action-deployer-openshift@v2.3.0
         with:
@@ -42,7 +38,6 @@ jobs:
   #   runs-on: ubuntu-22.04
   #   permissions:
   #     packages: write
-  #   needs: setup
   #   strategy:
   #     matrix:
   #       package: [admin, api, db, public]
@@ -76,8 +71,8 @@ jobs:
 
   deploys:
     name: Deploys
-    # needs: [prep, builds, setup]
-    needs: [prep, setup]
+    # needs: [builds, init]
+    needs: [init]
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     strategy:
@@ -118,6 +113,6 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p URL=fom-${{ needs.setup.outputs.route_number }}.apps.silver.devops.gov.bc.ca
+            -p URL=fom-${{ needs.init.outputs.route_number }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
           triggers: ${{ matrix.triggers }}
