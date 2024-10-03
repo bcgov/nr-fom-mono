@@ -44,9 +44,9 @@ parameters:
   - name: REGISTRY
     description: Container registry to import from (internal is image-registry.openshift-image-registry.svc:5000)
     value: ghcr.io
-  - name: PROMOTE
-    description: Image (namespace/name:tag) to promote/import
-    required: true
+  - name: ORG
+    description: Organization name
+    value: bcgov
   - name: CRON_MINUTES
     description: Random number, 0-60, for scheduling cronjobs
     from: "[0-5]{1}[0-9]{1}"
@@ -81,23 +81,11 @@ parameters:
   - name: OC_NAMESPACE
     description: OpenShift namespace containing imported images
     required: true
+  - name: RANDOM_EXPRESSION
+    description: Random expression to make sure deployments update
+    from: "[a-zA-Z0-9]{32}"
+    generate: expression
 objects:
-  - apiVersion: v1
-    kind: ImageStream
-    metadata:
-      labels:
-        app: ${NAME}-${ZONE}
-      name: ${NAME}-${ZONE}-${COMPONENT}
-    spec:
-      lookupPolicy:
-        local: false
-      tags:
-        - name: ${ZONE}-api
-          from:
-            kind: DockerImage
-            name: ${REGISTRY}/${PROMOTE}
-          referencePolicy:
-            type: Local
   - apiVersion: v1
     kind: ConfigMap
     data:
@@ -149,7 +137,7 @@ objects:
             deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
-            - image: ${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+            - image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
               imagePullPolicy: Always
               name: ${NAME}
               env:
@@ -316,7 +304,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: image-registry.apps.silver.devops.gov.bc.ca/${OC_NAMESPACE}/${NAME}-${ZONE}-${COMPONENT}:${ZONE}-api
+                  image: ${REGISTRY}/${ORG}/${NAME}/${COMPONENT}:${ZONE}
                   imagePullPolicy: Always
                   args: ["-batchWorkflowStateChange"]
                   env:
