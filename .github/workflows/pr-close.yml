@@ -17,6 +17,6 @@ jobs:
       oc_namespace: ${{ vars.OC_NAMESPACE }}
       oc_token: ${{ secrets.OC_TOKEN }}
     with:
-      cleanup: label
+      cleanup_name: label
       packages: api public admin db
       repository: fom
