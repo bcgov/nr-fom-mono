@@ -17,7 +17,7 @@ jobs:
   tests:
     name: Unit Tests
     if: ${{ ! github.event.pull_request.draft }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: bcgov-nr/action-test-and-analyse@v1.2.1
         with:
@@ -37,7 +37,7 @@ jobs:
     name: CodeQL
     if: ${{ ! github.event.pull_request.draft }}
     needs: [tests]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
@@ -51,7 +51,7 @@ jobs:
     name: Trivy Security Scan
     if: ${{ ! github.event.pull_request.draft }}
     needs: [tests]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
