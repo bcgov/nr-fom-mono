@@ -13,7 +13,7 @@ jobs:
     name: Init
     permissions:
       pull-requests: write
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     outputs:
       route_number: ${{ steps.calculate.outputs.route_number }}
     steps:
@@ -23,7 +23,7 @@ jobs:
           echo "route_number=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
 
       - name: OpenShift Init
-        uses: bcgov-nr/action-deployer-openshift@v2.3.0
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
           oc_server: ${{ vars.OC_SERVER }}
@@ -35,7 +35,7 @@ jobs:
 
   builds:
     name: Builds
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       packages: write
     strategy:
@@ -72,7 +72,7 @@ jobs:
   deploys:
     name: Deploys
     needs: [builds, init]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
       matrix:
@@ -103,7 +103,7 @@ jobs:
             parameters: -p REPLICA_COUNT=1
             triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
-      - uses: bcgov-nr/action-deployer-openshift@v2.3.0
+      - uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           file: ${{ matrix.file }}
           oc_namespace: ${{ vars.OC_NAMESPACE }}
