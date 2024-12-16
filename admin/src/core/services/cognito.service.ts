@@ -67,7 +67,6 @@ export class CognitoService {
 
   private getParameterByName(name) {
     const url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
     const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
     const results = regex.exec(url);
     if (!results) {
