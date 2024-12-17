@@ -114,4 +114,5 @@ jobs:
           parameters:
             -p URL=fom-${{ needs.init.outputs.route_number }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
+            -p TAG=${{ github.event.number }}
           triggers: ${{ matrix.triggers }}

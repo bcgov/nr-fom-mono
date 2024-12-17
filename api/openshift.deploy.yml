@@ -19,6 +19,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: TAG
+    description: Image tag; e.g. PR number, latest or prod
+    required: true
   - name: PORT
     value: "3333"
   - name: DB_TESTDATA
@@ -134,7 +137,7 @@ objects:
             deployment: ${NAME}-${ZONE}-${COMPONENT}
         spec:
           containers:
-            - image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
+            - image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${TAG}
               imagePullPolicy: Always
               name: ${NAME}
               env:

@@ -19,6 +19,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: TAG
+    description: Image tag; e.g. PR number, latest or prod
+    required: true
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Database Volume Capacity
     name: DB_PVC_SIZE
@@ -142,7 +145,7 @@ objects:
                 claimName: ${NAME}-${ZONE}-${COMPONENT}
           containers:
             - name: ${NAME}
-              image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
+              image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${TAG}
               ports:
                 - containerPort: 5432
                   protocol: TCP
