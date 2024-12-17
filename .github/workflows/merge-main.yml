@@ -19,7 +19,7 @@ jobs:
   vars:
     name: Set Variables
     outputs:
-      tag: ${{ steps.tag.outputs.tag }}
+      tag: ${{ steps.tag.outputs.pr }}
     runs-on: ubuntu-24.04
     timeout-minutes: 1
     steps:
