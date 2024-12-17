@@ -16,8 +16,21 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  vars:
+    name: Set Variables
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 1
+    steps:
+      # Get PR number for squash merges to main
+      - name: PR Number
+        id: pr
+        uses: bcgov-nr/action-get-pr@v0.0.1
+
   deploy-test:
     name: TEST Deploys
+    needs: [vars]
     environment: test
     env:
       ZONE: test
@@ -62,23 +75,9 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.pr }}
+            ${{ matrix.parameters }}
           post_rollout: ${{ matrix.post_rollout }}
-
-  prod-promotions:
-    name: Promote images to PROD
-    needs: [deploy-test]
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        component: [api, admin, db, public]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: test
-          tags: prod
 
   deploy-prod:
     name: PROD Deploys
@@ -127,5 +126,21 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.pr }}
+            ${{ matrix.parameters }}
           post_rollout: ${{ matrix.post_rollout }}
+
+  prod-promotions:
+    name: Promote images to PROD
+    needs: [deploy-prod, vars]
+    runs-on: ubuntu-24.04
+    strategy:
+      matrix:
+        component: [api, admin, db, public]
+    steps:
+      - uses: shrink/actions-docker-registry-tag@v4
+        with:
+          registry: ghcr.io
+          repository: ${{ github.repository }}/${{ matrix.component }}
+          target: ${{ needs.vars.outputs.pr }}
+          tags: prod
