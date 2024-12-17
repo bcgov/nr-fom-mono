@@ -25,7 +25,7 @@ jobs:
     steps:
       # Get PR number for squash merges to main
       - name: PR Number
-        id: pr
+        id: tag
         uses: bcgov-nr/action-get-pr@v0.0.1
 
   deploy-test:
@@ -75,7 +75,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.pr }}
+            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.tag }}
             ${{ matrix.parameters }}
           post_rollout: ${{ matrix.post_rollout }}
 
@@ -126,7 +126,7 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           penetration_test: false
           parameters:
-            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.pr }}
+            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.tag }}
             ${{ matrix.parameters }}
           post_rollout: ${{ matrix.post_rollout }}
 
@@ -142,5 +142,5 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.vars.outputs.pr }}
+          target: ${{ needs.vars.outputs.tag }}
           tags: prod
