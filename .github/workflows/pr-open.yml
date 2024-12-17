@@ -113,6 +113,6 @@ jobs:
           penetration_test: false
           parameters:
             -p URL=fom-${{ needs.init.outputs.route_number }}.apps.silver.devops.gov.bc.ca
-            -p ZONE=${{ github.event.number }} ${{ matrix.parameters }}
-            -p TAG=${{ github.event.number }}
+            -p ZONE=${{ github.event.number }} -p TAG=${{ github.event.number }}
+            ${{ matrix.parameters }}
           triggers: ${{ matrix.triggers }}
