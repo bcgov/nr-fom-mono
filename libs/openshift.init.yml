@@ -22,6 +22,9 @@ parameters:
   - name: ZONE
     description: Deployment zone, e.g. pr-### or prod
     required: true
+  - name: TAG
+    description: Image tag; e.g. PR number, latest or prod
+    required: false
   - name: POSTGRES_DB
     description: Postgres database name
     value: fom
