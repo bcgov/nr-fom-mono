@@ -81,7 +81,7 @@ jobs:
 
   deploy-prod:
     name: PROD Deploys
-    needs: [prod-promotions]
+    needs: [deploy-test, vars]
     environment: prod
     env:
       ZONE: prod
