@@ -306,7 +306,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
+                  image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${TAG}
                   imagePullPolicy: Always
                   args: ["-batchWorkflowStateChange"]
                   env:
@@ -369,7 +369,7 @@ objects:
               containers:
                 - name: ${NAME}-batch
                   # Full image name required due to bug https://bugzilla.redhat.com/show_bug.cgi?id=2000216
-                  image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
+                  image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${TAG}
                   imagePullPolicy: Always
                   args: ["-batchForestClientDataRefresh"]
                   env:
