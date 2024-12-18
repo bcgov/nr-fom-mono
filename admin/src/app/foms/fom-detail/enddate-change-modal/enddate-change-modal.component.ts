@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ProjectCommentingClosedDateChangeRequest, ProjectService } from '@api-client';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import * as moment from 'moment';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import moment = require('moment');
 
 @Component({
     standalone: true,

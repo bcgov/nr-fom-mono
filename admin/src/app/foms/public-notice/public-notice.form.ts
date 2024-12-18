@@ -1,6 +1,6 @@
 import { PublicNoticeResponse } from "@api-client";
 import { email, minDate, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
-import moment = require("moment");
+import * as moment from 'moment';
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
