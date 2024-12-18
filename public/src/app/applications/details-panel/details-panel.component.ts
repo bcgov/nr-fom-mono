@@ -23,9 +23,6 @@ import { take, takeUntil } from 'rxjs/operators';
 import { CommentModalComponent } from '../../comment-modal/comment-modal.component';
 import { Filter } from '../utils/filter';
 
-
-import moment = require('moment');
-
 /**
  * Details side panel.
  *

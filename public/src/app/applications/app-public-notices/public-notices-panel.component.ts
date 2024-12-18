@@ -9,10 +9,10 @@ import { periodOperationsTxt, woodlotOperationsTxt } from '@public-core/constant
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
+import * as moment from 'moment';
 import { IUpdateEvent } from '../projects.component';
 import { Panel } from '../utils/panel.enum';
 import { NoticeFilter, PublicNoticesFilterPanelComponent } from './notices-filter-panel/public-notices-filter-panel.component';
-import moment = require('moment');
 @Component({
   standalone: true,
   imports: [
