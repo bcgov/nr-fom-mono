@@ -105,28 +105,28 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "admin:build",
             "port": 4200,
-            "host": "0.0.0.0"
+            "host": "0.0.0.0",
+            "buildTarget": "admin:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "admin:build:production",
               "sourceMap": {
                 "hidden": false,
                 "scripts": true,
                 "styles": true
-              }
+              },
+              "buildTarget": "admin:build:production"
             },
             "development": {
-              "browserTarget": "admin:build:development"
+              "buildTarget": "admin:build:development"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "admin:build"
+            "buildTarget": "admin:build"
           }
         },
         "lint": {
