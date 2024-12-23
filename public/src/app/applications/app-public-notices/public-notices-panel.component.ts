@@ -9,7 +9,7 @@ import { periodOperationsTxt, woodlotOperationsTxt } from '@public-core/constant
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import { DateTime } from "luxon";
 import { IUpdateEvent } from '../projects.component';
 import { Panel } from '../utils/panel.enum';
 import { NoticeFilter, PublicNoticesFilterPanelComponent } from './notices-filter-panel/public-notices-filter-panel.component';
@@ -89,7 +89,7 @@ export class PublicNoticesPanelComponent implements OnInit {
   }
 
   isFomAvailable(commentingOpenDate) {
-    return moment(commentingOpenDate).startOf('day') <= moment().startOf('day');
+    return DateTime.fromISO(commentingOpenDate).startOf('day') <= DateTime.now().startOf('day');
   }
 
   getValidityStartDate(project: ProjectResponse) {
@@ -113,7 +113,7 @@ export class PublicNoticesPanelComponent implements OnInit {
       },
       isDateOnOrAfter: function(date1: Date, value: Date) {
         return _.isNil(value) || 
-              moment(date1).startOf('day').isSameOrAfter(moment(value).startOf('day'));
+            DateTime.fromJSDate(date1).startOf('day') >= DateTime.fromJSDate(value).startOf('day');
       }
     }
   }

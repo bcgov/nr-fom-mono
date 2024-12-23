@@ -5,7 +5,7 @@ import { WorkflowStateCode } from '@api-client';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { UrlService } from '@public-core/services/url.service';
 import * as _ from 'lodash';
-import * as moment from 'moment';
+import { DateTime } from "luxon";
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -43,8 +43,8 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   public forestClientNameFilter = new Filter<string>({ filter: { queryParam: 'fcName', value: null }});
   public commentStatusFilters: MultiFilter<boolean>; // For 'Commenting Open' or 'Commenting Closed'.
   public postedOnAfterFilter = new Filter<Date>({ filter: { queryParam: 'pdOnAfter', value: null } });
-  readonly minDate = moment('2018-03-23').toDate(); // first app created
-  readonly maxDate = moment().toDate(); // today
+  readonly minDate = DateTime.fromISO('2018-03-23').toJSDate(); // first app created
+  readonly maxDate = DateTime.now().toJSDate(); // today
   readonly maxInputLength = 9;
 
   constructor(public urlSvc: UrlService,
