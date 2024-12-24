@@ -7,7 +7,7 @@ import { AttachmentResponse, ProjectMetricsResponse, ProjectPlanCodeEnum, Projec
 import { NgbModal, NgbModalRef, NgbModule, NgbNav } from '@ng-bootstrap/ng-bootstrap';
 import { User } from "@utility/security/user";
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
-import * as moment from 'moment';
+import { DateTime } from "luxon";
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { EnddateChangeModalComponent } from './enddate-change-modal/enddate-change-modal.component';
@@ -355,8 +355,9 @@ export class FomDetailComponent implements OnInit, OnDestroy {
 
   private calculateDaysRemaining(){
     this.daysRemaining = (this.project.workflowState.code === WorkflowStateEnum.Initial) ?
-      moment(this.project.commentingClosedDate).diff(moment(this.project.commentingOpenDate), 'days') :
-      moment(this.project.commentingClosedDate).diff(moment(this.today), 'days');
+    DateTime.fromISO(this.project.commentingClosedDate).diff(DateTime.fromISO(this.project.commentingOpenDate), 'days').as('days') :
+    DateTime.fromISO(this.project.commentingClosedDate).diff(DateTime.fromJSDate(this.today), 'days').as('days');
+
     if(this.daysRemaining < 0){
       this.daysRemaining = 0;
     }
@@ -364,7 +365,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
 
   private validatePublishReady() {
     let ready = true;
-    if (moment(this.project.commentingClosedDate).diff(moment(this.project.commentingOpenDate), 'days') < 30) {
+    if (DateTime.fromISO(this.project.commentingClosedDate).diff(DateTime.fromISO(this.project.commentingOpenDate), 'days').as('days') < 30) {
       ready = false;
       this.modalSvc.openWarningDialog('Comment End Date must be at least 30 days after Comment Start Date when "Publish" is pushed.');
     }
@@ -374,7 +375,7 @@ export class FomDetailComponent implements OnInit, OnDestroy {
       this.modalSvc.openWarningDialog('Proposed FOM spatial file should be uploaded before "Publish" is pushed.');
     }
 
-    if(moment(this.project.commentingOpenDate).diff(moment(this.today), 'days') < 1){
+    if(DateTime.fromISO(this.project.commentingOpenDate).diff(DateTime.fromJSDate(this.today), 'days').as('days') < 1){
       ready = false;
       this.modalSvc.openWarningDialog('Comment Start Date must be at least one day after "Publish" is pushed.');
     }
