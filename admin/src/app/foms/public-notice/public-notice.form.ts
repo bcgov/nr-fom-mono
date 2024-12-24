@@ -1,6 +1,6 @@
 import { PublicNoticeResponse } from "@api-client";
 import { email, minDate, notEmpty, prop, required } from "@rxweb/reactive-form-validators";
-import * as moment from 'moment';
+import { DateTime } from "luxon";
 import * as R from 'remeda';
 export class PublicNoticeForm {
 
@@ -55,7 +55,7 @@ export class PublicNoticeForm {
   email: string;
 
   @minDate({
-    value: moment().add(1, 'days').format('YYYY-MM-DD'),
+    value: DateTime.now().plus({days: 1}).toISODate(),
     message: 'Must publish notice one day in the future'})
   @prop()
   pnPostDate: Date;
@@ -84,7 +84,7 @@ export class PublicNoticeForm {
 
   initProposedOperations(pn: PublicNoticeResponse) {
     if (pn?.postDate) {
-        this.pnPostDate = moment(pn.postDate).toDate();
+        this.pnPostDate = DateTime.fromISO(pn.postDate).toJSDate();
     }
   }
 }
