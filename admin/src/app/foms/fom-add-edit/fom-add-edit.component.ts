@@ -2,7 +2,7 @@ import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 
 import { MatSnackBar, MatSnackBarRef, SimpleSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as moment from 'moment';
+import { DateTime } from "luxon";
 import { Observable, Subject, of } from 'rxjs';
 import { switchMap, takeUntil, tap } from 'rxjs/operators';
 
@@ -12,15 +12,15 @@ import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
 import { AttachmentUploadService } from "@admin-core/utils/attachmentUploadService";
-import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
+import { DEFAULT_ISO_DATE_FORMAT, MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants';
 import { DatePipe, NgClass, NgFor, NgIf } from '@angular/common';
 import {
-    AttachmentResponse, DistrictResponse, ForestClientResponse,
-    ForestClientService,
-    ProjectCreateRequest,
-    ProjectPlanCodeEnum,
-    ProjectResponse,
-    ProjectService, WorkflowStateEnum
+  AttachmentResponse, DistrictResponse, ForestClientResponse,
+  ForestClientService,
+  ProjectCreateRequest,
+  ProjectPlanCodeEnum,
+  ProjectResponse,
+  ProjectService, WorkflowStateEnum
 } from '@api-client';
 import { RxFormBuilder, RxFormGroup } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
@@ -55,6 +55,7 @@ type ApplicationPageType = 'create' | 'edit';
 })
 export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
+  readonly DEFAULT_ISO_DATE_FORMAT = DEFAULT_ISO_DATE_FORMAT;
   fg: RxFormGroup;
   state: ApplicationPageType;
   originalProjectResponse: ProjectResponse;
@@ -82,7 +83,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   public attachments: AttachmentResponse[] = [];
   public attachmentsInitialNotice: AttachmentResponse[] = [];
   public isDeleting = false;
-  public minOpeningDate: Date = moment(moment().format('YYYY-MM-DD')).add(1, 'days').toDate(); // 1 day in the future.
+  public minOpeningDate: Date = DateTime.now().plus({days: 1}).toJSDate(); // 1 day in the future.
   public minClosedDate: Date;
   public fileTypesParentInitial: string[] =
     ['image/png', 'image/jpeg', 'image/jpg', 'image/tiff',
@@ -105,8 +106,8 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly bsConfig = {
     dateInputFormat: 'YYYY',
     minMode: 'year',
-    minDate: moment().toDate(),
-    maxDate: moment().add(7, 'years').toDate(), // current + 7 years
+    minDate: DateTime.now().toJSDate(),
+    maxDate: DateTime.now().plus({years: 7}).toJSDate(), // current + 7 years
     containerClass: 'theme-dark-blue'
   } as Partial<BsDatepickerConfig>
 
@@ -164,7 +165,6 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
         return this.isCreate ? of({}) : this.projectSvc.projectControllerFindOne(this.route.snapshot.params.appId);
       }
     )).subscribe((data: ProjectResponse) => {
-
       if (!this.isCreate) {
         this.originalProjectResponse = data;
         if (data.district) {
@@ -262,12 +262,12 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     let projectCreate = this.fg.value as ProjectCreateRequest
     projectCreate['districtId'] = this.districtIdSelect;
     projectCreate.forestClientNumber = this.fg.get('forestClient').value.id;
-    const cmoDateVal = this.fg.get('commentingOpenDate').value;
-    const cmcDateVal = this.fg.get('commentingClosedDate').value;
-    projectCreate.commentingOpenDate = cmoDateVal? moment(cmoDateVal).format('YYYY-MM-DD'): null;
-    projectCreate.commentingClosedDate = cmcDateVal? moment(cmcDateVal).format('YYYY-MM-DD'): null;
-    projectCreate.operationStartYear = parseInt(moment(this.fg.get('opStartDate').value).format('YYYY'));
-    projectCreate.operationEndYear = parseInt(moment(this.fg.get('opEndDate').value).format('YYYY'));
+    const cmoDateIsoVal = this.getformatedDate('commentingOpenDate', this.DEFAULT_ISO_DATE_FORMAT);
+    const cmcDateIsoVal = this.getformatedDate('commentingClosedDate', this.DEFAULT_ISO_DATE_FORMAT);
+    projectCreate.commentingOpenDate = cmoDateIsoVal? cmoDateIsoVal: null;
+    projectCreate.commentingClosedDate = cmcDateIsoVal? cmcDateIsoVal: null;
+    projectCreate.operationStartYear = DateTime.fromJSDate(this.fg.get('opStartDate').value).year;
+    projectCreate.operationEndYear = DateTime.fromJSDate(this.fg.get('opEndDate').value).year;
 
     this.projectSvc.projectControllerCreate(projectCreate)
         .toPromise()
@@ -288,12 +288,12 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     if (!this.fg.valid) return;
     try {
-      const cmoDateVal = this.fg.get('commentingOpenDate').value;
-      const cmcDateVal = this.fg.get('commentingClosedDate').value;
-      projectUpdateRequest.commentingOpenDate = cmoDateVal? moment(cmoDateVal).format('YYYY-MM-DD'): null;
-      projectUpdateRequest.commentingClosedDate = cmcDateVal? moment(cmcDateVal).format('YYYY-MM-DD'): null;
-      projectUpdateRequest.operationStartYear = parseInt(moment(this.fg.get('opStartDate').value).format('YYYY'));
-      projectUpdateRequest.operationEndYear = parseInt(moment(this.fg.get('opEndDate').value).format('YYYY'));
+      const cmoDateIsoVal = this.getformatedDate('commentingOpenDate', this.DEFAULT_ISO_DATE_FORMAT);
+      const cmcDateIsoVal = this.getformatedDate('commentingClosedDate', this.DEFAULT_ISO_DATE_FORMAT);
+      projectUpdateRequest.commentingOpenDate = cmoDateIsoVal? cmoDateIsoVal: null;
+      projectUpdateRequest.commentingClosedDate = cmcDateIsoVal? cmcDateIsoVal: null;
+      projectUpdateRequest.operationStartYear = DateTime.fromJSDate(this.fg.get('opStartDate').value).year;
+      projectUpdateRequest.operationEndYear = DateTime.fromJSDate(this.fg.get('opEndDate').value).year;
 
       await this.projectSvc.projectControllerUpdate(id, projectUpdateRequest).toPromise();
 
@@ -368,17 +368,17 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!closedDate) return;
 
     const commentingOpenDateField = this.fg.get('commentingOpenDate');
-    const defaultClosedDate = moment(commentingOpenDateField.value).add(30, 'd');
-    const diff = moment(closedDate.toISOString()).diff(defaultClosedDate, 'days');
-    if (diff < 0 ) {
+    const defaultClosedDate = DateTime.fromJSDate(commentingOpenDateField.value).plus({days: 30});
+    const diff = DateTime.fromJSDate(closedDate).diff(defaultClosedDate, 'days');
+    if (diff.days < 0 ) {
       const originalOpenDate = this.originalProjectResponse?.commentingOpenDate;
       if (this.isCreate || !this.isCreate && (originalOpenDate && originalOpenDate
-        !== moment(commentingOpenDateField.value).format('YYYY-MM-DD'))) {
-        this.modalSvc.openWarningDialog(`Commenting Closed Date cannot be before ${defaultClosedDate.format('YYYY-MM-DD')}`);
+        !== DateTime.fromJSDate(commentingOpenDateField.value).toISODate())) {
+        this.modalSvc.openWarningDialog(`Commenting Closed Date cannot be before ${defaultClosedDate.toISODate()}`);
       }
 
       if (!this.isCreate) {
-        const closeDatePipe = this.datePipe.transform(this.originalProjectResponse.commentingClosedDate,'yyyy-MM-dd');
+        const closeDatePipe = this.datePipe.transform(this.originalProjectResponse.commentingClosedDate, DEFAULT_ISO_DATE_FORMAT);
         this.fg.get('commentingClosedDate').setValue(closeDatePipe)
       }
       else {
@@ -392,10 +392,10 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     // Only enable commenting_closed_date when commenting_open_date is present.
     if (newCommentingOpenDate) {
       commentingClosedDateField.enable();
-      this.validateClosedDate(commentingClosedDateField.value? moment(commentingClosedDateField.value).toDate(): null);
+      this.validateClosedDate(commentingClosedDateField.value? DateTime.fromJSDate(commentingClosedDateField.value).toJSDate(): null);
 
       // disable past date at closedDate selection less than 30 days after commentingOpenDate
-      this.minClosedDate = moment(newCommentingOpenDate).add(30, 'd').toDate();
+      this.minClosedDate = DateTime.fromJSDate(newCommentingOpenDate).plus({days: 30}).toJSDate();
     }
     else {
       commentingClosedDateField.disable();
@@ -449,8 +449,14 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
     return desc;
   }
 
-  getformatedDate(field, format = 'YYYY') {
-    return moment(this.fg.get(field).value).format(format);
+  getformatedDate(field, format = 'yyyy') {
+    const fieldVal = this.fg.get(field).value;
+    if (typeof fieldVal === "string") {
+        return DateTime.fromISO(fieldVal).toFormat(format)
+    }
+    else if (fieldVal instanceof Date) {
+        return DateTime.fromJSDate(fieldVal).toFormat(format);
+    }
   }
 
   /**
@@ -461,7 +467,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Converting commentingOpenDate date to 'yyyy-MM-dd'
     const commentingOpenDateField = fg.get('commentingOpenDate');
-    const openDatePipe = this.datePipe.transform(fg.value.commentingOpenDate,'yyyy-MM-dd');
+    const openDatePipe = this.datePipe.transform(fg.value.commentingOpenDate, DEFAULT_ISO_DATE_FORMAT);
     commentingOpenDateField.setValue(openDatePipe);
 
     // Commenting open can only be edited before publish.
@@ -471,7 +477,7 @@ export class FomAddEditComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Converting commentingClosedDate date to 'yyyy-MM-dd'
     const commentingClosedDateField = fg.get('commentingClosedDate');
-    const closeDatePipe = this.datePipe.transform(fg.value.commentingClosedDate,'yyyy-MM-dd');
+    const closeDatePipe = this.datePipe.transform(fg.value.commentingClosedDate, DEFAULT_ISO_DATE_FORMAT);
     commentingClosedDateField.setValue(closeDatePipe);
     if ((user.isMinistry && !user.isForestClient) ||
         commentingOpenDateField.value == null) {

@@ -1,6 +1,7 @@
 import { CognitoService } from "@admin-core/services/cognito.service";
 import { ModalService } from '@admin-core/services/modal.service';
 import { StateService } from '@admin-core/services/state.service';
+import { DEFAULT_ISO_DATE_FORMAT } from "@admin-core/utils/constants";
 import { DatePipe, NgClass, NgIf } from "@angular/common";
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -220,7 +221,7 @@ export class PublicNoticeEditComponent implements OnInit, OnDestroy {
     body.projectId = this.project.id;
 
     if (body.pnPostDate) {
-      body.postDate = this.datePipe.transform(body.pnPostDate,'yyyy-MM-dd');
+      body.postDate = this.datePipe.transform(body.pnPostDate, DEFAULT_ISO_DATE_FORMAT);
     }
     else {
       body.postDate = null;

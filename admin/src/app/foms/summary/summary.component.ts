@@ -1,6 +1,6 @@
 import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSvc';
 import { CommonUtil } from '@admin-core/utils/commonUtil';
-import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants/constantUtils';
+import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants';
 import { DatePipe, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';

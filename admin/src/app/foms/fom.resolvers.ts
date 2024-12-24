@@ -1,4 +1,4 @@
-import { PROJECT_ID_PARAM_KEY } from '@admin-core/utils/constants/constantUtils';
+import { PROJECT_ID_PARAM_KEY } from '@admin-core/utils/constants';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, ResolveFn, RouterStateSnapshot } from '@angular/router';
 import { ProjectMetricsResponse, ProjectResponse, ProjectService, SpatialFeaturePublicResponse, SpatialFeatureService } from '@api-client';

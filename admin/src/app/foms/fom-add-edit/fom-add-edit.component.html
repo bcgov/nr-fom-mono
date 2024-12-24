@@ -86,8 +86,8 @@
                 name="commentingOpenDate"
                 class="form-control"
                 type="text"
-                placeholder="YYYY"
-                [value]="getformatedDate('commentingOpenDate', 'YYYY-MM-DD')"
+                placeholder="YYYY-MM-DD"
+                [value]="getformatedDate('commentingOpenDate', DEFAULT_ISO_DATE_FORMAT)"
               />
           </div>
 
@@ -126,8 +126,8 @@
               name="commentingClosedDate"
               class="form-control"
               type="text"
-              placeholder="YYYY"
-              [value]="getformatedDate('commentingClosedDate', 'YYYY-MM-DD')"
+              placeholder="YYYY-MM-DD"
+              [value]="getformatedDate('commentingClosedDate', DEFAULT_ISO_DATE_FORMAT)"
             />
           </div>
         </div>

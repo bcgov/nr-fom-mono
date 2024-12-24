@@ -1,7 +1,7 @@
 import { AbstractControl } from '@angular/forms';
 import { DistrictResponse, ForestClientResponse, ProjectPlanCodeEnum, ProjectResponse, WorkflowStateCode } from '@api-client';
 import { alphaNumeric, maxLength, minDate, minLength, numeric, pattern, prop, required } from '@rxweb/reactive-form-validators';
-import * as moment from "moment";
+import { DateTime } from 'luxon';
 import * as R from 'remeda';
 
 const updateFields = [
@@ -91,7 +91,7 @@ export class FomAddEditForm implements Pick<ProjectResponse,
       // For 'opStartDate' and 'opEndDate', only need "year" from the date; but still use "Date" type for datePicker.
       // (This is a tricky case to set up "conditionalExpression" validator for @minDate, as date is passed from datePicker)
       // So, conditionally, if years are the same, no need to validate on @minDate().
-      const sameYear = moment(this.opStartDate).year() == moment(this.opEndDate).year();
+      const sameYear = DateTime.fromJSDate(this.opStartDate).year == DateTime.fromJSDate(this.opEndDate).year;
       return !sameYear;
     },
     fieldName:'opStartDate', message: 'Must be equal to or later than the Start of Operations'})
@@ -121,20 +121,20 @@ export class FomAddEditForm implements Pick<ProjectResponse,
   initProposedOperations(project: Partial<ProjectResponse>) {
     // Extra conversion for form: 'opStartDate' and 'opEndDate'
     if (project?.operationStartYear) {
-      this.opStartDate = moment().set('year', project.operationStartYear)
-                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
-                                  .toDate();
+      this.opStartDate = DateTime.now().set({year: project.operationStartYear})
+                                  .set({day: 1}) // Does not matter for date, but set to first day for consistency later for comparison.
+                                  .toJSDate();
     }
     // Setting default year 
     else {
-      this.opStartDate = moment().set('date', 1)
-                                  .toDate();
+      this.opStartDate = DateTime.now().set({day: 1})
+                                  .toJSDate();
     }
 
     if (project?.operationEndYear) {
-      this.opEndDate = moment().set('year', project.operationEndYear)
-                                  .set('date', 1) // Does not matter for date, but set to first day for consistency later for comparison.
-                                  .toDate();
+      this.opEndDate = DateTime.now().set({year: project.operationEndYear})
+                                  .set({day: 1}) // Does not matter for date, but set to first day for consistency later for comparison.
+                                  .toJSDate();
     }
   }
 
