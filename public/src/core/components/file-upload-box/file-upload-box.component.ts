@@ -1,10 +1,10 @@
-import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
-import { faLockOpen, faLock } from '@fortawesome/free-solid-svg-icons';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { faLock, faLockOpen } from '@fortawesome/free-solid-svg-icons';
+import { concat } from 'remeda';
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth();
 const currentDay = new Date().getDate();
-import * as R from 'remeda';
 export function dateBuilder() {
   const dateTuple = [currentYear, currentMonth, currentDay];
   return dateTuple;
@@ -151,7 +151,7 @@ export class UploadBoxComponent implements OnInit {
   }
 
   onSelect(event) {
-    this.files = R.concat(event.addedFiles, this.files);
+    this.files = concat(event.addedFiles, this.files);
     this.invalidTypeText = null;
     if (event.addedFiles.length > 0) {
       this.fileBlobsUploaded.emit(this.files);

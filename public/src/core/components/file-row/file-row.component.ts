@@ -1,18 +1,18 @@
-import { Component, OnInit, EventEmitter, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
-import * as R from 'remeda';
+import {
+    faFileAlt,
+    faFileExcel,
+    faFilePdf,
+    faFileWord,
+    faImage,
+    IconDefinition,
+} from '@fortawesome/free-solid-svg-icons';
+import { clone } from 'remeda';
 
 const fileTypes = ['pdf', 'img', 'text', 'word', 'excel'] as const;
 export type FileType = typeof fileTypes[number];
 export type FileRecord = Record<FileType, IconDefinition>;
-import {
-  faFilePdf,
-  faImage,
-  faFileWord,
-  faFileExcel,
-  faFileAlt,
-  IconDefinition,
-} from '@fortawesome/free-solid-svg-icons';
 
 export const FILE_TYPES: FileRecord = {
   pdf: faFilePdf,
@@ -21,7 +21,7 @@ export const FILE_TYPES: FileRecord = {
   excel: faFileExcel,
   text: faFileAlt,
 } as const;
-const fileMap: FileRecord = R.clone(FILE_TYPES);
+const fileMap: FileRecord = clone(FILE_TYPES);
 export class FileTypeFns {
   static fileExt(fileName: string) {
     if (!fileName.includes('.')) return 'file format not set';
@@ -107,7 +107,7 @@ export class FileRowComponent implements OnInit {
     return `${(this.fileSize / 10).toString()} kb`;
   }
 
-  fileMap: FileRecord = R.clone(FILE_TYPES);
+  fileMap: FileRecord = clone(FILE_TYPES);
 
   @Input() index: number;
   @Input() fileTypeStr: string;

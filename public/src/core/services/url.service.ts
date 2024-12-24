@@ -1,9 +1,9 @@
+import { Location } from '@angular/common';
 import { Injectable } from '@angular/core';
-import { Params, ActivatedRoute, Router, NavigationEnd, Event } from '@angular/router';
+import { ActivatedRoute, Event, NavigationEnd, Params, Router } from '@angular/router';
+import { funnel } from 'remeda';
 import { Observable } from 'rxjs';
 import { filter, share } from 'rxjs/operators';
-import { debounce } from 'lodash';
-import { Location } from '@angular/common';
 
 /**
  * This service provides a centralized mechanism to save and restore query parameters to the URL.
@@ -81,7 +81,7 @@ export class UrlService {
     }
 
     // update url
-    this.navigate();
+    this.navigate.call();
   }
 
   /**
@@ -99,7 +99,7 @@ export class UrlService {
     }
 
     this.panel = fragment;
-    this.navigate();
+    this.navigate.call();
   }
 
   /**
@@ -117,9 +117,9 @@ export class UrlService {
    *
    * @memberof UrlService
    */
-  public navigate = debounce(() => {
+  public navigate = funnel(() => {
     this.router
       .navigate([], { relativeTo: this.route, queryParams: this.queryParams, fragment: this.panel })
       .toString();
-  }, 100);
+  }, { minQuietPeriodMs: 100 });
 }
