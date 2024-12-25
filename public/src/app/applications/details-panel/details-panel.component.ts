@@ -16,8 +16,8 @@ import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { DetailsMapComponent } from 'app/applications/details-panel/details-map/details-map.component';
 import { ShapeInfoComponent } from 'app/applications/details-panel/shape-info/shape-info.component';
 import { saveAs } from "file-saver";
-import * as _ from 'lodash';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
+import { indexBy } from 'remeda';
 import { Subject, forkJoin } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { CommentModalComponent } from '../../comment-modal/comment-modal.component';
@@ -52,7 +52,7 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
   public project: ProjectResponse;
   public projectSpatialDetail: SpatialFeaturePublicResponse[];
   public currentPeriodDaysRemainingCount = 0;
-  public workflowStatus: _.Dictionary<WorkflowStateCode>;
+  public workflowStatus: Record<string, WorkflowStateCode>
   public projectIdFilter = new Filter<string>({ filter: { queryParam: 'id', value: null } });
   public attachments: AttachmentResponse[];
   public faArrowUpRightFromSquare = faArrowUpRightFromSquare;
@@ -77,9 +77,8 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
     // Subscribe to this first, seems to be slower and can cause minor page render issue due to no code.
     this.projectService.workflowStateCodeControllerFindAll()
     .pipe(take(1)).subscribe((data) => {
-      this.workflowStatus = _.keyBy(data, 'code');
+      this.workflowStatus = indexBy(data, (x) => x.code);
     });
-
     // First time component init. The `urlService.onNavEnd$` already ends, so 
     // do this initially first since queryParam is ready from route. 
     // Works if user has bookmarks the detail link.
@@ -118,7 +117,9 @@ export class DetailsPanelComponent implements OnDestroy, OnInit {
       next: (results) => {
         this.project = results.project;
         this.projectSpatialDetail = results.spatialDetail;
-        this.attachments = _.orderBy(results.attachments, ['attachmentType.code'],['asc']);
+        this.attachments = results.attachments.sort(
+            (a, b) => a.attachmentType.code.localeCompare(b.attachmentType.code)
+        );
         this.isAppLoading = false;
         this.projectIdFilter.filter.value = this.project.id.toString();
         this.saveQueryParameters();
