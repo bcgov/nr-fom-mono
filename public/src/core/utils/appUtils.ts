@@ -9,10 +9,6 @@ export class AppUtils {
     // deep object copy
     return JSON.parse(JSON.stringify(obj));
   }
-
-  static isNil(value) {
-    return value == null;
-  }
 }
 export const getCommentingClosingDate = (commentingClosedDate: string) => {
     // Note: commenting_closingDate (inclusive) = commenting_closedDate (exclusive) - 1 day

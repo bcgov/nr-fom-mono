@@ -8,9 +8,8 @@ import { ProjectPlanCodeEnum, ProjectResponse, PublicNoticePublicFrontEndRespons
 import { periodOperationsTxt, woodlotOperationsTxt } from '@public-core/constants/appConstants';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
-import { AppUtils } from '@public-core/utils/appUtils';
 import { DateTime } from "luxon";
-import { pathOr, stringToPath } from 'remeda';
+import { isNullish, pathOr, stringToPath } from 'remeda';
 import { IUpdateEvent } from '../projects.component';
 import { Panel } from '../utils/panel.enum';
 import { NoticeFilter, PublicNoticesFilterPanelComponent } from './notices-filter-panel/public-notices-filter-panel.component';
@@ -107,13 +106,13 @@ export class PublicNoticesPanelComponent implements OnInit {
     // If 'value'(filter value) is null or underfined, consider this as to include all.
     return {
       equal: function(dataValue: string, filterValue: string) {
-        return AppUtils.isNil(filterValue) || dataValue === filterValue;
+        return isNullish(filterValue) || dataValue === filterValue;
       },
       in: function(dataValue: string, filterValue: string) {
-        return AppUtils.isNil(filterValue) || dataValue.includes(filterValue);
+        return isNullish(filterValue) || dataValue.includes(filterValue);
       },
       isDateOnOrAfter: function(date1: Date, date2: Date) {
-        return AppUtils.isNil(date2) || 
+        return isNullish(date2) || 
             DateTime.fromJSDate(date1).startOf('day') >= DateTime.fromJSDate(date2).startOf('day');
       }
     }
