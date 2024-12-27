@@ -18,6 +18,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+                "leaflet"
+            ],
             "baseHref": "/admin/",
             "outputPath": "dist/admin",
             "index": "src/index.html",
