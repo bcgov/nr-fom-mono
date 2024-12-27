@@ -18,6 +18,9 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
+            "allowedCommonJsDependencies": [
+                "leaflet", "leaflet.markercluster", "object-hash"
+            ],
             "baseHref": "/public/",
             "outputPath": "dist/public",
             "index": "src/index.html",
