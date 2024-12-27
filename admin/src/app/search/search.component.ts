@@ -10,7 +10,7 @@ import { ProjectPlanCodeEnum, ProjectResponse, ProjectService, WorkflowStateEnum
 import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap';
 import { RxReactiveFormsModule } from '@rxweb/reactive-form-validators';
 import { User } from "@utility/security/user";
-import { isNil } from 'lodash';
+import { isNullish } from 'remeda';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
@@ -81,9 +81,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.count = 0;
 
     const workFlowStateCodeArg = this.fStatus === 'undefined'? null: this.fStatus;
-    const districtArg = (isNaN(this.fDistrict) || isNil(this.fDistrict))? null : this.fDistrict.toString();
-    const fspIdArg = (isNaN(this.fFspId) || isNil(this.fFspId))? null : this.fFspId.toString();
-    const projectIdArg = (isNaN(this.fNumber) || isNil(this.fNumber))? null : this.fNumber.toString();
+    const districtArg = (isNaN(this.fDistrict) || isNullish(this.fDistrict))? null : this.fDistrict.toString();
+    const fspIdArg = (isNaN(this.fFspId) || isNullish(this.fFspId))? null : this.fFspId.toString();
+    const projectIdArg = (isNaN(this.fNumber) || isNullish(this.fNumber))? null : this.fNumber.toString();
     this.searchProjectService.projectControllerFind(projectIdArg, fspIdArg , districtArg, workFlowStateCodeArg, this.fHolder)
       .subscribe(
         projects => {
