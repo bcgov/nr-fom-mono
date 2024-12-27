@@ -16,7 +16,7 @@ import {
     PublicCommentAdminUpdateRequest, PublicCommentService, SpatialFeatureService
 } from '@api-client';
 import { User } from "@utility/security/user";
-import * as _ from 'lodash';
+import { indexBy } from 'remeda';
 import { map, takeUntil } from 'rxjs/operators';
 import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 
@@ -56,7 +56,7 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
   commentDetailForm: CommentDetailComponent;
 
   public responseCodes = this.stateSvc.getCodeTable('responseCode')
-  public commentScopeCodes = _.keyBy(this.stateSvc.getCodeTable('commentScopeCode'), 'code');
+  public commentScopeCodes = indexBy(this.stateSvc.getCodeTable('commentScopeCode'), (x) => x.code);
   public loading = false;
   public projectId: number;
   public project: ProjectResponse;
