@@ -15,7 +15,7 @@ import { ConfigService } from '@utility/services/config.service';
 import { FeatureSelectService } from '@utility/services/featureSelect.service';
 import { DetailsMapComponent } from 'app/applications/details-panel/details-map/details-map.component';
 import { ShapeInfoComponent } from 'app/applications/details-panel/shape-info/shape-info.component';
-import { saveAs } from "file-saver";
+import { saveAs } from "file-saver-es";
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { indexBy } from 'remeda';
 import { Subject, forkJoin } from 'rxjs';
