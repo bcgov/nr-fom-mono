@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { WorkflowStateCode } from '@api-client';
 import { COMMENT_STATUS_FILTER_PARAMS, FOMFiltersService, FOM_FILTER_NAME } from '@public-core/services/fomFilters.service';
 import { UrlService } from '@public-core/services/url.service';
-import * as _ from 'lodash';
 import { DateTime } from "luxon";
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { Subject } from 'rxjs';
@@ -37,7 +35,6 @@ export class FindPanelComponent implements OnDestroy, OnInit {
   
   public filterHash: string;
   private ngUnsubscribe: Subject<void> = new Subject<void>();
-  public workflowState: _.Dictionary<WorkflowStateCode>;
   private fomFilters: Map<string, IFilter | IMultiFilter>;
   public fomNumberFilter = new Filter<number>({ filter: { queryParam: 'fomNumber', value: null }});
   public forestClientNameFilter = new Filter<string>({ filter: { queryParam: 'fcName', value: null }});

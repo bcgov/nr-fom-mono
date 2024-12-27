@@ -8,11 +8,10 @@ import { UrlService } from '@public-core/services/url.service';
 import { MapLayers } from '@utility/models/map-layers';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
-import * as _ from 'lodash';
+import { differenceWith, findIndex, funnel } from 'remeda';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MarkerPopupComponent } from './marker-popup/marker-popup.component';
-
 
 declare module 'leaflet' {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -119,7 +118,7 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
     this.map.on('moveend', () => {
       // notify applications component of updated coordinates
       if (this.isMapReady && this.doNotify) {
-        this.emitCoordinates();
+        this.emitCoordinates.call();
       }
       this.doNotify = true; // reset for next time
     });
@@ -211,15 +210,17 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   // called when projects list changes
   public ngOnChanges(changes: SimpleChanges) {
     if (changes.projectsSummary && !changes.projectsSummary.firstChange && changes.projectsSummary.currentValue) {
-      const deletedProjects = _.differenceBy(
+      const ppsEqComparator = (a: ProjectPublicSummaryResponse, b: ProjectPublicSummaryResponse) => a.id == b.id;
+      const deletedProjects = differenceWith(
         changes.projectsSummary.previousValue as Array<ProjectPublicSummaryResponse>,
         changes.projectsSummary.currentValue as Array<ProjectPublicSummaryResponse>,
-        'id'
+        ppsEqComparator
       );
-      const addedProjects = _.differenceBy(
+
+      const addedProjects = differenceWith(
         changes.projectsSummary.currentValue as Array<ProjectPublicSummaryResponse>,
         changes.projectsSummary.previousValue as Array<ProjectPublicSummaryResponse>,
-        'id'
+        ppsEqComparator
       );
 
       // (re)draw the matching projects
@@ -262,10 +263,9 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
    * Emits an event to notify applications component of updated coordinates.
    * Debounced function executes when 250ms have elapsed since last call.
    */
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  private emitCoordinates = _.debounce(() => {
+  private emitCoordinates = funnel(() => {
     this.updateCoordinates.emit();
-  }, 250);
+  }, { minQuietPeriodMs: 250 });
 
   /**
    * Returns coordinates in GeoJSON format that specify map bounding box.
@@ -315,7 +315,7 @@ export class AppMapComponent implements OnInit, AfterViewInit, OnChanges, OnDest
   private drawMap(deletedProjects: Array<ProjectPublicSummaryResponse>, addedProjects: Array<ProjectPublicSummaryResponse>) {
     // remove deleted projects from list and map
     deletedProjects.forEach(projectSummary => {
-      const markerIndex = _.findIndex(this.markerList, { dispositionId: projectSummary.id });
+      const markerIndex = findIndex(this.markerList, (marker) => marker.dispositionId == projectSummary.id);
       if (markerIndex >= 0) {
         const markers = this.markerList.splice(markerIndex, 1);
         this.markerClusterGroup.removeLayer(markers[0]);
