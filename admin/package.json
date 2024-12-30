@@ -26,7 +26,7 @@
     "@rxweb/reactive-form-validators": "~13.0.0",
     "@types/file-saver-es": "^2.0.3",
     "@types/luxon": "^3.4.2",
-    "aws-amplify": "^5.3.2",
+    "aws-amplify": "^5.3.27",
     "bootstrap": "~5.3.0",
     "file-saver-es": "^2.0.5",
     "jquery": "^3.6.0",
