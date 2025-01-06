@@ -58,7 +58,7 @@ jobs:
             triggers: ('public/' 'libs/')
     steps:
       - uses: actions/checkout@v4
-      - uses: bcgov-nr/action-builder-ghcr@v2.3.0
+      - uses: bcgov-nr/action-builder-ghcr@v2.2.0
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
@@ -72,9 +72,6 @@ jobs:
   deploys:
     name: Deploys
     needs: [builds, init]
-    env:
-      LOGOUT_URL: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi
-      LOGOUT_RETURN_URL: https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
@@ -89,7 +86,7 @@ jobs:
               -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
-              -p LOGOUT_CHAIN_URL="${{ env.LOGOUT_URL }}?retnow=1&returl=${{ env.LOGOUT_RETURN_URL }}"
+              -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
             triggers: ('db/' 'libs/' 'api/')
           - name: admin
             file: admin/openshift.deploy.yml
@@ -99,7 +96,6 @@ jobs:
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
-            triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
           - name: public
             file: public/openshift.deploy.yml
             overwrite: true
