@@ -2,12 +2,14 @@ name: Pull Request Closed
 
 on:
   pull_request:
-    types:
-      - closed
+    types: [closed]
 
 concurrency:
   group: ${{ github.event.number }}
   cancel-in-progress: true
+
+permissions:
+  packages: write
 
 jobs:
   cleanup:
