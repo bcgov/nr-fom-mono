@@ -2,7 +2,6 @@ name: Pull Request Open
 
 on:
   pull_request:
-  workflow_dispatch:
 
 concurrency:
   group: ${{ github.event.number }}
