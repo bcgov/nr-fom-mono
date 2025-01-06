@@ -2,11 +2,12 @@ name: Pull Request Open
 
 on:
   pull_request:
-  workflow_dispatch:
 
 concurrency:
   group: ${{ github.event.number }}
   cancel-in-progress: true
+
+permissions: {}
 
 jobs:
   init:

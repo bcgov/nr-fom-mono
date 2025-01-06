@@ -1,4 +1,3 @@
-# RedHat UBI 8 with nodejs 14
 FROM postgis/postgis:13-master
 
 # Enable pgcrypto extension on startup
