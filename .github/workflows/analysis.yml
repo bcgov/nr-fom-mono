@@ -33,19 +33,6 @@ jobs:
             -Dsonar.projectKey=nr-fom
           sonar_token: ${{ secrets.SONAR_TOKEN }}
 
-  codeql:
-    name: CodeQL
-    if: ${{ ! github.event.pull_request.draft }}
-    needs: [tests]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: javascript
-      - uses: github/codeql-action/analyze@v3
-
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy:
     name: Trivy Security Scan
