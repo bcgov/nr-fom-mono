@@ -87,12 +87,10 @@ jobs:
               -p DB_TESTDATA=true
               -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
               -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-            triggers: ('db/' 'libs/' 'api/')
           - name: admin
             file: admin/openshift.deploy.yml
             overwrite: true
             parameters: -p REPLICA_COUNT=1
-            triggers: ('db/' 'libs/' 'api/' 'admin/')
           - name: db
             file: db/openshift.deploy.yml
             overwrite: false
@@ -100,7 +98,6 @@ jobs:
             file: public/openshift.deploy.yml
             overwrite: true
             parameters: -p REPLICA_COUNT=1
-            triggers: ('db/' 'libs/' 'api/' 'public/')
     steps:
       - uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
@@ -114,4 +111,4 @@ jobs:
             -p URL=fom-${{ needs.init.outputs.route_number }}.apps.silver.devops.gov.bc.ca
             -p ZONE=${{ github.event.number }} -p TAG=${{ github.event.number }}
             ${{ matrix.parameters }}
-          triggers: ${{ matrix.triggers }}
+          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
