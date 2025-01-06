@@ -22,6 +22,9 @@ parameters:
   - name: TAG
     description: Image tag; e.g. PR number, latest or prod
     required: true
+  - name: CRONJOB_RESTORE_TAG
+    description: Image tag for database restore cronjob; e.g. PR number, latest or prod
+    value: prod
   - description: Volume space available for data, e.g. 512Mi, 2Gi.
     displayName: Database Volume Capacity
     name: DB_PVC_SIZE
@@ -339,7 +342,7 @@ objects:
               containers:
                 - name: ${NAME}-${ZONE}-${COMPONENT}-restore
                   # use the same image as our database, so we can run the psql command
-                  image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${ZONE}
+                  image: ${REGISTRY}/${ORG}/nr-fom/${COMPONENT}:${CRONJOB_RESTORE_TAG}
                   command: ["/bin/sh", "-c"]
                   args:
                   - |
@@ -384,7 +387,7 @@ objects:
                           echo "psql successfully reverted current failed db restore procedure. DB fom is back to original state. However, the restore procedure failed."
                           exit $db_restore_cmd_status
                         else
-                          echo "Error: psql failed to attmpt reverting failed db restore procedure. Please manually rename ${OLD_FOM_DATABASE_NAME} back to fom."
+                          echo "Error: psql failed to attempt reverting failed db restore procedure. Please manually rename ${OLD_FOM_DATABASE_NAME} back to fom."
                           exit $db_revert_restore_cmd_status
                         fi
                       else
