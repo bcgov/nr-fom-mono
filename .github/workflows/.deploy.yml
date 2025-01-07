@@ -22,22 +22,40 @@ on:
         default: ${{ github.event.number }}
         required: false
         type: string
+      triggers:
+        description: Paths to check for changes
+        default: ''
+        required: false
+        type: string
 
 jobs:
   init:
     name: Init
-    permissions:
-      pull-requests: write
-    runs-on: ubuntu-24.04
+    environment: ${{ inputs.environment }}
     outputs:
-      route_number: ${{ steps.calculate.outputs.route_number }}
+      route_number: ${{ steps.route_number.outputs.route_number }}
+      triggered: ${{ steps.triggers.outputs.triggered }}
+    runs-on: ubuntu-24.04
     steps:
-      - name: Calculate the deployment number
-        id: calculate
+      # Check triggers (omitted or matched)
+      - name: Check triggers
+        uses: bcgov-nr/action-diff-triggers@v0.2.0
+        id: triggers
+        with:
+          triggers: ${{ inputs.triggers }}
+
+      - name: FAM routing
+        id: route_number
+        if: steps.triggers.outputs.core == 'true'
         run: |
-          echo "route_number=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
+          if [ ${{ github.event_name }} == 'pull_request' ]; then
+            echo "route_number=$(( ${{ inputs.target }} % 50 ))" >> $GITHUB_OUTPUT
+          else
+            echo "route_number=${{ inputs.target }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: OpenShift Init
+        if: steps.triggers.outputs.core == 'true' || steps.triggers.outputs.sync == 'true'
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
@@ -45,12 +63,27 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           file: libs/openshift.init.yml
           overwrite: false
-          parameters: -p ZONE=${{ github.event.number }}
+          parameters: -p ZONE=${{ inputs.target }}
           triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
 
-  deploys:
-    name: Deploys
-    needs: [builds, init]
+      - name: Database
+        if: steps.triggers.outputs.core == 'true' || steps.triggers.outputs.sync == 'true'
+        uses: bcgov-nr/action-deployer-openshift@v3.0.1
+        with:
+          oc_namespace: ${{ vars.OC_NAMESPACE }}
+          oc_server: ${{ vars.OC_SERVER }}
+          oc_token: ${{ secrets.OC_TOKEN }}
+          file: common/openshift.database.yml
+          overwrite: false
+          parameters:
+            -p ZONE=${{ inputs.target }}
+            ${{ github.event_name == 'pull_request' && '-p DB_PVC_SIZE=192Mi' || '' }}
+            ${{ github.event_name == 'pull_request' && '-p MEMORY_REQUEST=100Mi' || '' }}
+            ${{ github.event_name == 'pull_request' && '-p MEMORY_LIMIT=200Mi' || '' }}
+
+  deploy:
+    name: Deploy
+    needs: [init]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     strategy:
@@ -88,173 +121,4 @@ jobs:
             -p URL=fom-${{ needs.init.outputs.route_number }}.apps.silver.devops.gov.bc.ca
             -p REPLICA_COUNT=1
             ${{ matrix.parameters }}
-          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
-
-
-
-
-
-  init:
-    name: Deploy (init)
-    environment: ${{ inputs.environment }}
-    outputs:
-      fam-modded-zone: ${{ steps.fam-modded-zone.outputs.fam-modded-zone }}
-      deploy_core: ${{ steps.triggers.outputs.core }}
-      deploy_sync: ${{ steps.triggers.outputs.sync }}
-    runs-on: ubuntu-24.04
-    steps:
-      # Check triggers (omitted or matched)
-      - name: Check core triggers
-        uses: bcgov-nr/action-diff-triggers@v0.2.0
-        id: check_core
-        with:
-          triggers: ('backend/' 'common/' 'database/' 'frontend/' 'oracle-api/')
-
-      - name: Check sync triggers
-        uses: bcgov-nr/action-diff-triggers@v0.2.0
-        id: check_sync
-        with:
-          triggers: ('common/' 'sync/')
-
-      # Simplify triggers
-      - name: Simplify triggers
-        id: triggers
-        run: |
-          echo "core=${{ github.event_name != 'pull_request' || steps.check_core.outputs.triggered == 'true' }}" >> $GITHUB_OUTPUT
-          echo "sync=${{ github.event_name != 'pull_request' || steps.check_sync.outputs.triggered == 'true' }}" >> $GITHUB_OUTPUT
-
-      - name: FAM routing
-        id: fam-modded-zone
-        if: steps.triggers.outputs.core == 'true'
-        run: |
-          if [ ${{ github.event_name }} == 'pull_request' ]; then
-            echo "fam-modded-zone=$(( ${{ inputs.target }} % 50 ))" >> $GITHUB_OUTPUT
-          else
-            echo "fam-modded-zone=${{ inputs.target }}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: OpenShift Init
-        if: steps.triggers.outputs.core == 'true' || steps.triggers.outputs.sync == 'true'
-        uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          file: common/openshift.init.yml
-          overwrite: true
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            -p DB_PASSWORD='${{ secrets.DB_PASSWORD }}'
-            -p FORESTCLIENTAPI_KEY='${{ secrets.FORESTCLIENTAPI_KEY }}'
-            -p ORACLE_PASSWORD='${{ secrets.ORACLE_PASSWORD }}'
-            -p ORACLE_SERVICE='${{ vars.ORACLE_SERVICE }}'
-            -p ORACLE_USER='${{ vars.ORACLE_USER }}'
-            -p ORACLE_SYNC_USER='${{ vars.ORACLE_SYNC_USER }}'
-            -p ORACLE_SYNC_PASSWORD='${{ secrets.ORACLE_SYNC_PASSWORD }}'
-            -p ORACLE_CERT_SECRET='${{ secrets.ORACLE_CERT_SECRET }}'
-            -p ORACLE_HOST='${{ vars.ORACLE_HOST }}'
-            -p VITE_USER_POOLS_WEB_CLIENT_ID=${{ secrets.VITE_USER_POOLS_WEB_CLIENT_ID }}
-
-      - name: Database
-        if: steps.triggers.outputs.core == 'true' || steps.triggers.outputs.sync == 'true'
-        uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          file: common/openshift.database.yml
-          overwrite: false
-          parameters:
-            -p ZONE=${{ inputs.target }}
-            ${{ github.event_name == 'pull_request' && '-p DB_PVC_SIZE=192Mi' || '' }}
-            ${{ github.event_name == 'pull_request' && '-p MEMORY_REQUEST=100Mi' || '' }}
-            ${{ github.event_name == 'pull_request' && '-p MEMORY_LIMIT=200Mi' || '' }}
-
-  deploy:
-    name: Deploy
-    environment: ${{ inputs.environment }}
-    if: needs.init.outputs.deploy_core == 'true'
-    needs: [init]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        name: [backend, frontend, oracle-api]
-        include:
-          - name: backend
-            file: backend/openshift.deploy.yml
-            overwrite: true
-            parameters:
-              -p AWS_COGNITO_ISSUER_URI=https://cognito-idp.ca-central-1.amazonaws.com/${{ vars.VITE_USER_POOLS_ID }}
-            verification_path: "health"
-          - name: frontend
-            file: frontend/openshift.deploy.yml
-            overwrite: true
-            parameters:
-              -p FAM_MODDED_ZONE=${{ needs.init.outputs.fam-modded-zone }}
-              -p VITE_SPAR_BUILD_VERSION=snapshot-${{ inputs.target || github.event.number }}
-              -p VITE_USER_POOLS_ID=${{ vars.VITE_USER_POOLS_ID }}
-          - name: oracle-api
-            file: oracle-api/openshift.deploy.yml
-            overwrite: true
-            parameters:
-              -p AWS_COGNITO_ISSUER_URI=https://cognito-idp.ca-central-1.amazonaws.com/${{ vars.VITE_USER_POOLS_ID }}
-              ${{ github.event_name == 'pull_request' && '-p CPU_LIMIT=100m' || '' }}
-              ${{ inputs.target == 'prod' && '-p MIN_REPLICAS=3' || '' }}
-              ${{ inputs.target == 'prod' && '-p MAX_REPLICAS=5' || '' }}
-            verification_path: "actuator/health"
-
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        id: deploys
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          parameters:
-            -p TAG=${{ inputs.tag }}
-            -p ZONE=${{ inputs.target }}
-            ${{ github.event_name == 'pull_request' && '-p MIN_REPLICAS=1' || '' }}
-            ${{ github.event_name == 'pull_request' && '-p MAX_REPLICAS=1' || '' }}
-            ${{ matrix.parameters }}
-          verification_path: ${{ matrix.verification_path }}
-          verification_retry_attempts: 5
-          verification_retry_seconds: 20
-
-  # ETL testing will only run on Pull Requests if the sync/ directory is modified
-  sync:
-    name: Deploy (sync)
-    environment: ${{ inputs.environment }}
-    if: needs.init.outputs.deploy_sync == 'true'
-    needs: [init]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Deploy (sync)
-        uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          file: sync/openshift.deploy.yml
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: true
-          parameters:
-            -p TAG=${{ inputs.tag }}
-            -p ZONE=${{ inputs.target }}
-            ${{ github.event_name == 'pull_request' && '-p TEST_MODE=true' || '' }}
-
-
-      - name: Override OpenShift version
-        if: github.event_name == 'pull_request'
-        env:
-          OC: https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable-4.13/openshift-client-linux.tar.gz
-        run: |
-          # Download and extract with retry, continuing on error
-          (wget ${{ env.OC }} -qcO - | tar -xzvf - oc)|| !! || true
-          oc version
-        working-directory: /usr/local/bin/
-
-      - name: Run sync ETL
-        if: github.event_name == 'pull_request'
-        run: ./sync/oc_run.sh ${{ inputs.tag }} ${{ secrets.oc_token }}
+          triggers: ${{ inputs.triggers }}
