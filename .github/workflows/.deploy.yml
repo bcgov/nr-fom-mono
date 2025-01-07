@@ -95,6 +95,6 @@ jobs:
           overwrite: ${{ matrix.overwrite }}
           parameters:
             -p ZONE=${{ inputs.target }} -p TAG=${{ inputs.tag }}
-            -p URL=${{ needs.url.outputs.url }} -p REPLICA_COUNT=1
+            -p URL=${{ needs.init.outputs.url }} -p REPLICA_COUNT=1
             ${{ matrix.parameters }}
           # triggers: ${{ inputs.triggers }}
