@@ -34,8 +34,8 @@ jobs:
           parameters: -p ZONE=${{ github.event.number }}
           triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
 
-  builds:
-    name: Builds
+  build:
+    name: Build
     runs-on: ubuntu-24.04
     permissions:
       packages: write
@@ -70,51 +70,15 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           triggers: ${{ matrix.triggers }}
 
-  deploys:
-    name: Deploys
-    needs: [builds, init]
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        name: [api, admin, db, public]
-        include:
-          - name: api
-            file: api/openshift.deploy.yml
-            overwrite: true
-            parameters:
-              -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
-              -p DB_TESTDATA=true
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
-              -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-          - name: admin
-            file: admin/openshift.deploy.yml
-            overwrite: true
-          - name: db
-            file: db/openshift.deploy.yml
-            overwrite: false
-          - name: public
-            file: public/openshift.deploy.yml
-            overwrite: true
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ github.event.number }} -p TAG=${{ github.event.number }}
-            -p URL=fom-${{ needs.init.outputs.route_number }}.apps.silver.devops.gov.bc.ca
-            -p REPLICA_COUNT=1
-            ${{ matrix.parameters }}
-          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
+  deploy:
+    name: Deploy (${{ github.event.number }})
+    needs: [build]
+    secrets: inherit
+    uses: ./.github/workflows/.deploy.yml
 
   results:
     name: PR Results
-    needs: [builds, deploys]
+    needs: [build, deploy]
     if: always()
     runs-on: ubuntu-24.04
     steps:
