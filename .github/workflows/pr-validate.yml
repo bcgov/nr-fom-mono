@@ -41,3 +41,11 @@ jobs:
 
             Once merged, code will be promoted and handed off to following workflow run.
              - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+
+  results:
+    name: Validate Results
+    if: always()
+    needs: [pr-description-add]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: echo "Success!"
