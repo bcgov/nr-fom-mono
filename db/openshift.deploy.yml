@@ -46,6 +46,8 @@ parameters:
     value: 1Gi
   - name: URL
     description: Dummy parameter to make workflows easier
+  - name: REPLICA_COUNT
+    description: Dummy parameter to make workflows easier
   ### Backup-Container starts here ###
   - name: BACKUP_COMPONENT
     description: BACKUP_COMPONENT name
