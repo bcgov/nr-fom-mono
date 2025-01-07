@@ -62,7 +62,7 @@ jobs:
           file: libs/openshift.init.yml
           overwrite: false
           parameters: -p ZONE=${{ inputs.target }}
-          triggers: ${{ inputs.triggers }}
+          # triggers: ${{ inputs.triggers }}
 
   # deploy:
   #   name: Deploy
