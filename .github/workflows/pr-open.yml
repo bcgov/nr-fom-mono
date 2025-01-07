@@ -113,3 +113,13 @@ jobs:
             -p ZONE=${{ github.event.number }} -p TAG=${{ github.event.number }}
             ${{ matrix.parameters }}
           triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
+
+  results:
+    name: PR Results
+    needs: [builds, deploys]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
+        run: echo "At least one job has failed." && exit 1
+      - run: echo "Success!"

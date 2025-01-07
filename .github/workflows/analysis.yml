@@ -39,7 +39,6 @@ jobs:
   trivy:
     name: Trivy Security Scan
     if: ${{ ! github.event.pull_request.draft }}
-    needs: [tests]
     permissions:
       security-events: write
     runs-on: ubuntu-24.04
@@ -60,3 +59,13 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: "trivy-results.sarif"
+
+  results:
+    name: Analysis Results
+    needs: [tests, trivy]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
+        run: echo "At least one job has failed." && exit 1
+      - run: echo "Success!"
