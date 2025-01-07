@@ -27,6 +27,11 @@ on:
         default: ''
         required: false
         type: string
+      url:
+        description: URL for deployment, does not include path
+        default: ''
+        required: false
+        type: string
 
 permissions: {}
 
@@ -35,7 +40,7 @@ jobs:
     name: Init
     environment: ${{ inputs.environment }}
     outputs:
-      route_number: ${{ steps.route_number.outputs.route_number }}
+      url: ${{ steps.url.outputs.url }}
       triggered: ${{ steps.triggers.outputs.triggered }}
     runs-on: ubuntu-24.04
     steps:
@@ -46,14 +51,13 @@ jobs:
         with:
           triggers: ${{ inputs.triggers }}
 
-      - name: FAM routing
-        id: route_number
-        if: steps.triggers.outputs.core == 'true'
+      - name: Create URL
+        id: url
         run: |
-          if [ ${{ github.event_name }} == 'pull_request' ]; then
-            echo "route_number=$(( ${{ inputs.target }} % 50 ))" >> $GITHUB_OUTPUT
+          if [ -z "${{ inputs.target }}" ]; then
+            echo "url=fom-$(( ${{ inputs.target }} % 50 )).apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
           else
-            echo "route_number=${{ inputs.target }}" >> $GITHUB_OUTPUT
+            echo "url=${{ inputs.url }}" >> $GITHUB_OUTPUT
           fi
 
       - name: OpenShift Init
@@ -105,7 +109,6 @@ jobs:
   #         penetration_test: false
   #         parameters:
   #           -p ZONE=${{ github.event.number }} -p TAG=${{ github.event.number }}
-  #           -p URL=fom-${{ needs.init.outputs.route_number }}.apps.silver.devops.gov.bc.ca
-  #           -p REPLICA_COUNT=1
+  #           -p URL=${{ needs.url.outputs.url }} -p REPLICA_COUNT=1
   #           ${{ matrix.parameters }}
   #         triggers: ${{ inputs.triggers }}
