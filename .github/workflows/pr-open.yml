@@ -10,30 +10,6 @@ concurrency:
 permissions: {}
 
 jobs:
-  init:
-    name: Init
-    permissions:
-      pull-requests: write
-    runs-on: ubuntu-24.04
-    outputs:
-      route_number: ${{ steps.calculate.outputs.route_number }}
-    steps:
-      - name: Calculate the deployment number
-        id: calculate
-        run: |
-          echo "route_number=$((${{ github.event.number }} % 50))" >> $GITHUB_OUTPUT
-
-      - name: OpenShift Init
-        uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          file: libs/openshift.init.yml
-          overwrite: false
-          parameters: -p ZONE=${{ github.event.number }}
-          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
-
   build:
     name: Build
     runs-on: ubuntu-24.04
