@@ -41,16 +41,8 @@ jobs:
     environment: ${{ inputs.environment }}
     outputs:
       url: ${{ steps.url.outputs.url }}
-      triggered: ${{ steps.triggers.outputs.triggered }}
     runs-on: ubuntu-24.04
     steps:
-      # Check triggers (omitted or matched)
-      - name: Check triggers
-        uses: bcgov-nr/action-diff-triggers@v0.2.0
-        id: triggers
-        with:
-          triggers: ${{ inputs.triggers }}
-
       - name: Create URL
         id: url
         run: |
@@ -70,7 +62,7 @@ jobs:
           file: libs/openshift.init.yml
           overwrite: false
           parameters: -p ZONE=${{ inputs.target }}
-          triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')  
+          triggers: ${{ inputs.triggers }}
 
   # deploy:
   #   name: Deploy

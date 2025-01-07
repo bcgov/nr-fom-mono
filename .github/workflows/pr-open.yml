@@ -49,9 +49,10 @@ jobs:
   deploy:
     name: Deploy (${{ github.event.number }})
     needs: [build]
-    permissions: {}
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
+    with:
+      triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
 
   results:
     name: PR Results
