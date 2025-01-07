@@ -24,6 +24,8 @@ jobs:
   validate:
     name: Validate PR
     needs: [init]
+    env:
+      DOMAIN: apps.silver.devops.gov.bc.ca
     uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.8.3
     with:
       markdown_links: |
