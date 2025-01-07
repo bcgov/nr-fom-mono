@@ -28,6 +28,8 @@ on:
         required: false
         type: string
 
+permissions: {}
+
 jobs:
   init:
     name: Init
