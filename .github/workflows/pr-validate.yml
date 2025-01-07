@@ -11,41 +11,32 @@ concurrency:
 permissions: {}
 
 jobs:
-  pr-description-add:
-    name: PR Description Add
-    env:
-      DOMAIN: apps.silver.devops.gov.bc.ca
-      PREFIX: ${{ github.event.repository.name }}
+  init:
+    name: Initialize
+    outputs:
+      mod-tag: ${{ steps.mod-tag.outputs.mod-tag }}
     runs-on: ubuntu-24.04
-    permissions:
-      pull-requests: write
-    timeout-minutes: 1
     steps:
-      - name: Get FAM Route
-        id: fam
-        run: echo "route=$(( ${{ github.event.number }} % 50 ))" >> $GITHUB_OUTPUT
+      - name: Get PR Number Mod 50
+        id: mod-tag
+        run: echo "mod-tag=$(( ${{ github.event.number }} % 50 ))" >> $GITHUB_OUTPUT
 
-      - uses: bcgov-nr/action-pr-description-add@v1.2.0
-        env:
-          DOMAIN: apps.silver.devops.gov.bc.ca
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          add_markdown: |
-            ---
-            Thanks for the PR!
-
-            Any successful deployments (not always required) will be available below.
-             - [api](https://fom-${{ steps.fam.outputs.route }}.${{ env.DOMAIN }}/api)
-             - [admin](https://fom-${{ steps.fam.outputs.route }}.${{ env.DOMAIN }}/admin)
-             - [public](https://fom-${{ steps.fam.outputs.route }}.${{ env.DOMAIN }}/public)
-
-            Once merged, code will be promoted and handed off to following workflow run.
-             - [Main Merge Workflow](https://github.com/${{ github.repository }}/actions/workflows/merge-main.yml)
+  validate:
+    name: Validate PR
+    needs: [init]
+    uses: bcgov/quickstart-openshift-helpers/.github/workflows/.pr-validate.yml@v0.8.3
+    with:
+      markdown_links: |
+        - [api](https://fom-${{ needs.init.outputs.mod-tag }}.${{ env.DOMAIN }}/api)
+        - [admin](https://fom-${{ needs.init.outputs.mod-tag }}.${{ env.DOMAIN }}/admin)
+        - [public](https://fom-${{ needs.init.outputs.mod-tag }}.${{ env.DOMAIN }}/public)
 
   results:
     name: Validate Results
     if: always()
-    needs: [pr-description-add]
+    needs: [validate]
     runs-on: ubuntu-24.04
     steps:
+      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
+        run: echo "At least one job has failed." && exit 1
       - run: echo "Success!"
