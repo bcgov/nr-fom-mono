@@ -53,7 +53,6 @@ jobs:
           fi
 
       - name: OpenShift Init
-        if: steps.triggers.outputs.core == 'true' || steps.triggers.outputs.sync == 'true'
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
         with:
           oc_namespace: ${{ vars.OC_NAMESPACE }}
