@@ -9,9 +9,13 @@ export class InteractionDetailForm implements Pick<InteractionRequest, typeof UP
   @prop()
   stakeholder: string = '';
 
+  /* 
+  FORM field for binding to the datePicker, the value will later be converted to 'communicationDate'
+  in the body when saving interaction to the backend.
+  */
   @required()
   @prop()
-  communicationDatePickerDate: Date; // for datePicker only
+  communicationDatePickerDate: Date;
 
   @required()
   @minLength({value: 1})
