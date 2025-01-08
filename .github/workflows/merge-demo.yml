@@ -42,7 +42,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
-    name: Deploy (${{ github.event.number }})
+    name: Deploy (Demo)
     needs: [build]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
