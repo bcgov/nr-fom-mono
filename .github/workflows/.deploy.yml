@@ -46,12 +46,12 @@ jobs:
       - name: Create URL
         id: url
         run: |
-          if [ -z "${{ inputs.target }}" ]; then
-            echo "Targets provided"
+          if [ -z "${{ inputs.url }}" ]; then
+            echo "URL provided"
             echo "url=fom-$(( ${{ inputs.target }} % 50 )).apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
           else
             echo "url=${{ inputs.url }}" >> $GITHUB_OUTPUT
-            echo "Targets not provided"
+            echo "URL not provided"
           fi
 
       - name: OpenShift Init
