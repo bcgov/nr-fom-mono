@@ -14,9 +14,9 @@ import { lastValueFrom, Observable } from "rxjs";
 import { getFakeUser } from "./mock-user";
 
 export interface CognitoAuthToken { 
-  id_token: { [id: string]: any }
-  access_token: { [id: string]: any }
-  jwtToken: CognitoUserSession
+  id_token: { [id: string]: any }  // decoded jwt payload
+  access_token: { [id: string]: any } // decoded jwt payload
+  jwtToken: CognitoUserSession // original Cognito user session (tokens)
 }
 
 @Injectable({
