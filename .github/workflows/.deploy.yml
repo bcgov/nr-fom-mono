@@ -52,17 +52,37 @@ jobs:
     name: Init
     environment: ${{ inputs.environment }}
     outputs:
-      url: ${{ steps.url.outputs.url }}
+      tag: ${{ steps.vars.outputs.tag }}
+      url: ${{ steps.vars.outputs.url }}
     runs-on: ubuntu-24.04
     steps:
-      - name: Create URL
-        id: url
+      # Get PR number - requires squash merges to main
+      - name: PR Number
+        id: pr
+        if: inputs.tag == ''
+        uses: bcgov-nr/action-get-pr@v0.0.1
+
+      - name: Vars
+        id: vars
         run: |
+          # Set variables
+          if [ -z "${{ inputs.tag }}" ]; then
+            echo "Creating tag"
+            echo "tag=${{ steps.pr.outputs.pr }}"
+            echo "tag=${{ steps.pr.outputs.pr }}" >> $GITHUB_OUTPUT
+          else
+            echo "Using tag parameter"
+            echo "tag=${{ inputs.tag }}"
+            echo "tag=${{ inputs.tag }}" >> $GITHUB_OUTPUT
+          fi
+
           if [ -z "${{ inputs.url }}" ]; then
             echo "Creating URL"
+            echo "url=fom-$(( ${{ inputs.target }} % 50 )).apps.silver.devops.gov.bc.ca"
             echo "url=fom-$(( ${{ inputs.target }} % 50 )).apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
           else
             echo "Using URL parameter"
+            echo "url=${{ inputs.url }}"
             echo "url=${{ inputs.url }}" >> $GITHUB_OUTPUT
           fi
 
@@ -110,7 +130,7 @@ jobs:
           oc_token: ${{ secrets.OC_TOKEN }}
           overwrite: ${{ matrix.overwrite }}
           parameters:
-            -p ZONE=${{ inputs.target }} -p TAG=${{ inputs.tag }}
+            -p ZONE=${{ inputs.target }} -p TAG=${{ needs.init.outputs.tag }}
             -p URL=${{ needs.init.outputs.url }} -p REPLICA_COUNT=1
             ${{ matrix.parameters }}
           triggers: ${{ inputs.triggers }}
