@@ -21,14 +21,17 @@ jobs:
         include:
           - package: admin
             build_context: ./
+            build_file: admin/Dockerfile
             triggers: ('admin/' 'libs/')
           - package: api
             build_context: ./
+            build_file: api/Dockerfile
             triggers: ('api/' 'libs/')
           - package: db
             triggers: ('db')
           - package: public
             build_context: ./
+            build_file: public/Dockerfile
             triggers: ('public/' 'libs/')
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +39,7 @@ jobs:
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
-          build_file: ${{ matrix.name }}/Dockerfile
+          build_file: ${{ matrix.build_file }}
           keep_versions: 100
           tag: ${{ github.event.number }}
           tag_fallback: latest
