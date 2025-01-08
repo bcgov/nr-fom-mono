@@ -1,19 +1,18 @@
-name: Merge to Demo
+name: Deploy to Demo
 
 on:
   push:
-    branches: [demo]
-
-env:
-  ZONE: demo
+    branches: demo
 
 concurrency:
   group: ${{ github.workflow }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
-  builds:
-    name: Builds
+  build:
+    name: Build
     runs-on: ubuntu-24.04
     permissions:
       packages: write
@@ -38,51 +37,22 @@ jobs:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
           build_file: ${{ matrix.build_file }}
-          tag: ${{ env.ZONE }}
+          keep_versions: 100
+          tag: demo
           token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
-    name: DEMO Deploys
-    needs: [builds]
-    environment: test
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        name: [api, admin, db, init, public]
-        include:
-          - name: api
-            file: api/openshift.deploy.yml
-            overwrite: true
-            parameters:
-              -p URL=fom-demo.apps.silver.devops.gov.bc.ca
-              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
-              -p DB_TESTDATA=true
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="k3b9ip1vf85o4tkqvu5g4adgj"
-              -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-              -p BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME="fom-demo-client-app-api"
-          - name: admin
-            file: admin/openshift.deploy.yml
-            overwrite: true
-            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca
-          - name: db
-            file: db/openshift.deploy.yml
-            overwrite: false
-          - name: init
-            file: libs/openshift.init.yml
-            overwrite: false
-          - name: public
-            file: public/openshift.deploy.yml
-            overwrite: true
-            parameters: -p URL=fom-demo.apps.silver.devops.gov.bc.ca
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} ${{ matrix.parameters }}
+    name: Deploy (${{ github.event.number }})
+    needs: [build]
+    secrets: inherit
+    uses: ./.github/workflows/.deploy.yml
+    with:
+      aws_user_pools_web_client_id: k3b9ip1vf85o4tkqvu5g4adgj
+      batch_client_rfsh_api_tkn_op_secret_name: fom-demo-client-app-api
+      db_testdata: true
+      environment: demo
+      email_notify: FLNR.AdminServicesCariboo@gov.bc.ca
+      logout_chain_url: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=
+      tag: demo
+      target: demo
+      url: fom-demo.apps.silver.devops.gov.bc.ca
