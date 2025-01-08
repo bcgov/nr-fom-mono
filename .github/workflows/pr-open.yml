@@ -66,7 +66,7 @@ jobs:
       - run: echo "Success!"
 
   release:
-    name: Test Release
+    name: PROD Release
     needs: build
     secrets: inherit
     uses: ./.github/workflows/release.yml
