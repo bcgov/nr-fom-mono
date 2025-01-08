@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { ProjectPlanCodeEnum, ProjectPublicSummaryResponse } from '@api-client';
 import { StateService } from '@public-core/services/state.service';
 import { UrlService } from '@public-core/services/url.service';
-import * as _ from 'lodash';
+import { indexBy } from 'remeda';
 import { Panel } from '../../../applications/utils/panel.enum';
 
 @Component({
@@ -14,7 +14,7 @@ import { Panel } from '../../../applications/utils/panel.enum';
 })
 export class MarkerPopupComponent {
   public projectSummary: ProjectPublicSummaryResponse;
-  public workflowStatus = _.keyBy(this.stateSvc.getCodeTable('workflowStateCode'), 'code');
+  public workflowStatus = indexBy(this.stateSvc.getCodeTable('workflowStateCode'), (x) => x.code);
   readonly projectPlanCodeEnum = ProjectPlanCodeEnum;
   
   constructor(

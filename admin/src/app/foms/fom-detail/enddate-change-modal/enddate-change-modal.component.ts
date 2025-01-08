@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ProjectCommentingClosedDateChangeRequest, ProjectService } from '@api-client';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
+import { DateTime } from 'luxon';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import moment = require('moment');
 
 @Component({
     standalone: true,
@@ -35,14 +35,14 @@ export class EnddateChangeModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.minDate = moment().add(1, 'days').toDate(); // Earliest date allowed for change: tomorrow.
+    this.minDate = DateTime.now().plus({days: 1}).toJSDate(); // Earliest date allowed for change: tomorrow.
     this.newCommentingClosedDate = this.minDate;
   }
 
   public changeEndDate() {
     this.updating = true;
 
-    this.changeRequest.commentingClosedDate = moment(this.newCommentingClosedDate).format('YYYY-MM-DD');
+    this.changeRequest.commentingClosedDate = DateTime.fromJSDate(this.newCommentingClosedDate).toISODate();
     this.projectService.projectControllerCommentingClosedDateChange(this.projectId, this.changeRequest)
         .toPromise()
         .then(() => {

@@ -1,4 +1,4 @@
-import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants/constantUtils';
+import { MAX_FILEUPLOAD_SIZE } from '@admin-core/utils/constants';
 import { Component, Input } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AttachmentResponse, AttachmentService, InteractionResponse } from '@api-client';

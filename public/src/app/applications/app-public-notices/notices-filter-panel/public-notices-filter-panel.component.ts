@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { IFilterFields } from '../../utils/filter';
-import moment = require('moment');
 
 @Component({
   standalone: true,

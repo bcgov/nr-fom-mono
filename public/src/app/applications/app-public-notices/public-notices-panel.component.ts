@@ -8,11 +8,11 @@ import { ProjectPlanCodeEnum, ProjectResponse, PublicNoticePublicFrontEndRespons
 import { periodOperationsTxt, woodlotOperationsTxt } from '@public-core/constants/appConstants';
 import { ShortenPipe } from '@public-core/pipes/shorten.pipe';
 import { UrlService } from '@public-core/services/url.service';
-import * as _ from 'lodash';
+import { DateTime } from "luxon";
+import { isNullish, pathOr, stringToPath } from 'remeda';
 import { IUpdateEvent } from '../projects.component';
 import { Panel } from '../utils/panel.enum';
 import { NoticeFilter, PublicNoticesFilterPanelComponent } from './notices-filter-panel/public-notices-filter-panel.component';
-import moment = require('moment');
 @Component({
   standalone: true,
   imports: [
@@ -89,7 +89,7 @@ export class PublicNoticesPanelComponent implements OnInit {
   }
 
   isFomAvailable(commentingOpenDate) {
-    return moment(commentingOpenDate).startOf('day') <= moment().startOf('day');
+    return DateTime.fromISO(commentingOpenDate).startOf('day') <= DateTime.now().startOf('day');
   }
 
   getValidityStartDate(project: ProjectResponse) {
@@ -105,15 +105,15 @@ export class PublicNoticesPanelComponent implements OnInit {
   private compareFn() {
     // If 'value'(filter value) is null or underfined, consider this as to include all.
     return {
-      equal: function(a: any, value: any) {
-        return _.isNil(value) || _.isEqual(a, value);
+      equal: function(dataValue: string, filterValue: string) {
+        return isNullish(filterValue) || dataValue === filterValue;
       },
-      in: function(a: any, value: any) {
-        return _.isNil(value) || _.includes(a, value);
+      in: function(dataValue: string, filterValue: string) {
+        return isNullish(filterValue) || dataValue.includes(filterValue);
       },
-      isDateOnOrAfter: function(date1: Date, value: Date) {
-        return _.isNil(value) || 
-              moment(date1).startOf('day').isSameOrAfter(moment(value).startOf('day'));
+      isDateOnOrAfter: function(date1: Date, date2: Date) {
+        return isNullish(date2) || 
+            DateTime.fromJSDate(date1).startOf('day') >= DateTime.fromJSDate(date2).startOf('day');
       }
     }
   }
@@ -121,16 +121,20 @@ export class PublicNoticesPanelComponent implements OnInit {
   private condition(
     key: string, // can be a dot notation path string.
     filterValue: string | Date, 
-    comparFn = this.compareFn().equal) {
+    comparFn: Function) {
 
     if (typeof filterValue === 'string') {
       filterValue = filterValue.toLowerCase();
     }
 
     return function(data: PublicNoticePublicFrontEndResponse) {
-      let dataValue = _.get(data, key, null);
+      let dataValue = pathOr(data, stringToPath(key), null).valueOf();
       if (typeof dataValue === 'string') {
         dataValue = dataValue.toLowerCase();
+      }
+      
+      if (comparFn.name === 'isDateOnOrAfter') {
+        dataValue = DateTime.fromISO(dataValue as string).toJSDate(); // convert ISO date to js Date.
       }
       return comparFn(dataValue, filterValue);
     }

@@ -1,8 +1,8 @@
+import { StateService } from '@admin-core/services/state.service';
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatAccordion, MatExpansionModule } from '@angular/material/expansion';
 import { PublicCommentAdminResponse, ResponseCodeEnum } from '@api-client';
-import * as _ from 'lodash';
-import { StateService } from '@admin-core/services/state.service';
+import { indexBy } from 'remeda';
 
 import { NewlinesPipe } from '@admin-core/pipes/newlines.pipe';
 import { DatePipe, NgFor, NgStyle, NgTemplateOutlet } from '@angular/common';
@@ -29,7 +29,7 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class CommentsSummaryComponent implements OnInit {
 
-  commentScopeCodes = _.keyBy(this.stateSvc.getCodeTable('commentScopeCode'), 'code');
+  commentScopeCodes = indexBy(this.stateSvc.getCodeTable('commentScopeCode'), (x) => x.code);
   publicComments: PublicCommentAdminResponse[];
   addressedPcs: PublicCommentAdminResponse[];
   consideredPcs: PublicCommentAdminResponse[];

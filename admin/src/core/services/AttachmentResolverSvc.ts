@@ -5,7 +5,7 @@ import {
     AttachmentService,
     WorkflowStateEnum,
 } from '@api-client';
-import { saveAs } from "file-saver";
+import { saveAs } from "file-saver-es";
 
 @Injectable({
   providedIn: 'root'

@@ -21,8 +21,7 @@ app-root {
 .container {
   margin: 0 auto;
   // Need to override bootstrap responsive behaviour for the container class here to ensure we aren't squeezing the interface unneccessarily
-  max-width: 1140px !important;
-  padding: 1.5rem;
+  padding-top: 1.5rem;
 
   section {
     &.last {
@@ -219,6 +218,10 @@ hr {
 
   overflow-y: scroll;
   background: #f7f8fa;
+
+  .container {
+    padding-bottom: 1.5rem;
+  }
 }
 
 .bold {

@@ -5,7 +5,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { InteractionResponse, InteractionService, ProjectResponse, WorkflowStateEnum } from '@api-client';
 import { User } from "@utility/security/user";
-import * as moment from 'moment';
+import { DateTime } from "luxon";
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { InteractionDetailComponent } from './interaction-detail/interaction-detail.component';
@@ -116,13 +116,12 @@ export class InteractionsComponent implements OnInit, OnDestroy {
   }
 
   setMinDate() {
-    this.interactionDetailForm.minDate = moment(this.project.commentingOpenDate).toDate();
+    this.interactionDetailForm.minDate = DateTime.fromISO(this.project.commentingOpenDate).toJSDate();
   }
 
   async saveInteraction(saveReq: InteractionRequest, selectedInteraction: InteractionResponse) {
     const {id} = selectedInteraction;
-    saveReq.communicationDate = moment(saveReq.communicationDate).format('YYYY-MM-DD'); // convert datePicker value to YYYY-MM-DD string.
-    const resultPromise = this.prepareSaveRequest(id, this.projectId, saveReq, selectedInteraction);
+    const resultPromise = this.saveRequest(id, this.projectId, saveReq, selectedInteraction);
     resultPromise
       .then((result) => this.handleSaveSuccess(result))
       .catch((err) => this.handleSaveError(err));
@@ -145,9 +144,11 @@ export class InteractionsComponent implements OnInit, OnDestroy {
     })
   }
 
-  private prepareSaveRequest(id: number, projectId: number, saveReq: InteractionRequest, selectedInteraction: InteractionResponse)
+  private saveRequest(id: number, projectId: number, saveReq: InteractionRequest, selectedInteraction: InteractionResponse)
           : Promise<InteractionResponse> {
     let resultPromise: Promise<InteractionResponse>;
+    saveReq.communicationDate = DateTime.fromJSDate(saveReq.communicationDatePickerDate).toISODate(); // convert datePicker value to YYYY-MM-DD string.
+
     if (!id) {
       resultPromise = this.interactionSvc.interactionControllerCreate(saveReq.fileContent, projectId,
         saveReq.stakeholder,

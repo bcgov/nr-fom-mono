@@ -5,7 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { CognitoService } from "@admin-core/services/cognito.service";
 import { StateService } from '@admin-core/services/state.service';
 import { CommonUtil } from '@admin-core/utils/commonUtil';
-import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants/constantUtils';
+import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants';
 import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatOptionModule } from '@angular/material/core';
@@ -16,7 +16,7 @@ import {
     PublicCommentAdminUpdateRequest, PublicCommentService, SpatialFeatureService
 } from '@api-client';
 import { User } from "@utility/security/user";
-import * as _ from 'lodash';
+import { indexBy } from 'remeda';
 import { map, takeUntil } from 'rxjs/operators';
 import { CommentDetailComponent } from './comment-detail/comment-detail.component';
 
@@ -56,7 +56,7 @@ export class ReviewCommentsComponent implements OnInit, OnDestroy {
   commentDetailForm: CommentDetailComponent;
 
   public responseCodes = this.stateSvc.getCodeTable('responseCode')
-  public commentScopeCodes = _.keyBy(this.stateSvc.getCodeTable('commentScopeCode'), 'code');
+  public commentScopeCodes = indexBy(this.stateSvc.getCodeTable('commentScopeCode'), (x) => x.code);
   public loading = false;
   public projectId: number;
   public project: ProjectResponse;

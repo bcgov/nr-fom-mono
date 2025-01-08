@@ -37,3 +37,5 @@ export const SpatialTypeMap = new Map<SpatialObjectCodeEnum, object>([
 ]);
 
 export const PROJECT_ID_PARAM_KEY: string = 'appId';
+
+export const DEFAULT_ISO_DATE_FORMAT = "yyyy-MM-dd";

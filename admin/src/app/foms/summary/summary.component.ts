@@ -1,6 +1,6 @@
 import { AttachmentResolverSvc } from '@admin-core/services/AttachmentResolverSvc';
 import { CommonUtil } from '@admin-core/utils/commonUtil';
-import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants/constantUtils';
+import { COMMENT_SCOPE_CODE, CommentScopeOpt } from '@admin-core/utils/constants';
 import { DatePipe, NgFor, NgIf, TitleCasePipe } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +15,6 @@ import {
     SpatialFeaturePublicResponse, SpatialFeatureService
 } from '@api-client';
 import { ConfigService } from '@utility/services/config.service';
-import * as _ from 'lodash';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { DetailsMapComponent } from '../details-map/details-map.component';
@@ -121,7 +120,7 @@ export class SummaryComponent implements OnInit, OnDestroy {
       (result) => {
         this.spatialDetail = this.filteredSpatialDetail = [...result];
         this.commentScopeOpts =  CommonUtil.buildCommentScopeOptions(result);
-        this.commentScopeOpts = _.remove(this.commentScopeOpts, opt => opt.commentScopeCode !== null); // Don't need All option.
+        this.commentScopeOpts = this.commentScopeOpts.filter((opt) => opt.commentScopeCode !== null);
         const mainRptOpt = {commentScopeCode: null, desc: 'Main Report', name: null, scopeId: null} as CommentScopeOpt;
         this.selectedScope = mainRptOpt;
         this.commentScopeOpts.unshift(mainRptOpt);
@@ -150,7 +149,9 @@ export class SummaryComponent implements OnInit, OnDestroy {
     this.attachmentSvc.attachmentControllerFind(projectId).toPromise()
     .then(
       (result) => {
-        this.attachments =  _.orderBy(result, ['attachmentType.code'],['asc']);
+        this.attachments  = result.sort((a: AttachmentResponse, b: AttachmentResponse) => 
+            a.attachmentType.code.localeCompare(b.attachmentType.code)
+        )
       },
       (error) => {
         console.error(`Error retrieving Project Attachments for Summary Report:`, error);

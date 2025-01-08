@@ -21,7 +21,7 @@
         </span>
       </mat-panel-description>
       <mat-icon matBadge="{{addressedPcs?.length}}" matBadgePosition="above before" 
-              matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
+              matBadgeColor="accent" matBadgeSize="small">comment</mat-icon>
     </mat-expansion-panel-header>
     <mat-card appearance="outlined" *ngFor="let comment of addressedPcs">
       <mat-card-content>
@@ -44,7 +44,7 @@
         </span>
       </mat-panel-description>
       <mat-icon matBadge="{{consideredPcs?.length}}" matBadgePosition="above before" 
-              matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
+              matBadgeColor="accent" matBadgeSize="small">comment</mat-icon>
     </mat-expansion-panel-header>
     <mat-card appearance="outlined" *ngFor="let comment of consideredPcs">
       <mat-card-content>
@@ -67,7 +67,7 @@
           </span>
         </mat-panel-description>
         <mat-icon matBadge="{{irrelevantPcs?.length}}" matBadgePosition="above before" 
-                  matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
+                  matBadgeColor="accent" matBadgeSize="small">comment</mat-icon>
       </mat-expansion-panel-header>
       <mat-card appearance="outlined" *ngFor="let comment of irrelevantPcs">
         <mat-card-content>
@@ -90,7 +90,7 @@
           </span>
         </mat-panel-description>
         <mat-icon matBadge="{{noResponsePcs?.length}}" matBadgePosition="above before" 
-                  matBadgeColor="accent" matBadgeSize="medium">comment</mat-icon>
+                  matBadgeColor="accent" matBadgeSize="small">comment</mat-icon>
       </mat-expansion-panel-header>
       <mat-card appearance="outlined" *ngFor="let comment of noResponsePcs">
         <mat-card-content>

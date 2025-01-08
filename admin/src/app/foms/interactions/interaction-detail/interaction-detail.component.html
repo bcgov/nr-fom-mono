@@ -14,19 +14,19 @@
 
   <form [formGroup]="interactionFormGroup">
     <div class="form-group col-md">
-      <label for="communicationDate" class="control-label"
+      <label for="communicationDatePickerDate" class="control-label"
             [ngClass]="{'required': editMode}">Engagement Date</label>
       <div class="input-group" 
-          [ngClass]="{'is-invalid': interactionFormGroup.touched && !isValid('communicationDate')}">
+          [ngClass]="{'is-invalid': interactionFormGroup.touched && !isValid('communicationDatePickerDate')}">
         <input
           type="text"
           class="form-control col-md-6"
           placeholder="YYYY-MM-DD"
           bsDatepicker
-          #communicationDate="bsDatepicker"
-          id="communicationDate"
-          name="communicationDate"
-          formControlName="communicationDate"
+          #communicationDatePickerDate="bsDatepicker"
+          id="communicationDatePickerDate"
+          name="communicationDatePickerDate"
+          formControlName="communicationDatePickerDate"
           [maxDate]="maxDate"
           [minDate]="minDate"
           readonly
@@ -36,14 +36,14 @@
         />
         <div class="input-group-append">
           <button class="btn btn-icon"  type="button" tabindex="-1"
-                  (click)="communicationDate.show()"
+                  (click)="communicationDatePickerDate.show()"
                   [disabled]="!editMode"
-                  [attr.aria-expanded]="communicationDate.isOpen">
+                  [attr.aria-expanded]="communicationDatePickerDate.isOpen">
             <em class="material-icons">date_range</em>
           </button>
         </div>
       </div>
-      <div class="invalid-feedback" *ngIf="interactionFormGroup.touched && !isValid('communicationDate')">
+      <div class="invalid-feedback" *ngIf="interactionFormGroup.touched && !isValid('communicationDatePickerDate')">
         Engagement Date is required.
       </div>
     </div>
