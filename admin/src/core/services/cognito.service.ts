@@ -66,67 +66,6 @@ export class CognitoService {
     }
   }
 
-  private async loadRemoteConfig() {
-    let url: string = this.configService.getApiBasePath() + "/api/awsCognitoConfig";
-    this.awsCognitoConfig = await lastValueFrom(
-      this.http.get(url, { observe: "body", responseType: "json" })
-    ) as AwsCognitoConfig;
-
-    const amplifyConfig = this.toAmplifyConfig(this.awsCognitoConfig);
-    console.log("Using amplify config = " + JSON.stringify(amplifyConfig));
-    Amplify.configure(amplifyConfig);
-  }
-
-  private toAmplifyConfig(awsCognitoConfig: AwsCognitoConfig): ResourcesConfig {
-    // conversion to config aws-amplify (gen 2)
-    return {
-      Auth: {
-        Cognito: {
-          userPoolClientId: awsCognitoConfig.aws_user_pools_web_client_id,
-          userPoolId: awsCognitoConfig.aws_user_pools_id,
-          loginWith: {
-            oauth: {
-              domain: awsCognitoConfig.oauth.domain,
-              scopes: ['openid'],
-              redirectSignIn: [awsCognitoConfig.oauth.redirectSignIn],
-              redirectSignOut: [this.awsCognitoConfig.oauth.redirectSignOut],
-              responseType: 'code',
-            },
-          }
-        }
-      }
-    }
-  }
-
-  private getParameterByName(name) {
-    const url = window.location.href;
-    const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
-    const results = regex.exec(url);
-    if (!results) {
-      return null;
-    }
-    if (!results[2]) {
-      return "";
-    }
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
-  }
-
-  /**
-   * See OIDC Attribute Mapping mapping reference:
-   *      https://github.com/bcgov/nr-forests-access-management/wiki/OIDC-Attribute-Mapping
-   * The display username is "custom:idp_username" from token.
-   */
-  private parseToken(authToken: CognitoUserSession): CognitoAuthToken {
-    console.log("authToken: ", authToken)
-    const decodedIdToken = authToken.getIdToken().decodePayload();
-    const decodedAccessToken = authToken.getAccessToken().decodePayload();
-    return {
-      id_token: decodedIdToken,
-      access_token: decodedAccessToken,
-      jwtToken: authToken
-    };
-  }
-
   /**
    * Automatically logout if unable to get currentSession().
    */
@@ -200,6 +139,67 @@ export class CognitoService {
     return this.cognitoAuthToken;
   }
 
+  private async loadRemoteConfig() {
+    let url: string = this.configService.getApiBasePath() + "/api/awsCognitoConfig";
+    this.awsCognitoConfig = await lastValueFrom(
+      this.http.get(url, { observe: "body", responseType: "json" })
+    ) as AwsCognitoConfig;
+
+    const amplifyConfig = this.toAmplifyConfig(this.awsCognitoConfig);
+    console.log("Using amplify config = " + JSON.stringify(amplifyConfig));
+    Amplify.configure(amplifyConfig);
+  }
+
+  private toAmplifyConfig(awsCognitoConfig: AwsCognitoConfig): ResourcesConfig {
+    // conversion to config aws-amplify (gen 2)
+    return {
+      Auth: {
+        Cognito: {
+          userPoolClientId: awsCognitoConfig.aws_user_pools_web_client_id,
+          userPoolId: awsCognitoConfig.aws_user_pools_id,
+          loginWith: {
+            oauth: {
+              domain: awsCognitoConfig.oauth.domain,
+              scopes: ['openid'],
+              redirectSignIn: [awsCognitoConfig.oauth.redirectSignIn],
+              redirectSignOut: [this.awsCognitoConfig.oauth.redirectSignOut],
+              responseType: 'code',
+            },
+          }
+        }
+      }
+    }
+  }
+
+  private getParameterByName(name) {
+    const url = window.location.href;
+    const regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)");
+    const results = regex.exec(url);
+    if (!results) {
+      return null;
+    }
+    if (!results[2]) {
+      return "";
+    }
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+  }
+
+  /**
+   * See OIDC Attribute Mapping mapping reference:
+   *      https://github.com/bcgov/nr-forests-access-management/wiki/OIDC-Attribute-Mapping
+   * The display username is "custom:idp_username" from token.
+   */
+  private parseToken(authToken: CognitoUserSession): CognitoAuthToken {
+    console.log("authToken: ", authToken)
+    const decodedIdToken = authToken.getIdToken().decodePayload();
+    const decodedAccessToken = authToken.getAccessToken().decodePayload();
+    return {
+      id_token: decodedIdToken,
+      access_token: decodedAccessToken,
+      jwtToken: authToken
+    };
+  }
+  
   /**
    * Note:
    * `aws-amplify` (v6) does not expose previous CognitoUserSession (JWT Token) and it does not
