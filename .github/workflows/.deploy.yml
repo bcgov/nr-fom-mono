@@ -51,6 +51,7 @@ jobs:
           else
             echo "url=${{ inputs.url }}" >> $GITHUB_OUTPUT
           fi
+          echo "URL: ${{ needs.init.outputs.url }}"
 
       - name: OpenShift Init
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
@@ -98,3 +99,11 @@ jobs:
             -p URL=${{ needs.init.outputs.url }} -p REPLICA_COUNT=1
             ${{ matrix.parameters }}
           # triggers: ${{ inputs.triggers }}
+
+  check:
+    name: Check
+    needs: [init]
+    runs-on: ubuntu-24.04
+    steps:
+      - run: |
+          echo "URL: ${{ needs.init.outputs.url }}"
