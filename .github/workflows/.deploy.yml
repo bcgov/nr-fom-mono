@@ -47,11 +47,11 @@ jobs:
         id: url
         run: |
           if [ -z "${{ inputs.url }}" ]; then
-            echo "URL provided"
+            echo "Creating URL"
             echo "url=fom-$(( ${{ inputs.target }} % 50 )).apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
           else
+            echo "Using URL parameter"
             echo "url=${{ inputs.url }}" >> $GITHUB_OUTPUT
-            echo "URL not provided"
           fi
 
       - name: OpenShift Init
@@ -63,7 +63,7 @@ jobs:
           file: libs/openshift.init.yml
           overwrite: false
           parameters: -p ZONE=${{ inputs.target }}
-          # triggers: ${{ inputs.triggers }}
+          triggers: ${{ inputs.triggers }}
 
   deploy:
     name: Deploy
@@ -99,12 +99,4 @@ jobs:
             -p ZONE=${{ inputs.target }} -p TAG=${{ inputs.tag }}
             -p URL=${{ needs.init.outputs.url }} -p REPLICA_COUNT=1
             ${{ matrix.parameters }}
-          # triggers: ${{ inputs.triggers }}
-
-  check:
-    name: Check
-    needs: [init]
-    runs-on: ubuntu-24.04
-    steps:
-      - run: |
-          echo "URL: ${{ needs.init.outputs.url }}"
+          triggers: ${{ inputs.triggers }}
