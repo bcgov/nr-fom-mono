@@ -45,6 +45,14 @@ on:
         description: URL for deployment, does not include path
         type: string
 
+outputs:
+  tag:
+    description: Container tag
+    value: ${{ steps.init.outputs.tag }}
+  url:
+    description: URL for deployment
+    value: ${{ steps.init.outputs.url }}
+
 permissions: {}
 
 jobs:
