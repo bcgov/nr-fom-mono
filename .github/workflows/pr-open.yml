@@ -52,6 +52,7 @@ jobs:
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
+      db_testdata: true
       triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
 
   results:
