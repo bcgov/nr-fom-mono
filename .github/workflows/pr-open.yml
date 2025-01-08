@@ -68,6 +68,5 @@ jobs:
   release:
     name: Test Release
     needs: build
-    runs-on: ubuntu-24.04
     secrets: inherit
     uses: ./.github/workflows/release.yml
