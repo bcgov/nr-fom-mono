@@ -1,4 +1,4 @@
-name: Merge to Main
+name: TEST (merge)
 
 on:
   push:

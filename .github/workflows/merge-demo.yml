@@ -1,4 +1,4 @@
-name: Deploy to Demo
+name: DEMO (merge)
 
 on:
   push:
