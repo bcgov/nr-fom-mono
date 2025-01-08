@@ -15,8 +15,8 @@ concurrency:
 permissions: {}
 
 jobs:
-  deploy-test:
-    name: Deploy (Test)
+  deploy:
+    name: Deploy (TEST)
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
     with:
