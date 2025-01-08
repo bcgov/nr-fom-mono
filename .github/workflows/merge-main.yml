@@ -15,133 +15,84 @@ concurrency:
 permissions: {}
 
 jobs:
-  vars:
-    name: Set Variables
-    outputs:
-      tag: ${{ steps.tag.outputs.pr }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 1
-    steps:
-      # Get PR number for squash merges to main
-      - name: PR Number
-        id: tag
-        uses: bcgov-nr/action-get-pr@v0.0.1
-
   deploy-test:
-    name: TEST Deploys
-    needs: [vars]
-    environment: test
-    env:
-      ZONE: test
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        name: [api, admin, db, init, public]
-        include:
-          - name: api
-            file: api/openshift.deploy.yml
-            oc_version: "4.13"
-            overwrite: true
-            parameters:
-              -p URL=fom-test.nrs.gov.bc.ca
-              -p FOM_EMAIL_NOTIFY=FLNR.AdminServicesCariboo@gov.bc.ca
-              -p DB_TESTDATA=true
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="k3b9ip1vf85o4tkqvu5g4adgj"
-              -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-          - name: admin
-            file: admin/openshift.deploy.yml
-            overwrite: true
-            parameters: -p URL=fom-test.nrs.gov.bc.ca
-          - name: db
-            file: db/openshift.deploy.yml
-            overwrite: false
-          - name: init
-            file: libs/openshift.init.yml
-            overwrite: false
-          - name: public
-            file: public/openshift.deploy.yml
-            overwrite: true
-            parameters: -p URL=fom-test.nrs.gov.bc.ca
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: ${{ matrix.oc_version }}
-          overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.tag }}
-            ${{ matrix.parameters }}
-          post_rollout: ${{ matrix.post_rollout }}
+    name: Deploy (Test)
+    secrets: inherit
+    uses: ./.github/workflows/.deploy.yml
+    with:
+      aws_user_pools_web_client_id: k3b9ip1vf85o4tkqvu5g4adgj
+      batch_client_rfsh_api_tkn_op_secret_name: fom-demo-client-app-api
+      db_testdata: true
+      environment: test
+      email_notify: FLNR.AdminServicesCariboo@gov.bc.ca
+      logout_chain_url: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://test.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=
+      target: test
+      url: fom-test.nrs.gov.bc.ca
 
-  deploy-prod:
-    name: PROD Deploys
-    needs: [deploy-test, vars]
-    environment: prod
-    env:
-      ZONE: prod
-    runs-on: ubuntu-24.04
-    timeout-minutes: 10
-    strategy:
-      matrix:
-        name: [api, admin, db, init, public]
-        include:
-          - name: api
-            file: api/openshift.deploy.yml
-            oc_version: "4.13"
-            overwrite: true
-            parameters:
-              -p URL=fom.nrs.gov.bc.ca
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="4bu2n8at3m32a2fqnvd4t06la1"
-              -p LOGOUT_CHAIN_URL="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
-              -p MEMORY_REQUEST=650Mi
-              -p MEMORY_LIMIT=4Gi
-          - name: admin
-            file: admin/openshift.deploy.yml
-            overwrite: true
-            parameters: -p URL=fom.nrs.gov.bc.ca
-          - name: db
-            file: db/openshift.deploy.yml
-            overwrite: false
-          - name: init
-            file: libs/openshift.init.yml
-            overwrite: false
-          - name: public
-            file: public/openshift.deploy.yml
-            overwrite: true
-            parameters: -p URL=fom.nrs.gov.bc.ca
-    steps:
-      - uses: bcgov-nr/action-deployer-openshift@v3.0.1
-        with:
-          file: ${{ matrix.file }}
-          oc_namespace: ${{ vars.OC_NAMESPACE }}
-          oc_server: ${{ vars.OC_SERVER }}
-          oc_token: ${{ secrets.OC_TOKEN }}
-          oc_version: ${{ matrix.oc_version }}
-          overwrite: ${{ matrix.overwrite }}
-          penetration_test: false
-          parameters:
-            -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.tag }}
-            ${{ matrix.parameters }}
-          post_rollout: ${{ matrix.post_rollout }}
+  # deploy-prod:
+  #   name: PROD Deploys
+  #   needs: [deploy-test, vars]
+  #   environment: prod
+  #   env:
+  #     ZONE: prod
+  #   runs-on: ubuntu-24.04
+  #   timeout-minutes: 10
+  #   strategy:
+  #     matrix:
+  #       name: [api, admin, db, init, public]
+  #       include:
+  #         - name: api
+  #           file: api/openshift.deploy.yml
+  #           oc_version: "4.13"
+  #           overwrite: true
+  #           parameters:
+  #             -p URL=fom.nrs.gov.bc.ca
+  #             -p AWS_USER_POOLS_WEB_CLIENT_ID="4bu2n8at3m32a2fqnvd4t06la1"
+  #             -p LOGOUT_CHAIN_URL="https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+  #             -p MEMORY_REQUEST=650Mi
+  #             -p MEMORY_LIMIT=4Gi
+  #         - name: admin
+  #           file: admin/openshift.deploy.yml
+  #           overwrite: true
+  #           parameters: -p URL=fom.nrs.gov.bc.ca
+  #         - name: db
+  #           file: db/openshift.deploy.yml
+  #           overwrite: false
+  #         - name: init
+  #           file: libs/openshift.init.yml
+  #           overwrite: false
+  #         - name: public
+  #           file: public/openshift.deploy.yml
+  #           overwrite: true
+  #           parameters: -p URL=fom.nrs.gov.bc.ca
+  #   steps:
+  #     - uses: bcgov-nr/action-deployer-openshift@v3.0.1
+  #       with:
+  #         file: ${{ matrix.file }}
+  #         oc_namespace: ${{ vars.OC_NAMESPACE }}
+  #         oc_server: ${{ vars.OC_SERVER }}
+  #         oc_token: ${{ secrets.OC_TOKEN }}
+  #         oc_version: ${{ matrix.oc_version }}
+  #         overwrite: ${{ matrix.overwrite }}
+  #         penetration_test: false
+  #         parameters:
+  #           -p ZONE=${{ env.ZONE }} -p TAG=${{ needs.vars.outputs.tag }}
+  #           ${{ matrix.parameters }}
+  #         post_rollout: ${{ matrix.post_rollout }}
 
-  prod-promotions:
-    name: Promote images to PROD
-    needs: [deploy-prod, vars]
-    permissions:
-      packages: write
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        component: [api, admin, db, public]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.vars.outputs.tag }}
-          tags: prod
+  # prod-promotions:
+  #   name: Promote images to PROD
+  #   needs: [deploy-prod, vars]
+  #   permissions:
+  #     packages: write
+  #   runs-on: ubuntu-24.04
+  #   strategy:
+  #     matrix:
+  #       component: [api, admin, db, public]
+  #   steps:
+  #     - uses: shrink/actions-docker-registry-tag@v4
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}/${{ matrix.component }}
+  #         target: ${{ needs.vars.outputs.tag }}
+  #         tags: prod
