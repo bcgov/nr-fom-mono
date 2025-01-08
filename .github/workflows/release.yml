@@ -9,7 +9,11 @@ on:
       tag:
         description: Container tag; usually prod or PR number, can be omitted
         type: string
-  pull_request:
+  workflow_call:
+    inputs:
+      tag:
+        description: Container tag; usually prod or PR number, can be omitted
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}

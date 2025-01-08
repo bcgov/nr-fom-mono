@@ -57,10 +57,17 @@ jobs:
 
   results:
     name: PR Results
-    needs: [build, deploy]
+    needs: build, deploy
     if: always()
     runs-on: ubuntu-24.04
     steps:
       - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
         run: echo "At least one job has failed." && exit 1
       - run: echo "Success!"
+
+  release:
+    name: Test Release
+    needs: build
+    runs-on: ubuntu-24.04
+    secrets: inherit
+    uses: ./.github/workflows/release.yml
