@@ -9,28 +9,20 @@ on:
       ### Typical / recommended
       environment:
         description: GitHub/OpenShift environment; usually PR number, test or prod
-        default: ''
-        required: false
         type: string
       tag:
         description: Container tag; usually PR number
         default: ${{ github.event.number }}
-        required: false
         type: string
       target:
         description: Deployment target; usually PR number, test or prod
         default: ${{ github.event.number }}
-        required: false
         type: string
       triggers:
         description: Paths to check for changes
-        default: ''
-        required: false
         type: string
       url:
         description: URL for deployment, does not include path
-        default: ''
-        required: false
         type: string
 
 permissions: {}
