@@ -10,63 +10,63 @@ concurrency:
 permissions: {}
 
 jobs:
-  build:
-    name: Build
-    runs-on: ubuntu-24.04
-    permissions:
-      packages: write
-    strategy:
-      matrix:
-        package: [admin, api, db, public]
-        include:
-          - package: admin
-            build_context: ./
-            build_file: admin/Dockerfile
-            triggers: ('admin/' 'libs/')
-          - package: api
-            build_context: ./
-            build_file: api/Dockerfile
-            triggers: ('api/' 'libs/')
-          - package: db
-            triggers: ('db')
-          - package: public
-            build_context: ./
-            build_file: public/Dockerfile
-            triggers: ('public/' 'libs/')
-    steps:
-      - uses: actions/checkout@v4
-      - uses: bcgov-nr/action-builder-ghcr@v2.3.0
-        with:
-          package: ${{ matrix.package }}
-          build_context: ${{ matrix.build_context }}
-          build_file: ${{ matrix.build_file }}
-          keep_versions: 100
-          tag: ${{ github.event.number }}
-          tag_fallback: latest
-          token: ${{ secrets.GITHUB_TOKEN }}
-          triggers: ${{ matrix.triggers }}
+  # build:
+  #   name: Build
+  #   runs-on: ubuntu-24.04
+  #   permissions:
+  #     packages: write
+  #   strategy:
+  #     matrix:
+  #       package: [admin, api, db, public]
+  #       include:
+  #         - package: admin
+  #           build_context: ./
+  #           build_file: admin/Dockerfile
+  #           triggers: ('admin/' 'libs/')
+  #         - package: api
+  #           build_context: ./
+  #           build_file: api/Dockerfile
+  #           triggers: ('api/' 'libs/')
+  #         - package: db
+  #           triggers: ('db')
+  #         - package: public
+  #           build_context: ./
+  #           build_file: public/Dockerfile
+  #           triggers: ('public/' 'libs/')
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: bcgov-nr/action-builder-ghcr@v2.3.0
+  #       with:
+  #         package: ${{ matrix.package }}
+  #         build_context: ${{ matrix.build_context }}
+  #         build_file: ${{ matrix.build_file }}
+  #         keep_versions: 100
+  #         tag: ${{ github.event.number }}
+  #         tag_fallback: latest
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         triggers: ${{ matrix.triggers }}
 
-  deploy:
-    name: Deploy (${{ github.event.number }})
-    needs: [build]
-    secrets: inherit
-    uses: ./.github/workflows/.deploy.yml
-    with:
-      db_testdata: true
-      triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
+  # deploy:
+  #   name: Deploy (${{ github.event.number }})
+  #   needs: [build]
+  #   secrets: inherit
+  #   uses: ./.github/workflows/.deploy.yml
+  #   with:
+  #     db_testdata: true
+  #     triggers: ('db/' 'libs/' 'api/' 'admin/' 'public/')
 
-  results:
-    name: PR Results
-    needs: [build, deploy]
-    if: always()
-    runs-on: ubuntu-24.04
-    steps:
-      - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
-        run: echo "At least one job has failed." && exit 1
-      - run: echo "Success!"
+  # results:
+  #   name: PR Results
+  #   needs: [build, deploy]
+  #   if: always()
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - if: contains(needs.*.result, 'failure')||contains(needs.*.result, 'canceled')
+  #       run: echo "At least one job has failed." && exit 1
+  #     - run: echo "Success!"
 
   release:
     name: PROD Release
-    needs: build
+    # needs: build
     secrets: inherit
     uses: ./.github/workflows/release.yml
