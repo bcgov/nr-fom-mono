@@ -7,8 +7,28 @@ on:
       # Nothing! Only `secrets: inherit` is required
 
       ### Typical / recommended
+      aws_user_pools_web_client_id:
+        description: AWS User Pools Web Client ID
+        default: 7hpo4qa7j0hs0rkfl2pm0sto5k
+        type: string
+      batch_client_rfsh_api_tkn_op_secret_name:
+        description: OP secret name for CLIENT API Token
+        default: fom-client-app-api
+        type: string
+      db_testdata:
+        description: Load test data into the database
+        default: false
+        type: boolean
+      email_notify:
+        description: Email address for notifications
+        default: SIBIFSAF@victoria1.gov.bc.ca
+        type: string
       environment:
         description: GitHub/OpenShift environment; usually PR number, test or prod
+        type: string
+      logout_chain_url:
+        description: URL for logout chain
+        default: https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=
         type: string
       tag:
         description: Container tag; usually PR number
@@ -59,6 +79,7 @@ jobs:
 
   deploy:
     name: Deploy
+    environment: ${{ inputs.environment }}
     needs: [init]
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -69,10 +90,11 @@ jobs:
           - name: api
             overwrite: true
             parameters:
-              -p FOM_EMAIL_NOTIFY=SIBIFSAF@victoria1.gov.bc.ca
-              -p DB_TESTDATA=true
-              -p AWS_USER_POOLS_WEB_CLIENT_ID="7hpo4qa7j0hs0rkfl2pm0sto5k"
-              -p LOGOUT_CHAIN_URL="https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
+              -p AWS_USER_POOLS_WEB_CLIENT_ID="${{ inputs.aws_user_pools_web_client_id }}"
+              -p BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME="${{ inputs.batch_client_rfsh_api_tkn_op_secret_name }}"
+              -p DB_TESTDATA=${{ inputs.db_testdata }}
+              -p FOM_EMAIL_NOTIFY=${{ inputs.email_notify }}
+              -p LOGOUT_CHAIN_URL="{{ inputs.logout_chain_url }}"
           - name: admin
             overwrite: true
           - name: db

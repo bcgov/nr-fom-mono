@@ -79,8 +79,8 @@ parameters:
     value: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri="
     required: true
   - name: BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME
-    description: OP secrete name for CLIENT API Token.
-    value: "fom-client-app-api"
+    description: OP secret name for CLIENT API Token
+    value: fom-client-app-api
   - name: RANDOM_EXPRESSION
     description: Random expression to make sure deployments update
     from: "[a-zA-Z0-9]{32}"
