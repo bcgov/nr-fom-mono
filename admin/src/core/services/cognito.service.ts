@@ -83,7 +83,7 @@ export class CognitoService {
   updateToken(): Observable<any> {
     return new Observable((observer) => {
       this.refreshAndObtainAwsCognitoUserSession()
-        .then(async (refreshed) => {
+        .then((refreshed) => {
           this.cognitoAuthToken = this.parseToken(refreshed);
           observer.next();
           observer.complete();
@@ -199,7 +199,7 @@ export class CognitoService {
       jwtToken: authToken
     };
   }
-  
+
   /**
    * Note:
    * `aws-amplify` (v6) does not expose previous CognitoUserSession (JWT Token) and it does not
