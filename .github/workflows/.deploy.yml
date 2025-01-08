@@ -48,10 +48,10 @@ on:
     outputs:
       tag:
         description: Container tag
-        value: ${{ steps.init.outputs.tag }}
+        value: ${{ jobs.init.outputs.tag }}
       url:
         description: URL for deployment
-        value: ${{ steps.init.outputs.url }}
+        value: ${{ jobs.init.outputs.url }}
 
 permissions: {}
 
