@@ -22,44 +22,44 @@ jobs:
     with:
       aws_user_pools_web_client_id: 4bu2n8at3m32a2fqnvd4t06la1
       batch_client_rfsh_api_tkn_op_secret_name: fom-demo-client-app-api
-      environment: prod
+      # environment: prod
       email_notify: FLNR.AdminServicesCariboo@gov.bc.ca
       logout_chain_url: https://logon7.gov.bc.ca/clp-cgi/logoff.cgi?retnow=1&returl=https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout?redirect_uri=
       tag: ${{ inputs.tag }}
       target: prod
       url: fom.nrs.gov.bc.ca
 
-  images-backup:
-    name: Backup images (PROD)
-    continue-on-error: true # If no prod tags
-    needs: deploy
-    permissions:
-      packages: write
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        component: [api, admin, db, public]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: prod
-          tags: prod-backup
+  # images-backup:
+  #   name: Backup images (PROD)
+  #   continue-on-error: true # If no prod tags
+  #   needs: deploy
+  #   permissions:
+  #     packages: write
+  #   runs-on: ubuntu-24.04
+  #   strategy:
+  #     matrix:
+  #       component: [api, admin, db, public]
+  #   steps:
+  #     - uses: shrink/actions-docker-registry-tag@v4
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}/${{ matrix.component }}
+  #         target: prod
+  #         tags: prod-backup
 
-  images-promote:
-    name: Promote images (PROD)
-    needs: deploy, images-backup
-    permissions:
-      packages: write
-    runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        component: [api, admin, db, public]
-    steps:
-      - uses: shrink/actions-docker-registry-tag@v4
-        with:
-          registry: ghcr.io
-          repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.deploy.outputs.tag }}
-          tags: prod
+  # images-promote:
+  #   name: Promote images (PROD)
+  #   needs: deploy, images-backup
+  #   permissions:
+  #     packages: write
+  #   runs-on: ubuntu-24.04
+  #   strategy:
+  #     matrix:
+  #       component: [api, admin, db, public]
+  #   steps:
+  #     - uses: shrink/actions-docker-registry-tag@v4
+  #       with:
+  #         registry: ghcr.io
+  #         repository: ${{ github.repository }}/${{ matrix.component }}
+  #         target: ${{ needs.deploy.outputs.tag }}
+  #         tags: prod
