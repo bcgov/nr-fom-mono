@@ -47,11 +47,12 @@ jobs:
         id: url
         run: |
           if [ -z "${{ inputs.target }}" ]; then
+            echo "Targets provided"
             echo "url=fom-$(( ${{ inputs.target }} % 50 )).apps.silver.devops.gov.bc.ca" >> $GITHUB_OUTPUT
           else
             echo "url=${{ inputs.url }}" >> $GITHUB_OUTPUT
+            echo "Targets not provided"
           fi
-          echo "URL: ${{ needs.init.outputs.url }}"
 
       - name: OpenShift Init
         uses: bcgov-nr/action-deployer-openshift@v3.0.1
