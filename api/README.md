@@ -2,7 +2,6 @@
 ![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)
 
 [![Analysis](https://github.com/bcgov/nr-fom/actions/workflows/analysis.yml/badge.svg)](https://github.com/bcgov/nr-fom/actions/workflows/analysis.yml)
-[![CodeQL](https://github.com/bcgov/nr-fom/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/bcgov/nr-fom/actions/workflows/github-code-scanning/codeql)
 [![DEMO (merge)](https://github.com/bcgov/nr-fom/actions/workflows/merge-demo.yml/badge.svg)](https://github.com/bcgov/nr-fom/actions/workflows/merge-demo.yml)
 [![TEST (merge)](https://github.com/bcgov/nr-fom/actions/workflows/merge-main.yml/badge.svg)](https://github.com/bcgov/nr-fom/actions/workflows/merge-main.yml)
 [![PROD (release)](https://github.com/bcgov/nr-fom/actions/workflows/release.yml/badge.svg)](https://github.com/bcgov/nr-fom/actions/workflows/release.yml)
