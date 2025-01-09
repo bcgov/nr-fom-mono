@@ -1,4 +1,4 @@
-name: Deploy to Demo
+name: DEMO (merge)
 
 on:
   push:
@@ -42,7 +42,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
   deploy:
-    name: Deploy (Demo)
+    name: Deploy (DEMO)
     needs: [build]
     secrets: inherit
     uses: ./.github/workflows/.deploy.yml
