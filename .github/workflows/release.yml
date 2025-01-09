@@ -55,7 +55,7 @@ jobs:
 
   images-promote:
     name: Promote images (PROD)
-    needs: deploy, images-backup
+    needs: [deploy, images-backup]
     permissions:
       packages: write
     runs-on: ubuntu-24.04
