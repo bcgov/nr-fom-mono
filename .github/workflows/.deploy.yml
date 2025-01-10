@@ -122,7 +122,7 @@ jobs:
               -p BATCH_CLIENT_RFSH_API_TKN_OP_SECRET_NAME="${{ inputs.batch_client_rfsh_api_tkn_op_secret_name }}"
               -p DB_TESTDATA=${{ inputs.db_testdata }}
               -p FOM_EMAIL_NOTIFY=${{ inputs.email_notify }}
-              -p LOGOUT_CHAIN_URL="{{ inputs.logout_chain_url }}"
+              -p LOGOUT_CHAIN_URL="${{ inputs.logout_chain_url }}"
           - name: admin
             overwrite: true
           - name: db
