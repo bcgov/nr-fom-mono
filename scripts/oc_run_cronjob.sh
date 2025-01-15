@@ -5,7 +5,7 @@ set -eu
 
 # Run and verify ETL jobs in OpenShift
 #
-# Usage: ./oc_run.sh [pr#|test|prod] [optional:token]
+# Usage: ./oc_run_cronjob.sh [cronjob_name] [optional:token]
 
 # Check inputs
 if [ -z "${1:-}" ]; then
