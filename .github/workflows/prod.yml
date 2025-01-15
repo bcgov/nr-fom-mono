@@ -1,17 +1,12 @@
-name: PROD (release)
+name: PROD (dispatch)
 
 on:
-  release:
-    types: [published]
   workflow_dispatch:
     inputs:
       tag:
-        description: Container tag; usually prod or PR number, can be omitted
-        type: string
-  workflow_call:
-    inputs:
-      tag:
-        description: Container tag; usually prod or PR number, can be omitted
+        description: Container tag; usually test, prod or PR number
+        default: test
+        required: true
         type: string
 
 concurrency:
@@ -55,7 +50,7 @@ jobs:
 
   images-promote:
     name: Promote images (PROD)
-    needs: [deploy, images-backup]
+    needs: [images-backup]
     permissions:
       packages: write
     runs-on: ubuntu-24.04
@@ -67,7 +62,5 @@ jobs:
         with:
           registry: ghcr.io
           repository: ${{ github.repository }}/${{ matrix.component }}
-          target: ${{ needs.deploy.outputs.tag }}
-          tags: |
-            prod
-            ${{ github.event.release.tag_name }}
+          target: ${{ inputs.tag }}
+          tags: prod
