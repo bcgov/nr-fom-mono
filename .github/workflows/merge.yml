@@ -29,8 +29,8 @@ jobs:
       target: test
       url: fom-test.nrs.gov.bc.ca
 
-  images-backup:
-    name: Backup images (PROD)
+  images-promote:
+    name: Promote images (TEST)
     continue-on-error: true # If no prod tags
     needs: [deploy]
     permissions:
