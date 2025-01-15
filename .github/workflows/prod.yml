@@ -1,4 +1,4 @@
-name: PROD (dispatch, release)
+name: PROD (release)
 
 on:
   release:
