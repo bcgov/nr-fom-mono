@@ -6,12 +6,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: Container tag; usually prod or PR number, can be omitted
-        type: string
-  workflow_call:
-    inputs:
-      tag:
-        description: Container tag; usually prod or PR number, can be omitted
+        description: Container tag; usually test, prod or PR number, can be omitted
+        default: test
+        required: true
         type: string
 
 concurrency:
