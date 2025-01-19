@@ -32,7 +32,7 @@ jobs:
             build_file: public/Dockerfile
     steps:
       - uses: actions/checkout@v4
-      - uses: bcgov-nr/action-builder-ghcr@v2.3.0
+      - uses: bcgov/action-builder-ghcr@v2.3.0
         with:
           package: ${{ matrix.package }}
           build_context: ${{ matrix.build_context }}
