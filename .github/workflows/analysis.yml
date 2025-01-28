@@ -18,7 +18,7 @@ permissions: {}
 jobs:
   tests:
     name: Unit Tests
-    if: ${{ ! github.event.pull_request.draft }}
+    if: (! github.event.pull_request.draft)
     runs-on: ubuntu-24.04
     steps:
       - uses: bcgov/action-test-and-analyse@v1.2.1
@@ -38,7 +38,7 @@ jobs:
   # https://github.com/marketplace/actions/aqua-security-trivy
   trivy:
     name: Trivy Security Scan
-    if: ${{ ! github.event.pull_request.draft }}
+    if: (! github.event.pull_request.draft)
     permissions:
       security-events: write
     runs-on: ubuntu-24.04
